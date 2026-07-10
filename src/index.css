@@ -46,13 +46,13 @@
 }
 
 [data-theme='dark'] {
-  --bg-page: #060f1e;
-  --bg-section: #0a1628;
-  --bg-section-alt: #0d1f3c;
-  --bg-card: #0f2340;
+  --bg-page: #040a14;
+  --bg-section: #060f1e;
+  --bg-section-alt: #0a1628;
+  --bg-card: #0d1f3c;
   --bg-card-hover: #132a4d;
-  --bg-header: rgba(6, 15, 30, 0.9);
-  --bg-header-scrolled: rgba(6, 15, 30, 0.97);
+  --bg-header: rgba(4, 10, 20, 0.88);
+  --bg-header-scrolled: rgba(4, 10, 20, 0.96);
   --bg-input: rgba(255, 255, 255, 0.06);
   --bg-modal: #0f2340;
   --bg-agenda: linear-gradient(160deg, #060f1e 0%, #0d1f3c 100%);

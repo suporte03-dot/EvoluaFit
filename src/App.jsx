@@ -8,16 +8,18 @@ import NewsGrid from './components/NewsGrid'
 import FanPanel from './components/FanPanel'
 import TrendingSports from './components/TrendingSports'
 import SportsCategories from './components/SportsCategories'
-import WeeklyAgenda from './components/WeeklyAgenda'
+import AgendaSection from './components/AgendaSection'
 import Curiosities from './components/Curiosities'
 import Stories from './components/Stories'
 import Newsletter from './components/Newsletter'
 import Footer from './components/Footer'
 import NewsModal from './components/NewsModal'
+import EventModal from './components/agenda/EventModal'
 import './App.css'
 
 function App() {
   const [selectedNews, setSelectedNews] = useState(null)
+  const [selectedEvent, setSelectedEvent] = useState(null)
   const activeSection = useScrollSpy(sectionIds)
 
   return (
@@ -30,13 +32,14 @@ function App() {
         <FanPanel />
         <TrendingSports />
         <SportsCategories />
-        <WeeklyAgenda />
+        <AgendaSection onEventDetails={setSelectedEvent} />
         <Curiosities />
         <Stories />
         <Newsletter />
       </main>
       <Footer />
       <NewsModal article={selectedNews} onClose={() => setSelectedNews(null)} />
+      <EventModal event={selectedEvent} onClose={() => setSelectedEvent(null)} />
     </div>
   )
 }

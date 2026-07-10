@@ -32,6 +32,7 @@ export const imageByFilter = {
   formula1: sportImages.formula1,
   lutas: sportImages.lutas,
   tenis: sportImages.tenis,
+  atletismo: sportImages.atletismo,
   olimpicos: sportImages.atletismo,
 }
 
@@ -316,58 +317,9 @@ export const categories = [
   },
 ]
 
-export const weekAgenda = [
-  {
-    id: 1,
-    date: '10 Jul',
-    day: 'Sex',
-    time: '20:30',
-    sport: 'Futebol',
-    event: 'Final do campeonato nacional',
-    description: 'Decisão do título nacional em jogo único',
-    status: 'Hoje',
-  },
-  {
-    id: 2,
-    date: '11 Jul',
-    day: 'Sáb',
-    time: '15:00',
-    sport: 'Fórmula 1',
-    event: 'Treino classificatório do GP da Europa',
-    description: 'Preparação para a corrida em Silverstone',
-    status: 'Amanhã',
-  },
-  {
-    id: 3,
-    date: '12 Jul',
-    day: 'Dom',
-    time: '19:00',
-    sport: 'Lutas',
-    event: 'Disputa de cinturão internacional',
-    description: 'Card principal com título em jogo',
-    status: 'Em breve',
-  },
-  {
-    id: 4,
-    date: '13 Jul',
-    day: 'Seg',
-    time: '10:00',
-    sport: 'Tênis',
-    event: 'Semifinal do torneio mundial',
-    description: 'Semifinal masculina em quadra central',
-    status: 'Em breve',
-  },
-  {
-    id: 5,
-    date: '13 Jul',
-    day: 'Seg',
-    time: '18:00',
-    sport: 'Basquete',
-    event: 'Jogo decisivo da conferência',
-    description: 'Confronto que define finalista da conferência',
-    status: 'Em breve',
-  },
-]
+export const weekAgenda = []
+
+export { agendaEvents, agendaSummary, agendaSportFilters, agendaPeriodFilters, agendaWeekDays, agendaFeaturedEvent, filterAgendaEvents, getEventCountByDay, REFERENCE_DATE } from './agendaData'
 
 export const curiosities = [
   {

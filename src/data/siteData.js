@@ -11,14 +11,94 @@ export const sportImages = {
   atletismo: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=900&auto=format&fit=crop&q=80',
 }
 
+export const sectionIds = [
+  'inicio',
+  'manchete',
+  'destaques',
+  'painel',
+  'em-alta',
+  'modalidades',
+  'agenda',
+  'curiosidades',
+  'historias',
+  'contato',
+]
+
 export const menuItems = [
-  { label: 'Início', href: '#inicio' },
-  { label: 'Destaques', href: '#destaques' },
-  { label: 'Modalidades', href: '#modalidades' },
-  { label: 'Agenda', href: '#agenda' },
-  { label: 'Curiosidades', href: '#curiosidades' },
-  { label: 'Histórias', href: '#historias' },
-  { label: 'Contato', href: '#contato' },
+  { label: 'Início', href: '#inicio', sectionId: 'inicio' },
+  { label: 'Destaques', href: '#destaques', sectionId: 'destaques' },
+  { label: 'Modalidades', href: '#modalidades', sectionId: 'modalidades' },
+  { label: 'Agenda', href: '#agenda', sectionId: 'agenda' },
+  { label: 'Curiosidades', href: '#curiosidades', sectionId: 'curiosidades' },
+  { label: 'Histórias', href: '#historias', sectionId: 'historias' },
+  { label: 'Contato', href: '#contato', sectionId: 'contato' },
+]
+
+export const heroQuickCards = [
+  {
+    label: 'Notícias do dia',
+    value: '12+',
+    detail: 'Atualizadas agora',
+    href: '#destaques',
+    icon: '📰',
+  },
+  {
+    label: 'Modalidades',
+    value: '8',
+    detail: 'Esportes cobertos',
+    href: '#modalidades',
+    icon: '🏆',
+  },
+  {
+    label: 'Agenda semanal',
+    value: '6',
+    detail: 'Eventos confirmados',
+    href: '#agenda',
+    icon: '📅',
+  },
+]
+
+export const fanPanelCards = [
+  {
+    id: 1,
+    title: 'Jogos hoje',
+    value: '3',
+    detail: 'Futebol, Basquete e Vôlei',
+    icon: '⚽',
+    accent: 'green',
+  },
+  {
+    id: 2,
+    title: 'Próximos eventos',
+    value: '6',
+    detail: 'Confirmados esta semana',
+    icon: '📅',
+    accent: 'accent',
+  },
+  {
+    id: 3,
+    title: 'Destaque da semana',
+    value: 'Brasil',
+    detail: 'Vitória nos acréscimos',
+    icon: '⭐',
+    accent: 'orange',
+  },
+  {
+    id: 4,
+    title: 'Modalidade em alta',
+    value: 'Futebol',
+    detail: '+42% de acessos',
+    icon: '🔥',
+    accent: 'green',
+  },
+]
+
+export const trendingSports = [
+  { rank: 1, name: 'Futebol', percent: 92, icon: '⚽', color: '#00c96b' },
+  { rank: 2, name: 'Fórmula 1', percent: 78, icon: '🏎️', color: '#ef4444' },
+  { rank: 3, name: 'Basquete', percent: 71, icon: '🏀', color: '#f5a623' },
+  { rank: 4, name: 'Vôlei', percent: 58, icon: '🏐', color: '#3b82f6' },
+  { rank: 5, name: 'Lutas', percent: 45, icon: '🥊', color: '#8b5cf6' },
 ]
 
 export const newsFilters = [
@@ -364,6 +444,14 @@ export const curiosities = [
       'A finalização mais rápida durou apenas 1 segundo, com nocaute técnico logo no início do combate.',
     sport: 'Lutas',
   },
+  {
+    id: 7,
+    icon: '🏅',
+    question: 'Qual esporte já foi olímpico e saiu do programa?',
+    answer:
+      'O polo aquático em equipes de 7 jogadores e o croquet foram modalidades olímpicas que deixaram o programa ao longo da história dos Jogos.',
+    sport: 'Olímpicos',
+  },
 ]
 
 export const stories = [
@@ -376,6 +464,7 @@ export const stories = [
       'A Seleção de 1970 é considerada a maior de todos os tempos, com futebol arte que eternizou Pelé.',
     sport: 'Futebol',
     tag: 'Copa do Mundo',
+    image: sportImages.futebol,
   },
   {
     id: 2,
@@ -386,6 +475,7 @@ export const stories = [
       'Time venceu após estar 25 pontos atrás no terceiro quarto — uma das maiores recuperações da NBA.',
     sport: 'Basquete',
     tag: 'Recordes',
+    image: sportImages.basquete,
   },
   {
     id: 3,
@@ -396,6 +486,7 @@ export const stories = [
       'Usain Bolt cruzou os 100m em 9,69s na final olímpica e entrou para a história do atletismo.',
     sport: 'Atletismo',
     tag: 'Olimpíadas',
+    image: sportImages.atletismo,
   },
   {
     id: 4,
@@ -406,14 +497,8 @@ export const stories = [
       'Seleção amadora dos EUA derrotou a URSS no hóquei — um dos maiores upsets do esporte mundial.',
     sport: 'Hóquei',
     tag: 'História',
+    image: sportImages.olimpicos,
   },
-]
-
-export const fanModeChips = [
-  { label: 'Ver futebol', href: '#modalidades', icon: '⚽' },
-  { label: 'Ver agenda', href: '#agenda', icon: '📅' },
-  { label: 'Ver curiosidades', href: '#curiosidades', icon: '💡' },
-  { label: 'Ver histórias', href: '#historias', icon: '📖' },
 ]
 
 export const footerLinks = {

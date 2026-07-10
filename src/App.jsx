@@ -1,11 +1,14 @@
 import { useState } from 'react'
+import { sectionIds } from './data/siteData'
+import { useScrollSpy } from './hooks/useScrollSpy'
 import Header from './components/Header'
 import Hero from './components/Hero'
-import PortalHeadlines from './components/PortalHeadlines'
-import FanMode from './components/FanMode'
-import SportsHighlights from './components/SportsHighlights'
+import FeaturedNews from './components/FeaturedNews'
+import NewsGrid from './components/NewsGrid'
+import FanPanel from './components/FanPanel'
+import TrendingSports from './components/TrendingSports'
 import CategoryCards from './components/CategoryCards'
-import WeekAgenda from './components/WeekAgenda'
+import Calendar from './components/Calendar'
 import Curiosities from './components/Curiosities'
 import Stories from './components/Stories'
 import Newsletter from './components/Newsletter'
@@ -15,17 +18,19 @@ import './App.css'
 
 function App() {
   const [selectedNews, setSelectedNews] = useState(null)
+  const activeSection = useScrollSpy(sectionIds)
 
   return (
     <div className="app">
-      <Header />
+      <Header activeSection={activeSection} />
       <main>
         <Hero />
-        <PortalHeadlines onReadMore={setSelectedNews} />
-        <FanMode />
-        <SportsHighlights onReadMore={setSelectedNews} />
+        <FeaturedNews onReadMore={setSelectedNews} />
+        <NewsGrid onReadMore={setSelectedNews} />
+        <FanPanel />
+        <TrendingSports />
         <CategoryCards />
-        <WeekAgenda />
+        <Calendar />
         <Curiosities />
         <Stories />
         <Newsletter />

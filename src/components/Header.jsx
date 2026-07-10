@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { menuItems } from '../data/siteData'
 import { useTheme } from '../context/ThemeContext'
 
-function Header() {
+function Header({ activeSection }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const { theme, toggleTheme } = useTheme()
@@ -14,6 +14,11 @@ function Header() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [menuOpen])
 
   return (
     <header className={`header ${scrolled ? 'header--scrolled' : ''}`}>
@@ -30,16 +35,29 @@ function Header() {
           </span>
         </a>
 
-        <nav className={`header__nav ${menuOpen ? 'header__nav--open' : ''}`}>
+        <nav
+          className={`header__nav ${menuOpen ? 'header__nav--open' : ''}`}
+          aria-label="Menu principal"
+        >
           <ul className="header__menu">
             {menuItems.map((item) => (
               <li key={item.label}>
-                <a href={item.href} onClick={closeMenu}>
+                <a
+                  href={item.href}
+                  className={activeSection === item.sectionId ? 'header__link--active' : ''}
+                  onClick={closeMenu}
+                  aria-current={activeSection === item.sectionId ? 'page' : undefined}
+                >
                   {item.label}
                 </a>
               </li>
             ))}
           </ul>
+          <div className="header__mobile-actions">
+            <a href="#destaques" className="btn btn--primary" onClick={closeMenu}>
+              Ver destaques
+            </a>
+          </div>
         </nav>
 
         <div className="header__actions">
@@ -69,6 +87,14 @@ function Header() {
           </button>
         </div>
       </div>
+      {menuOpen && (
+        <button
+          type="button"
+          className="header__backdrop"
+          aria-label="Fechar menu"
+          onClick={closeMenu}
+        />
+      )}
     </header>
   )
 }

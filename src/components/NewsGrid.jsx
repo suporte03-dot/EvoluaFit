@@ -1,5 +1,6 @@
+import SportImage from './SportImage'
 import { useState } from 'react'
-import { allNews } from '../data/siteData'
+import { gridNews } from '../data/siteData'
 import SectionTitle from './SectionTitle'
 import SectionReveal from './SectionReveal'
 import CategoryFilter from './CategoryFilter'
@@ -9,8 +10,8 @@ function NewsGrid({ onReadMore }) {
 
   const filtered =
     activeFilter === 'todos'
-      ? allNews
-      : allNews.filter((news) => news.filter === activeFilter)
+      ? gridNews
+      : gridNews.filter((news) => news.filter === activeFilter)
 
   return (
     <section id="destaques" className="section news-grid">
@@ -35,7 +36,12 @@ function NewsGrid({ onReadMore }) {
                 style={{ '--delay': `${index * 0.05}s` }}
               >
                 <div className="news-grid__image-wrap">
-                  <img src={news.image} alt="" className="news-grid__img" />
+                  <SportImage
+                    src={news.image}
+                    filter={news.filter}
+                    alt={news.category}
+                    className="news-grid__img"
+                  />
                   <div className="news-grid__overlay" />
                   <span className="news-grid__category">{news.category}</span>
                 </div>

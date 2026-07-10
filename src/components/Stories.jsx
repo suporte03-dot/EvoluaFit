@@ -1,3 +1,4 @@
+import SportImage from './SportImage'
 import { stories } from '../data/siteData'
 import SectionTitle from './SectionTitle'
 import SectionReveal from './SectionReveal'
@@ -23,7 +24,7 @@ function Stories() {
                 style={{ '--delay': `${index * 0.07}s` }}
               >
                 <div className="stories__image-wrap">
-                  <img src={story.image} alt="" className="stories__img" />
+                  <SportImage src={story.image} className="stories__img" />
                   <div className="stories__overlay" />
                   <span className="stories__icon" aria-hidden="true">{story.icon}</span>
                 </div>

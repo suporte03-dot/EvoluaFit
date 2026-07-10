@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import SportImage from './SportImage'
 
 function NewsModal({ article, onClose }) {
   useEffect(() => {
@@ -33,7 +34,12 @@ function NewsModal({ article, onClose }) {
         </button>
 
         <div className="modal__image-wrap">
-          <img src={article.image} alt="" className="modal__image" />
+          <SportImage
+            src={article.image}
+            filter={article.filter}
+            alt={article.category}
+            className="modal__image"
+          />
           <div className="modal__image-overlay" />
           <span className="modal__category">{article.category}</span>
         </div>

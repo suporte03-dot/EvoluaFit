@@ -1,3 +1,4 @@
+import SportImage from './SportImage'
 import { categories } from '../data/siteData'
 import SectionTitle from './SectionTitle'
 import SectionReveal from './SectionReveal'
@@ -22,7 +23,7 @@ function CategoryCards() {
                 style={{ '--accent': cat.color, '--delay': `${index * 0.05}s` }}
               >
               <div className="categories__visual">
-                <img src={cat.image} alt="" className="categories__img" />
+                <SportImage src={cat.image} className="categories__img" />
                 <div className="categories__overlay" />
                 <span className="categories__icon" aria-hidden="true">
                   {cat.icon}

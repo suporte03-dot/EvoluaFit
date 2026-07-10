@@ -1,9 +1,10 @@
+import SportImage from './SportImage'
 import { heroQuickCards, sportImages } from '../data/siteData'
 
 function Hero() {
   return (
     <section id="inicio" className="hero">
-      <img src={sportImages.hero} alt="" className="hero__bg-img" loading="eager" />
+      <SportImage src={sportImages.hero} className="hero__bg-img" loading="eager" />
       <div className="hero__overlay" />
       <div className="hero__grid-lines" aria-hidden="true" />
       <div className="hero__spotlight" aria-hidden="true" />

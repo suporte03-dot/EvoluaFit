@@ -1,14 +1,36 @@
+const asset = (file) => `${import.meta.env.BASE_URL}assets/sports/${file}`
+
 export const sportImages = {
-  hero: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1400&auto=format&fit=crop&q=80',
-  futebol: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=900&auto=format&fit=crop&q=80',
-  basquete: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=900&auto=format&fit=crop&q=80',
-  volei: 'https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=900&auto=format&fit=crop&q=80',
-  formula1: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=900&auto=format&fit=crop&q=80',
-  lutas: 'https://images.unsplash.com/photo-1549719386-74dfdf7f054d?w=900&auto=format&fit=crop&q=80',
-  tenis: 'https://images.unsplash.com/photo-1554068865-24cecd4cd381?w=900&auto=format&fit=crop&q=80',
-  olimpicos: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=900&auto=format&fit=crop&q=80',
-  radicais: 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=900&auto=format&fit=crop&q=80',
-  atletismo: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=900&auto=format&fit=crop&q=80',
+  hero: asset('hero.jpg'),
+  futebol: asset('futebol.jpg'),
+  futebol2: asset('futebol-2.jpg'),
+  futebol3: asset('futebol-3.jpg'),
+  basquete: asset('basquete.jpg'),
+  basquete2: asset('basquete-2.jpg'),
+  basquete3: asset('basquete-3.jpg'),
+  volei: asset('volei.jpg'),
+  formula1: asset('formula1.jpg'),
+  lutas: asset('lutas.jpg'),
+  tenis: asset('tenis.jpg'),
+  atletismo: asset('atletismo.jpg'),
+  olimpicos: asset('olimpicos.jpg'),
+  radicais: asset('radicais.jpg'),
+  fallback: asset('fallback.jpg'),
+}
+
+/** Retorna imagem local coerente com a modalidade da notícia */
+export const imageByFilter = {
+  futebol: sportImages.futebol,
+  basquete: sportImages.basquete,
+  volei: sportImages.volei,
+  formula1: sportImages.formula1,
+  lutas: sportImages.lutas,
+  tenis: sportImages.tenis,
+  olimpicos: sportImages.atletismo,
+}
+
+export function getNewsImage(news) {
+  return news.image ?? imageByFilter[news.filter] ?? sportImages.fallback
 }
 
 export const sectionIds = [
@@ -179,9 +201,7 @@ export const secondaryHeadlines = [
   },
 ]
 
-export const allNews = [
-  mainHeadline,
-  ...secondaryHeadlines,
+export const gridNews = [
   {
     id: 5,
     category: 'Atletismo',
@@ -239,7 +259,7 @@ export const allNews = [
     ],
     date: '07 Jul 2026',
     readTime: '4 min',
-    image: sportImages.futebol,
+    image: sportImages.futebol2,
     icon: '⚽',
   },
   {
@@ -254,10 +274,13 @@ export const allNews = [
     ],
     date: '07 Jul 2026',
     readTime: '4 min',
-    image: sportImages.basquete,
+    image: sportImages.basquete2,
     icon: '🏀',
   },
 ]
+
+/** Todas as notícias (destaques + grade) — usado em filtros e modal */
+export const allNews = [mainHeadline, ...secondaryHeadlines, ...gridNews]
 
 export const categories = [
   {
@@ -266,7 +289,7 @@ export const categories = [
     icon: '⚽',
     description: 'Campeonatos, seleções e mercado da bola',
     color: '#00a650',
-    image: sportImages.futebol,
+    image: sportImages.futebol3,
   },
   {
     id: 'basquete',
@@ -274,7 +297,7 @@ export const categories = [
     icon: '🏀',
     description: 'NBA, NBB e competições internacionais',
     color: '#f5a623',
-    image: sportImages.basquete,
+    image: sportImages.basquete3,
   },
   {
     id: 'volei',
@@ -464,7 +487,7 @@ export const stories = [
       'A Seleção de 1970 é considerada a maior de todos os tempos, com futebol arte que eternizou Pelé.',
     sport: 'Futebol',
     tag: 'Copa do Mundo',
-    image: sportImages.futebol,
+    image: sportImages.futebol2,
   },
   {
     id: 2,
@@ -475,7 +498,7 @@ export const stories = [
       'Time venceu após estar 25 pontos atrás no terceiro quarto — uma das maiores recuperações da NBA.',
     sport: 'Basquete',
     tag: 'Recordes',
-    image: sportImages.basquete,
+    image: sportImages.basquete2,
   },
   {
     id: 3,

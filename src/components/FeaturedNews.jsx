@@ -1,3 +1,4 @@
+import SportImage from './SportImage'
 import { mainHeadline, secondaryHeadlines } from '../data/siteData'
 import SectionTitle from './SectionTitle'
 import SectionReveal from './SectionReveal'
@@ -18,7 +19,12 @@ function FeaturedNews({ onReadMore }) {
           <SectionReveal className="featured-news__main-wrap">
             <article className="featured-news__main card">
               <div className="featured-news__image-wrap">
-                <img src={mainHeadline.image} alt="" className="featured-news__img" />
+                <SportImage
+                  src={mainHeadline.image}
+                  filter={mainHeadline.filter}
+                  alt={mainHeadline.category}
+                  className="featured-news__img"
+                />
                 <div className="featured-news__overlay" />
                 <span className="featured-news__tag">{mainHeadline.tag}</span>
               </div>
@@ -49,7 +55,12 @@ function FeaturedNews({ onReadMore }) {
                   style={{ '--delay': `${index * 0.08}s` }}
                 >
                   <div className="featured-news__side-image">
-                    <img src={news.image} alt="" className="featured-news__img" />
+                    <SportImage
+                      src={news.image}
+                      filter={news.filter}
+                      alt={news.category}
+                      className="featured-news__img"
+                    />
                     <div className="featured-news__overlay featured-news__overlay--side" />
                     <span className="featured-news__side-icon" aria-hidden="true">
                       {news.icon}

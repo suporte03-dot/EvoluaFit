@@ -3,7 +3,7 @@ import { stories } from '../data/siteData'
 import SectionTitle from './SectionTitle'
 import SectionReveal from './SectionReveal'
 
-function Stories() {
+function Stories({ onSelectStory }) {
   return (
     <section id="historias" className="section stories">
       <div className="container">
@@ -20,11 +20,15 @@ function Stories() {
           {stories.map((story, index) => (
             <SectionReveal key={story.id}>
               <article
-                className="stories__card card"
+                className="stories__card card card--clickable"
                 style={{ '--delay': `${index * 0.07}s` }}
+                onClick={() => onSelectStory?.(story)}
+                onKeyDown={(e) => e.key === 'Enter' && onSelectStory?.(story)}
+                role="button"
+                tabIndex={0}
               >
                 <div className="stories__image-wrap">
-                  <SportImage src={story.image} className="stories__img" />
+                  <SportImage src={story.image} className="stories__img" alt={story.sport} />
                   <div className="stories__overlay" />
                 </div>
                 <div className="stories__body">
@@ -34,6 +38,7 @@ function Stories() {
                   </div>
                   <h3>{story.title}</h3>
                   <p>{story.excerpt}</p>
+                  <span className="stories__read">Ler história completa →</span>
                 </div>
               </article>
             </SectionReveal>

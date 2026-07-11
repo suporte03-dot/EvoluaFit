@@ -1,16 +1,25 @@
 import { useState } from 'react'
 import SectionReveal from './SectionReveal'
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+
 function Newsletter() {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (email.trim()) {
-      setSubmitted(true)
-      setEmail('')
+    const trimmed = email.trim()
+
+    if (!EMAIL_REGEX.test(trimmed)) {
+      setError('Informe um e-mail válido para receber a newsletter da Arena 360.')
+      return
     }
+
+    setError('')
+    setSubmitted(true)
+    setEmail('')
   }
 
   return (
@@ -32,20 +41,31 @@ function Newsletter() {
               <div className="newsletter__success" role="status">
                 <span className="newsletter__success-icon">✓</span>
                 <div>
-                  <strong>Cadastro realizado!</strong>
-                  <p>Você receberá os próximos destaques da Arena 360.</p>
+                  <strong>Bem-vindo à Arena 360!</strong>
+                  <p>Cadastro realizado com sucesso. Você receberá os próximos destaques do esporte em todos os ângulos.</p>
                 </div>
               </div>
             ) : (
-              <form className="newsletter__form" onSubmit={handleSubmit}>
-                <input
-                  type="email"
-                  placeholder="Seu melhor e-mail"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  aria-label="E-mail para newsletter"
-                />
+              <form className="newsletter__form" onSubmit={handleSubmit} noValidate>
+                <div className="newsletter__field">
+                  <input
+                    type="email"
+                    placeholder="Seu melhor e-mail"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value)
+                      if (error) setError('')
+                    }}
+                    aria-label="E-mail para newsletter"
+                    aria-invalid={Boolean(error)}
+                    aria-describedby={error ? 'newsletter-error' : undefined}
+                  />
+                  {error && (
+                    <p id="newsletter-error" className="newsletter__error" role="alert">
+                      {error}
+                    </p>
+                  )}
+                </div>
                 <button type="submit" className="btn btn--accent">
                   Quero receber
                 </button>

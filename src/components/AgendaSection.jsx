@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   agendaEvents,
   agendaFeaturedEvent,
@@ -12,11 +12,18 @@ import AgendaTimeline from './agenda/AgendaTimeline'
 import AgendaFeatured from './agenda/AgendaFeatured'
 import AgendaEventList from './agenda/AgendaEventList'
 
-function AgendaSection({ onEventDetails }) {
+function AgendaSection({ onEventDetails, periodPreset, onPeriodPresetApplied }) {
   const filtersRef = useRef(null)
   const [sportFilter, setSportFilter] = useState('todos')
   const [periodFilter, setPeriodFilter] = useState('todos')
   const [dayFilter, setDayFilter] = useState(null)
+
+  useEffect(() => {
+    if (!periodPreset) return
+    setDayFilter(null)
+    setPeriodFilter(periodPreset)
+    onPeriodPresetApplied?.()
+  }, [periodPreset, onPeriodPresetApplied])
 
   const filteredEvents = useMemo(() => {
     const nonFeatured = agendaEvents.filter((e) => !e.featured)

@@ -8,9 +8,11 @@ const statusClass = {
 function AgendaEventList({ events, onDetails }) {
   if (events.length === 0) {
     return (
-      <p className="agenda-event-list__empty">
-        Nenhum evento encontrado para os filtros selecionados.
-      </p>
+      <div className="agenda-event-list__empty empty-state">
+        <span className="empty-state__icon" aria-hidden="true">📅</span>
+        <h3>Nenhum evento encontrado</h3>
+        <p>Não há eventos para os filtros selecionados. Tente outro período ou modalidade.</p>
+      </div>
     )
   }
 
@@ -19,7 +21,11 @@ function AgendaEventList({ events, onDetails }) {
       {events.map((event) => (
         <article
           key={event.id}
-          className={`agenda-event card ${event.status === 'Hoje' ? 'agenda-event--today' : ''}`}
+          className={`agenda-event card card--clickable ${event.status === 'Hoje' ? 'agenda-event--today' : ''}`}
+          onClick={() => onDetails(event)}
+          onKeyDown={(e) => e.key === 'Enter' && onDetails(event)}
+          role="button"
+          tabIndex={0}
         >
           <div className="agenda-event__date">
             <strong>{event.date}</strong>
@@ -43,7 +49,10 @@ function AgendaEventList({ events, onDetails }) {
             <button
               type="button"
               className="agenda-event__btn"
-              onClick={() => onDetails(event)}
+              onClick={(e) => {
+                e.stopPropagation()
+                onDetails(event)
+              }}
             >
               Ver detalhes
             </button>

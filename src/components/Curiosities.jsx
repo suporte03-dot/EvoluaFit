@@ -3,7 +3,7 @@ import { curiosities } from '../data/siteData'
 import SectionTitle from './SectionTitle'
 import SectionReveal from './SectionReveal'
 
-function Curiosities() {
+function Curiosities({ onSelectCuriosity }) {
   const [highlighted, setHighlighted] = useState(0)
 
   const showNext = () => {
@@ -25,8 +25,12 @@ function Curiosities() {
           {curiosities.map((item, index) => (
             <SectionReveal key={item.id}>
               <article
-                className={`curiosities__card card ${highlighted === index ? 'curiosities__card--active' : ''}`}
+                className={`curiosities__card card card--clickable ${highlighted === index ? 'curiosities__card--active' : ''}`}
                 style={{ '--delay': `${index * 0.05}s` }}
+                onClick={() => onSelectCuriosity?.(item)}
+                onKeyDown={(e) => e.key === 'Enter' && onSelectCuriosity?.(item)}
+                role="button"
+                tabIndex={0}
               >
                 <span className="curiosities__icon" aria-hidden="true">{item.icon}</span>
                 <span className="curiosities__sport">{item.sport}</span>

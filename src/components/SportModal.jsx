@@ -3,16 +3,23 @@ import SportImage from './SportImage'
 import { allNews, curiosities } from '../data/siteData'
 import { getAgendaEvents } from '../data/agendaData'
 import { enrichAgendaEvent } from '../utils/agendaDateUtils'
+import { scrollToSection } from '../utils/scrollToSection'
 
 function getRelatedNews(categoryId) {
+  if (categoryId === 'futebol') {
+    return allNews
+      .filter((n) => n.filter === 'futebol' || n.filter === 'brasileirao')
+      .slice(0, 3)
+  }
   return allNews
     .filter((n) => n.filter === categoryId)
     .slice(0, 3)
 }
 
 function getUpcomingEvents(categoryId) {
+  const filter = categoryId === 'brasileirao' ? 'futebol' : categoryId
   return getAgendaEvents()
-    .filter((event) => event.filter === categoryId && event.status !== 'Encerrado')
+    .filter((event) => event.filter === filter && event.status !== 'Encerrado')
     .slice(0, 3)
     .map(enrichAgendaEvent)
 }
@@ -65,6 +72,40 @@ function SportModal({ category, onClose, onReadNews, onViewEvent }) {
 
         <div className="sport-modal__body">
           <p className="sport-modal__description">{category.description}</p>
+
+          {(category.id === 'futebol' || category.id === 'brasileirao') && (
+            <section className="sport-modal__section">
+              <h3>Brasileirão Série A</h3>
+              <button
+                type="button"
+                className="sport-modal__link-btn sport-modal__standings-link"
+                onClick={() => {
+                  onClose()
+                  scrollToSection('brasileirao')
+                }}
+              >
+                Ver classificação, jogos e artilharia →
+              </button>
+            </section>
+          )}
+
+          {(category.id === 'futebol' || category.id === 'brasileirao') && (
+            <section className="sport-modal__section">
+              <h3>{category.id === 'brasileirao' ? 'Outros campeonatos' : 'Classificações'}</h3>
+              <button
+                type="button"
+                className="sport-modal__link-btn sport-modal__standings-link"
+                onClick={() => {
+                  onClose()
+                  scrollToSection('tabelas')
+                }}
+              >
+                {category.id === 'brasileirao'
+                  ? 'Ver tabelas de outras competições →'
+                  : 'Ver tabelas e campeonatos de futebol →'}
+              </button>
+            </section>
+          )}
 
           <section className="sport-modal__section">
             <h3>Notícias relacionadas</h3>

@@ -7,9 +7,19 @@ const typeLabels = {
   event: 'Evento',
   curiosity: 'Curiosidade',
   story: 'História',
+  team: 'Time',
+  competition: 'Campeonato',
 }
 
-function SearchBar({ onSelectNews, onSelectEvent, onSelectStory, onSelectCuriosity, onSelectModality }) {
+function SearchBar({
+  onSelectNews,
+  onSelectEvent,
+  onSelectStory,
+  onSelectCuriosity,
+  onSelectModality,
+  onSelectTeam,
+  onSelectCompetition,
+}) {
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
@@ -46,6 +56,12 @@ function SearchBar({ onSelectNews, onSelectEvent, onSelectStory, onSelectCuriosi
       case 'modality':
         onSelectModality?.(result.data)
         break
+      case 'team':
+        onSelectTeam?.(result.data)
+        break
+      case 'competition':
+        onSelectCompetition?.(result.data)
+        break
       default:
         break
     }
@@ -59,7 +75,7 @@ function SearchBar({ onSelectNews, onSelectEvent, onSelectStory, onSelectCuriosi
           id="site-search"
           type="search"
           className="search-bar__input"
-          placeholder="Buscar notícias, modalidades, eventos..."
+          placeholder="Buscar notícias, times, campeonatos ou eventos..."
           value={query}
           onChange={(e) => {
             setQuery(e.target.value)
@@ -74,7 +90,7 @@ function SearchBar({ onSelectNews, onSelectEvent, onSelectStory, onSelectCuriosi
         <div className="search-bar__panel" role="listbox" aria-label="Resultados da busca">
           {results.length === 0 ? (
             <p className="search-bar__empty empty-state">
-              Nenhum resultado encontrado para sua busca.
+              Nenhum resultado encontrado.
             </p>
           ) : (
             <ul className="search-bar__results">

@@ -26,6 +26,7 @@ export const sportImages = {
 }
 
 export const imageByFilter = {
+  brasileirao: sportImages.futebol,
   futebol: sportImages.futebol,
   basquete: sportImages.basquete,
   volei: sportImages.volei,
@@ -45,28 +46,34 @@ export const sectionIds = [
   'inicio',
   'destaques',
   'noticias',
+  'brasileirao',
   'painel',
   'em-alta',
   'modalidades',
+  'tabelas',
   'agenda',
   'curiosidades',
   'historias',
   'contato',
 ]
 
-export const menuItems = [
+export const navLinks = [
   { label: 'Início', href: '#inicio', sectionId: 'inicio' },
-  { label: 'Destaques', href: '#destaques', sectionId: 'destaques' },
-  { label: 'Modalidades', href: '#modalidades', sectionId: 'modalidades' },
+  { label: 'Notícias', href: '#noticias', sectionId: 'noticias' },
+  { label: 'Brasileirão', href: '#brasileirao', sectionId: 'brasileirao' },
+  { label: 'Tabelas', href: '#tabelas', sectionId: 'tabelas' },
   { label: 'Agenda', href: '#agenda', sectionId: 'agenda' },
+  { label: 'Modalidades', href: '#modalidades', sectionId: 'modalidades' },
   { label: 'Curiosidades', href: '#curiosidades', sectionId: 'curiosidades' },
   { label: 'Histórias', href: '#historias', sectionId: 'historias' },
   { label: 'Contato', href: '#contato', sectionId: 'contato' },
 ]
 
+export const menuItems = navLinks
+
 export const heroStats = [
   { value: '500+', label: 'notícias por mês', sectionId: 'noticias' },
-  { value: '9', label: 'modalidades', sectionId: 'modalidades' },
+  { value: '10', label: 'modalidades', sectionId: 'modalidades' },
   { value: '24h', label: 'de cobertura', sectionId: 'destaques' },
   { value: '100%', label: 'paixão pelo esporte', sectionId: 'historias' },
 ]
@@ -112,6 +119,7 @@ export const trendingSports = [
 
 export const newsFilters = [
   { id: 'todos', label: 'Todos' },
+  { id: 'brasileirao', label: 'Brasileirão' },
   { id: 'futebol', label: 'Futebol' },
   { id: 'basquete', label: 'Basquete' },
   { id: 'volei', label: 'Vôlei' },
@@ -144,6 +152,39 @@ export const mainHeadline = {
 }
 
 export const gridNews = [
+  {
+    id: 11,
+    category: 'Brasileirão',
+    filter: 'brasileirao',
+    title: 'Rodada 15 do Brasileirão promete clássicos e disputa acirrada no topo',
+    excerpt: 'Flamengo, Palmeiras e Botafogo se enfrentam em jogos decisivos pela liderança.',
+    fullContent: [
+      'A 15ª rodada do Campeonato Brasileiro reúne confrontos diretos entre os principais candidatos ao título.',
+      'No Rio de Janeiro, o clássico entre Flamengo e São Paulo movimenta a torcida em noite de expectativa no Maracanã.',
+      'Em São Paulo, Palmeiras recebe o Botafogo em duelo que pode redefinir a zona de classificação à Libertadores.',
+    ],
+    date: '11 Jul 2026',
+    readTime: '5 min',
+    image: sportImages.futebol3,
+    icon: '⚽',
+    source: 'Arena 360',
+  },
+  {
+    id: 12,
+    category: 'Brasileirão',
+    filter: 'brasileirao',
+    title: 'Artilheiro do Brasileirão chega a 12 gols e lidera disputa individual',
+    excerpt: 'Atacante do Flamengo se consolida como referência ofensiva da temporada.',
+    fullContent: [
+      'Com mais um gol marcado na última rodada, o atacante rubro-negro ampliou a vantagem na artilharia do campeonato.',
+      'A performance coloca pressão sobre os demais goleadores da competição nas rodadas finais do primeiro turno.',
+    ],
+    date: '10 Jul 2026',
+    readTime: '3 min',
+    image: sportImages.futebol2,
+    icon: '⚽',
+    source: 'Arena 360',
+  },
   {
     id: 2,
     category: 'Futebol',
@@ -294,6 +335,14 @@ export const gridNews = [
 export const allNews = [mainHeadline, ...gridNews]
 
 export const categories = [
+  {
+    id: 'brasileirao',
+    name: 'Brasileirão',
+    icon: '🏆',
+    description: 'O principal campeonato nacional de futebol, com 20 clubes disputando título e vagas continentais.',
+    color: '#00E887',
+    image: sportImages.futebol,
+  },
   {
     id: 'futebol',
     name: 'Futebol',
@@ -534,10 +583,11 @@ export const stories = [
 export const footerLinks = {
   navegacao: [
     { label: 'Início', href: '#inicio' },
-    { label: 'Destaques', href: '#destaques' },
     { label: 'Notícias', href: '#noticias' },
-    { label: 'Modalidades', href: '#modalidades' },
+    { label: 'Brasileirão', href: '#brasileirao' },
+    { label: 'Tabelas', href: '#tabelas' },
     { label: 'Agenda', href: '#agenda' },
+    { label: 'Modalidades', href: '#modalidades' },
   ],
   conteudo: [
     { label: 'Notícias', href: '#noticias' },

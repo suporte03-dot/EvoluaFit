@@ -7,7 +7,9 @@ import SectionTitle from './SectionTitle'
 import SectionReveal from './SectionReveal'
 
 const FAN_PANEL_LINKS = [
+  { label: 'Brasileirão Série A', sectionId: 'brasileirao' },
   { label: 'Ver agenda completa', sectionId: 'agenda' },
+  { label: 'Tabelas e campeonatos', sectionId: 'tabelas' },
   { label: 'Ver todas as notícias', sectionId: 'noticias' },
   { label: 'Modalidades em alta', sectionId: 'modalidades' },
 ]

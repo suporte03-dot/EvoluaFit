@@ -3,6 +3,7 @@ import { useFitness } from '../context/FitnessContext'
 import SectionTitle from './SectionTitle'
 import EmptyState from './EmptyState'
 import StartWorkoutModal from './StartWorkoutModal'
+import WorkoutDetailModal from './WorkoutDetailModal'
 
 const statusClass = {
   Pendente: 'status--pending',
@@ -15,24 +16,34 @@ export default function MyWorkouts() {
   const { workouts, setActiveWorkout, updateWorkout, deleteWorkout, duplicateWorkout, showToast } = useFitness()
   const [editingId, setEditingId] = useState(null)
   const [editName, setEditName] = useState('')
+  const [detailWorkout, setDetailWorkout] = useState(null)
 
-  const startEdit = (workout) => {
+  const startEdit = (workout, e) => {
+    e.stopPropagation()
     setEditingId(workout.id)
     setEditName(workout.name)
   }
 
-  const saveEdit = (id) => {
+  const saveEdit = (id, e) => {
+    e?.stopPropagation()
     updateWorkout(id, { name: editName })
     setEditingId(null)
   }
 
-  const markDone = (workout) => {
+  const markDone = (workout, e) => {
+    e.stopPropagation()
     updateWorkout(workout.id, {
       status: 'Realizado',
       completedAt: new Date().toISOString(),
     })
     showToast('Treino marcado como realizado!')
   }
+
+  const openDetail = (workout) => setDetailWorkout(workout)
+
+  const handleCardClick = (workout) => openDetail(workout)
+
+  const stopProp = (e) => e.stopPropagation()
 
   return (
     <section id="treinos" className="section">
@@ -54,12 +65,24 @@ export default function MyWorkouts() {
         ) : (
           <div className="workout-list">
             {workouts.map((workout) => (
-              <article key={workout.id} className="workout-card glass-card">
+              <article
+                key={workout.id}
+                className="workout-card glass-card workout-card--clickable"
+                onClick={() => handleCardClick(workout)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    handleCardClick(workout)
+                  }
+                }}
+              >
                 <div className="workout-card__top">
                   {editingId === workout.id ? (
-                    <div className="workout-card__edit">
+                    <div className="workout-card__edit" onClick={stopProp}>
                       <input value={editName} onChange={(e) => setEditName(e.target.value)} />
-                      <button type="button" className="btn btn--sm btn--primary" onClick={() => saveEdit(workout.id)}>
+                      <button type="button" className="btn btn--sm btn--primary" onClick={(e) => saveEdit(workout.id, e)}>
                         Salvar
                       </button>
                     </div>
@@ -89,7 +112,10 @@ export default function MyWorkouts() {
                   ))}
                 </div>
 
-                <div className="workout-card__actions">
+                <div className="workout-card__actions" onClick={stopProp}>
+                  <button type="button" className="btn btn--ghost btn--sm" onClick={() => openDetail(workout)}>
+                    Ver treino
+                  </button>
                   <button
                     type="button"
                     className="btn btn--primary btn--sm"
@@ -98,14 +124,18 @@ export default function MyWorkouts() {
                   >
                     Iniciar
                   </button>
-                  <button type="button" className="btn btn--ghost btn--sm" onClick={() => startEdit(workout)}>
+                  <button type="button" className="btn btn--ghost btn--sm" onClick={(e) => startEdit(workout, e)}>
                     Editar
                   </button>
-                  <button type="button" className="btn btn--ghost btn--sm" onClick={() => duplicateWorkout(workout.id)}>
+                  <button
+                    type="button"
+                    className="btn btn--ghost btn--sm"
+                    onClick={() => duplicateWorkout(workout.id)}
+                  >
                     Duplicar
                   </button>
                   {workout.status !== 'Realizado' && (
-                    <button type="button" className="btn btn--ghost btn--sm" onClick={() => markDone(workout)}>
+                    <button type="button" className="btn btn--ghost btn--sm" onClick={(e) => markDone(workout, e)}>
                       Marcar realizado
                     </button>
                   )}
@@ -123,6 +153,11 @@ export default function MyWorkouts() {
         )}
       </div>
       <StartWorkoutModal />
+      <WorkoutDetailModal
+        workout={detailWorkout}
+        isOpen={Boolean(detailWorkout)}
+        onClose={() => setDetailWorkout(null)}
+      />
     </section>
   )
 }

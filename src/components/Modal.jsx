@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-export default function Modal({ isOpen, onClose, title, children, size = 'md' }) {
+export default function Modal({ isOpen, onClose, title, children, size = 'md', className = '' }) {
   useEffect(() => {
     if (!isOpen) return undefined
     const handleKey = (e) => {
@@ -17,9 +17,9 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
   if (!isOpen) return null
 
   return (
-    <div className="modal-overlay" onClick={onClose} role="presentation">
+    <div className={`modal-overlay modal-overlay--animated ${className ? `${className}-overlay` : ''}`} onClick={onClose} role="presentation">
       <div
-        className={`modal modal--${size}`}
+        className={`modal modal--${size} modal--animated ${className}`}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"

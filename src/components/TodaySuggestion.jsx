@@ -1,6 +1,7 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
 import { scrollToSection } from '../utils/scrollToSection'
+import WorkoutDetailModal from './WorkoutDetailModal'
 
 const suggestions = {
   push: { title: 'Dia de Push', desc: 'Foque em peito, ombros e tríceps com cargas moderadas.', muscles: ['Peito', 'Ombros', 'Tríceps'] },
@@ -11,6 +12,7 @@ const suggestions = {
 
 export default function TodaySuggestion() {
   const { workouts, history, performance } = useFitness()
+  const [detailWorkout, setDetailWorkout] = useState(null)
 
   const suggestion = useMemo(() => {
     const lastSession = history[0]
@@ -47,6 +49,14 @@ export default function TodaySuggestion() {
       suggestion.muscles.some((m) => w.muscleGroups?.includes(m)),
   )
 
+  const handleCta = () => {
+    if (matchingWorkout) {
+      setDetailWorkout(matchingWorkout)
+    } else {
+      scrollToSection('planilha')
+    }
+  }
+
   return (
     <section className="today-suggestion">
       <div className="container">
@@ -68,15 +78,17 @@ export default function TodaySuggestion() {
               </div>
             )}
           </div>
-          <button
-            type="button"
-            className="btn btn--primary"
-            onClick={() => scrollToSection(matchingWorkout ? 'treinos' : 'planilha')}
-          >
-            {matchingWorkout ? 'Ver treino sugerido' : 'Criar planilha'}
+          <button type="button" className="btn btn--primary" onClick={handleCta}>
+            {matchingWorkout ? 'Ver treino' : 'Criar planilha'}
           </button>
         </div>
       </div>
+
+      <WorkoutDetailModal
+        workout={detailWorkout}
+        isOpen={Boolean(detailWorkout)}
+        onClose={() => setDetailWorkout(null)}
+      />
     </section>
   )
 }

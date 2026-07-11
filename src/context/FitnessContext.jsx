@@ -129,6 +129,35 @@ export function FitnessProvider({ children }) {
     [persist, showToast],
   )
 
+  const startWorkout = useCallback((workout) => {
+    setActiveWorkout(workout)
+  }, [])
+
+  const addWorkoutToPlan = useCallback(
+    (workout) => {
+      if (!workout) return
+      const exists = data.workouts.some((w) => w.id === workout.id)
+      if (exists) {
+        showToast('Treino já está na sua planilha.', 'info')
+        return
+      }
+      const entry = {
+        ...workout,
+        id: workout.id || `workout-${Date.now()}`,
+        status: workout.status || 'Pendente',
+        date: workout.date || new Date().toISOString().split('T')[0],
+        createdAt: workout.createdAt || new Date().toISOString(),
+        exercises: (workout.exercises || []).map((ex) => ({ ...ex })),
+      }
+      persist((prev) => ({
+        ...prev,
+        workouts: [entry, ...prev.workouts],
+      }))
+      showToast('Treino adicionado à planilha!')
+    },
+    [data.workouts, persist, showToast],
+  )
+
   const updateGoals = useCallback(
     (goals) => {
       persist((prev) => ({ ...prev, goals }))
@@ -184,6 +213,8 @@ export function FitnessProvider({ children }) {
     completeWorkout,
     savePlan,
     addPlanWorkouts,
+    startWorkout,
+    addWorkoutToPlan,
     updateGoals,
     importData,
     exportData,

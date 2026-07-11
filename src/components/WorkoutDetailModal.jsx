@@ -1,6 +1,8 @@
 import { useMemo } from 'react'
 import { useFitness } from '../context/FitnessContext'
 import { enrichWorkoutDetail } from '../data/workoutTemplates'
+import { navigateToExercise } from '../hooks/useHashRoute'
+import ExerciseMedia from './ExerciseMedia'
 import Modal from './Modal'
 
 export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
@@ -24,7 +26,11 @@ export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
       <div className="workout-detail">
         <div className="workout-detail__badges">
           <span className="workout-detail__badge">{detail.type}</span>
-          {detail.status && <span className={`status-badge status--${detail.status === 'Realizado' ? 'done' : 'pending'}`}>{detail.status}</span>}
+          {detail.status && (
+            <span className={`status-badge status--${detail.status === 'Realizado' ? 'done' : 'pending'}`}>
+              {detail.status}
+            </span>
+          )}
         </div>
 
         <div className="workout-detail__meta-grid">
@@ -87,17 +93,84 @@ export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
           <h3 className="workout-detail__section-title">Exercícios ({detail.exercises.length})</h3>
           <div className="workout-detail__exercises">
             {detail.exercises.map((ex, i) => (
-              <div key={`${ex.name}-${i}`} className="workout-detail__exercise">
-                <div className="workout-detail__exercise-header">
-                  <strong>{ex.name}</strong>
-                  <span className="muscle-tag">{ex.muscleGroup}</span>
+              <div key={`${ex.id || ex.name}-${i}`} className="workout-detail__exercise-card">
+                {ex.mediaUrl && (
+                  <ExerciseMedia
+                    exercise={ex}
+                    aspectRatio="16/9"
+                    compact
+                    showPlaceholderName={false}
+                  />
+                )}
+                <div className="workout-detail__exercise-body">
+                  <div className="workout-detail__exercise-header">
+                    {ex.id ? (
+                      <button
+                        type="button"
+                        className="workout-detail__exercise-link"
+                        onClick={() => navigateToExercise(ex.id)}
+                      >
+                        {ex.name}
+                      </button>
+                    ) : (
+                      <strong>{ex.name}</strong>
+                    )}
+                    <span className="muscle-tag">{ex.muscleGroup || ex.category}</span>
+                  </div>
+
+                  {ex.type && <span className="exercise-type-tag">{ex.type}</span>}
+
+                  {ex.muscles?.length > 0 && (
+                    <div className="workout-detail__exercise-muscles">
+                      {ex.muscles.map((m) => (
+                        <span key={m} className="muscle-tag muscle-tag--sm">
+                          {m}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="workout-detail__exercise-meta">
+                    <span>{ex.sets} séries</span>
+                    <span>{ex.reps} reps</span>
+                    <span>Descanso {ex.rest}</span>
+                  </div>
+
+                  {ex.benefits?.length > 0 && (
+                    <div className="workout-detail__exercise-block">
+                      <h4>Benefícios</h4>
+                      <ul>
+                        {ex.benefits.map((b) => (
+                          <li key={b}>{b}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {ex.execution?.length > 0 && (
+                    <div className="workout-detail__exercise-block">
+                      <h4>Execução</h4>
+                      <ol>
+                        {ex.execution.map((step) => (
+                          <li key={step}>{step}</li>
+                        ))}
+                      </ol>
+                    </div>
+                  )}
+
+                  {ex.commonMistakes?.length > 0 && (
+                    <div className="workout-detail__exercise-block workout-detail__exercise-block--caution">
+                      <h4>Erros comuns</h4>
+                      <ul>
+                        {ex.commonMistakes.map((m) => (
+                          <li key={m}>{m}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {ex.note && <p className="workout-detail__exercise-note">{ex.note}</p>}
                 </div>
-                <div className="workout-detail__exercise-meta">
-                  <span>{ex.sets} séries</span>
-                  <span>{ex.reps} reps</span>
-                  <span>Descanso {ex.rest}</span>
-                </div>
-                {ex.note && <p className="workout-detail__exercise-note">{ex.note}</p>}
               </div>
             ))}
           </div>

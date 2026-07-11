@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 import storageService from '../services/storageService'
 import { getPerformanceSummary } from '../utils/performanceUtils'
+import { parseSets, parseRestSeconds } from '../data/exercisesData'
 
 const FitnessContext = createContext(null)
 
@@ -158,6 +159,59 @@ export function FitnessProvider({ children }) {
     [data.workouts, persist, showToast],
   )
 
+  const addExerciseToPlan = useCallback(
+    (exercise) => {
+      if (!exercise) return
+
+      const entry = {
+        exerciseId: exercise.id,
+        name: exercise.name,
+        muscleGroup: exercise.category,
+        sets: parseSets(exercise.sets),
+        reps: exercise.reps,
+        restSeconds: parseRestSeconds(exercise.rest),
+        load: '',
+      }
+
+      const pending = data.workouts.find((w) => w.status === 'Pendente')
+
+      if (pending) {
+        persist((prev) => ({
+          ...prev,
+          workouts: prev.workouts.map((w) =>
+            w.id === pending.id
+              ? {
+                  ...w,
+                  exercises: [...w.exercises, entry],
+                  muscleGroups: [...new Set([...(w.muscleGroups || []), exercise.category])],
+                }
+              : w,
+          ),
+        }))
+        showToast(`"${exercise.name}" adicionado ao treino ${pending.name}`)
+        return
+      }
+
+      const newWorkout = {
+        id: `workout-${Date.now()}`,
+        name: `Treino — ${exercise.category}`,
+        date: new Date().toISOString().split('T')[0],
+        muscleGroups: [exercise.category],
+        status: 'Pendente',
+        estimatedMinutes: 45,
+        exercises: [entry],
+        createdAt: new Date().toISOString(),
+      }
+
+      persist((prev) => ({
+        ...prev,
+        workouts: [newWorkout, ...prev.workouts],
+      }))
+      showToast(`"${exercise.name}" adicionado à planilha!`)
+    },
+    [data.workouts, persist, showToast],
+  )
+
   const updateGoals = useCallback(
     (goals) => {
       persist((prev) => ({ ...prev, goals }))
@@ -215,6 +269,7 @@ export function FitnessProvider({ children }) {
     addPlanWorkouts,
     startWorkout,
     addWorkoutToPlan,
+    addExerciseToPlan,
     updateGoals,
     importData,
     exportData,

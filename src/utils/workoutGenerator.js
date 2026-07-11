@@ -1,4 +1,4 @@
-import { exercises } from '../data/exercisesData'
+import { exercises, parseSets, parseRestSeconds } from '../data/exercisesData'
 import { splitTemplates, levelConfig, objectiveLabels } from '../data/workoutTemplates'
 
 const restrictionMap = {
@@ -39,7 +39,7 @@ const pickExercisesForDay = (focus, options) => {
 
   let pool = exercises.filter(
     (ex) =>
-      (focus.includes(ex.muscleGroup) || focus.includes('Corpo inteiro')) &&
+      (focus.includes(ex.category) || focus.includes('Corpo inteiro')) &&
       matchesEquipment(ex, equipment) &&
       matchesLevel(ex, level) &&
       !isRestricted(ex, restrictions),
@@ -56,9 +56,9 @@ const pickExercisesForDay = (focus, options) => {
 
   for (const ex of pool) {
     if (selected.length >= maxExercises) break
-    if (!usedGroups.has(ex.muscleGroup) || focus.length <= 2) {
+    if (!usedGroups.has(ex.category) || focus.length <= 2) {
       selected.push(ex)
-      usedGroups.add(ex.muscleGroup)
+      usedGroups.add(ex.category)
     }
   }
 
@@ -74,9 +74,9 @@ const pickExercisesForDay = (focus, options) => {
 
 const buildExerciseEntry = (exercise, level, objective) => {
   const config = levelConfig[level] || levelConfig['Intermediário']
-  let sets = Math.round(exercise.defaultSets * config.setsMultiplier)
-  let reps = exercise.defaultReps
-  let rest = exercise.restSeconds + config.restBonus
+  let sets = Math.round(parseSets(exercise.sets) * config.setsMultiplier)
+  let reps = exercise.reps
+  let rest = parseRestSeconds(exercise.rest) + config.restBonus
 
   if (objective === 'emagrecimento') {
     reps = '12-15'
@@ -93,7 +93,7 @@ const buildExerciseEntry = (exercise, level, objective) => {
   return {
     exerciseId: exercise.id,
     name: exercise.name,
-    muscleGroup: exercise.muscleGroup,
+    muscleGroup: exercise.category,
     sets,
     reps,
     restSeconds: rest,

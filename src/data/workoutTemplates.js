@@ -1,3 +1,5 @@
+import { getExerciseById, getExercisesByIds } from './exercisesData'
+
 export const splitTemplates = {
   2: [
     { day: 1, name: 'Full Body A', focus: ['Peito', 'Costas', 'Quadríceps', 'Abdômen'] },
@@ -125,12 +127,12 @@ export const workoutTemplates = [
     benefits: workoutBenefitsByType.Push,
     precautions: DEFAULT_PRECAUTIONS,
     exercises: [
-      { name: 'Supino reto', sets: 4, reps: '8–12', rest: '90s', note: 'Controle a descida', muscleGroup: 'Peito' },
-      { name: 'Desenvolvimento com halteres', sets: 3, reps: '10–12', rest: '75s', note: 'Evite arquear demais a lombar', muscleGroup: 'Ombros' },
-      { name: 'Crucifixo inclinado', sets: 3, reps: '12–15', rest: '60s', note: 'Amplitude confortável', muscleGroup: 'Peito' },
-      { name: 'Elevação lateral', sets: 3, reps: '12–15', rest: '45s', note: 'Carga moderada', muscleGroup: 'Ombros' },
-      { name: 'Tríceps na polia', sets: 3, reps: '12–15', rest: '60s', note: 'Cotovelos fixos', muscleGroup: 'Tríceps' },
-      { name: 'Flexão de braços', sets: 2, reps: 'até a falha técnica', rest: '60s', note: 'Ajuste inclinação se necessário', muscleGroup: 'Peito' },
+      'supino-reto',
+      'desenvolvimento',
+      'crucifixo-inclinado',
+      'elevacao-lateral',
+      'triceps-pulley',
+      'flexao',
     ],
   },
   {
@@ -147,12 +149,12 @@ export const workoutTemplates = [
     benefits: workoutBenefitsByType.Pull,
     precautions: DEFAULT_PRECAUTIONS,
     exercises: [
-      { name: 'Barra fixa ou puxada frontal', sets: 4, reps: '6–10', rest: '90s', note: 'Puxe com as costas', muscleGroup: 'Costas' },
-      { name: 'Remada curvada', sets: 4, reps: '8–12', rest: '75s', note: 'Coluna neutra', muscleGroup: 'Costas' },
-      { name: 'Remada unilateral', sets: 3, reps: '10–12', rest: '60s', note: 'Evite rotação excessiva', muscleGroup: 'Costas' },
-      { name: 'Puxada alta com triângulo', sets: 3, reps: '12–15', rest: '60s', note: 'Cotovelos próximos ao corpo', muscleGroup: 'Costas' },
-      { name: 'Rosca direta', sets: 3, reps: '10–12', rest: '60s', note: 'Sem balanço', muscleGroup: 'Bíceps' },
-      { name: 'Prancha', sets: 3, reps: '30–45s', rest: '45s', note: 'Core ativado', muscleGroup: 'Abdômen' },
+      'puxada-frontal',
+      'remada-curvada',
+      'remada-unilateral',
+      'puxada-triangulo',
+      'rosca-direta',
+      'prancha',
     ],
   },
   {
@@ -169,12 +171,12 @@ export const workoutTemplates = [
     benefits: workoutBenefitsByType.Legs,
     precautions: DEFAULT_PRECAUTIONS,
     exercises: [
-      { name: 'Agachamento livre', sets: 4, reps: '8–10', rest: '120s', note: 'Profundidade confortável', muscleGroup: 'Quadríceps' },
-      { name: 'Leg press', sets: 3, reps: '10–12', rest: '90s', note: 'Pés na largura do quadril', muscleGroup: 'Quadríceps' },
-      { name: 'Stiff', sets: 3, reps: '10–12', rest: '75s', note: 'Coluna neutra', muscleGroup: 'Posterior' },
-      { name: 'Afundo com halteres', sets: 3, reps: '10 cada perna', rest: '75s', note: 'Passo controlado', muscleGroup: 'Glúteos' },
-      { name: 'Cadeira extensora', sets: 3, reps: '12–15', rest: '60s', note: 'Contração no topo', muscleGroup: 'Quadríceps' },
-      { name: 'Panturrilha em pé', sets: 4, reps: '15–20', rest: '45s', note: 'Amplitude completa', muscleGroup: 'Quadríceps' },
+      'agachamento',
+      'leg-press',
+      'stiff',
+      'afundo',
+      'cadeira-extensora',
+      'panturrilha',
     ],
   },
   {
@@ -191,11 +193,11 @@ export const workoutTemplates = [
     benefits: workoutBenefitsByType['Full Body'],
     precautions: DEFAULT_PRECAUTIONS,
     exercises: [
-      { name: 'Agachamento com halteres', sets: 3, reps: '12–15', rest: '75s', note: 'Inicie com carga leve', muscleGroup: 'Quadríceps' },
-      { name: 'Flexão de braços', sets: 3, reps: '8–12', rest: '60s', note: 'Joelhos no chão se necessário', muscleGroup: 'Peito' },
-      { name: 'Remada com halteres', sets: 3, reps: '10–12', rest: '60s', note: 'Costas retas', muscleGroup: 'Costas' },
-      { name: 'Desenvolvimento com halteres', sets: 3, reps: '10–12', rest: '60s', note: 'Sem impulso', muscleGroup: 'Ombros' },
-      { name: 'Prancha', sets: 3, reps: '20–40s', rest: '45s', note: 'Respiração contínua', muscleGroup: 'Abdômen' },
+      'agachamento-goblet',
+      'flexao',
+      'remada-unilateral',
+      'desenvolvimento',
+      'prancha',
     ],
   },
   {
@@ -212,11 +214,11 @@ export const workoutTemplates = [
     benefits: workoutBenefitsByType['Full Body'],
     precautions: DEFAULT_PRECAUTIONS,
     exercises: [
-      { name: 'Levantamento terra com halteres', sets: 3, reps: '10–12', rest: '75s', note: 'Coluna neutra', muscleGroup: 'Posterior' },
-      { name: 'Elevação frontal + lateral', sets: 3, reps: '12', rest: '60s', note: 'Carga leve', muscleGroup: 'Ombros' },
-      { name: 'Ponte de glúteos', sets: 3, reps: '15', rest: '45s', note: 'Contraia no topo', muscleGroup: 'Glúteos' },
-      { name: 'Rosca alternada', sets: 3, reps: '12', rest: '60s', note: 'Cotovelos fixos', muscleGroup: 'Bíceps' },
-      { name: 'Abdominal bicicleta', sets: 3, reps: '20', rest: '45s', note: 'Movimento controlado', muscleGroup: 'Abdômen' },
+      'levantamento-terra-halteres',
+      'elevacao-frontal-lateral',
+      'ponte-gluteos',
+      'rosca-alternada',
+      'abdominal-bicicleta',
     ],
   },
   {
@@ -238,10 +240,10 @@ export const workoutTemplates = [
       PROFESSIONAL_DISCLAIMER,
     ],
     exercises: [
-      { name: 'Aquecimento leve', sets: 1, reps: '5 min', rest: '—', note: 'Caminhada ou pedal suave', muscleGroup: 'Cardiovascular' },
-      { name: 'Esteira — ritmo moderado', sets: 1, reps: '15 min', rest: '—', note: 'FC confortável', muscleGroup: 'Cardiovascular' },
-      { name: 'Bicicleta — resistência leve', sets: 1, reps: '8 min', rest: '—', note: 'Cadência constante', muscleGroup: 'Cardiovascular' },
-      { name: 'Desaquecimento', sets: 1, reps: '2 min', rest: '—', note: 'Reduza intensidade aos poucos', muscleGroup: 'Cardiovascular' },
+      'aquecimento-leve',
+      'esteira-moderada',
+      'bicicleta-leve',
+      'desaquecimento',
     ],
   },
   {
@@ -263,11 +265,11 @@ export const workoutTemplates = [
       PROFESSIONAL_DISCLAIMER,
     ],
     exercises: [
-      { name: 'Rotação torácica', sets: 2, reps: '10 cada lado', rest: '30s', note: 'Sentado ou em pé', muscleGroup: 'Coluna' },
-      { name: 'Alongamento de quadríceps', sets: 2, reps: '30s cada perna', rest: '20s', note: 'Segure apoio se precisar', muscleGroup: 'Quadríceps' },
-      { name: 'Mobilidade de quadril — 90/90', sets: 2, reps: '45s cada lado', rest: '20s', note: 'Tronco ereto', muscleGroup: 'Quadril' },
-      { name: 'Alongamento posterior de ombro', sets: 2, reps: '30s cada braço', rest: '20s', note: 'Sem pressionar articulação', muscleGroup: 'Ombros' },
-      { name: 'Gato-vaca', sets: 2, reps: '12', rest: '30s', note: 'Sincronize com a respiração', muscleGroup: 'Coluna' },
+      'rotacao-toracica',
+      'alongamento-quadriceps',
+      'mobilidade-quadril-90',
+      'alongamento-ombro',
+      'gato-vaca',
     ],
   },
   {
@@ -284,11 +286,11 @@ export const workoutTemplates = [
     benefits: workoutBenefitsByType['Core/Abdômen'],
     precautions: DEFAULT_PRECAUTIONS,
     exercises: [
-      { name: 'Prancha frontal', sets: 3, reps: '30–45s', rest: '45s', note: 'Quadril alinhado', muscleGroup: 'Abdômen' },
-      { name: 'Prancha lateral', sets: 2, reps: '25s cada lado', rest: '30s', note: 'Corpo em linha reta', muscleGroup: 'Oblíquos' },
-      { name: 'Dead bug', sets: 3, reps: '10 cada lado', rest: '45s', note: 'Lombar pressionada no chão', muscleGroup: 'Abdômen' },
-      { name: 'Bird dog', sets: 3, reps: '10 cada lado', rest: '45s', note: 'Movimento lento', muscleGroup: 'Lombar' },
-      { name: 'Pallof press com elástico', sets: 3, reps: '12 cada lado', rest: '45s', note: 'Resista à rotação', muscleGroup: 'Oblíquos' },
+      'prancha',
+      'prancha-lateral',
+      'dead-bug',
+      'bird-dog',
+      'pallof-press',
     ],
   },
   {
@@ -305,11 +307,11 @@ export const workoutTemplates = [
     benefits: workoutBenefitsByType.Superiores,
     precautions: DEFAULT_PRECAUTIONS,
     exercises: [
-      { name: 'Supino inclinado com halteres', sets: 4, reps: '8–12', rest: '90s', note: 'Descida controlada', muscleGroup: 'Peito' },
-      { name: 'Remada baixa no cabo', sets: 4, reps: '10–12', rest: '75s', note: 'Peito para fora', muscleGroup: 'Costas' },
-      { name: 'Desenvolvimento Arnold', sets: 3, reps: '10–12', rest: '75s', note: 'Amplitude confortável', muscleGroup: 'Ombros' },
-      { name: 'Crucifixo no cabo', sets: 3, reps: '12–15', rest: '60s', note: 'Leve flexão de cotovelo', muscleGroup: 'Peito' },
-      { name: 'Puxada neutra', sets: 3, reps: '10–12', rest: '75s', note: 'Cotovelos para baixo', muscleGroup: 'Costas' },
+      'supino-inclinado',
+      'remada-baixa-cabo',
+      'desenvolvimento-arnold',
+      'crucifixo-cabo',
+      'puxada-neutra',
     ],
   },
   {
@@ -326,11 +328,11 @@ export const workoutTemplates = [
     benefits: workoutBenefitsByType.Inferiores,
     precautions: DEFAULT_PRECAUTIONS,
     exercises: [
-      { name: 'Agachamento frontal', sets: 4, reps: '8–10', rest: '120s', note: 'Cotovelos altos', muscleGroup: 'Quadríceps' },
-      { name: 'Mesa flexora', sets: 3, reps: '10–12', rest: '75s', note: 'Contração no final', muscleGroup: 'Posterior' },
-      { name: 'Hip thrust', sets: 4, reps: '10–12', rest: '90s', note: 'Queixo recolhido', muscleGroup: 'Glúteos' },
-      { name: 'Passada lateral com halter', sets: 3, reps: '10 cada lado', rest: '60s', note: 'Joelho alinhado ao pé', muscleGroup: 'Glúteos' },
-      { name: 'Abdominal infra no banco', sets: 3, reps: '12–15', rest: '45s', note: 'Sem balanço', muscleGroup: 'Abdômen' },
+      'agachamento-frontal',
+      'cadeira-flexora',
+      'hip-thrust',
+      'passada-lateral',
+      'abdominal-infra',
     ],
   },
   {
@@ -347,11 +349,11 @@ export const workoutTemplates = [
     benefits: workoutBenefitsByType.Funcional,
     precautions: DEFAULT_PRECAUTIONS,
     exercises: [
-      { name: 'Swing com kettlebell', sets: 4, reps: '15', rest: '60s', note: 'Impulso do quadril', muscleGroup: 'Posterior' },
-      { name: 'Burpee modificado', sets: 3, reps: '8–10', rest: '75s', note: 'Sem salto se necessário', muscleGroup: 'Corpo inteiro' },
-      { name: 'Farmer walk', sets: 3, reps: '30m', rest: '60s', note: 'Postura ereta', muscleGroup: 'Core' },
-      { name: 'Step-up na caixa', sets: 3, reps: '10 cada perna', rest: '60s', note: 'Suba com controle', muscleGroup: 'Quadríceps' },
-      { name: 'Battle rope — ondas', sets: 3, reps: '30s', rest: '60s', note: 'Ritmo constante', muscleGroup: 'Ombros' },
+      'kettlebell-swing',
+      'burpee',
+      'farmer-walk',
+      'step-up',
+      'battle-rope',
     ],
   },
 ]
@@ -410,15 +412,63 @@ function inferTypeFromWorkout(workout) {
   return 'Full Body'
 }
 
+function exerciseToDetail(exercise, overrides = {}) {
+  if (!exercise) return null
+  return {
+    id: exercise.id,
+    name: exercise.name,
+    type: exercise.type,
+    category: exercise.category,
+    muscleGroup: exercise.category,
+    muscles: exercise.muscles,
+    sets: overrides.sets ?? exercise.sets,
+    reps: overrides.reps ?? exercise.reps,
+    rest: overrides.rest ?? exercise.rest,
+    note: overrides.note || '',
+    benefits: exercise.benefits,
+    execution: exercise.execution,
+    commonMistakes: exercise.commonMistakes,
+    mediaType: exercise.mediaType,
+    mediaUrl: exercise.mediaUrl,
+    thumbnail: exercise.thumbnail,
+    equipment: exercise.equipment,
+    level: exercise.level,
+  }
+}
+
+function resolveTemplateExercises(exerciseRefs = []) {
+  if (!exerciseRefs.length) return []
+  if (typeof exerciseRefs[0] === 'string') {
+    return getExercisesByIds(exerciseRefs).map((ex) => exerciseToDetail(ex))
+  }
+  return exerciseRefs.map((ex) => {
+    const full = ex.exerciseId ? getExerciseById(ex.exerciseId) : getExerciseById(ex.id)
+    if (full) {
+      return exerciseToDetail(full, {
+        sets: ex.sets,
+        reps: ex.reps,
+        rest: ex.rest || (ex.restSeconds ? `${ex.restSeconds}s` : undefined),
+        note: ex.note,
+      })
+    }
+    return {
+      id: ex.exerciseId || ex.id,
+      name: ex.name,
+      sets: ex.sets,
+      reps: ex.reps,
+      rest: ex.rest || (ex.restSeconds ? `${ex.restSeconds}s` : '60s'),
+      note: ex.note || '',
+      muscleGroup: ex.muscleGroup || ex.category,
+      muscles: ex.muscles || (ex.muscleGroup ? [ex.muscleGroup] : []),
+      benefits: ex.benefits || [],
+      execution: ex.execution || (ex.instructions ? [ex.instructions] : []),
+      commonMistakes: ex.commonMistakes || (ex.cautions ? [ex.cautions] : []),
+    }
+  })
+}
+
 function normalizeExercises(exercises = []) {
-  return exercises.map((ex) => ({
-    name: ex.name,
-    sets: ex.sets,
-    reps: ex.reps,
-    rest: ex.rest || (ex.restSeconds ? `${ex.restSeconds}s` : '60s'),
-    note: ex.note || '',
-    muscleGroup: ex.muscleGroup,
-  }))
+  return resolveTemplateExercises(exercises)
 }
 
 export function enrichWorkoutDetail(workout) {
@@ -429,8 +479,10 @@ export function enrichWorkoutDetail(workout) {
   const benefits = template?.benefits || getWorkoutBenefitsByType(type)
   const precautions = template?.precautions || DEFAULT_PRECAUTIONS
 
-  const userExercises = workout.exercises?.length ? normalizeExercises(workout.exercises) : null
-  const exercises = userExercises?.length ? userExercises : normalizeExercises(template?.exercises || [])
+  const userExercises = workout.exercises?.length ? resolveTemplateExercises(workout.exercises) : null
+  const exercises = userExercises?.length
+    ? userExercises
+    : resolveTemplateExercises(template?.exercises || [])
 
   return {
     id: workout.id,

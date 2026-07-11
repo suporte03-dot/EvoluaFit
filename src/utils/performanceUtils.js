@@ -1,4 +1,4 @@
-import { getExerciseById } from '../data/exercisesData'
+import { getExerciseById, getExerciseMuscleGroup } from '../data/exercisesData'
 
 const parseReps = (reps) => {
   if (!reps) return 10
@@ -107,7 +107,7 @@ export function getMuscleGroupVolume(history) {
   history.forEach((session) => {
     session.exercises?.forEach((ex) => {
       const exercise = getExerciseById(ex.exerciseId)
-      const group = exercise?.muscleGroup || ex.muscleGroup || 'Outros'
+      const group = getExerciseMuscleGroup(exercise) || ex.muscleGroup || 'Outros'
       const sets = ex.completedSets || ex.sets || 0
       const reps = parseReps(ex.reps)
       const load = parseLoad(ex.load)

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" fill="none">
+  <defs>
+    <linearGradient id="bg-abdomen" x1="0" y1="0" x2="640" y2="360" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0b1020"/>
+      <stop offset="1" stop-color="#152238"/>
+    </linearGradient>
+    <radialGradient id="glow-abdomen" cx="50%" cy="40%" r="50%">
+      <stop stop-color="#00E58F" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#00E58F" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg-abdomen)"/>
+  <rect width="640" height="360" fill="url(#glow-abdomen)"/>
+  <g transform="translate(160, 30) scale(1.6)">
+    <ellipse cx="160" cy="100" rx="48" ry="36" stroke="#00E58F" stroke-width="3" fill="none" opacity="0.85"/>
+        <path d="M128 100h64M160 76v48" stroke="#00C97B" stroke-width="1.5" opacity="0.4"/>
+  </g>
+  <text x="320" y="300" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="22" font-weight="600">Abdômen</text>
+  <text x="320" y="330" text-anchor="middle" fill="#00E58F" font-family="system-ui,sans-serif" font-size="13" opacity="0.8">EvoluaFit</text>
+</svg>

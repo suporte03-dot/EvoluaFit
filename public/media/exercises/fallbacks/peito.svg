@@ -15,6 +15,6 @@
     <path d="M200 95c-18 0-32-14-40-28-8 14-22 28-40 28-22 0-40-18-40-40v-8c0-11 9-20 20-20h120c11 0 20 9 20 20v8c0 22-18 40-40 40z" stroke="#00E58F" stroke-width="3" fill="none" opacity="0.85"/>
         <path d="M160 67v56M120 95h80" stroke="#00C97B" stroke-width="1.5" opacity="0.4"/>
   </g>
-  <text x="320" y="300" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="22" font-weight="600">Exercício</text>
+  <text x="320" y="300" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="22" font-weight="600">Peito</text>
   <text x="320" y="330" text-anchor="middle" fill="#00E58F" font-family="system-ui,sans-serif" font-size="13" opacity="0.8">EvoluaFit</text>
 </svg>

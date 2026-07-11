@@ -26,12 +26,14 @@ export default function ExerciseCard({ exercise, onAdd, onClick }) {
       </div>
 
       <div className="exercise-card__tags">
-        <span className="muscle-tag">{exercise.category}</span>
+        <span className="muscle-tag">{exercise.muscleGroup || exercise.category}</span>
         <span className="exercise-type-tag">{exercise.type}</span>
         <span className="equipment-tag">{exercise.equipment}</span>
       </div>
 
-      <p className="exercise-card__instructions">{exercise.execution?.[0] || exercise.benefits?.[0]}</p>
+      <p className="exercise-card__instructions">
+        {exercise.shortInstruction || exercise.execution?.[0] || exercise.benefits?.[0]}
+      </p>
 
       {exercise.commonMistakes?.[0] && (
         <p className="exercise-card__caution">⚠️ {exercise.commonMistakes[0]}</p>
@@ -41,11 +43,16 @@ export default function ExerciseCard({ exercise, onAdd, onClick }) {
         {exercise.sets} séries · {exercise.reps} · {exercise.rest}
       </div>
 
-      {onAdd && (
-        <button type="button" className="btn btn--primary btn--sm" onClick={() => onAdd(exercise)}>
-          Adicionar ao treino
+      <div className="exercise-card__actions">
+        {onAdd && (
+          <button type="button" className="btn btn--primary btn--sm" onClick={() => onAdd(exercise)}>
+            Adicionar ao treino
+          </button>
+        )}
+        <button type="button" className="btn btn--ghost btn--sm" onClick={handleOpen}>
+          Ver detalhes
         </button>
-      )}
+      </div>
     </article>
   )
 }

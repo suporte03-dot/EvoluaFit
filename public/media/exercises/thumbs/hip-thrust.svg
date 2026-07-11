@@ -1,6 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" fill="none">
-  <rect width="320" height="180" fill="#0f1f35"/>
-  <circle cx="160" cy="70" r="24" stroke="#3b82f6" stroke-width="2" opacity="0.7"/>
-  <path d="M120 140c0-22.091 17.909-40 40-40s40 17.909 40 40" stroke="#3b82f6" stroke-width="2" opacity="0.7"/>
-  <text x="160" y="165" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="10">Legs</text>
+  <defs>
+    <linearGradient id="tbg" x1="0" y1="0" x2="320" y2="180">
+      <stop stop-color="#0b1020"/>
+      <stop offset="1" stop-color="#152238"/>
+    </linearGradient>
+    <radialGradient id="tglow" cx="50%" cy="38%" r="55%">
+      <stop stop-color="#00E58F" stop-opacity="0.1"/>
+      <stop offset="1" stop-color="#00E58F" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="320" height="180" fill="url(#tbg)"/>
+  <rect width="320" height="180" fill="url(#tglow)"/>
+  <circle cx="160" cy="68" r="26" stroke="#00E58F" stroke-width="2" opacity="0.85"/>
+  <path d="M118 132c0-23.196 18.804-42 42-42s42 18.804 42 42" stroke="#00E58F" stroke-width="2" opacity="0.75"/>
+  <path d="M132 98l-16 22M188 98l16 22" stroke="#00C97B" stroke-width="1.5" stroke-linecap="round" opacity="0.45"/>
+  <text x="160" y="156" text-anchor="middle" fill="#cbd5e1" font-family="system-ui,sans-serif" font-size="9" font-weight="500">Hip thrust</text>
+  <text x="160" y="170" text-anchor="middle" fill="#00E58F" font-family="system-ui,sans-serif" font-size="7" opacity="0.75">Legs</text>
 </svg>

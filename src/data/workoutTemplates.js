@@ -430,7 +430,13 @@ function exerciseToDetail(exercise, overrides = {}) {
     commonMistakes: exercise.commonMistakes,
     mediaType: exercise.mediaType,
     mediaUrl: exercise.mediaUrl,
+    image: exercise.image,
     thumbnail: exercise.thumbnail,
+    gif: exercise.gif,
+    video: exercise.video,
+    fallbackImage: exercise.fallbackImage,
+    shortInstruction: exercise.shortInstruction,
+    executionSteps: exercise.executionSteps,
     equipment: exercise.equipment,
     level: exercise.level,
   }

@@ -1,16 +1,42 @@
 const BASE = import.meta.env.BASE_URL
 
-const mediaUrl = (id, mediaType = 'video') =>
-  `${BASE}media/exercises/${id}.${mediaType === 'gif' ? 'gif' : 'mp4'}`
-
 const thumbUrl = (id) => `${BASE}media/exercises/thumbs/${id}.svg`
+const imageUrl = (id) => thumbUrl(id)
+const videoUrl = (id) => `${BASE}media/exercises/${id}.mp4`
+const gifUrl = (id) => `${BASE}media/exercises/${id}.gif`
+const fallbackUrl = (key) => `${BASE}media/exercises/fallbacks/${key}.svg`
+
+const CATEGORY_FALLBACK = {
+  Peito: 'peito',
+  Costas: 'costas',
+  Ombros: 'ombros',
+  'Bíceps': 'bracos',
+  'Tríceps': 'bracos',
+  'Quadríceps': 'pernas',
+  Posterior: 'pernas',
+  'Glúteos': 'pernas',
+  'Abdômen': 'abdomen',
+  'Corpo inteiro': 'cardio',
+  Cardiovascular: 'cardio',
+  Coluna: 'mobilidade',
+  Quadril: 'mobilidade',
+  'Oblíquos': 'abdomen',
+  Lombar: 'abdomen',
+  Core: 'abdomen',
+}
+
+function getFallbackKey(category, type) {
+  if (type === 'Cardio') return 'cardio'
+  if (type === 'Mobilidade') return 'mobilidade'
+  return CATEGORY_FALLBACK[category] || 'cardio'
+}
 
 function createExercise({
   id,
   name,
   type,
   category,
-  mediaType = 'video',
+  mediaType = 'image',
   muscles,
   benefits,
   execution,
@@ -21,15 +47,39 @@ function createExercise({
   equipment,
   level,
   restrictions,
+  video,
+  gif,
+  image,
 }) {
+  const thumbnail = thumbUrl(id)
+  const primaryImage = image || imageUrl(id)
+  const fallbackKey = getFallbackKey(category, type)
+  const fallbackImage = fallbackUrl(fallbackKey)
+  const resolvedVideo = video ?? (mediaType === 'video' ? videoUrl(id) : null)
+  const resolvedGif = gif ?? (mediaType === 'gif' ? gifUrl(id) : null)
+  const resolvedMediaType = resolvedVideo ? 'video' : resolvedGif ? 'gif' : 'image'
+  const resolvedMediaUrl =
+    resolvedMediaType === 'video'
+      ? resolvedVideo
+      : resolvedMediaType === 'gif'
+        ? resolvedGif
+        : primaryImage
+
   return {
     id,
     name,
     type,
     category,
-    mediaType,
-    mediaUrl: mediaUrl(id, mediaType),
-    thumbnail: thumbUrl(id),
+    muscleGroup: category,
+    mediaType: resolvedMediaType,
+    mediaUrl: resolvedMediaUrl,
+    image: primaryImage,
+    thumbnail,
+    gif: resolvedGif,
+    video: resolvedVideo,
+    fallbackImage,
+    shortInstruction: execution?.[0] ?? '',
+    executionSteps: execution,
     muscles,
     benefits,
     execution,

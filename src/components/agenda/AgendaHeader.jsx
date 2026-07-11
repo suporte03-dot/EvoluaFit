@@ -2,10 +2,10 @@ function AgendaHeader({ onWeekClick, onFilterFocus }) {
   return (
     <header className="agenda-header">
       <div className="agenda-header__text">
-        <span className="agenda-header__badge">Atualizada hoje</span>
+        <span className="agenda-header__badge">Dados demonstrativos</span>
         <h2 className="agenda-header__title">Agenda Esportiva</h2>
         <p className="agenda-header__subtitle">
-          Os principais eventos, jogos e competições para acompanhar nos próximos dias.
+          Eventos ilustrativos para demonstração do portal — não representam calendário oficial.
         </p>
       </div>
       <div className="agenda-header__actions">

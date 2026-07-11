@@ -111,7 +111,7 @@ const matches = [
   match(6, 14, '09 Jul 2026', '20:00', 'Bragantino', 'Fortaleza', 1, 0, 'Encerrado', 'Nabi Abi Chedid', 'Bragança Paulista'),
   match(7, 15, '12 Jul 2026', '16:00', 'Palmeiras', 'Botafogo', null, null, 'Agendado', 'Allianz Parque', 'São Paulo'),
   match(8, 15, '12 Jul 2026', '18:30', 'Flamengo', 'São Paulo', null, null, 'Agendado', 'Maracanã', 'Rio de Janeiro'),
-  match(9, 15, '12 Jul 2026', '21:00', 'Internacional', 'Grêmio', 1, 0, 'Ao vivo', 'Beira-Rio', 'Porto Alegre'),
+  match(9, 15, '12 Jul 2026', '21:00', 'Internacional', 'Grêmio', null, null, 'Agendado', 'Beira-Rio', 'Porto Alegre'),
   match(10, 15, '13 Jul 2026', '16:00', 'Corinthians', 'Santos', null, null, 'Agendado', 'Neo Química Arena', 'São Paulo'),
   match(11, 15, '13 Jul 2026', '18:30', 'Athletico-PR', 'Fluminense', null, null, 'Agendado', 'Ligga Arena', 'Curitiba'),
   match(12, 15, '13 Jul 2026', '21:00', 'Vasco', 'Bahia', null, null, 'Agendado', 'São Januário', 'Rio de Janeiro'),

@@ -3,18 +3,8 @@ import { menuItems } from '../data/siteData'
 import { useTheme } from '../context/ThemeContext'
 import { handleSectionClick } from '../utils/scrollToSection'
 import Logo from './Logo'
-import SearchBar from './SearchBar'
 
-function Header({
-  activeSection,
-  onSelectNews,
-  onSelectEvent,
-  onSelectStory,
-  onSelectCuriosity,
-  onSelectModality,
-  onSelectTeam,
-  onSelectCompetition,
-}) {
+function Header({ activeSection }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const { theme, toggleTheme } = useTheme()
@@ -48,33 +38,10 @@ function Header({
           <Logo showTagline />
         </a>
 
-        <div className="header__search">
-          <SearchBar
-            onSelectNews={onSelectNews}
-            onSelectEvent={onSelectEvent}
-            onSelectStory={onSelectStory}
-            onSelectCuriosity={onSelectCuriosity}
-            onSelectModality={onSelectModality}
-            onSelectTeam={onSelectTeam}
-            onSelectCompetition={onSelectCompetition}
-          />
-        </div>
-
         <nav
           className={`header__nav ${menuOpen ? 'header__nav--open' : ''}`}
           aria-label="Menu principal"
         >
-          <div className="header__mobile-search">
-            <SearchBar
-              onSelectNews={onSelectNews}
-              onSelectEvent={onSelectEvent}
-              onSelectStory={onSelectStory}
-              onSelectCuriosity={onSelectCuriosity}
-              onSelectModality={onSelectModality}
-              onSelectTeam={onSelectTeam}
-              onSelectCompetition={onSelectCompetition}
-            />
-          </div>
           <ul className="header__menu">
             {menuItems.map((item) => (
               <li key={item.label}>

@@ -71,16 +71,7 @@ function App() {
 
   return (
     <div className="app">
-      <Header
-        activeSection={activeSection}
-        onSelectNews={(article) => openNews(article, [article])}
-        onSelectEvent={setSelectedEvent}
-        onSelectStory={setSelectedStory}
-        onSelectCuriosity={setSelectedCuriosity}
-        onSelectModality={setSelectedSport}
-        onSelectTeam={() => scrollToSection('brasileirao')}
-        onSelectCompetition={() => scrollToSection('tabelas')}
-      />
+      <Header activeSection={activeSection} />
       <main>
         <Hero />
         <FeaturedNews onReadMore={(article, list) => openNews(article, list)} />

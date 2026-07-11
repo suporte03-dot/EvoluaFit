@@ -419,7 +419,7 @@ export const competitions = [
       { home: 'Grêmio', away: 'Internacional', date: '13 Jul 2026', time: '20:00' },
     ],
     featured: true,
-    cardSummary: 'Rodada 18 — cenário ilustrativo da temporada 2026',
+    cardSummary: 'Classificação ilustrativa — temporada 2026 (demo)',
     isDemonstrative: true,
   },
   {

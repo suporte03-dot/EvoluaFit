@@ -312,14 +312,6 @@
 
 .header__mobile-actions { display: none; }
 
-.header__search {
-  flex: 1;
-  max-width: 340px;
-  min-width: 0;
-}
-
-.header__mobile-search { display: none; width: 100%; margin-bottom: 1rem; }
-
 /* ═══ HERO ═══ */
 .hero {
   position: relative;
@@ -3772,8 +3764,6 @@
   }
 
   .header__nav { display: none; }
-  .header__search { display: none; }
-  .header__mobile-search { display: block; }
 
   .header__nav--open {
     display: flex;

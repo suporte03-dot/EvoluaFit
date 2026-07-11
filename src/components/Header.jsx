@@ -1,96 +1,61 @@
 import { useEffect, useState } from 'react'
-import { menuItems } from '../data/siteData'
-import { useTheme } from '../context/ThemeContext'
-import { handleSectionClick } from '../utils/scrollToSection'
 import Logo from './Logo'
+import { navItems, BRAND } from '../data/siteData'
+import { scrollToSection, handleSectionClick } from '../utils/scrollToSection'
 
-function Header({ activeSection }) {
-  const [menuOpen, setMenuOpen] = useState(false)
+export default function Header({ activeSection }) {
   const [scrolled, setScrolled] = useState(false)
-  const { theme, toggleTheme } = useTheme()
-
-  const closeMenu = () => setMenuOpen(false)
-
-  const navigateTo = (event, sectionId) => {
-    handleSectionClick(event, sectionId, closeMenu)
-  }
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50)
+    const onScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
-  }, [menuOpen])
+  const navigate = (id) => {
+    setMenuOpen(false)
+    scrollToSection(id)
+  }
 
   return (
     <header className={`header ${scrolled ? 'header--scrolled' : ''}`}>
-      <div className="header__bar" />
-      <div className="container header__inner">
+      <div className="header__inner container">
         <a
           href="#inicio"
-          className="header__logo"
-          onClick={(event) => navigateTo(event, 'inicio')}
+          className="header__brand"
+          onClick={(e) => handleSectionClick(e, 'inicio', () => setMenuOpen(false))}
         >
-          <Logo showTagline />
+          <Logo size={32} />
+          <span className="header__brand-text">
+            <strong>{BRAND.name}</strong>
+            <small>{BRAND.slogan}</small>
+          </span>
         </a>
 
-        <nav
-          className={`header__nav ${menuOpen ? 'header__nav--open' : ''}`}
-          aria-label="Menu principal"
-        >
-          <ul className="header__menu">
-            {menuItems.map((item) => (
-              <li key={item.label}>
-                <a
-                  href={item.href}
-                  className={activeSection === item.sectionId ? 'header__link--active' : ''}
-                  onClick={(event) => navigateTo(event, item.sectionId)}
-                  aria-current={activeSection === item.sectionId ? 'page' : undefined}
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-          <div className="header__mobile-actions">
+        <nav className={`header__nav ${menuOpen ? 'header__nav--open' : ''}`}>
+          {navItems.map((item) => (
             <a
-              href="#noticias"
-              className="btn btn--primary"
-              onClick={(event) => navigateTo(event, 'noticias')}
+              key={item.id}
+              href={`#${item.id}`}
+              className={`header__link ${activeSection === item.id ? 'header__link--active' : ''}`}
+              onClick={(e) => handleSectionClick(e, item.id, () => setMenuOpen(false))}
             >
-              Ver notícias
+              {item.label}
             </a>
-          </div>
+          ))}
         </nav>
 
         <div className="header__actions">
-          <button
-            type="button"
-            className="header__theme"
-            onClick={toggleTheme}
-            aria-label={theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'}
-          >
-            {theme === 'dark' ? '☀️' : '🌙'}
+          <button type="button" className="btn btn--primary btn--sm" onClick={() => navigate('planilha')}>
+            Criar meu treino
           </button>
-
-          <a
-            href="#brasileirao"
-            className="header__cta btn btn--primary btn--sm"
-            onClick={(event) => navigateTo(event, 'brasileirao')}
-          >
-            Brasileirão
-          </a>
-
           <button
             type="button"
-            className={`header__toggle ${menuOpen ? 'header__toggle--open' : ''}`}
-            aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
+            className={`header__burger ${menuOpen ? 'header__burger--open' : ''}`}
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Menu"
             aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((open) => !open)}
           >
             <span />
             <span />
@@ -98,16 +63,7 @@ function Header({ activeSection }) {
           </button>
         </div>
       </div>
-      {menuOpen && (
-        <button
-          type="button"
-          className="header__backdrop"
-          aria-label="Fechar menu"
-          onClick={closeMenu}
-        />
-      )}
+      <p className="header__disclaimer container">{BRAND.disclaimer}</p>
     </header>
   )
 }
-
-export default Header

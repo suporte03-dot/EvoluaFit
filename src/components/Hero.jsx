@@ -1,59 +1,71 @@
-import SportImage from './SportImage'
-import { heroStats, sportImages } from '../data/siteData'
-import { handleSectionClick, scrollToSection } from '../utils/scrollToSection'
+import { useFitness } from '../context/FitnessContext'
+import { scrollToSection } from '../utils/scrollToSection'
+import { muscleGroups } from '../data/exercisesData'
 
-function Hero() {
+export default function Hero() {
+  const { performance } = useFitness()
+
+  const stats = [
+    {
+      label: 'Treinos na semana',
+      value: performance.weeklyWorkouts,
+      suffix: '',
+      target: 'desempenho',
+    },
+    {
+      label: 'Desempenho mensal',
+      value: performance.monthlyWorkouts,
+      suffix: ' treinos',
+      target: 'desempenho',
+    },
+    {
+      label: 'Grupos musculares',
+      value: performance.muscleVolume.length || muscleGroups.length - 1,
+      suffix: '',
+      target: 'exercicios',
+    },
+    {
+      label: 'Próximo treino',
+      value: performance.nextWorkout?.name?.split('—')[0]?.trim() || '—',
+      suffix: '',
+      target: 'treinos',
+      isText: true,
+    },
+  ]
+
   return (
     <section id="inicio" className="hero">
-      <SportImage src={sportImages.hero} className="hero__bg-img" loading="eager" />
-      <div className="hero__overlay" />
-      <div className="hero__grid-lines" aria-hidden="true" />
-      <div className="hero__spotlight" aria-hidden="true" />
-
-      <div className="container hero__layout">
+      <div className="hero__glow" aria-hidden="true" />
+      <div className="container hero__inner">
         <div className="hero__content">
-          <span className="hero__badge">
-            <span className="hero__badge-dot" />
-            Portal esportivo
-          </span>
-
-          <h1 className="hero__title">
-            O esporte em <span className="hero__highlight">todos os ângulos</span>
-          </h1>
-
+          <span className="hero__badge">Plataforma fitness inteligente</span>
+          <h1 className="hero__title">Treinos inteligentes para evoluir de verdade</h1>
           <p className="hero__subtitle">
-            Notícias, agenda, modalidades, curiosidades e histórias marcantes do
-            universo esportivo em uma experiência moderna e completa.
+            Organize sua rotina, gere planilhas personalizadas, registre seus treinos e acompanhe seu
+            desempenho mês a mês.
           </p>
-
           <div className="hero__actions">
-            <a
-              href="#destaques"
-              className="btn btn--primary"
-              onClick={(event) => handleSectionClick(event, 'destaques')}
-            >
-              Ver destaques
-            </a>
-            <a
-              href="#agenda"
-              className="btn btn--outline"
-              onClick={(event) => handleSectionClick(event, 'agenda')}
-            >
-              Agenda da semana
-            </a>
+            <button type="button" className="btn btn--primary btn--lg" onClick={() => scrollToSection('planilha')}>
+              Criar minha planilha
+            </button>
+            <button type="button" className="btn btn--ghost btn--lg" onClick={() => scrollToSection('desempenho')}>
+              Ver desempenho
+            </button>
           </div>
         </div>
 
         <div className="hero__stats">
-          {heroStats.map((stat) => (
+          {stats.map((stat) => (
             <button
               key={stat.label}
               type="button"
-              className="hero__stat card hero__stat--clickable"
-              onClick={() => scrollToSection(stat.sectionId)}
+              className="hero-stat glass-card"
+              onClick={() => scrollToSection(stat.target)}
             >
-              <span className="hero__stat-value">{stat.value}</span>
-              <span className="hero__stat-label">{stat.label}</span>
+              <span className="hero-stat__label">{stat.label}</span>
+              <span className={`hero-stat__value ${stat.isText ? 'hero-stat__value--text' : ''}`}>
+                {stat.isText ? stat.value : `${stat.value}${stat.suffix}`}
+              </span>
             </button>
           ))}
         </div>
@@ -61,5 +73,3 @@ function Hero() {
     </section>
   )
 }
-
-export default Hero

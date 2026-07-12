@@ -19,8 +19,23 @@
 
 .brand-logo--compact {
   display: none;
-  height: 48px;
+  height: 40px;
   width: auto;
+  flex-shrink: 0;
+}
+
+.brand-text {
+  display: none;
+  font-family: var(--font-brand);
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--snow);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.brand-text__accent {
+  color: var(--accent);
 }
 
 .brand-logo--footer {
@@ -31,6 +46,8 @@
 /* ===== Layout ===== */
 .app {
   min-height: 100vh;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 main {
@@ -200,14 +217,46 @@ main {
   flex-shrink: 0;
 }
 
+.header__overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  border: none;
+  background: rgba(4, 10, 20, 0.65);
+  backdrop-filter: blur(2px);
+  cursor: pointer;
+  animation: modalOverlayIn 0.25s ease;
+}
+
+.header__nav-cta {
+  display: none;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.header__cta-desktop {
+  display: inline-flex;
+}
+
 .header__burger {
   display: none;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 5px;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
+  padding: 10px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+}
+
+.header__burger:hover {
+  background: rgba(0, 229, 143, 0.08);
 }
 
 .header__burger span {
@@ -869,6 +918,18 @@ main {
 }
 
 /* ===== Calendar ===== */
+.calendar-nav {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.calendar-nav h3 {
+  font-size: 1.05rem;
+}
+
 .calendar {
   padding: 1.5rem;
 }
@@ -982,6 +1043,101 @@ main {
   font-size: 0.82rem;
   color: var(--text-muted);
   margin-top: 0.25rem;
+}
+
+/* Calendar mobile list view */
+.calendar-list {
+  display: none;
+  padding: 0.5rem;
+  max-height: none;
+}
+
+.calendar-list__item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+  min-height: 44px;
+}
+
+.calendar-list__item:last-child {
+  border-bottom: none;
+}
+
+.calendar-list__item:hover {
+  background: rgba(0, 229, 143, 0.05);
+}
+
+.calendar-list__item--today {
+  background: rgba(0, 229, 143, 0.06);
+  border-left: 3px solid var(--accent);
+}
+
+.calendar-list__item--pendente { border-left-color: var(--blue); }
+.calendar-list__item--realizado { border-left-color: var(--green); }
+.calendar-list__item--parcial { border-left-color: var(--orange); }
+.calendar-list__item--pulado { border-left-color: var(--gray); }
+.calendar-list__item--rest { border-left-color: transparent; }
+
+.calendar-list__date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 3rem;
+  flex-shrink: 0;
+}
+
+.calendar-list__day-num {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.calendar-list__weekday {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.calendar-list__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.calendar-list__workout {
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.calendar-list__status {
+  font-size: 0.72rem;
+  align-self: flex-start;
+}
+
+.calendar-list__status--rest {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.calendar-list__more {
+  font-size: 0.72rem;
+  color: var(--text-muted);
 }
 
 /* ===== Performance ===== */
@@ -1614,40 +1770,61 @@ main {
 }
 
 /* ===== Responsive ===== */
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .header__nav {
     position: fixed;
-    top: var(--header-h);
-    left: 0;
+    top: 0;
     right: 0;
-    background: rgba(8, 18, 35, 0.98);
+    bottom: 0;
+    left: auto;
+    width: min(300px, 85vw);
     flex-direction: column;
     align-items: stretch;
-    padding: 1rem;
-    gap: 0.25rem;
-    border-bottom: 1px solid var(--border);
-    transform: translateY(-120%);
-    opacity: 0;
+    padding: calc(var(--header-h) + 1rem) 1rem 1.5rem;
+    gap: 0.15rem;
+    background: rgba(8, 18, 35, 0.98);
+    border-left: 1px solid var(--border);
+    border-bottom: none;
+    transform: translateX(100%);
+    opacity: 1;
     pointer-events: none;
-    transition: transform 0.25s, opacity 0.25s;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 101;
+    overflow-y: auto;
+    flex: unset;
   }
 
   .header__nav--open {
-    transform: translateY(0);
-    opacity: 1;
+    transform: translateX(0);
     pointer-events: auto;
   }
 
   .header__link {
-    padding: 0.75rem 1rem;
+    padding: 0.85rem 1rem;
     font-size: 0.95rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
   }
 
   .header__burger {
     display: flex;
   }
 
-  .header__actions .btn--primary {
+  .header__overlay {
+    display: block;
+  }
+
+  .header__overlay:not(.header__overlay--visible) {
+    display: none;
+  }
+
+  .header__nav-cta {
+    display: inline-flex;
+    min-height: 44px;
+  }
+
+  .header__cta-desktop {
     display: none;
   }
 
@@ -1658,16 +1835,225 @@ main {
   .form-grid--2 {
     grid-template-columns: 1fr;
   }
+
+  .perf-charts {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {
+  :root {
+    --header-h: 64px;
+  }
+
+  .section {
+    padding: 2.5rem 0;
+  }
+
+  .container {
+    width: min(var(--container), 100% - 1.25rem);
+  }
+
   .brand-logo--full {
     display: none;
   }
 
-  .brand-logo--compact {
+  .brand-logo--compact,
+  .brand-text {
     display: block;
-    height: 48px;
+  }
+
+  .header__brand {
+    gap: 0.5rem;
+  }
+
+  .header__disclaimer {
+    font-size: 0.62rem;
+    padding: 0.25rem 0 0.4rem;
+  }
+
+  .calendar--desktop {
+    display: none;
+  }
+
+  .calendar-nav,
+  .calendar-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .calendar-nav {
+    flex-direction: row;
+  }
+
+  .gdt-exercise-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gdt-library-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.35rem;
+    margin-inline: -0.25rem;
+    padding-inline: 0.25rem;
+  }
+
+  .gdt-chip {
+    flex-shrink: 0;
+    min-height: 36px;
+  }
+
+  .exercise-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .generated-plan__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .generated-plan__header .btn {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .plan-day__header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .plan-day__header .btn {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .plan-day__exercises li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .plan-day__exercises span {
+    white-space: normal;
+  }
+
+  .workout-card__top {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .workout-card__actions {
+    flex-direction: column;
+  }
+
+  .workout-card__actions .btn {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .perf-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .modal-overlay {
+    padding: 0;
+    align-items: stretch;
+  }
+
+  .modal {
+    max-width: 100%;
+    max-height: 100vh;
+    min-height: 100vh;
+    margin: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  .modal--md,
+  .modal--lg,
+  .modal--xl {
+    max-width: 100%;
+  }
+
+  .modal__close {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .workout-detail__meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workout-detail__actions {
+    flex-direction: column;
+  }
+
+  .workout-detail__actions .btn {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .planner-form,
+  .profile-form,
+  .generated-plan {
+    padding: 1.25rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .goals-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chip {
+    min-height: 40px;
+  }
+
+  .workout-session__nav .btn {
+    width: 100%;
+  }
+
+  .footer__inner {
+    text-align: center;
+  }
+
+  .footer__brand {
+    justify-content: center;
+  }
+
+  .btn {
+    min-height: 44px;
+  }
+
+  .btn--sm {
+    min-height: 40px;
+  }
+
+  .gdt-library-filters-btn {
+    min-height: 44px;
+  }
+
+  .gdt-exercise-card__add {
+    min-height: 40px;
+    padding: 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .gdt-exercise-card__visualizar {
+    opacity: 1;
   }
 }
 
@@ -1678,6 +2064,10 @@ main {
 
   .hero__actions .btn {
     width: 100%;
+  }
+
+  .hero__stats {
+    grid-template-columns: 1fr 1fr;
   }
 
   .suggestion-card {
@@ -1694,23 +2084,57 @@ main {
     align-items: flex-start;
   }
 
-  .modal--xl {
-    max-width: 100%;
-    max-height: 96vh;
-    margin: 0.5rem;
-    border-radius: var(--radius);
+  .brand-text {
+    display: none;
   }
 
-  .workout-detail__meta-grid {
+  .brand-logo--compact {
+    height: 36px;
+  }
+
+  .perf-stats {
     grid-template-columns: 1fr;
   }
 
-  .workout-detail__actions {
+  .dashboard__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bar-chart-row {
+    grid-template-columns: 72px 1fr 44px;
+    gap: 0.5rem;
+  }
+
+  .bar-chart-row__label {
+    font-size: 0.72rem;
+  }
+
+  .section-title {
+    margin-bottom: 1.5rem;
+  }
+
+  .gdt-library-toolbar {
     flex-direction: column;
   }
 
-  .workout-detail__actions .btn {
+  .gdt-library-filters-btn {
     width: 100%;
+    justify-content: center;
+  }
+
+  .exercise-modal__close {
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+  }
+
+  .exercise-modal__actions {
+    flex-direction: column;
+  }
+
+  .exercise-modal__actions .btn {
+    width: 100%;
+    flex: unset;
   }
 }
 
@@ -2203,13 +2627,19 @@ main {
   top: 0.75rem;
   right: 0.75rem;
   z-index: 2;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  min-width: 44px;
+  min-height: 44px;
   border: 1px solid var(--border);
   border-radius: 50%;
   background: rgba(11, 16, 32, 0.85);
   color: var(--text);
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
 }
 
 .exercise-modal__header {
@@ -2327,8 +2757,15 @@ main {
 
   .exercise-modal {
     margin: 0;
+    width: 100%;
     min-height: 100vh;
+    max-height: none;
     border-radius: 0;
+    overflow-y: auto;
+  }
+
+  .exercise-modal__hero .exercise-media {
+    max-height: min(40vh, 320px);
   }
 
   .exercise-modal__meta-grid {
@@ -2338,6 +2775,7 @@ main {
   .exercise-modal__actions .btn {
     flex: 1;
     min-width: 140px;
+    min-height: 44px;
   }
 }
 
@@ -2443,7 +2881,21 @@ main {
   gap: 0.85rem;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 769px) and (max-width: 1024px) {
+  .hero__inner {
+    grid-template-columns: 1fr;
+  }
+
+  .gdt-exercise-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .perf-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1025px) {
   .gdt-exercise-grid {
     grid-template-columns: repeat(5, 1fr);
   }

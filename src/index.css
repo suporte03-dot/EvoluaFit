@@ -42,6 +42,8 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--header-h) + 24px);
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 body {
@@ -51,6 +53,7 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  max-width: 100%;
 }
 
 body::before {
@@ -83,8 +86,10 @@ button, input, select, textarea {
   color: inherit;
 }
 
-img {
+img,
+video {
   max-width: 100%;
+  height: auto;
   display: block;
 }
 

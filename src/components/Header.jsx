@@ -14,8 +14,18 @@ export default function Header({ activeSection }) {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  useEffect(() => {
+    if (!menuOpen) return undefined
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [menuOpen])
+
+  const closeMenu = () => setMenuOpen(false)
+
   const navigate = (id) => {
-    setMenuOpen(false)
+    closeMenu()
     scrollToSection(id)
   }
 
@@ -25,7 +35,7 @@ export default function Header({ activeSection }) {
         <a
           href="#inicio"
           className="brand header__brand"
-          onClick={(e) => handleSectionClick(e, 'inicio', () => setMenuOpen(false))}
+          onClick={(e) => handleSectionClick(e, 'inicio', closeMenu)}
         >
           <img
             src={logoUrl('evoluafit-logo.png')}
@@ -34,34 +44,50 @@ export default function Header({ activeSection }) {
           />
           <img
             src={logoUrl('evoluafit-icon.png')}
-            alt="EvoluaFit"
+            alt=""
+            aria-hidden="true"
             className="brand-logo brand-logo--compact"
           />
+          <span className="brand-text">
+            Evolua<span className="brand-text__accent">Fit</span>
+          </span>
         </a>
 
-        <nav className={`header__nav ${menuOpen ? 'header__nav--open' : ''}`}>
+        <nav
+          id="mobile-nav"
+          className={`header__nav ${menuOpen ? 'header__nav--open' : ''}`}
+          aria-label="Navegação principal"
+        >
           {navItems.map((item) => (
             <a
               key={item.id}
               href={`#${item.id}`}
               className={`header__link ${activeSection === item.id ? 'header__link--active' : ''}`}
-              onClick={(e) => handleSectionClick(e, item.id, () => setMenuOpen(false))}
+              onClick={(e) => handleSectionClick(e, item.id, closeMenu)}
             >
               {item.label}
             </a>
           ))}
+          <button
+            type="button"
+            className="btn btn--primary header__nav-cta"
+            onClick={() => navigate('planilha')}
+          >
+            Criar meu treino
+          </button>
         </nav>
 
         <div className="header__actions">
-          <button type="button" className="btn btn--primary btn--sm" onClick={() => navigate('planilha')}>
+          <button type="button" className="btn btn--primary btn--sm header__cta-desktop" onClick={() => navigate('planilha')}>
             Criar meu treino
           </button>
           <button
             type="button"
             className={`header__burger ${menuOpen ? 'header__burger--open' : ''}`}
             onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Menu"
+            aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
             aria-expanded={menuOpen}
+            aria-controls="mobile-nav"
           >
             <span />
             <span />
@@ -69,6 +95,16 @@ export default function Header({ activeSection }) {
           </button>
         </div>
       </div>
+
+      {menuOpen && (
+        <button
+          type="button"
+          className="header__overlay header__overlay--visible"
+          onClick={closeMenu}
+          aria-label="Fechar menu"
+        />
+      )}
+
       <p className="header__disclaimer container">{BRAND.disclaimer}</p>
     </header>
   )

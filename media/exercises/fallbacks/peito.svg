@@ -1,20 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="Treino de peito">
   <defs>
-    <linearGradient id="bg-peito" x1="0" y1="0" x2="640" y2="360" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#0b1020"/>
-      <stop offset="1" stop-color="#152238"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="320" y2="240">
+      <stop stop-color="#0b1020"/><stop offset="1" stop-color="#152238"/>
     </linearGradient>
-    <radialGradient id="glow-peito" cx="50%" cy="40%" r="50%">
-      <stop stop-color="#00E58F" stop-opacity="0.12"/>
-      <stop offset="1" stop-color="#00E58F" stop-opacity="0"/>
-    </radialGradient>
   </defs>
-  <rect width="640" height="360" fill="url(#bg-peito)"/>
-  <rect width="640" height="360" fill="url(#glow-peito)"/>
-  <g transform="translate(160, 30) scale(1.6)">
-    <path d="M200 95c-18 0-32-14-40-28-8 14-22 28-40 28-22 0-40-18-40-40v-8c0-11 9-20 20-20h120c11 0 20 9 20 20v8c0 22-18 40-40 40z" stroke="#00E58F" stroke-width="3" fill="none" opacity="0.85"/>
-        <path d="M160 67v56M120 95h80" stroke="#00C97B" stroke-width="1.5" opacity="0.4"/>
-  </g>
-  <text x="320" y="300" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="22" font-weight="600">Peito</text>
-  <text x="320" y="330" text-anchor="middle" fill="#00E58F" font-family="system-ui,sans-serif" font-size="13" opacity="0.8">EvoluaFit</text>
+  <rect width="320" height="240" fill="url(#bg)"/>
+  <rect x="40" y="200" width="240" height="12" rx="4" fill="#1e293b" stroke="#00E58F" stroke-width="1.5"/>
+  <ellipse cx="160" cy="175" rx="55" ry="8" fill="none" stroke="#00E58F" stroke-width="3"/>
+  <circle cx="160" cy="155" r="14" fill="#00E58F"/>
+  <text x="160" y="228" text-anchor="middle" fill="#E2E8F0" font-family="system-ui,sans-serif" font-size="12" font-weight="600">Peito</text>
 </svg>

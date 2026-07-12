@@ -3,6 +3,7 @@ import { exercises, muscleGroups, equipmentTypes, levelTypes, exerciseTypes } fr
 import { useFitness } from '../context/FitnessContext'
 import SectionTitle from './SectionTitle'
 import ExerciseCard from './ExerciseCard'
+import ExerciseDetailModal from './ExerciseDetailModal'
 
 export default function ExerciseLibrary() {
   const { addExerciseToPlan } = useFitness()
@@ -11,6 +12,7 @@ export default function ExerciseLibrary() {
   const [equipment, setEquipment] = useState('Todos')
   const [level, setLevel] = useState('Todos')
   const [type, setType] = useState('Todos')
+  const [selectedExercise, setSelectedExercise] = useState(null)
 
   const filtered = useMemo(() => {
     return exercises.filter((ex) => {
@@ -82,13 +84,24 @@ export default function ExerciseLibrary() {
 
         <div className="exercise-grid">
           {filtered.map((ex) => (
-            <ExerciseCard key={ex.id} exercise={ex} onAdd={addExerciseToPlan} />
+            <ExerciseCard
+              key={ex.id}
+              exercise={ex}
+              onAdd={addExerciseToPlan}
+              onClick={setSelectedExercise}
+            />
           ))}
         </div>
 
         {filtered.length === 0 && (
           <p className="empty-text">Nenhum exercício encontrado com esses filtros.</p>
         )}
+
+        <ExerciseDetailModal
+          exercise={selectedExercise}
+          isOpen={Boolean(selectedExercise)}
+          onClose={() => setSelectedExercise(null)}
+        />
       </div>
     </section>
   )

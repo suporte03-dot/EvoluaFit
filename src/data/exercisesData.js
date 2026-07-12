@@ -1,17 +1,28 @@
+import { EXERCISE_IMAGE_SOURCES, FALLBACK_IMAGE_SOURCES } from './exerciseMediaMap.js'
+
 const BASE = import.meta.env.BASE_URL
 
-const thumbUrl = (id) => `${BASE}media/exercises/thumbs/${id}.svg`
-const imageUrl = (id) => thumbUrl(id)
+const photoUrl = (id) => `${BASE}media/exercises/${id}.jpg`
+const thumbUrl = (id) => photoUrl(id)
 const videoUrl = (id) => `${BASE}media/exercises/${id}.mp4`
 const gifUrl = (id) => `${BASE}media/exercises/${id}.gif`
-const fallbackUrl = (key) => `${BASE}media/exercises/fallbacks/${key}.svg`
+const fallbackUrl = (key) => `${BASE}media/exercises/fallbacks/${key}.jpg`
+const svgFallbackUrl = (key) => `${BASE}media/exercises/fallbacks/${key}.svg`
+
+export const DEFAULT_SAFETY_TIPS = [
+  'Evite cargas excessivas para o seu nível.',
+  'Mantenha controle total do movimento.',
+  'Pare o exercício em caso de dor.',
+  'Priorize execução correta antes de aumentar carga.',
+  'Procure orientação profissional se tiver lesão ou desconforto.',
+]
 
 const CATEGORY_FALLBACK = {
   Peito: 'peito',
   Costas: 'costas',
   Ombros: 'ombros',
-  'Bíceps': 'bracos',
-  'Tríceps': 'bracos',
+  'Bíceps': 'biceps',
+  'Tríceps': 'triceps',
   'Quadríceps': 'pernas',
   Posterior: 'pernas',
   'Glúteos': 'pernas',
@@ -28,7 +39,8 @@ const CATEGORY_FALLBACK = {
 function getFallbackKey(category, type) {
   if (type === 'Cardio') return 'cardio'
   if (type === 'Mobilidade') return 'mobilidade'
-  return CATEGORY_FALLBACK[category] || 'cardio'
+  if (type === 'Funcional') return 'funcional'
+  return CATEGORY_FALLBACK[category] || 'funcional'
 }
 
 function createExercise({
@@ -41,6 +53,7 @@ function createExercise({
   benefits,
   execution,
   commonMistakes,
+  safetyTips,
   sets,
   reps,
   rest,
@@ -51,12 +64,15 @@ function createExercise({
   gif,
   image,
 }) {
-  const thumbnail = thumbUrl(id)
-  const primaryImage = image || imageUrl(id)
   const fallbackKey = getFallbackKey(category, type)
-  const fallbackImage = fallbackUrl(fallbackKey)
-  const resolvedVideo = video ?? (mediaType === 'video' ? videoUrl(id) : null)
-  const resolvedGif = gif ?? (mediaType === 'gif' ? gifUrl(id) : null)
+  const localImage = photoUrl(id)
+  const remoteImage = EXERCISE_IMAGE_SOURCES[id]
+  const primaryImage = image || remoteImage || localImage
+  const fallbackImage =
+    FALLBACK_IMAGE_SOURCES[fallbackKey] || fallbackUrl(fallbackKey)
+  const fallbackSvg = svgFallbackUrl(fallbackKey)
+  const resolvedVideo = video ?? null
+  const resolvedGif = gif ?? null
   const resolvedMediaType = resolvedVideo ? 'video' : resolvedGif ? 'gif' : 'image'
   const resolvedMediaUrl =
     resolvedMediaType === 'video'
@@ -74,16 +90,18 @@ function createExercise({
     mediaType: resolvedMediaType,
     mediaUrl: resolvedMediaUrl,
     image: primaryImage,
-    thumbnail,
+    thumbnail: remoteImage || localImage,
     gif: resolvedGif,
     video: resolvedVideo,
     fallbackImage,
+    fallbackSvg,
     shortInstruction: execution?.[0] ?? '',
     executionSteps: execution,
     muscles,
     benefits,
     execution,
     commonMistakes,
+    safetyTips: safetyTips ?? DEFAULT_SAFETY_TIPS,
     sets,
     reps,
     rest,
@@ -146,8 +164,17 @@ export const exercises = [
     type: 'Push',
     category: 'Peito',
     muscles: ['Peito', 'Tríceps', 'Ombro anterior'],
-    benefits: ['Desenvolve força de empurrar', 'Estimula hipertrofia do peitoral', 'Melhora estabilidade do ombro'],
-    execution: ['Deite no banco com pés firmes no chão', 'Desça a barra até o peito com controle', 'Empurre até extensão completa sem travar cotovelos'],
+    benefits: [
+      'Fortalece peitoral, tríceps e ombros.',
+      'Melhora força em movimentos de empurrar.',
+      'Ajuda na estabilidade dos membros superiores.',
+    ],
+    execution: [
+      'Deite no banco com os pés apoiados no chão.',
+      'Segure a barra com pegada firme, um pouco mais larga que os ombros.',
+      'Desça a barra de forma controlada até a linha do peito.',
+      'Empurre a barra para cima mantendo controle do movimento.',
+    ],
     commonMistakes: ['Arquear demais a lombar', 'Bater a barra no peito', 'Cotovelos muito abertos'],
     sets: '3 a 4',
     reps: '8 a 12',
@@ -981,7 +1008,6 @@ export const exercises = [
     name: 'Gato-vaca',
     type: 'Mobilidade',
     category: 'Coluna',
-    mediaType: 'gif',
     muscles: ['Coluna', 'Core'],
     benefits: ['Mobilidade da coluna', 'Alivia tensão lombar'],
     execution: ['Quatro apoios', 'Alterne flexão e extensão da coluna', 'Sincronize com a respiração'],

@@ -97,6 +97,15 @@ export default function ExerciseDetailPage({ exerciseId }) {
           </ul>
         </section>
 
+        <section className="exercise-detail__section exercise-modal__section--safety">
+          <h2>Cuidados de segurança</h2>
+          <ul className="exercise-detail__list">
+            {exercise.safetyTips?.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </section>
+
         <div className="exercise-detail__actions">
           <button type="button" className="btn btn--primary" onClick={handleAdd}>
             Adicionar à minha planilha

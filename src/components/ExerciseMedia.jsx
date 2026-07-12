@@ -19,6 +19,7 @@ function buildMediaSources(exercise) {
   else if (exercise.mediaType === 'gif') pushUnique('gif', exercise.mediaUrl)
   else pushUnique('image', exercise.mediaUrl)
   pushUnique('image', exercise.fallbackImage)
+  pushUnique('image', exercise.fallbackSvg)
   pushUnique('image', GENERIC_FALLBACK)
 
   return sources

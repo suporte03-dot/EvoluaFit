@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "download-sports": "node scripts/download-sports.mjs",
+    "download-exercises": "node scripts/download-exercise-images.mjs",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",

@@ -39,6 +39,10 @@ export default function ExerciseCard({ exercise, onAdd, onClick }) {
         <p className="exercise-card__caution">⚠️ {exercise.commonMistakes[0]}</p>
       )}
 
+      {exercise.safetyTips?.[0] && (
+        <p className="exercise-card__safety">🛡️ {exercise.safetyTips[0]}</p>
+      )}
+
       <div className="exercise-card__meta">
         {exercise.sets} séries · {exercise.reps} · {exercise.rest}
       </div>

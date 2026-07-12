@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "download-sports": "node scripts/download-sports.mjs",
+    "fetch-media": "node scripts/build-exercise-gif-map.mjs",
     "download-exercises": "node scripts/download-exercise-images.mjs",
     "dev": "vite",
     "build": "vite build",

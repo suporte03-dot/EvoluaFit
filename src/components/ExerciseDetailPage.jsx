@@ -46,9 +46,9 @@ export default function ExerciseDetailPage({ exerciseId }) {
         </div>
 
         <div className="exercise-detail__tags">
-          <span className="muscle-tag muscle-tag--primary">{exercise.category}</span>
-          {exercise.muscles.map((m) => (
-            <span key={m} className="muscle-tag">
+          <span className="muscle-tag muscle-tag--primary">{exercise.muscleGroup || exercise.category}</span>
+          {(exercise.secondaryMuscles || []).map((m) => (
+            <span key={m} className="muscle-tag muscle-tag--muted">
               {m}
             </span>
           ))}

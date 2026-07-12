@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
-import { exercises, muscleGroups, equipmentTypes, levelTypes, exerciseTypes } from '../data/exercisesData'
+import { exercises, equipmentTypes, levelTypes, exerciseTypes } from '../data/exercisesData'
+import { GDT_CATEGORY_CHIPS, matchesGdtChip } from '../data/exerciseMediaMap'
 import { useFitness } from '../context/FitnessContext'
 import SectionTitle from './SectionTitle'
 import ExerciseCard from './ExerciseCard'
@@ -8,29 +9,35 @@ import ExerciseDetailModal from './ExerciseDetailModal'
 export default function ExerciseLibrary() {
   const { addExerciseToPlan } = useFitness()
   const [search, setSearch] = useState('')
-  const [muscle, setMuscle] = useState('Todos')
+  const [chip, setChip] = useState('Todos')
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [equipment, setEquipment] = useState('Todos')
   const [level, setLevel] = useState('Todos')
   const [type, setType] = useState('Todos')
   const [selectedExercise, setSelectedExercise] = useState(null)
 
+  const activeFilterCount = [equipment, level, type].filter((v) => v !== 'Todos').length
+
   const filtered = useMemo(() => {
     return exercises.filter((ex) => {
+      const q = search.toLowerCase()
       const matchSearch =
         !search ||
-        ex.name.toLowerCase().includes(search.toLowerCase()) ||
-        ex.category.toLowerCase().includes(search.toLowerCase()) ||
-        ex.type.toLowerCase().includes(search.toLowerCase())
-      const matchMuscle = muscle === 'Todos' || ex.category === muscle
+        ex.name.toLowerCase().includes(q) ||
+        ex.category.toLowerCase().includes(q) ||
+        ex.type.toLowerCase().includes(q) ||
+        ex.equipment.toLowerCase().includes(q) ||
+        (ex.muscles || []).some((m) => m.toLowerCase().includes(q))
+      const matchChip = matchesGdtChip(chip, ex.category)
       const matchEquip = equipment === 'Todos' || ex.equipment === equipment
       const matchLevel = level === 'Todos' || ex.level === level
       const matchType = type === 'Todos' || ex.type === type
-      return matchSearch && matchMuscle && matchEquip && matchLevel && matchType
+      return matchSearch && matchChip && matchEquip && matchLevel && matchType
     })
-  }, [search, muscle, equipment, level, type])
+  }, [search, chip, equipment, level, type])
 
   return (
-    <section id="exercicios" className="section section--alt">
+    <section id="exercicios" className="section section--alt exercise-library--gdt">
       <div className="container">
         <SectionTitle
           tag="Biblioteca"
@@ -38,63 +45,92 @@ export default function ExerciseLibrary() {
           subtitle={`${exercises.length} exercícios com mídia demonstrativa, instruções e cuidados de segurança.`}
         />
 
-        <div className="library-filters glass-card">
+        <div className="gdt-library-toolbar">
           <input
             type="search"
-            placeholder="Buscar exercício..."
+            placeholder="Pesquise exercícios..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="search-input"
+            className="search-input gdt-library-search"
+            aria-label="Pesquisar exercícios"
           />
-          <div className="filter-scroll">
-            <select value={type} onChange={(e) => setType(e.target.value)}>
-              <option value="Todos">Tipo de treino</option>
-              {exerciseTypes.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-            <select value={muscle} onChange={(e) => setMuscle(e.target.value)}>
-              <option value="Todos">Grupo muscular</option>
-              {muscleGroups.map((g) => (
-                <option key={g} value={g}>
-                  {g}
-                </option>
-              ))}
-            </select>
-            <select value={equipment} onChange={(e) => setEquipment(e.target.value)}>
-              <option value="Todos">Equipamento</option>
-              {equipmentTypes.map((e) => (
-                <option key={e} value={e}>
-                  {e}
-                </option>
-              ))}
-            </select>
-            <select value={level} onChange={(e) => setLevel(e.target.value)}>
-              <option value="Todos">Nível</option>
-              {levelTypes.map((l) => (
-                <option key={l} value={l}>
-                  {l}
-                </option>
-              ))}
-            </select>
-          </div>
+          <button
+            type="button"
+            className={`gdt-library-filters-btn${filtersOpen ? ' is-open' : ''}`}
+            onClick={() => setFiltersOpen((o) => !o)}
+            aria-expanded={filtersOpen}
+          >
+            Filtros
+            {activeFilterCount > 0 && (
+              <span className="gdt-library-filters-count">{activeFilterCount}</span>
+            )}
+          </button>
         </div>
 
-        <div className="exercise-grid">
+        <div className="gdt-library-chips" role="tablist" aria-label="Grupos musculares">
+          {GDT_CATEGORY_CHIPS.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              role="tab"
+              aria-selected={chip === item.id}
+              className={`gdt-chip${chip === item.id ? ' is-active' : ''}`}
+              onClick={() => setChip(item.id)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        {filtersOpen && (
+          <div className="library-filters glass-card gdt-library-advanced">
+            <div className="filter-scroll">
+              <select value={type} onChange={(e) => setType(e.target.value)} aria-label="Tipo de treino">
+                <option value="Todos">Tipo de treino</option>
+                {exerciseTypes.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+              <select value={equipment} onChange={(e) => setEquipment(e.target.value)} aria-label="Equipamento">
+                <option value="Todos">Equipamento</option>
+                {equipmentTypes.map((e) => (
+                  <option key={e} value={e}>
+                    {e}
+                  </option>
+                ))}
+              </select>
+              <select value={level} onChange={(e) => setLevel(e.target.value)} aria-label="Nível">
+                <option value="Todos">Nível</option>
+                {levelTypes.map((l) => (
+                  <option key={l} value={l}>
+                    {l}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+
+        <p className="gdt-library-results">
+          {filtered.length} {filtered.length === 1 ? 'exercício encontrado' : 'exercícios encontrados'}
+        </p>
+
+        <div className="gdt-exercise-grid">
           {filtered.map((ex) => (
             <ExerciseCard
               key={ex.id}
               exercise={ex}
               onAdd={addExerciseToPlan}
               onClick={setSelectedExercise}
+              variant="gdt"
             />
           ))}
         </div>
 
         {filtered.length === 0 && (
-          <p className="empty-text">Nenhum exercício encontrado com esses filtros.</p>
+          <p className="empty-text">Nenhum exercício encontrado.</p>
         )}
 
         <ExerciseDetailModal

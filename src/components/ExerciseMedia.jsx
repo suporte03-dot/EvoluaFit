@@ -1,29 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-
-const GENERIC_FALLBACK = `${import.meta.env.BASE_URL}media/exercises/fallback.svg`
-
-function buildMediaSources(exercise) {
-  if (!exercise) return []
-
-  const sources = []
-  const pushUnique = (kind, src) => {
-    if (!src || sources.some((s) => s.src === src)) return
-    sources.push({ kind, src })
-  }
-
-  pushUnique('video', exercise.video)
-  pushUnique('gif', exercise.gif)
-  pushUnique('image', exercise.image)
-  pushUnique('image', exercise.thumbnail)
-  if (exercise.mediaType === 'video') pushUnique('video', exercise.mediaUrl)
-  else if (exercise.mediaType === 'gif') pushUnique('gif', exercise.mediaUrl)
-  else pushUnique('image', exercise.mediaUrl)
-  pushUnique('image', exercise.fallbackImage)
-  pushUnique('image', exercise.fallbackSvg)
-  pushUnique('image', GENERIC_FALLBACK)
-
-  return sources
-}
+import { useEffect, useRef, useState } from 'react'
 
 export default function ExerciseMedia({
   exercise,
@@ -31,14 +6,11 @@ export default function ExerciseMedia({
   aspectRatio = '16/9',
   lazy = true,
   compact = false,
+  square = false,
 }) {
   const containerRef = useRef(null)
   const [inView, setInView] = useState(!lazy)
-  const [sourceIndex, setSourceIndex] = useState(0)
-  const [status, setStatus] = useState('loading')
-
-  const sources = useMemo(() => buildMediaSources(exercise), [exercise])
-  const current = sources[sourceIndex] ?? sources[sources.length - 1]
+  const [failedSrc, setFailedSrc] = useState(null)
 
   useEffect(() => {
     if (!lazy) return undefined
@@ -60,84 +32,81 @@ export default function ExerciseMedia({
   }, [lazy])
 
   useEffect(() => {
-    setSourceIndex(0)
-    setStatus('loading')
-  }, [exercise?.id])
+    setFailedSrc(null)
+  }, [exercise?.id, exercise?.gif, exercise?.image, exercise?.video])
 
-  const handleError = () => {
-    if (sourceIndex < sources.length - 1) {
-      setSourceIndex((i) => i + 1)
-      setStatus('loading')
-      return
-    }
-    setStatus('error')
+  if (!exercise) return null
+
+  const ratioClass = square
+    ? 'exercise-media--square'
+    : aspectRatio === '4/3'
+      ? 'exercise-media--4-3'
+      : 'exercise-media--16-9'
+  const alt = `Demonstração: ${exercise.name}`
+
+  const gifSrc = exercise.gif
+  const imageSrc = exercise.image || (!exercise.gif ? exercise.mediaUrl : null)
+  const videoSrc = exercise.video
+  const fallbackSrc = exercise.fallbackImage || exercise.fallbackSvg
+
+  let mediaSrc = null
+  let mediaKind = null
+
+  if (videoSrc) {
+    mediaSrc = videoSrc
+    mediaKind = 'video'
+  } else if (gifSrc && failedSrc !== gifSrc) {
+    mediaSrc = gifSrc
+    mediaKind = 'gif'
+  } else if (imageSrc && failedSrc !== imageSrc) {
+    mediaSrc = imageSrc
+    mediaKind = 'image'
+  } else if (fallbackSrc && failedSrc !== fallbackSrc) {
+    mediaSrc = fallbackSrc
+    mediaKind = 'fallback'
   }
 
-  if (!exercise || !current) return null
-
-  const ratioClass = aspectRatio === '4/3' ? 'exercise-media--4-3' : 'exercise-media--16-9'
-  const showSkeleton = inView && status === 'loading'
-  const alt = `Demonstração: ${exercise.name}`
+  const handleError = () => {
+    if (mediaSrc) setFailedSrc(mediaSrc)
+  }
 
   return (
     <div
       ref={containerRef}
-      className={`exercise-media ${ratioClass}${compact ? ' exercise-media--compact' : ''} ${className}`.trim()}
-      style={{ aspectRatio }}
+      className={`exercise-media ${ratioClass}${compact ? ' exercise-media--compact' : ''}${square ? ' exercise-media--photo' : ''} ${className}`.trim()}
+      style={square ? undefined : { aspectRatio }}
     >
-      {showSkeleton && <div className="exercise-media__skeleton" aria-hidden="true" />}
+      {!inView && <div className="exercise-media__skeleton" aria-hidden="true" />}
 
-      {!inView && (
-        <img
-          className="exercise-media__image"
-          src={exercise.thumbnail || exercise.image || exercise.fallbackImage || GENERIC_FALLBACK}
-          alt=""
-          loading="lazy"
-          aria-hidden="true"
-        />
-      )}
-
-      {inView && current.kind === 'video' && (
+      {inView && mediaKind === 'video' && (
         <video
-          key={current.src}
           className="exercise-media__video"
-          src={current.src}
-          poster={exercise.thumbnail || exercise.image}
+          src={mediaSrc}
+          poster={exercise.thumbnail}
           autoPlay
           loop
           muted
           playsInline
-          preload={lazy ? 'metadata' : 'auto'}
-          onLoadedData={() => setStatus('loaded')}
-          onError={handleError}
+          preload="metadata"
+          aria-label={alt}
         />
       )}
 
-      {inView && current.kind === 'gif' && (
+      {inView && (mediaKind === 'gif' || mediaKind === 'image' || mediaKind === 'fallback') && mediaSrc && (
         <img
-          key={current.src}
           className="exercise-media__image"
-          src={current.src}
+          src={mediaSrc}
           alt={alt}
           loading="lazy"
-          onLoad={() => setStatus('loaded')}
           onError={handleError}
         />
       )}
 
-      {inView && current.kind === 'image' && (
-        <img
-          key={current.src}
-          className="exercise-media__image"
-          src={current.src}
-          alt={alt}
-          loading="lazy"
-          onLoad={() => setStatus('loaded')}
-          onError={handleError}
-        />
+      {inView && !mediaSrc && (
+        <div className="exercise-media__placeholder" aria-label={alt}>
+          <p className="exercise-media__placeholder-text">{exercise.name}</p>
+        </div>
       )}
-
-      <div className="exercise-media__overlay" aria-hidden="true" />
     </div>
   )
 }

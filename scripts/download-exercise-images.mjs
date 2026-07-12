@@ -1,6 +1,6 @@
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import { join, dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..')
@@ -8,7 +8,7 @@ const mediaDir = join(root, 'public/media/exercises')
 const fallbacksDir = join(mediaDir, 'fallbacks')
 
 const { EXERCISE_IMAGE_SOURCES, FALLBACK_IMAGE_SOURCES } = await import(
-  join(root, 'src/data/exerciseMediaMap.js')
+  pathToFileURL(join(root, 'src/data/exerciseMediaMap.js')).href
 )
 
 mkdirSync(mediaDir, { recursive: true })

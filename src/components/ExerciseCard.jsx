@@ -1,13 +1,49 @@
 import ExerciseMedia from './ExerciseMedia'
 import { navigateToExercise } from '../hooks/useHashRoute'
+import { GDT_CATEGORY_CHIPS } from '../data/exerciseMediaMap'
 
-export default function ExerciseCard({ exercise, onAdd, onClick }) {
+function muscleLabel(category) {
+  const chip = GDT_CATEGORY_CHIPS.find((c) => c.id === category || c.categories?.includes(category))
+  return chip?.label || category
+}
+
+export default function ExerciseCard({ exercise, onAdd, onClick, variant = 'default' }) {
   const handleOpen = () => {
     if (onClick) {
       onClick(exercise)
       return
     }
     navigateToExercise(exercise.id)
+  }
+
+  if (variant === 'gdt') {
+    return (
+      <article className="gdt-exercise-card">
+        <button
+          type="button"
+          className="gdt-exercise-card__media"
+          onClick={handleOpen}
+          aria-label={`Visualizar ${exercise.name}`}
+        >
+          <ExerciseMedia exercise={exercise} square lazy />
+          <span className="gdt-exercise-card__visualizar">Visualizar</span>
+        </button>
+
+        <div className="gdt-exercise-card__body">
+          <h3 className="gdt-exercise-card__title">{exercise.name}</h3>
+          <span className="gdt-exercise-card__muscle">{muscleLabel(exercise.category)}</span>
+          {onAdd && (
+            <button
+              type="button"
+              className="gdt-exercise-card__add"
+              onClick={() => onAdd(exercise)}
+            >
+              + Adicionar
+            </button>
+          )}
+        </div>
+      </article>
+    )
   }
 
   return (
@@ -31,22 +67,6 @@ export default function ExerciseCard({ exercise, onAdd, onClick }) {
         <span className="equipment-tag">{exercise.equipment}</span>
       </div>
 
-      <p className="exercise-card__instructions">
-        {exercise.shortInstruction || exercise.execution?.[0] || exercise.benefits?.[0]}
-      </p>
-
-      {exercise.commonMistakes?.[0] && (
-        <p className="exercise-card__caution">⚠️ {exercise.commonMistakes[0]}</p>
-      )}
-
-      {exercise.safetyTips?.[0] && (
-        <p className="exercise-card__safety">🛡️ {exercise.safetyTips[0]}</p>
-      )}
-
-      <div className="exercise-card__meta">
-        {exercise.sets} séries · {exercise.reps} · {exercise.rest}
-      </div>
-
       <div className="exercise-card__actions">
         {onAdd && (
           <button type="button" className="btn btn--primary btn--sm" onClick={() => onAdd(exercise)}>
@@ -54,7 +74,7 @@ export default function ExerciseCard({ exercise, onAdd, onClick }) {
           </button>
         )}
         <button type="button" className="btn btn--ghost btn--sm" onClick={handleOpen}>
-          Ver detalhes
+          Ver exercício
         </button>
       </div>
     </article>

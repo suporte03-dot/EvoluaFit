@@ -435,6 +435,7 @@ function exerciseToDetail(exercise, overrides = {}) {
     gif: exercise.gif,
     video: exercise.video,
     fallbackImage: exercise.fallbackImage,
+    fallbackSvg: exercise.fallbackSvg,
     shortInstruction: exercise.shortInstruction,
     executionSteps: exercise.executionSteps,
     equipment: exercise.equipment,

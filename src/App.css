@@ -1734,6 +1734,20 @@ main {
   aspect-ratio: 16 / 9;
 }
 
+.exercise-media--square {
+  aspect-ratio: 1 / 1;
+}
+
+.exercise-media--photo {
+  background: #f1f5f9;
+  border: none;
+}
+
+.exercise-media--photo .exercise-media__image {
+  object-fit: cover;
+  object-position: center top;
+}
+
 .exercise-media--4-3 {
   aspect-ratio: 4 / 3;
 }
@@ -1806,6 +1820,18 @@ main {
 }
 
 .exercise-media__placeholder-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.exercise-media--photo .exercise-media__image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.exercise-illustration {
   width: 100%;
   height: 100%;
 }
@@ -2158,6 +2184,20 @@ main {
   border-bottom: 1px solid var(--border);
 }
 
+.exercise-modal__hero {
+  background: #0b1020;
+}
+
+.exercise-modal__hero .exercise-media {
+  max-height: min(52vh, 420px);
+}
+
+.exercise-modal__hero .exercise-media__image,
+.exercise-modal__hero .exercise-media__video {
+  object-fit: contain;
+  background: #0b1020;
+}
+
 .exercise-modal__close {
   position: absolute;
   top: 0.75rem;
@@ -2299,4 +2339,243 @@ main {
     flex: 1;
     min-width: 140px;
   }
+}
+
+/* —— Biblioteca estilo Gif do Treino —— */
+.exercise-library--gdt {
+  position: relative;
+  padding-bottom: 5rem;
+}
+
+.gdt-library-toolbar {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  align-items: stretch;
+}
+
+.gdt-library-search {
+  flex: 1;
+  margin: 0;
+}
+
+.gdt-library-filters-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(15, 31, 53, 0.85);
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.gdt-library-filters-btn:hover,
+.gdt-library-filters-btn.is-open {
+  border-color: rgba(0, 229, 143, 0.45);
+  background: rgba(0, 229, 143, 0.08);
+}
+
+.gdt-library-filters-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: #00e58f;
+  color: #071426;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.gdt-library-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+}
+
+.gdt-chip {
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(11, 16, 32, 0.6);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.gdt-chip:hover {
+  border-color: rgba(0, 229, 143, 0.35);
+  color: #e2e8f0;
+}
+
+.gdt-chip.is-active {
+  background: rgba(0, 229, 143, 0.15);
+  border-color: #00e58f;
+  color: #00e58f;
+}
+
+.gdt-library-advanced {
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.gdt-library-results {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0 0 1rem;
+}
+
+.gdt-exercise-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 0.85rem;
+}
+
+@media (min-width: 900px) {
+  .gdt-exercise-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.gdt-exercise-card {
+  background: #f8fafc;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gdt-exercise-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
+}
+
+.gdt-exercise-card__media {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: #e2e8f0;
+  cursor: pointer;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+.gdt-exercise-card__media .exercise-media {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  border: none;
+}
+
+.gdt-exercise-card__media .exercise-media__image {
+  object-fit: cover;
+  object-position: center top;
+  background: #fff;
+}
+
+.gdt-exercise-card__visualizar {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  background: rgba(30, 41, 59, 0.88);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.gdt-exercise-card:hover .gdt-exercise-card__visualizar {
+  opacity: 1;
+}
+
+.gdt-exercise-card__body {
+  padding: 0.65rem 0.7rem 0.75rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.gdt-exercise-card__title {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.gdt-exercise-card__muscle {
+  font-size: 0.65rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.gdt-exercise-card__add {
+  margin-top: auto;
+  padding: 0.35rem 0.5rem;
+  border: none;
+  border-radius: 6px;
+  background: rgba(0, 229, 143, 0.12);
+  color: #047857;
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.gdt-exercise-card__add:hover {
+  background: rgba(0, 229, 143, 0.22);
+}
+
+.gdt-fab {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.25rem;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  box-shadow: 0 8px 24px rgba(249, 115, 22, 0.45);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.gdt-fab:hover {
+  transform: scale(1.03);
 }

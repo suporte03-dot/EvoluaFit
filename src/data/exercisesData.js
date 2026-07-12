@@ -1,47 +1,13 @@
-import { EXERCISE_IMAGE_SOURCES, FALLBACK_IMAGE_SOURCES } from './exerciseMediaMap.js'
-
-const BASE = import.meta.env.BASE_URL
-
-const photoUrl = (id) => `${BASE}media/exercises/${id}.jpg`
-const thumbUrl = (id) => photoUrl(id)
-const videoUrl = (id) => `${BASE}media/exercises/${id}.mp4`
-const gifUrl = (id) => `${BASE}media/exercises/${id}.gif`
-const fallbackUrl = (key) => `${BASE}media/exercises/fallbacks/${key}.jpg`
-const svgFallbackUrl = (key) => `${BASE}media/exercises/fallbacks/${key}.svg`
+import { resolveExerciseMedia } from './exerciseMediaMap.js'
+import { getExerciseGifUrl } from './exerciseGifMap.js'
 
 export const DEFAULT_SAFETY_TIPS = [
-  'Evite cargas excessivas para o seu nível.',
-  'Mantenha controle total do movimento.',
-  'Pare o exercício em caso de dor.',
-  'Priorize execução correta antes de aumentar carga.',
-  'Procure orientação profissional se tiver lesão ou desconforto.',
+  'Priorize execução correta.',
+  'Evite cargas excessivas.',
+  'Controle o movimento em todas as fases.',
+  'Pare em caso de dor.',
+  'Procure orientação profissional em caso de lesão, desconforto ou dúvida.',
 ]
-
-const CATEGORY_FALLBACK = {
-  Peito: 'peito',
-  Costas: 'costas',
-  Ombros: 'ombros',
-  'Bíceps': 'biceps',
-  'Tríceps': 'triceps',
-  'Quadríceps': 'pernas',
-  Posterior: 'pernas',
-  'Glúteos': 'pernas',
-  'Abdômen': 'abdomen',
-  'Corpo inteiro': 'cardio',
-  Cardiovascular: 'cardio',
-  Coluna: 'mobilidade',
-  Quadril: 'mobilidade',
-  'Oblíquos': 'abdomen',
-  Lombar: 'abdomen',
-  Core: 'abdomen',
-}
-
-function getFallbackKey(category, type) {
-  if (type === 'Cardio') return 'cardio'
-  if (type === 'Mobilidade') return 'mobilidade'
-  if (type === 'Funcional') return 'funcional'
-  return CATEGORY_FALLBACK[category] || 'funcional'
-}
 
 function createExercise({
   id,
@@ -64,22 +30,20 @@ function createExercise({
   gif,
   image,
 }) {
-  const fallbackKey = getFallbackKey(category, type)
-  const localImage = photoUrl(id)
-  const remoteImage = EXERCISE_IMAGE_SOURCES[id]
-  const primaryImage = image || remoteImage || localImage
-  const fallbackImage =
-    FALLBACK_IMAGE_SOURCES[fallbackKey] || fallbackUrl(fallbackKey)
-  const fallbackSvg = svgFallbackUrl(fallbackKey)
+  const media = resolveExerciseMedia(id, category, type)
+  const mappedUrl = getExerciseGifUrl(id)
+  const mappedIsGif = mappedUrl?.endsWith('.gif')
+  const primaryImage = image || media.image || (!mappedIsGif ? mappedUrl : null)
+  const fallbackImage = media.fallbackImage
   const resolvedVideo = video ?? null
-  const resolvedGif = gif ?? null
-  const resolvedMediaType = resolvedVideo ? 'video' : resolvedGif ? 'gif' : 'image'
+  const resolvedGif = gif ?? media.gif ?? (mappedIsGif ? mappedUrl : null)
+  const resolvedMediaType = resolvedVideo ? 'video' : resolvedGif ? 'gif' : mappedUrl ? (mappedIsGif ? 'gif' : 'image') : 'image'
   const resolvedMediaUrl =
     resolvedMediaType === 'video'
       ? resolvedVideo
       : resolvedMediaType === 'gif'
         ? resolvedGif
-        : primaryImage
+        : primaryImage || mappedUrl || fallbackImage
 
   return {
     id,
@@ -87,14 +51,16 @@ function createExercise({
     type,
     category,
     muscleGroup: category,
+    secondaryMuscles: muscles?.slice(1) ?? [],
     mediaType: resolvedMediaType,
     mediaUrl: resolvedMediaUrl,
-    image: primaryImage,
-    thumbnail: remoteImage || localImage,
+    image: primaryImage || (!mappedIsGif ? mappedUrl : null),
+    thumbnail: media.thumbnail,
     gif: resolvedGif,
     video: resolvedVideo,
     fallbackImage,
-    fallbackSvg,
+    fallbackSvg: media.fallbackSvg,
+    poseKey: media.poseKey,
     shortInstruction: execution?.[0] ?? '',
     executionSteps: execution,
     muscles,
@@ -493,7 +459,11 @@ export const exercises = [
     type: 'Legs',
     category: 'Quadríceps',
     muscles: ['Quadríceps', 'Glúteos', 'Core'],
-    benefits: ['Rei dos exercícios de perna', 'Força funcional', 'Estímulo hormonal'],
+    benefits: [
+      'Fortalece pernas e glúteos.',
+      'Melhora estabilidade e controle corporal.',
+      'Trabalha coordenação entre quadril, joelhos e tornozelos.',
+    ],
     execution: ['Pés na largura dos ombros', 'Desça até coxas paralelas', 'Joelhos alinhados com os pés'],
     commonMistakes: ['Joelhos colapsando', 'Calcanhares saindo do chão', 'Lombar arredondada'],
     sets: '3 a 4',

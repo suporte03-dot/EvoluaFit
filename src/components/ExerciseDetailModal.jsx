@@ -27,7 +27,9 @@ export default function ExerciseDetailModal({ exercise, isOpen, onClose }) {
           ✕
         </button>
 
-        <ExerciseMedia exercise={exercise} aspectRatio="16/9" lazy={false} />
+        <div className="exercise-modal__hero">
+          <ExerciseMedia exercise={exercise} aspectRatio="4/3" lazy={false} />
+        </div>
 
         <div className="exercise-modal__header">
           <div>
@@ -45,8 +47,8 @@ export default function ExerciseDetailModal({ exercise, isOpen, onClose }) {
 
         <div className="exercise-modal__tags">
           <span className="muscle-tag muscle-tag--primary">{exercise.muscleGroup || exercise.category}</span>
-          {exercise.muscles?.map((m) => (
-            <span key={m} className="muscle-tag">
+          {(exercise.secondaryMuscles || []).map((m) => (
+            <span key={m} className="muscle-tag muscle-tag--muted">
               {m}
             </span>
           ))}

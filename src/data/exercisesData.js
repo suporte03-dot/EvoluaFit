@@ -1,5 +1,6 @@
 import { resolveExerciseMedia } from './exerciseMediaMap.js'
 import { getExerciseGifUrl } from './exerciseGifMap.js'
+import { getExerciseFromCache } from './exerciseCache.js'
 
 export const DEFAULT_SAFETY_TIPS = [
   'Priorize execução correta.',
@@ -1008,6 +1009,8 @@ export function getExerciseMuscleGroup(exercise) {
 }
 
 export function getExerciseById(id) {
+  const fromCache = getExerciseFromCache(id)
+  if (fromCache) return fromCache
   return exercises.find((e) => e.id === id) || null
 }
 

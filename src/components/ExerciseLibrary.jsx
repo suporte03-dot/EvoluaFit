@@ -1,13 +1,19 @@
 import { useMemo, useState } from 'react'
-import { exercises, equipmentTypes, levelTypes, exerciseTypes } from '../data/exercisesData'
+import { equipmentTypes as defaultEquipment, levelTypes as defaultLevels, exerciseTypes as defaultTypes } from '../data/exercisesData'
 import { GDT_CATEGORY_CHIPS, matchesGdtChip } from '../data/exerciseMediaMap'
 import { useFitness } from '../context/FitnessContext'
+import { useExercises } from '../hooks/useExercises'
 import SectionTitle from './SectionTitle'
 import ExerciseCard from './ExerciseCard'
 import ExerciseDetailModal from './ExerciseDetailModal'
 
+function uniqueSorted(values) {
+  return [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'))
+}
+
 export default function ExerciseLibrary() {
   const { addExerciseToPlan } = useFitness()
+  const { exercises, loading } = useExercises()
   const [search, setSearch] = useState('')
   const [chip, setChip] = useState('Todos')
   const [filtersOpen, setFiltersOpen] = useState(false)
@@ -16,25 +22,37 @@ export default function ExerciseLibrary() {
   const [type, setType] = useState('Todos')
   const [selectedExercise, setSelectedExercise] = useState(null)
 
+  const exerciseTypes = useMemo(
+    () => (exercises.length ? uniqueSorted(exercises.map((ex) => ex.type)) : defaultTypes),
+    [exercises],
+  )
+  const equipmentTypes = useMemo(
+    () => (exercises.length ? uniqueSorted(exercises.map((ex) => ex.equipment)) : defaultEquipment),
+    [exercises],
+  )
+  const levelTypes = useMemo(
+    () => (exercises.length ? uniqueSorted(exercises.map((ex) => ex.level)) : defaultLevels),
+    [exercises],
+  )
+
   const activeFilterCount = [equipment, level, type].filter((v) => v !== 'Todos').length
 
   const filtered = useMemo(() => {
     return exercises.filter((ex) => {
       const q = search.toLowerCase()
+      const muscleGroup = ex.muscleGroup || ex.category || ''
       const matchSearch =
         !search ||
         ex.name.toLowerCase().includes(q) ||
-        ex.category.toLowerCase().includes(q) ||
-        ex.type.toLowerCase().includes(q) ||
-        ex.equipment.toLowerCase().includes(q) ||
-        (ex.muscles || []).some((m) => m.toLowerCase().includes(q))
-      const matchChip = matchesGdtChip(chip, ex.category)
+        muscleGroup.toLowerCase().includes(q) ||
+        (ex.equipment || '').toLowerCase().includes(q)
+      const matchChip = matchesGdtChip(chip, ex.category || muscleGroup)
       const matchEquip = equipment === 'Todos' || ex.equipment === equipment
       const matchLevel = level === 'Todos' || ex.level === level
       const matchType = type === 'Todos' || ex.type === type
       return matchSearch && matchChip && matchEquip && matchLevel && matchType
     })
-  }, [search, chip, equipment, level, type])
+  }, [exercises, search, chip, equipment, level, type])
 
   return (
     <section id="exercicios" className="section section--alt exercise-library--gdt">
@@ -113,24 +131,32 @@ export default function ExerciseLibrary() {
           </div>
         )}
 
-        <p className="gdt-library-results">
-          {filtered.length} {filtered.length === 1 ? 'exercício encontrado' : 'exercícios encontrados'}
-        </p>
+        {loading ? (
+          <p className="library-loading" aria-live="polite">
+            Carregando exercícios...
+          </p>
+        ) : (
+          <>
+            <p className="gdt-library-results">
+              {filtered.length} {filtered.length === 1 ? 'exercício encontrado' : 'exercícios encontrados'}
+            </p>
 
-        <div className="gdt-exercise-grid">
-          {filtered.map((ex) => (
-            <ExerciseCard
-              key={ex.id}
-              exercise={ex}
-              onAdd={addExerciseToPlan}
-              onClick={setSelectedExercise}
-              variant="gdt"
-            />
-          ))}
-        </div>
+            <div className="gdt-exercise-grid">
+              {filtered.map((ex) => (
+                <ExerciseCard
+                  key={ex.id}
+                  exercise={ex}
+                  onAdd={addExerciseToPlan}
+                  onClick={setSelectedExercise}
+                  variant="gdt"
+                />
+              ))}
+            </div>
 
-        {filtered.length === 0 && (
-          <p className="empty-text">Nenhum exercício encontrado.</p>
+            {filtered.length === 0 && (
+              <p className="empty-text">Nenhum exercício encontrado.</p>
+            )}
+          </>
         )}
 
         <ExerciseDetailModal

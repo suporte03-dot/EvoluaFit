@@ -1,7 +1,9 @@
+import { useEffect } from 'react'
 import { sectionIds } from './data/siteData'
 import { useScrollSpy } from './hooks/useScrollSpy'
 import { useHashRoute } from './hooks/useHashRoute'
 import { FitnessProvider, useFitness } from './context/FitnessContext'
+import { loadExercises } from './services/exerciseService'
 import Header from './components/Header'
 import Hero from './components/Hero'
 import Dashboard from './components/Dashboard'
@@ -48,6 +50,10 @@ function AppContent() {
 }
 
 function App() {
+  useEffect(() => {
+    loadExercises()
+  }, [])
+
   return (
     <FitnessProvider>
       <AppContent />

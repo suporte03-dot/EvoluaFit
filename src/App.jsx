@@ -10,6 +10,7 @@ import Dashboard from './components/Dashboard'
 import TodaySuggestion from './components/TodaySuggestion'
 import MyWorkouts from './components/MyWorkouts'
 import WorkoutPlanner from './components/WorkoutPlanner'
+import CoachIA from './components/CoachIA'
 import ExerciseLibrary from './components/ExerciseLibrary'
 import ExerciseDetailPage from './components/ExerciseDetailPage'
 import TrainingCalendar from './components/TrainingCalendar'
@@ -35,6 +36,7 @@ function AppContent() {
         <TodaySuggestion />
         <MyWorkouts />
         <WorkoutPlanner />
+        <CoachIA />
         <ExerciseLibrary />
         <TrainingCalendar />
         <PerformanceDashboard />

@@ -3,11 +3,15 @@ import { useFitness } from '../context/FitnessContext'
 import { planToWorkouts } from '../utils/workoutGenerator'
 import WorkoutDetailModal from './WorkoutDetailModal'
 
-export default function GeneratedPlan({ plan }) {
+export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
   const { addPlanWorkouts, startWorkout } = useFitness()
   const [detailWorkout, setDetailWorkout] = useState(null)
 
   const handleAddWorkouts = () => {
+    if (onSaveToPlan) {
+      onSaveToPlan()
+      return
+    }
     const workouts = planToWorkouts(plan)
     addPlanWorkouts(workouts)
   }
@@ -45,9 +49,16 @@ export default function GeneratedPlan({ plan }) {
             {plan.level} · {plan.daysPerWeek}x/semana · {plan.duration} min · {plan.location}
           </p>
         </div>
-        <button type="button" className="btn btn--primary" onClick={handleAddWorkouts}>
-          Adicionar treinos à lista
-        </button>
+        <div className="generated-plan__actions">
+          {onDownloadExcel && (
+            <button type="button" className="btn btn--ghost" onClick={onDownloadExcel}>
+              Baixar Excel
+            </button>
+          )}
+          <button type="button" className="btn btn--primary" onClick={handleAddWorkouts}>
+            Salvar na minha planilha
+          </button>
+        </div>
       </div>
 
       <div className="generated-plan__days">

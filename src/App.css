@@ -587,6 +587,18 @@ main {
   margin-bottom: 2rem;
 }
 
+.planner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.5rem;
+}
+
+.planner-actions .btn {
+  flex: 1 1 auto;
+  min-width: min(100%, 200px);
+}
+
 .safety-note {
   font-size: 0.8rem;
   color: var(--text-muted);
@@ -638,6 +650,13 @@ main {
 .generated-plan__meta {
   font-size: 0.85rem;
   color: var(--text-muted);
+}
+
+.generated-plan__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .generated-plan__days {
@@ -2221,6 +2240,20 @@ main {
   .generated-plan__header .btn {
     width: 100%;
     min-height: 44px;
+  }
+
+  .generated-plan__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .planner-actions {
+    flex-direction: column;
+  }
+
+  .planner-actions .btn {
+    width: 100%;
+    min-height: 48px;
   }
 
   .plan-day__header {

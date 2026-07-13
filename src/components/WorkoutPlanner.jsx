@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
-import { generateWorkoutPlan } from '../utils/workoutGenerator'
+import { generateWorkoutPlan, planToWorkouts } from '../utils/workoutGenerator'
+import { exportWorkoutToExcel } from '../utils/exportWorkoutToExcel'
 import SectionTitle from './SectionTitle'
 import GeneratedPlan from './GeneratedPlan'
 
@@ -18,7 +19,7 @@ const equipmentOptions = ['Academia completa', 'Halteres', 'Barra', 'Elástico',
 const restrictionOptions = ['Joelho', 'Lombar', 'Ombro']
 
 export default function WorkoutPlanner() {
-  const { profile, savePlan } = useFitness()
+  const { profile, savePlan, addPlanWorkouts, showToast } = useFitness()
   const [form, setForm] = useState({
     objective: profile.objective || 'saude',
     level: profile.level || 'Iniciante',
@@ -47,6 +48,27 @@ export default function WorkoutPlanner() {
     const generated = generateWorkoutPlan(form)
     setPlan(generated)
     savePlan(generated)
+  }
+
+  const handleDownloadExcel = () => {
+    if (!plan) {
+      showToast('Gere uma planilha antes de baixar o Excel.', 'info')
+      return
+    }
+    try {
+      exportWorkoutToExcel(plan)
+      showToast('Planilha exportada para Excel!')
+    } catch {
+      showToast('Não foi possível exportar a planilha.', 'error')
+    }
+  }
+
+  const handleSaveToMyPlan = () => {
+    if (!plan) {
+      showToast('Gere uma planilha antes de salvar.', 'info')
+      return
+    }
+    addPlanWorkouts(planToWorkouts(plan))
   }
 
   return (
@@ -156,12 +178,24 @@ export default function WorkoutPlanner() {
             rotina.
           </p>
 
-          <button type="submit" className="btn btn--primary btn--lg">
-            Gerar planilha
-          </button>
+          <div className="planner-actions">
+            <button type="submit" className="btn btn--primary btn--lg">
+              Gerar planilha
+            </button>
+            {plan && (
+              <>
+                <button type="button" className="btn btn--ghost btn--lg" onClick={handleDownloadExcel}>
+                  Baixar Excel
+                </button>
+                <button type="button" className="btn btn--ghost btn--lg" onClick={handleSaveToMyPlan}>
+                  Salvar na minha planilha
+                </button>
+              </>
+            )}
+          </div>
         </form>
 
-        {plan && <GeneratedPlan plan={plan} />}
+        {plan && <GeneratedPlan plan={plan} onDownloadExcel={handleDownloadExcel} onSaveToPlan={handleSaveToMyPlan} />}
       </div>
     </section>
   )

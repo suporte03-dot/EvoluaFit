@@ -16,6 +16,7 @@ export default function MyWorkouts() {
   const [editingId, setEditingId] = useState(null)
   const [editName, setEditName] = useState('')
   const [detailWorkout, setDetailWorkout] = useState(null)
+  const [expandedId, setExpandedId] = useState(null)
 
   const startEdit = (workout, e) => {
     e.stopPropagation()
@@ -66,7 +67,7 @@ export default function MyWorkouts() {
             {workouts.map((workout) => (
               <article
                 key={workout.id}
-                className="workout-card glass-card workout-card--clickable"
+                className={`workout-card glass-card workout-card--clickable${expandedId === workout.id ? ' workout-card--expanded' : ''}`}
                 onClick={() => handleCardClick(workout)}
                 role="button"
                 tabIndex={0}
@@ -112,9 +113,6 @@ export default function MyWorkouts() {
                 </div>
 
                 <div className="workout-card__actions" onClick={stopProp}>
-                  <button type="button" className="btn btn--ghost btn--sm" onClick={() => openDetail(workout)}>
-                    Ver treino
-                  </button>
                   <button
                     type="button"
                     className="btn btn--primary btn--sm"
@@ -123,6 +121,21 @@ export default function MyWorkouts() {
                   >
                     Iniciar treino
                   </button>
+                  <button type="button" className="btn btn--ghost btn--sm btn--secondary-mobile" onClick={() => openDetail(workout)}>
+                    Ver treino
+                  </button>
+                </div>
+                <div className="workout-card__more" onClick={stopProp}>
+                  <button
+                    type="button"
+                    className="workout-card__more-btn"
+                    onClick={() => setExpandedId(expandedId === workout.id ? null : workout.id)}
+                    aria-expanded={expandedId === workout.id}
+                  >
+                    {expandedId === workout.id ? 'Menos opções' : 'Mais opções'}
+                  </button>
+                </div>
+                <div className="workout-card__actions workout-card__actions--extra" onClick={stopProp}>
                   <button type="button" className="btn btn--ghost btn--sm" onClick={(e) => startEdit(workout, e)}>
                     Editar
                   </button>

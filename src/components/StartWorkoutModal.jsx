@@ -220,7 +220,7 @@ export default function StartWorkoutModal() {
               </div>
             </div>
 
-            <div className="workout-session__exercise">
+            <div className="workout-session__exercise workout-session__media">
               <ExerciseMedia exercise={current} aspectRatio="16/9" compact={false} lazy={false} />
               <h3>{current.name}</h3>
               <p>
@@ -229,7 +229,7 @@ export default function StartWorkoutModal() {
             </div>
 
             {!allSetsDone && (
-              <div className="workout-session__sets">
+              <div className="workout-session__sets workout-session__set-form">
                 <p className="workout-session__set-label">{getSetProgressLabel(completedSets, targetSets)}</p>
                 <div className="form-grid form-grid--2">
                   <label className="form-field">

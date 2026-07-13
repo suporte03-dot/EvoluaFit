@@ -101,8 +101,20 @@ export default function ExerciseLibrary() {
         </div>
 
         {filtersOpen && (
-          <div className="library-filters glass-card gdt-library-advanced">
-            <div className="filter-scroll">
+          <>
+            <button
+              type="button"
+              className="mobile-filter-backdrop"
+              onClick={() => setFiltersOpen(false)}
+              aria-label="Fechar filtros"
+            />
+            <div className="library-filters glass-card gdt-library-advanced mobile-filter-sheet">
+              <div className="mobile-filter-sheet__header">
+                <span className="mobile-filter-sheet__title">Filtros</span>
+                <button type="button" className="btn btn--ghost btn--sm" onClick={() => setFiltersOpen(false)}>
+                  Fechar
+                </button>
+              </div>
               <select value={type} onChange={(e) => setType(e.target.value)} aria-label="Tipo de treino">
                 <option value="Todos">Tipo de treino</option>
                 {exerciseTypes.map((t) => (
@@ -127,8 +139,39 @@ export default function ExerciseLibrary() {
                   </option>
                 ))}
               </select>
+              <button type="button" className="btn btn--primary" onClick={() => setFiltersOpen(false)}>
+                Aplicar filtros
+              </button>
             </div>
-          </div>
+            <div className="library-filters glass-card gdt-library-advanced">
+              <div className="filter-scroll">
+                <select value={type} onChange={(e) => setType(e.target.value)} aria-label="Tipo de treino">
+                  <option value="Todos">Tipo de treino</option>
+                  {exerciseTypes.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+                <select value={equipment} onChange={(e) => setEquipment(e.target.value)} aria-label="Equipamento">
+                  <option value="Todos">Equipamento</option>
+                  {equipmentTypes.map((e) => (
+                    <option key={e} value={e}>
+                      {e}
+                    </option>
+                  ))}
+                </select>
+                <select value={level} onChange={(e) => setLevel(e.target.value)} aria-label="Nível">
+                  <option value="Todos">Nível</option>
+                  {levelTypes.map((l) => (
+                    <option key={l} value={l}>
+                      {l}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </>
         )}
 
         {loading ? (

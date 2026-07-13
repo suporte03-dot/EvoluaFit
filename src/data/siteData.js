@@ -22,6 +22,14 @@ export const navItems = [
   { id: 'perfil', label: 'Perfil' },
 ]
 
+export const mobileNavItems = [
+  { id: 'inicio', label: 'Início', icon: '🏠' },
+  { id: 'treinos', label: 'Treinos', icon: '🏋️' },
+  { id: 'exercicios', label: 'Exercícios', icon: '💪' },
+  { id: 'coach-ia', label: 'Coach', icon: '✦' },
+  { id: 'perfil', label: 'Perfil', icon: '👤' },
+]
+
 export const BRAND = {
   name: 'EvoluaFit',
   slogan: 'Treinos inteligentes, evolução real.',

@@ -185,7 +185,7 @@ export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
           </ul>
         </div>
 
-        <div className="workout-detail__actions">
+        <div className="modal__footer--sticky workout-detail__actions">
           <button
             type="button"
             className="btn btn--primary"
@@ -196,9 +196,6 @@ export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
           </button>
           <button type="button" className="btn btn--ghost" onClick={handleAddToPlan}>
             Adicionar à planilha
-          </button>
-          <button type="button" className="btn btn--ghost" onClick={onClose}>
-            Fechar
           </button>
         </div>
       </div>

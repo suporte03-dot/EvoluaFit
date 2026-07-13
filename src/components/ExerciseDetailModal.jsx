@@ -134,12 +134,9 @@ export default function ExerciseDetailModal({ exercise, isOpen, onClose }) {
           </div>
         </div>
 
-        <div className="exercise-modal__actions">
+        <div className="exercise-modal__footer exercise-modal__actions">
           <button type="button" className="btn btn--primary" onClick={handleAdd}>
-            Adicionar ao treino
-          </button>
-          <button type="button" className="btn btn--ghost" onClick={onClose}>
-            Fechar
+            + Adicionar ao treino
           </button>
         </div>
       </div>

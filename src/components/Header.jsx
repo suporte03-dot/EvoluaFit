@@ -58,6 +58,17 @@ export default function Header({ activeSection }) {
           className={`header__nav ${menuOpen ? 'header__nav--open' : ''}`}
           aria-label="Navegação principal"
         >
+          <div className="header__nav-header">
+            <span className="header__nav-title">Menu</span>
+            <button
+              type="button"
+              className="header__nav-close"
+              onClick={closeMenu}
+              aria-label="Fechar menu"
+            >
+              ✕
+            </button>
+          </div>
           {navItems.map((item) => (
             <a
               key={item.id}

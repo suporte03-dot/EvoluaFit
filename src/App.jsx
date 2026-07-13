@@ -22,7 +22,9 @@ import UserProfile from './components/UserProfile'
 import Footer from './components/Footer'
 import Toast from './components/Toast'
 import StartWorkoutModal from './components/StartWorkoutModal'
+import MobileNav from './components/MobileNav'
 import './App.css'
+import './styles/mobile.css'
 
 function AppContent() {
   const activeSection = useScrollSpy(sectionIds)
@@ -50,6 +52,7 @@ function AppContent() {
       </main>
       <Toast toasts={toasts} />
       <StartWorkoutModal />
+      <MobileNav activeSection={activeSection} />
       {page === 'exercise' && exerciseId && <ExerciseDetailPage exerciseId={exerciseId} />}
     </div>
   )

@@ -5,15 +5,15 @@ import { scrollToSection } from '../utils/scrollToSection'
 import EmptyState from './EmptyState'
 
 const METRIC_CARDS = [
-  { key: 'weeklyWorkouts', label: 'Treinos na semana', icon: '📆' },
-  { key: 'monthlyWorkouts', label: 'Treinos no mês', icon: '📅' },
-  { key: 'streak', label: 'Sequência', icon: '🔥' },
+  { key: 'nextWorkout', label: 'Próximo treino', icon: '🎯', priority: true },
+  { key: 'weeklyWorkouts', label: 'Treinos na semana', icon: '📆', priority: true },
+  { key: 'streak', label: 'Sequência', icon: '🔥', priority: true },
+  { key: 'monthlyWorkouts', label: 'Treinos no mês', icon: '📅', priority: true },
+  { key: 'monthlyPerformancePct', label: 'Desempenho mensal', icon: '📈' },
   { key: 'totalVolume', label: 'Volume total', icon: '💪' },
   { key: 'avgDuration', label: 'Tempo médio', icon: '⏱️' },
-  { key: 'nextWorkout', label: 'Próximo treino', icon: '🎯' },
   { key: 'topMuscleGroup', label: 'Grupo mais treinado', icon: '🏋️' },
   { key: 'restDays', label: 'Dias de descanso (7d)', icon: '😴' },
-  { key: 'monthlyPerformancePct', label: 'Desempenho mensal', icon: '📈' },
   { key: 'activeGoals', label: 'Metas ativas', icon: '🎯' },
 ]
 
@@ -46,7 +46,10 @@ export default function Dashboard() {
       <div className="container">
         <div className="dashboard__grid">
           {METRIC_CARDS.map((card) => (
-            <div key={card.key} className="dashboard-card glass-card">
+            <div
+              key={card.key}
+              className={`dashboard-card glass-card${card.priority ? ' dashboard-card--priority' : ''}`}
+            >
               <span className="dashboard-card__icon" aria-hidden="true">
                 {card.icon}
               </span>

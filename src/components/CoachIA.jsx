@@ -210,13 +210,29 @@ export default function CoachIA() {
           subtitle="Treinos inteligentes com base na sua rotina, objetivo e histórico."
         />
 
-        <div className="coach-ia__layout">
-          <div className="coach-ia__main glass-card">
+        <div className="coach-ia__main glass-card">
             <div className="coach-ia__hero">
               <span className="coach-ia__badge" aria-hidden="true">
                 ✦
               </span>
               <p>Faça uma pergunta ou use os atalhos abaixo para receber orientação personalizada.</p>
+            </div>
+
+            <div className="coach-ia__quick-section">
+              <h3 className="coach-ia__sidebar-title">Perguntas rápidas</h3>
+              <div className="coach-ia__quick-list">
+                {QUICK_QUESTIONS.map((q) => (
+                  <button
+                    key={q}
+                    type="button"
+                    className="coach-ia__quick-card"
+                    onClick={() => runCoach(q, () => askCoach(q, context))}
+                    disabled={loading}
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <form className="coach-ia__form" onSubmit={handleSubmit}>
@@ -320,24 +336,6 @@ export default function CoachIA() {
               <div ref={chatEndRef} />
             </div>
           </div>
-
-          <aside className="coach-ia__sidebar">
-            <h3 className="coach-ia__sidebar-title">Perguntas rápidas</h3>
-            <div className="coach-ia__quick-list">
-              {QUICK_QUESTIONS.map((q) => (
-                <button
-                  key={q}
-                  type="button"
-                  className="coach-ia__quick-card"
-                  onClick={() => runCoach(q, () => askCoach(q, context))}
-                  disabled={loading}
-                >
-                  {q}
-                </button>
-              ))}
-            </div>
-          </aside>
-        </div>
       </div>
     </section>
   )

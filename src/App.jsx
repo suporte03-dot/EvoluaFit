@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { sectionIds } from './data/siteData'
 import { useScrollSpy } from './hooks/useScrollSpy'
+import { useSectionHash } from './hooks/useSectionHash'
 import { useHashRoute } from './hooks/useHashRoute'
 import { FitnessProvider, useFitness } from './context/FitnessContext'
 import { loadExercises } from './services/exerciseService'
@@ -24,6 +25,7 @@ import './App.css'
 
 function AppContent() {
   const activeSection = useScrollSpy(sectionIds)
+  useSectionHash(sectionIds)
   const { toasts } = useFitness()
   const { page, id: exerciseId } = useHashRoute()
 

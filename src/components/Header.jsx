@@ -34,12 +34,12 @@ export default function Header({ activeSection }) {
       <div className="header__inner container">
         <a
           href="#inicio"
-          className="brand header__brand"
+          className="brand header__brand logo-header"
           onClick={(e) => handleSectionClick(e, 'inicio', closeMenu)}
         >
           <img
             src={logoUrl('evoluafit-logo.png')}
-            alt="EvoluaFit - Treinos inteligentes, evolução real"
+            alt="EvoluaFit"
             className="brand-logo brand-logo--full"
           />
           <img

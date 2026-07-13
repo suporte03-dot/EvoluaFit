@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 import storageService from '../services/storageService'
+import { buildHistoryEntry } from '../services/workoutService'
 import { getPerformanceSummary } from '../utils/performanceUtils'
 import { parseSets, parseRestSeconds } from '../data/exercisesData'
 
@@ -86,14 +87,8 @@ export function FitnessProvider({ children }) {
 
   const completeWorkout = useCallback(
     (workoutId, sessionData) => {
-      const entry = {
-        id: `hist-${Date.now()}`,
-        workoutId,
-        name: sessionData.name,
-        completedAt: new Date().toISOString(),
-        durationMinutes: sessionData.durationMinutes,
-        exercises: sessionData.exercises,
-      }
+      // Persisted via localStorage (evoluafit-data). Future: sync to Supabase workout_history + workout_sets.
+      const entry = buildHistoryEntry(workoutId, sessionData)
 
       persist((prev) => ({
         ...prev,

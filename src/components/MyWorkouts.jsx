@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
 import SectionTitle from './SectionTitle'
 import EmptyState from './EmptyState'
-import StartWorkoutModal from './StartWorkoutModal'
 import WorkoutDetailModal from './WorkoutDetailModal'
 
 const statusClass = {
@@ -13,7 +12,7 @@ const statusClass = {
 }
 
 export default function MyWorkouts() {
-  const { workouts, setActiveWorkout, updateWorkout, deleteWorkout, duplicateWorkout, showToast } = useFitness()
+  const { workouts, startWorkout, updateWorkout, deleteWorkout, duplicateWorkout, showToast } = useFitness()
   const [editingId, setEditingId] = useState(null)
   const [editName, setEditName] = useState('')
   const [detailWorkout, setDetailWorkout] = useState(null)
@@ -119,10 +118,10 @@ export default function MyWorkouts() {
                   <button
                     type="button"
                     className="btn btn--primary btn--sm"
-                    onClick={() => setActiveWorkout(workout)}
+                    onClick={() => startWorkout(workout)}
                     disabled={workout.status === 'Realizado'}
                   >
-                    Iniciar
+                    Iniciar treino
                   </button>
                   <button type="button" className="btn btn--ghost btn--sm" onClick={(e) => startEdit(workout, e)}>
                     Editar
@@ -152,7 +151,6 @@ export default function MyWorkouts() {
           </div>
         )}
       </div>
-      <StartWorkoutModal />
       <WorkoutDetailModal
         workout={detailWorkout}
         isOpen={Boolean(detailWorkout)}

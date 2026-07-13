@@ -21,6 +21,7 @@ import Goals from './components/Goals'
 import UserProfile from './components/UserProfile'
 import Footer from './components/Footer'
 import Toast from './components/Toast'
+import StartWorkoutModal from './components/StartWorkoutModal'
 import './App.css'
 
 function AppContent() {
@@ -48,6 +49,7 @@ function AppContent() {
         <Footer />
       </main>
       <Toast toasts={toasts} />
+      <StartWorkoutModal />
       {page === 'exercise' && exerciseId && <ExerciseDetailPage exerciseId={exerciseId} />}
     </div>
   )

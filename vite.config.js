@@ -6,7 +6,7 @@ export default defineConfig({
   base: process.env.NODE_ENV === 'production' ? '/EvoluaFit/' : '/',
   server: {
     port: 5174,
-    strictPort: true,
+    strictPort: false,
     open: true,
   },
 })

@@ -4,7 +4,7 @@ import { planToWorkouts } from '../utils/workoutGenerator'
 import WorkoutDetailModal from './WorkoutDetailModal'
 
 export default function GeneratedPlan({ plan }) {
-  const { addPlanWorkouts } = useFitness()
+  const { addPlanWorkouts, startWorkout } = useFitness()
   const [detailWorkout, setDetailWorkout] = useState(null)
 
   const handleAddWorkouts = () => {
@@ -12,10 +12,10 @@ export default function GeneratedPlan({ plan }) {
     addPlanWorkouts(workouts)
   }
 
-  const openDayDetail = (day) => {
+  const buildDayWorkout = (day) => {
     const workouts = planToWorkouts(plan)
-    const workout = workouts.find((w) => w.name === day.name && w.muscleGroups?.join() === day.focus?.join())
-      || {
+    return (
+      workouts.find((w) => w.name === day.name && w.muscleGroups?.join() === day.focus?.join()) || {
         id: `preview-${plan.id}-${day.day}`,
         name: day.name,
         date: new Date().toISOString().split('T')[0],
@@ -24,7 +24,16 @@ export default function GeneratedPlan({ plan }) {
         status: 'Pendente',
         estimatedMinutes: day.estimatedMinutes,
       }
-    setDetailWorkout(workout)
+    )
+  }
+
+  const openDayDetail = (day) => {
+    setDetailWorkout(buildDayWorkout(day))
+  }
+
+  const startDayWorkout = (day, e) => {
+    e?.stopPropagation()
+    startWorkout(buildDayWorkout(day))
   }
 
   return (
@@ -51,9 +60,14 @@ export default function GeneratedPlan({ plan }) {
                 </h4>
                 <p className="plan-day__focus">{day.focus.join(' · ')}</p>
               </div>
-              <button type="button" className="btn btn--ghost btn--sm" onClick={() => openDayDetail(day)}>
-                Ver treino
-              </button>
+              <div className="plan-day__actions">
+                <button type="button" className="btn btn--primary btn--sm" onClick={(e) => startDayWorkout(day, e)}>
+                  Iniciar treino
+                </button>
+                <button type="button" className="btn btn--ghost btn--sm" onClick={() => openDayDetail(day)}>
+                  Ver treino
+                </button>
+              </div>
             </div>
             <ul className="plan-day__exercises">
               {day.exercises.map((ex) => (

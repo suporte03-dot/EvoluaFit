@@ -11,7 +11,7 @@ const suggestions = {
 }
 
 export default function TodaySuggestion() {
-  const { workouts, history, performance } = useFitness()
+  const { workouts, history, performance, startWorkout } = useFitness()
   const [detailWorkout, setDetailWorkout] = useState(null)
 
   const suggestion = useMemo(() => {
@@ -57,6 +57,12 @@ export default function TodaySuggestion() {
     }
   }
 
+  const handleStartWorkout = () => {
+    if (matchingWorkout) {
+      startWorkout(matchingWorkout)
+    }
+  }
+
   return (
     <section className="today-suggestion">
       <div className="container">
@@ -78,9 +84,16 @@ export default function TodaySuggestion() {
               </div>
             )}
           </div>
-          <button type="button" className="btn btn--primary" onClick={handleCta}>
-            {matchingWorkout ? 'Ver treino' : 'Criar planilha'}
-          </button>
+          <div className="suggestion-card__actions">
+            {matchingWorkout && (
+              <button type="button" className="btn btn--primary" onClick={handleStartWorkout}>
+                Iniciar treino
+              </button>
+            )}
+            <button type="button" className="btn btn--ghost" onClick={handleCta}>
+              {matchingWorkout ? 'Ver detalhes' : 'Criar planilha'}
+            </button>
+          </div>
         </div>
       </div>
 

@@ -1,8 +1,14 @@
 /**
  * Mapa centralizado exercício → mídia demonstrativa.
- * Prioridade: GIF/image URL (exerciseGifMap) → fallback por grupo muscular.
+ * Prioridade: URL validada (exerciseGifMap) → fallback por grupo muscular.
+ * Nunca exibe mídia incoerente com o exercício.
  */
 import { getExerciseGifUrl } from './exerciseGifMap.js'
+import {
+  getValidatedMediaUrl,
+  normalizeMuscleGroup,
+  logMediaIssuesOnce,
+} from './exerciseValidationMap.js'
 
 export const EXERCISE_POSE_MAP = {
   'supino-reto': 'bench-flat',
@@ -24,7 +30,7 @@ export const EXERCISE_POSE_MAP = {
   'remada-baixa-cabo': 'cable-row',
   'rosca-direta': 'barbell-curl',
   'rosca-martelo': 'hammer-curl',
-  'rosca-alternada': 'hammer-curl',
+  'rosca-alternada': 'alternating-curl',
   'face-pull': 'face-pull',
   agachamento: 'squat',
   'agachamento-frontal': 'squat',
@@ -63,61 +69,87 @@ export const EXERCISE_POSE_MAP = {
 }
 
 export const MUSCLE_FALLBACK_KEYS = {
+  Peitoral: 'peito',
   Peito: 'peito',
   Costas: 'costas',
   Ombros: 'ombros',
-  'Bíceps': 'biceps',
-  'Tríceps': 'triceps',
-  'Quadríceps': 'pernas',
+  Bíceps: 'biceps',
+  Tríceps: 'triceps',
+  Pernas: 'pernas',
+  Quadríceps: 'pernas',
   Posterior: 'pernas',
-  'Glúteos': 'pernas',
-  'Abdômen': 'abdomen',
-  'Corpo inteiro': 'cardio',
+  Glúteos: 'pernas',
+  Abdômen: 'abdomen',
+  Oblíquos: 'abdomen',
+  Core: 'abdomen',
+  Lombar: 'abdomen',
+  Cardio: 'cardio',
   Cardiovascular: 'cardio',
+  Funcional: 'funcional',
+  'Corpo inteiro': 'funcional',
+  Mobilidade: 'mobilidade',
   Coluna: 'mobilidade',
   Quadril: 'mobilidade',
-  'Oblíquos': 'abdomen',
-  Lombar: 'abdomen',
-  Core: 'abdomen',
 }
 
-/** Chips de categoria estilo Gif do Treino */
+/** Chips padronizados da biblioteca EvoluaFit */
 export const GDT_CATEGORY_CHIPS = [
   { id: 'Todos', label: 'Todos' },
-  { id: 'Peito', label: 'Peitoral' },
+  { id: 'Peitoral', label: 'Peitoral', categories: ['Peitoral', 'Peito'] },
   { id: 'Costas', label: 'Costas' },
-  { id: 'Pernas', label: 'Pernas', categories: ['Quadríceps', 'Posterior', 'Glúteos'] },
+  { id: 'Pernas', label: 'Pernas', categories: ['Pernas', 'Quadríceps', 'Posterior'] },
+  { id: 'Glúteos', label: 'Glúteos' },
   { id: 'Ombros', label: 'Ombros' },
   { id: 'Bíceps', label: 'Bíceps' },
   { id: 'Tríceps', label: 'Tríceps' },
   { id: 'Abdômen', label: 'Abdômen', categories: ['Abdômen', 'Oblíquos', 'Core', 'Lombar'] },
-  { id: 'Cardio', label: 'Cardio', categories: ['Cardiovascular', 'Corpo inteiro'] },
-  { id: 'Mobilidade', label: 'Mobilidade', categories: ['Coluna', 'Quadril'] },
+  { id: 'Cardio', label: 'Cardio', categories: ['Cardio', 'Cardiovascular'] },
+  { id: 'Mobilidade', label: 'Mobilidade', categories: ['Mobilidade', 'Coluna', 'Quadril'] },
 ]
 
 export function getFallbackKey(category, type) {
   if (type === 'Cardio') return 'cardio'
   if (type === 'Mobilidade') return 'mobilidade'
   if (type === 'Funcional') return 'funcional'
-  return MUSCLE_FALLBACK_KEYS[category] || 'funcional'
+  const normalized = normalizeMuscleGroup(category)
+  return MUSCLE_FALLBACK_KEYS[category] || MUSCLE_FALLBACK_KEYS[normalized] || 'funcional'
 }
 
-export function getFallbackMediaPath(key, base = import.meta.env.BASE_URL) {
-  return `${base}media/exercises/fallbacks/${key}.svg`
+export function getFallbackMediaPath(key, base) {
+  const root = base ?? (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) ?? '/'
+  return `${root}media/exercises/fallbacks/${key}.svg`
 }
 
 export function matchesGdtChip(chipId, category) {
   if (chipId === 'Todos') return true
   const chip = GDT_CATEGORY_CHIPS.find((c) => c.id === chipId)
-  if (!chip) return category === chipId
-  if (chip.categories) return chip.categories.includes(category)
-  return category === chipId
+  if (!chip) return normalizeMuscleGroup(category) === chipId
+  if (chip.categories) {
+    return chip.categories.includes(category) || chip.categories.includes(normalizeMuscleGroup(category))
+  }
+  return category === chipId || normalizeMuscleGroup(category) === chipId
 }
 
-export function resolveExerciseMedia(id, category, type, base = import.meta.env.BASE_URL) {
+export function muscleGroupLabel(category) {
+  const normalized = normalizeMuscleGroup(category)
+  const chip = GDT_CATEGORY_CHIPS.find(
+    (c) => c.id === normalized || c.categories?.includes(category) || c.categories?.includes(normalized),
+  )
+  return chip?.label || normalized || category
+}
+
+/**
+ * Resolve mídia segura. Se inválida/suspeita → fallback + mediaPending.
+ */
+export function resolveExerciseMedia(id, category, type, base) {
+  logMediaIssuesOnce()
+
+  const root = base ?? (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) ?? '/'
   const fallbackKey = getFallbackKey(category, type)
-  const fallbackImage = getFallbackMediaPath(fallbackKey, base)
-  const remoteUrl = getExerciseGifUrl(id)
+  const fallbackImage = getFallbackMediaPath(fallbackKey, root)
+  const remoteCandidate = getExerciseGifUrl(id)
+  const remoteUrl = getValidatedMediaUrl(id, remoteCandidate)
+  const mediaPending = !remoteUrl
   const isGif = remoteUrl?.endsWith('.gif')
 
   return {
@@ -129,6 +161,8 @@ export function resolveExerciseMedia(id, category, type, base = import.meta.env.
     fallbackImage,
     fallbackSvg: fallbackImage,
     poseKey: EXERCISE_POSE_MAP[id] || fallbackKey,
+    mediaPending,
+    hasVerifiedMedia: Boolean(remoteUrl),
   }
 }
 

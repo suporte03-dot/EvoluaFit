@@ -37,6 +37,11 @@ export default function ExerciseLibrary() {
 
   const activeFilterCount = [equipment, level, type].filter((v) => v !== 'Todos').length
 
+  const verifiedCount = useMemo(
+    () => exercises.filter((ex) => ex.hasVerifiedMedia && !ex.mediaPending).length,
+    [exercises],
+  )
+
   const filtered = useMemo(() => {
     return exercises.filter((ex) => {
       const q = search.toLowerCase()
@@ -60,8 +65,11 @@ export default function ExerciseLibrary() {
         <SectionTitle
           tag="Biblioteca"
           title="Exercícios"
-          subtitle={`${exercises.length} exercícios com mídia demonstrativa, instruções e cuidados de segurança.`}
+          subtitle="Biblioteca de exercícios com demonstrações, instruções e cuidados de segurança."
         />
+        <p className="gdt-library-subtitle-meta">
+          {exercises.length} exercícios · {verifiedCount} com mídia verificada
+        </p>
 
         <div className="gdt-library-toolbar">
           <input

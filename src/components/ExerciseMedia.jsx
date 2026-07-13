@@ -1,44 +1,50 @@
 import { useEffect, useRef, useState } from 'react'
 
 function resolveMedia(exercise, failedSrc) {
+  const mediaPending = Boolean(exercise?.mediaPending)
   const mediaType = String(exercise.mediaType || '').toLowerCase()
   const primaryUrl = exercise.mediaUrl || exercise.media_url || null
   const thumbUrl = exercise.thumbnail || exercise.thumbnail_url || null
   const fallbackSrc = exercise.fallbackImage || exercise.fallbackSvg || null
 
-  if (mediaType === 'video' && primaryUrl && failedSrc !== primaryUrl) {
+  // Mídia pendente: sempre preferir fallback visual do grupo
+  if (mediaPending && fallbackSrc && failedSrc !== fallbackSrc) {
+    return { kind: 'fallback', src: fallbackSrc, pending: true }
+  }
+
+  if (!mediaPending && mediaType === 'video' && primaryUrl && failedSrc !== primaryUrl) {
     return { kind: 'video', src: primaryUrl, poster: thumbUrl || undefined }
   }
 
-  if ((mediaType === 'gif' || mediaType === 'image') && primaryUrl && failedSrc !== primaryUrl) {
+  if (!mediaPending && (mediaType === 'gif' || mediaType === 'image') && primaryUrl && failedSrc !== primaryUrl) {
     return { kind: 'image', src: primaryUrl }
   }
 
-  if (primaryUrl && failedSrc !== primaryUrl) {
-    return { kind: primaryUrl.endsWith('.gif') ? 'image' : 'image', src: primaryUrl }
+  if (!mediaPending && primaryUrl && failedSrc !== primaryUrl && primaryUrl !== fallbackSrc) {
+    return { kind: 'image', src: primaryUrl }
   }
 
-  if (thumbUrl && failedSrc !== thumbUrl) {
+  if (!mediaPending && thumbUrl && failedSrc !== thumbUrl) {
     return { kind: 'image', src: thumbUrl }
   }
 
-  if (exercise.video && failedSrc !== exercise.video) {
+  if (!mediaPending && exercise.video && failedSrc !== exercise.video) {
     return { kind: 'video', src: exercise.video, poster: thumbUrl || undefined }
   }
 
-  if (exercise.gif && failedSrc !== exercise.gif) {
+  if (!mediaPending && exercise.gif && failedSrc !== exercise.gif) {
     return { kind: 'image', src: exercise.gif }
   }
 
-  if (exercise.image && failedSrc !== exercise.image) {
+  if (!mediaPending && exercise.image && failedSrc !== exercise.image) {
     return { kind: 'image', src: exercise.image }
   }
 
   if (fallbackSrc && failedSrc !== fallbackSrc) {
-    return { kind: 'fallback', src: fallbackSrc }
+    return { kind: 'fallback', src: fallbackSrc, pending: true }
   }
 
-  return { kind: null, src: null }
+  return { kind: null, src: null, pending: mediaPending }
 }
 
 export default function ExerciseMedia({
@@ -49,6 +55,7 @@ export default function ExerciseMedia({
   compact = false,
   square = false,
   fit = 'cover',
+  showPendingBadge = false,
 }) {
   const containerRef = useRef(null)
   const [inView, setInView] = useState(!lazy)
@@ -75,7 +82,7 @@ export default function ExerciseMedia({
 
   useEffect(() => {
     setFailedSrc(null)
-  }, [exercise?.id, exercise?.mediaUrl, exercise?.gif, exercise?.image, exercise?.video])
+  }, [exercise?.id, exercise?.mediaUrl, exercise?.gif, exercise?.image, exercise?.video, exercise?.mediaPending])
 
   if (!exercise) return null
 
@@ -87,6 +94,7 @@ export default function ExerciseMedia({
   const alt = `Demonstração: ${exercise.name}`
 
   const media = resolveMedia(exercise, failedSrc)
+  const showPending = showPendingBadge && (exercise.mediaPending || media.pending || media.kind === 'fallback')
 
   const handleError = () => {
     if (media.src) setFailedSrc(media.src)
@@ -130,6 +138,10 @@ export default function ExerciseMedia({
         <div className="exercise-media__placeholder" aria-label={alt}>
           <p className="exercise-media__placeholder-text">{exercise.name}</p>
         </div>
+      )}
+
+      {showPending && (
+        <span className="exercise-media__pending-badge">Demonstração específica pendente</span>
       )}
 
       <div className="exercise-media__overlay" aria-hidden="true" />

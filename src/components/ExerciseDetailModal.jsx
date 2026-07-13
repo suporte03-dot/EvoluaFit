@@ -1,6 +1,6 @@
 import ExerciseMedia from './ExerciseMedia'
 import { useFitness } from '../context/FitnessContext'
-import { GDT_CATEGORY_CHIPS } from '../data/exerciseMediaMap'
+import { muscleGroupLabel } from '../data/exerciseMediaMap'
 
 function levelClass(level = 'iniciante') {
   return level
@@ -8,11 +8,6 @@ function levelClass(level = 'iniciante') {
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/\s+/g, '-')
-}
-
-function muscleLabel(category) {
-  const chip = GDT_CATEGORY_CHIPS.find((c) => c.id === category || c.categories?.includes(category))
-  return chip?.label || category
 }
 
 export default function ExerciseDetailModal({ exercise, isOpen, onClose }) {
@@ -33,6 +28,7 @@ export default function ExerciseDetailModal({ exercise, isOpen, onClose }) {
   const safetyTips = Array.isArray(exercise.safetyTips) ? exercise.safetyTips : []
   const executionSteps = exercise.executionSteps || exercise.execution || []
   const category = exercise.muscleGroup || exercise.category
+  const secondary = (exercise.secondaryMuscles || exercise.muscles?.slice(1) || []).filter(Boolean)
 
   return (
     <div
@@ -48,7 +44,7 @@ export default function ExerciseDetailModal({ exercise, isOpen, onClose }) {
         </button>
 
         <div className="exercise-modal__hero">
-          <ExerciseMedia exercise={exercise} aspectRatio="4/3" lazy={false} fit="contain" />
+          <ExerciseMedia exercise={exercise} aspectRatio="4/3" lazy={false} fit="contain" showPendingBadge />
         </div>
 
         <div className="exercise-modal__header">
@@ -63,7 +59,12 @@ export default function ExerciseDetailModal({ exercise, isOpen, onClose }) {
         </div>
 
         <div className="exercise-modal__tags">
-          <span className="muscle-tag muscle-tag--primary">{muscleLabel(category)}</span>
+          <span className="muscle-tag muscle-tag--primary">{muscleGroupLabel(category)}</span>
+          {secondary.map((m) => (
+            <span key={m} className="muscle-tag">
+              {m}
+            </span>
+          ))}
           <span className="equipment-tag">{exercise.equipment}</span>
           {exercise.type && <span className="exercise-type-tag">{exercise.type}</span>}
         </div>
@@ -133,6 +134,11 @@ export default function ExerciseDetailModal({ exercise, isOpen, onClose }) {
             <strong>{exercise.rest}</strong>
           </div>
         </div>
+
+        <p className="exercise-modal__disclaimer">
+          Este conteúdo é informativo e não substitui orientação de um profissional. Em caso de dor, lesão
+          ou desconforto, interrompa o exercício e procure orientação especializada.
+        </p>
 
         <div className="exercise-modal__footer exercise-modal__actions">
           <button type="button" className="btn btn--primary" onClick={handleAdd}>

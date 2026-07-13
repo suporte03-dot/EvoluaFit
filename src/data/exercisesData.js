@@ -1,13 +1,14 @@
 import { resolveExerciseMedia } from './exerciseMediaMap.js'
 import { getExerciseGifUrl } from './exerciseGifMap.js'
 import { getExerciseFromCache } from './exerciseCache.js'
+import { normalizeMuscleGroup } from './exerciseValidationMap.js'
 
 export const DEFAULT_SAFETY_TIPS = [
   'Priorize execução correta.',
   'Evite cargas excessivas.',
   'Controle o movimento em todas as fases.',
   'Pare em caso de dor.',
-  'Procure orientação profissional em caso de lesão, desconforto ou dúvida.',
+  'Este conteúdo é informativo e não substitui orientação de um profissional. Em caso de dor, lesão ou desconforto, interrompa o exercício e procure orientação especializada.',
 ]
 
 function createExercise({
@@ -32,39 +33,52 @@ function createExercise({
   image,
 }) {
   const media = resolveExerciseMedia(id, category, type)
-  const mappedUrl = getExerciseGifUrl(id)
+  const mappedUrl = media.hasVerifiedMedia ? getExerciseGifUrl(id) : null
   const mappedIsGif = mappedUrl?.endsWith('.gif')
   const primaryImage = image || media.image || (!mappedIsGif ? mappedUrl : null)
   const fallbackImage = media.fallbackImage
   const resolvedVideo = video ?? null
   const resolvedGif = gif ?? media.gif ?? (mappedIsGif ? mappedUrl : null)
-  const resolvedMediaType = resolvedVideo ? 'video' : resolvedGif ? 'gif' : mappedUrl ? (mappedIsGif ? 'gif' : 'image') : 'image'
-  const resolvedMediaUrl =
-    resolvedMediaType === 'video'
+  const resolvedMediaType = resolvedVideo
+    ? 'video'
+    : resolvedGif
+      ? 'gif'
+      : mappedUrl
+        ? mappedIsGif
+          ? 'gif'
+          : 'image'
+        : 'image'
+  const resolvedMediaUrl = media.mediaPending
+    ? fallbackImage
+    : resolvedMediaType === 'video'
       ? resolvedVideo
       : resolvedMediaType === 'gif'
         ? resolvedGif
         : primaryImage || mappedUrl || fallbackImage
 
+  const displayGroup = normalizeMuscleGroup(category)
+
   return {
     id,
     name,
     type,
-    category,
-    muscleGroup: category,
+    category: displayGroup,
+    muscleGroup: displayGroup,
     secondaryMuscles: muscles?.slice(1) ?? [],
     mediaType: resolvedMediaType,
     mediaUrl: resolvedMediaUrl,
-    image: primaryImage || (!mappedIsGif ? mappedUrl : null),
+    image: media.mediaPending ? null : primaryImage || (!mappedIsGif ? mappedUrl : null),
     thumbnail: media.thumbnail,
-    gif: resolvedGif,
+    gif: media.mediaPending ? null : resolvedGif,
     video: resolvedVideo,
     fallbackImage,
     fallbackSvg: media.fallbackSvg,
     poseKey: media.poseKey,
+    mediaPending: media.mediaPending,
+    hasVerifiedMedia: media.hasVerifiedMedia,
     shortInstruction: execution?.[0] ?? '',
     executionSteps: execution,
-    muscles,
+    muscles: muscles?.map((m) => (m === 'Peito' ? 'Peitoral' : m === 'Peito superior' ? 'Peitoral superior' : m)),
     benefits,
     execution,
     commonMistakes,
@@ -79,22 +93,23 @@ function createExercise({
 }
 
 export const muscleGroups = [
-  'Peito',
+  'Peitoral',
   'Costas',
   'Ombros',
   'Bíceps',
   'Tríceps',
-  'Quadríceps',
-  'Posterior',
+  'Pernas',
   'Glúteos',
   'Abdômen',
+  'Cardio',
+  'Mobilidade',
+  'Funcional',
+  'Quadríceps',
+  'Posterior',
   'Corpo inteiro',
   'Cardiovascular',
   'Coluna',
   'Quadril',
-  'Oblíquos',
-  'Lombar',
-  'Core',
 ]
 
 export const exerciseTypes = [
@@ -142,7 +157,17 @@ export const exercises = [
       'Desça a barra de forma controlada até a linha do peito.',
       'Empurre a barra para cima mantendo controle do movimento.',
     ],
-    commonMistakes: ['Arquear demais a lombar', 'Bater a barra no peito', 'Cotovelos muito abertos'],
+    commonMistakes: [
+      'Arquear demais a lombar.',
+      'Descer a barra sem controle.',
+      'Usar carga excessiva.',
+    ],
+    safetyTips: [
+      'Use carga adequada.',
+      'Controle a descida.',
+      'Pare em caso de dor.',
+      'Este conteúdo é informativo e não substitui orientação de um profissional. Em caso de dor, lesão ou desconforto, interrompa o exercício e procure orientação especializada.',
+    ],
     sets: '3 a 4',
     reps: '8 a 12',
     rest: '60 a 90 segundos',
@@ -155,9 +180,22 @@ export const exercises = [
     type: 'Superiores',
     category: 'Peito',
     muscles: ['Peito superior', 'Tríceps', 'Ombros'],
-    benefits: ['Ênfase no peitoral superior', 'Melhora simetria do tórax', 'Complementa o supino reto'],
-    execution: ['Banco inclinado 30–45°', 'Desça halteres até a linha do peito', 'Suba sem bater os pesos'],
-    commonMistakes: ['Inclinação excessiva do banco', 'Travar cotovelos no topo', 'Amplitude incompleta'],
+    benefits: [
+      'Ênfase no peitoral superior.',
+      'Melhora simetria do tórax.',
+      'Complementa o treino de peitoral com ângulo diferente do banco reto.',
+    ],
+    execution: [
+      'Ajuste o banco entre 30° e 45° de inclinação.',
+      'Segure os haliões acima do peito com controle.',
+      'Desça até a linha do peito superior.',
+      'Empurre para cima sem bater os pesos.',
+    ],
+    commonMistakes: [
+      'Inclinação excessiva do banco (vira desenvolvimento de ombros).',
+      'Travar cotovelos no topo.',
+      'Amplitude incompleta.',
+    ],
     sets: '3 a 4',
     reps: '8 a 12',
     rest: '60 a 90 segundos',
@@ -405,7 +443,7 @@ export const exercises = [
     sets: '3',
     reps: '10 a 12',
     rest: '60 segundos',
-    equipment: 'Halteres',
+    equipment: 'Barra',
     level: 'Iniciante',
   }),
   createExercise({
@@ -929,7 +967,7 @@ export const exercises = [
     id: 'alongamento-quadriceps',
     name: 'Alongamento de quadríceps',
     type: 'Mobilidade',
-    category: 'Quadríceps',
+    category: 'Quadril',
     mediaType: 'gif',
     muscles: ['Quadríceps'],
     benefits: ['Flexibilidade do quadríceps', 'Recuperação pós-treino'],
@@ -961,7 +999,7 @@ export const exercises = [
     id: 'alongamento-ombro',
     name: 'Alongamento posterior de ombro',
     type: 'Mobilidade',
-    category: 'Ombros',
+    category: 'Coluna',
     mediaType: 'gif',
     muscles: ['Ombros', 'Manguito rotador'],
     benefits: ['Flexibilidade do ombro', 'Previne rigidez'],

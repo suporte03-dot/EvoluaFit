@@ -1,6 +1,7 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabaseClient.js'
 import { exercises as localExercises, DEFAULT_SAFETY_TIPS } from '../data/exercisesData.js'
 import { getFallbackKey, getFallbackMediaPath } from '../data/exerciseMediaMap.js'
+import { getValidatedMediaUrl, normalizeMuscleGroup, logMediaIssuesOnce } from '../data/exerciseValidationMap.js'
 import { setExerciseCache } from '../data/exerciseCache.js'
 
 function normalizeArray(value) {
@@ -27,13 +28,17 @@ function normalizeMediaType(value) {
 }
 
 export function mapSupabaseExercise(row) {
-  const category = row.muscle_group || row.muscleGroup || 'Outros'
+  const rawCategory = row.muscle_group || row.muscleGroup || 'Outros'
+  const category = normalizeMuscleGroup(rawCategory)
   const type = row.type || 'Funcional'
   const fallbackKey = getFallbackKey(category, type)
   const fallbackImage = getFallbackMediaPath(fallbackKey)
 
   const mediaType = normalizeMediaType(row.media_type)
-  const mediaUrl = row.media_url || null
+  const candidateUrl = row.media_url || null
+  const exerciseId = String(row.slug || row.id)
+  const mediaUrl = getValidatedMediaUrl(exerciseId, candidateUrl)
+  const mediaPending = !mediaUrl
   const thumbnailUrl = row.thumbnail_url || null
 
   const benefits = normalizeArray(row.benefits)
@@ -42,9 +47,9 @@ export function mapSupabaseExercise(row) {
   const executionSteps = normalizeArray(row.execution_steps)
   const shortInstruction = row.short_instruction || executionSteps[0] || ''
 
-  const resolvedVideo = mediaType === 'video' ? mediaUrl : null
-  const resolvedGif = mediaType === 'gif' ? mediaUrl : null
-  const resolvedImage = mediaType === 'image' ? mediaUrl : null
+  const resolvedVideo = !mediaPending && mediaType === 'video' ? mediaUrl : null
+  const resolvedGif = !mediaPending && mediaType === 'gif' ? mediaUrl : null
+  const resolvedImage = !mediaPending && mediaType === 'image' ? mediaUrl : null
 
   return {
     id: String(row.id),
@@ -56,14 +61,16 @@ export function mapSupabaseExercise(row) {
     secondaryMuscles: normalizeArray(row.secondary_muscles),
     equipment: row.equipment || '—',
     level: row.level || 'Iniciante',
-    mediaType,
+    mediaType: mediaPending ? 'image' : mediaType,
     mediaUrl: mediaUrl || thumbnailUrl || fallbackImage,
-    image: resolvedImage || (mediaType !== 'gif' && mediaType !== 'video' ? mediaUrl : null) || thumbnailUrl,
+    image: resolvedImage || thumbnailUrl,
     thumbnail: thumbnailUrl || mediaUrl || fallbackImage,
     gif: resolvedGif,
     video: resolvedVideo,
     fallbackImage,
     fallbackSvg: fallbackImage,
+    mediaPending,
+    hasVerifiedMedia: !mediaPending,
     shortInstruction,
     executionSteps: executionSteps.length ? executionSteps : shortInstruction ? [shortInstruction] : [],
     benefits,
@@ -95,6 +102,7 @@ export async function fetchExercisesFromSupabase() {
 }
 
 export async function loadExercises() {
+  logMediaIssuesOnce()
   const { data, error } = await fetchExercisesFromSupabase()
 
   if (!error && data?.length) {

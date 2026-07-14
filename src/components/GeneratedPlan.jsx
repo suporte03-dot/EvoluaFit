@@ -72,7 +72,7 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
                 <p className="plan-day__focus">{day.focus.join(' · ')}</p>
               </div>
               <div className="plan-day__actions">
-                <button type="button" className="btn btn--primary btn--sm" onClick={(e) => startDayWorkout(day, e)}>
+                <button type="button" className="btn btn--primary btn--sm btn--start-workout" onClick={(e) => startDayWorkout(day, e)}>
                   Iniciar treino
                 </button>
                 <button type="button" className="btn btn--ghost btn--sm" onClick={() => openDayDetail(day)}>

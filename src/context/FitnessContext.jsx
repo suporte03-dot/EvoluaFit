@@ -100,7 +100,7 @@ export function FitnessProvider({ children }) {
         ),
       }))
       setActiveWorkout(null)
-      showToast('Treino finalizado! Parabéns!')
+      showToast('Treino finalizado com sucesso!')
     },
     [persist, showToast],
   )

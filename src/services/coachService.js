@@ -249,9 +249,7 @@ export async function explainExercise(exerciseId) {
   return {
     answer: withSafety(body),
     exerciseId: exercise.id,
-    suggestion: alternatives.length
-      ? { type: 'exercise', data: alternatives[0] }
-      : undefined,
+    suggestion: { type: 'exercise', data: exercise },
   }
 }
 

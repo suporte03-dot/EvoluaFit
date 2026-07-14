@@ -13,8 +13,8 @@
 }
 
 .brand-logo--full {
-  height: 90px;
-  max-width: 340px;
+  height: 82px;
+  max-width: 320px;
   width: auto;
   object-fit: contain;
 }
@@ -24,16 +24,16 @@
 }
 
 .logo-header img {
-  height: 90px;
-  max-width: 340px;
+  height: 82px;
+  max-width: 320px;
   width: auto;
   object-fit: contain;
   display: block;
 }
 
 .logo-header .brand-logo--full {
-  height: 90px;
-  max-width: 340px;
+  height: 82px;
+  max-width: 320px;
   width: auto;
   object-fit: contain;
 }
@@ -187,7 +187,7 @@ main {
 .header__inner {
   display: flex;
   align-items: center;
-  gap: 1.75rem;
+  gap: 2rem;
   min-height: var(--header-h);
   height: var(--header-h);
   min-width: 0;
@@ -200,7 +200,7 @@ main {
   align-items: center;
   gap: 0.65rem;
   min-width: 0;
-  max-width: 360px;
+  max-width: 340px;
 }
 
 .logo-header .brand-logo--full {
@@ -276,6 +276,9 @@ main {
 
 .header__cta-desktop {
   display: inline-flex;
+  min-height: 44px;
+  padding: 0.65rem 1.15rem;
+  font-weight: 700;
 }
 
 .header__burger {
@@ -814,6 +817,14 @@ main {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+.workout-card__actions .btn--start-workout {
+  flex: 1 1 140px;
+  min-height: 44px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: 0 0 18px rgba(0, 229, 143, 0.22);
 }
 
 .muscle-tag,
@@ -2546,12 +2557,12 @@ main {
   }
 
   .logo-header img.brand-logo--compact {
-    height: 52px;
-    max-width: 52px;
+    height: 56px;
+    max-width: 56px;
   }
 
   .logo-header .brand-text {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
   }
 
   .perf-stats {
@@ -3246,6 +3257,16 @@ main {
   gap: 0.65rem;
   padding: 1rem 1.25rem 1.25rem;
   border-top: 1px solid var(--border);
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.92), rgba(8, 18, 35, 0.98));
+  backdrop-filter: blur(8px);
+  z-index: 2;
+}
+
+.exercise-modal__actions .btn {
+  min-height: 44px;
+  flex: 1;
 }
 
 @keyframes slide-up {

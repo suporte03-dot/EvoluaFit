@@ -86,7 +86,7 @@ export default function TodaySuggestion() {
           </div>
           <div className="suggestion-card__actions">
             {matchingWorkout && (
-              <button type="button" className="btn btn--primary" onClick={handleStartWorkout}>
+              <button type="button" className="btn btn--primary btn--start-workout" onClick={handleStartWorkout}>
                 Iniciar treino
               </button>
             )}

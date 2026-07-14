@@ -115,7 +115,7 @@ export default function MyWorkouts() {
                 <div className="workout-card__actions" onClick={stopProp}>
                   <button
                     type="button"
-                    className="btn btn--primary btn--sm"
+                    className="btn btn--primary btn--sm btn--start-workout"
                     onClick={() => startWorkout(workout)}
                     disabled={workout.status === 'Realizado'}
                   >

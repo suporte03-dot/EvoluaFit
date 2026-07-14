@@ -26,7 +26,7 @@ export const mobileNavItems = [
   { id: 'inicio', label: 'Início', icon: '🏠' },
   { id: 'treinos', label: 'Treinos', icon: '🏋️' },
   { id: 'exercicios', label: 'Exercícios', icon: '💪' },
-  { id: 'coach-ia', label: 'Coach', icon: '✦' },
+  { id: 'coach-ia', label: 'Coach IA', icon: '✦' },
   { id: 'perfil', label: 'Perfil', icon: '👤' },
 ]
 

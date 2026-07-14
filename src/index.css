@@ -25,7 +25,7 @@
   --font-heading: 'Sora', system-ui, sans-serif;
   --font-brand: 'Manrope', 'Sora', system-ui, sans-serif;
   --font: 'Inter', system-ui, sans-serif;
-  --header-h: 108px;
+  --header-h: 100px;
   --container: 1140px;
   --shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
   --glow-green: 0 0 40px rgba(0, 229, 143, 0.15);
@@ -42,7 +42,7 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--header-h) + 24px);
-  overflow-x: clip;
+  overflow-x: hidden;
   max-width: 100%;
 }
 
@@ -52,7 +52,7 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  overflow-x: clip;
+  overflow-x: hidden;
   max-width: 100%;
 }
 

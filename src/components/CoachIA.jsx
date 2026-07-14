@@ -59,7 +59,7 @@ function renderAnswer(text) {
 }
 
 export default function CoachIA() {
-  const { profile, workouts, history, performance, showToast, savePlan, addPlanWorkouts, addWorkoutToPlan } =
+  const { profile, workouts, history, performance, showToast, savePlan, addPlanWorkouts, addWorkoutToPlan, addExerciseToPlan, startWorkout } =
     useFitness()
 
   const [input, setInput] = useState('')
@@ -178,27 +178,31 @@ export default function CoachIA() {
     }
 
     if (lastSuggestion.type === 'exercise') {
-      addWorkoutToPlan({
-        id: `coach-ex-${Date.now()}`,
-        name: `Treino — ${lastSuggestion.data.category}`,
-        date: new Date().toISOString().split('T')[0],
-        muscleGroups: [lastSuggestion.data.category],
-        status: 'Pendente',
-        estimatedMinutes: 40,
-        exercises: [
-          {
-            exerciseId: lastSuggestion.data.id,
-            name: lastSuggestion.data.name,
-            muscleGroup: lastSuggestion.data.category,
-            sets: 3,
-            reps: lastSuggestion.data.reps,
-            restSeconds: 60,
-            load: '',
-          },
-        ],
-        createdAt: new Date().toISOString(),
-      })
+      addExerciseToPlan(lastSuggestion.data)
     }
+  }
+
+  const handleAddExerciseSuggestion = () => {
+    if (lastSuggestion?.type !== 'exercise' || !lastSuggestion.data) {
+      showToast('Nenhum exercício para adicionar.', 'info')
+      return
+    }
+    addExerciseToPlan(lastSuggestion.data)
+  }
+
+  const handleStartSuggestedWorkout = () => {
+    if (lastSuggestion?.type !== 'workout' || !lastSuggestion.data) {
+      showToast('Nenhum treino sugerido para iniciar.', 'info')
+      return
+    }
+    const workout = {
+      ...lastSuggestion.data,
+      id: lastSuggestion.data.id || `coach-start-${Date.now()}`,
+      status: lastSuggestion.data.status || 'Pendente',
+      date: lastSuggestion.data.date || new Date().toISOString().split('T')[0],
+    }
+    addWorkoutToPlan(workout)
+    startWorkout(workout)
   }
 
   return (
@@ -252,9 +256,19 @@ export default function CoachIA() {
                 <button type="submit" className="btn btn--primary" disabled={loading || !input.trim()}>
                   {loading ? 'Analisando…' : 'Perguntar'}
                 </button>
-                {lastSuggestion && (
+                {lastSuggestion && (lastSuggestion.type === 'plan' || lastSuggestion.type === 'workout') && (
                   <button type="button" className="btn btn--ghost" onClick={handleSaveSuggestion}>
-                    Salvar sugestão na planilha
+                    Salvar na planilha
+                  </button>
+                )}
+                {lastSuggestion?.type === 'workout' && (
+                  <button type="button" className="btn btn--primary btn--start-workout" onClick={handleStartSuggestedWorkout}>
+                    Iniciar treino sugerido
+                  </button>
+                )}
+                {lastSuggestion?.type === 'exercise' && (
+                  <button type="button" className="btn btn--ghost" onClick={handleAddExerciseSuggestion}>
+                    Adicionar exercício ao treino
                   </button>
                 )}
                 {messages.length > 0 && (

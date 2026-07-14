@@ -188,7 +188,7 @@ export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
         <div className="modal__footer--sticky workout-detail__actions">
           <button
             type="button"
-            className="btn btn--primary"
+            className="btn btn--primary btn--start-workout"
             onClick={handleStart}
             disabled={detail.status === 'Realizado'}
           >

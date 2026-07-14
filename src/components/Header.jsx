@@ -89,7 +89,7 @@ export default function Header({ activeSection }) {
         </nav>
 
         <div className="header__actions">
-          <button type="button" className="btn btn--primary btn--sm header__cta-desktop" onClick={() => navigate('planilha')}>
+          <button type="button" className="btn btn--primary header__cta-desktop btn--start-workout" onClick={() => navigate('planilha')}>
             Criar meu treino
           </button>
           <button

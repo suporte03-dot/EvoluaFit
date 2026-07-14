@@ -93,10 +93,12 @@ export default function ExerciseLibrary() {
         <SectionTitle
           tag="Biblioteca"
           title="Exercícios"
-          subtitle="Biblioteca de exercícios com demonstrações, instruções e cuidados de segurança."
+          subtitle="Biblioteca organizada por grupos musculares, com demonstrações coerentes, execução segura e cuidados."
         />
         <p className="gdt-library-subtitle-meta">
-          {exercises.length} exercícios · {verifiedCount} com mídia verificada
+          {loading ? 'Carregando…' : `${exercises.length} exercícios · ${verifiedCount} com mídia verificada`}
+          {' · '}
+          Conteúdo informativo — respeite seus limites.
         </p>
 
         <div className="gdt-library-toolbar">

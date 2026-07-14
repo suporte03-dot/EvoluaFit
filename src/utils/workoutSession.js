@@ -69,9 +69,14 @@ export function buildCompletionPayload(workout, sessionExercises, startTime, ses
 }
 
 export function inferWorkoutType(workout) {
-  const groups = workout?.muscleGroups || []
-  if (groups.some((g) => ['Peito', 'Ombros', 'Tríceps'].includes(g))) return 'Push'
-  if (groups.some((g) => ['Costas', 'Bíceps'].includes(g))) return 'Pull'
-  if (groups.some((g) => ['Quadríceps', 'Posterior', 'Glúteos', 'Pernas'].includes(g))) return 'Legs'
+  const groups = (workout?.muscleGroups || []).map((g) =>
+    String(g)
+      .replace(/^Peito$/, 'Peitoral')
+      .replace(/^Quadríceps$|^Posterior$/, 'Pernas'),
+  )
+  if (groups.some((g) => ['Peitoral', 'Ombros', 'Tríceps'].includes(g))) return 'Push'
+  if (groups.some((g) => ['Costas', 'Bíceps', 'Trapézio', 'Lombar'].includes(g))) return 'Pull'
+  if (groups.some((g) => ['Pernas', 'Glúteos', 'Panturrilha'].includes(g))) return 'Legs'
+  if (groups.some((g) => ['Abdômen', 'Cardio', 'Mobilidade'].includes(g))) return 'Core / Condicionamento'
   return workout?.type || 'Treino'
 }

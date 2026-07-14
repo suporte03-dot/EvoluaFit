@@ -3,6 +3,19 @@ import { useFitness } from '../context/FitnessContext'
 import { planToWorkouts } from '../utils/workoutGenerator'
 import WorkoutDetailModal from './WorkoutDetailModal'
 
+const WEEKDAYS = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo']
+
+function weekdayForDay(dayNumber) {
+  return WEEKDAYS[Math.max(0, (dayNumber || 1) - 1) % WEEKDAYS.length]
+}
+
+function formatFocus(focus = []) {
+  if (!focus.length) return ''
+  if (focus.length === 1) return focus[0]
+  if (focus.length === 2) return `${focus[0]} e ${focus[1]}`
+  return `${focus.slice(0, -1).join(', ')} e ${focus[focus.length - 1]}`
+}
+
 export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
   const { addPlanWorkouts, startWorkout } = useFitness()
   const [detailWorkout, setDetailWorkout] = useState(null)
@@ -69,10 +82,15 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
                 <h4>
                   Dia {day.day}: {day.name}
                 </h4>
-                <p className="plan-day__focus">Grupos: {day.focus.join(', ')}</p>
+                <p className="plan-day__weekday">{weekdayForDay(day.day)}</p>
+                <p className="plan-day__focus">Grupos: {formatFocus(day.focus)}</p>
               </div>
               <div className="plan-day__actions">
-                <button type="button" className="btn btn--primary btn--sm btn--start-workout" onClick={(e) => startDayWorkout(day, e)}>
+                <button
+                  type="button"
+                  className="btn btn--primary btn--sm btn--start-workout"
+                  onClick={(e) => startDayWorkout(day, e)}
+                >
                   Iniciar treino
                 </button>
                 <button type="button" className="btn btn--ghost btn--sm" onClick={() => openDayDetail(day)}>
@@ -83,9 +101,14 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
             <ul className="plan-day__exercises">
               {day.exercises.map((ex) => (
                 <li key={ex.exerciseId}>
-                  <strong>{ex.name}</strong>
-                  <span>
+                  <div className="plan-day__ex-main">
+                    <strong>{ex.name}</strong>
+                    <span className="plan-day__ex-group">{ex.muscleGroup}</span>
+                  </div>
+                  <span className="plan-day__ex-meta">
                     {ex.sets}x {ex.reps} · descanso {ex.restSeconds}s
+                    {ex.equipment ? ` · ${ex.equipment}` : ''}
+                    {ex.level ? ` · ${ex.level}` : ''}
                   </span>
                 </li>
               ))}
@@ -111,7 +134,10 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
         </div>
       )}
 
-      <p className="safety-note">{plan.disclaimer}</p>
+      <p className="safety-note">
+        {plan.disclaimer ||
+          'Plano demonstrativo. Este conteúdo é informativo. Respeite seus limites. Em caso de dor, interrompa o exercício e procure orientação profissional.'}
+      </p>
 
       <WorkoutDetailModal
         workout={detailWorkout}

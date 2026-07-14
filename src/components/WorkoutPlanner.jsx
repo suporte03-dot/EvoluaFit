@@ -77,7 +77,7 @@ export default function WorkoutPlanner() {
         <SectionTitle
           tag="Planilha"
           title="Monte sua planilha ideal"
-          subtitle="Responda algumas perguntas e gere um plano adaptado ao seu perfil e restrições."
+          subtitle="Responda algumas perguntas e gere um plano equilibrado. Plano demonstrativo — ajuste com orientação profissional."
         />
 
         <form className="planner-form glass-card" onSubmit={handleGenerate}>

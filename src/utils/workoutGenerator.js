@@ -1,6 +1,27 @@
 import { exercises, parseSets, parseRestSeconds } from '../data/exercisesData'
 import { splitTemplates, levelConfig, objectiveLabels } from '../data/workoutTemplates'
 
+/** Cotas por tipo de treino (máximo desejado por grupo) */
+const DAY_QUOTAS = {
+  Push: { Peitoral: 2, Ombros: 2, Tríceps: 2 },
+  Pull: { Costas: 3, Bíceps: 2, Trapézio: 1, Lombar: 1 },
+  Legs: { Pernas: 2, Glúteos: 2, Panturrilha: 1, Abdômen: 1 },
+  FullBody: {
+    Peitoral: 1,
+    Costas: 1,
+    Pernas: 1,
+    Glúteos: 1,
+    Ombros: 1,
+    Abdômen: 1,
+  },
+  Superiores: { Peitoral: 2, Costas: 2, Ombros: 1, Bíceps: 1, Tríceps: 1 },
+  Inferiores: { Pernas: 2, Glúteos: 2, Panturrilha: 1, Abdômen: 1 },
+  Core: { Abdômen: 3, Lombar: 2 },
+  Cardio: { Cardio: 4 },
+  Mobilidade: { Mobilidade: 3, Alongamento: 2 },
+  HybridRecovery: { Abdômen: 2, Cardio: 2, Mobilidade: 2, Alongamento: 1 },
+}
+
 /** Aliases → categoria oficial do catálogo */
 const CATEGORY_ALIASES = {
   Peito: 'Peitoral',
@@ -26,27 +47,6 @@ const CATEGORY_ALIASES = {
   Alongamento: 'Alongamento',
   Funcional: 'Funcional',
   'Corpo inteiro': 'Funcional',
-}
-
-/** Cotas por tipo de treino (máximo desejado por grupo) */
-const DAY_QUOTAS = {
-  Push: { Peitoral: 2, Ombros: 2, Tríceps: 2 },
-  Pull: { Costas: 3, Bíceps: 2, Trapézio: 1, Lombar: 1 },
-  Legs: { Pernas: 2, Glúteos: 2, Panturrilha: 1, Abdômen: 1 },
-  FullBody: {
-    Peitoral: 1,
-    Costas: 1,
-    Pernas: 1,
-    Glúteos: 1,
-    Ombros: 1,
-    Abdômen: 1,
-  },
-  Superiores: { Peitoral: 2, Costas: 2, Ombros: 1, Bíceps: 1, Tríceps: 1 },
-  Inferiores: { Pernas: 2, Glúteos: 2, Panturrilha: 1, Abdômen: 1 },
-  Core: { Abdômen: 3, Lombar: 2 },
-  Cardio: { Cardio: 4 },
-  Mobilidade: { Mobilidade: 3, Alongamento: 2 },
-  HybridRecovery: { Abdômen: 2, Cardio: 2, Mobilidade: 2, Alongamento: 1 },
 }
 
 function normalizeCategory(label) {

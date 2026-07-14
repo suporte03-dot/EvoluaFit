@@ -38,10 +38,6 @@ export default function ExerciseCard({ exercise, onAdd, onClick, variant = 'defa
             <h3 className="gdt-exercise-card__title">{exercise.name}</h3>
           </button>
 
-          {exercise.shortInstruction && (
-            <p className="gdt-exercise-card__hint">{exercise.shortInstruction}</p>
-          )}
-
           <div className="gdt-exercise-card__meta">
             <span className="gdt-exercise-card__muscle">{muscle}</span>
             {exercise.equipment && <span className="equipment-tag">{exercise.equipment}</span>}
@@ -50,6 +46,7 @@ export default function ExerciseCard({ exercise, onAdd, onClick, variant = 'defa
                 {exercise.level}
               </span>
             )}
+            {exercise.type && <span className="exercise-type-tag">{exercise.type}</span>}
           </div>
 
           <div className="gdt-exercise-card__actions">

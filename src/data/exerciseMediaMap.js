@@ -18,6 +18,7 @@ import {
   normalizeMuscleGroup,
   logMediaIssuesOnce,
 } from './exerciseValidationMap.js'
+import { resolveSafeMediaUrl } from '../utils/exerciseValidation.js'
 
 export const EXERCISE_POSE_MAP = {
   'supino-reto': 'bench-flat',
@@ -422,14 +423,16 @@ export function countExercisesByChip(exercises, chipId) {
 
 /**
  * Resolve mídia segura. Se inválida/suspeita → fallback + mediaPending.
+ * Nunca retorna mídia incoerente com o exercício/grupo.
  */
 export function resolveExerciseMedia(id, category, type, base) {
   logMediaIssuesOnce()
 
   const root = base ?? (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) ?? '/'
+  const group = normalizeMuscleGroup(category)
   const fallbackKey = getFallbackKey(category, type)
   const fallbackImage = getFallbackMediaPath(fallbackKey, root)
-  const localUrl =
+  const localCandidate =
     getPeitoLocalMediaUrl(id, root) ||
     getCostasLocalMediaUrl(id, root) ||
     getBicepsLocalMediaUrl(id, root) ||
@@ -439,6 +442,8 @@ export function resolveExerciseMedia(id, category, type, base) {
     getLombarLocalMediaUrl(id, root) ||
     getPernasLocalMediaUrl(id, root) ||
     getTrapezioLocalMediaUrl(id, root)
+
+  const localUrl = resolveSafeMediaUrl(id, localCandidate, group)
 
   if (localUrl) {
     return {
@@ -455,8 +460,24 @@ export function resolveExerciseMedia(id, category, type, base) {
     }
   }
 
+  // Candidato local existia mas falhou coerência → pendente (usa fallback do grupo)
+  if (localCandidate && !localUrl) {
+    return {
+      mediaType: 'image',
+      mediaUrl: fallbackImage,
+      image: null,
+      gif: null,
+      thumbnail: fallbackImage,
+      fallbackImage,
+      fallbackSvg: fallbackImage,
+      poseKey: EXERCISE_POSE_MAP[id] || fallbackKey,
+      mediaPending: true,
+      hasVerifiedMedia: false,
+    }
+  }
+
   const remoteCandidate = getExerciseGifUrl(id)
-  const remoteUrl = getValidatedMediaUrl(id, remoteCandidate)
+  const remoteUrl = resolveSafeMediaUrl(id, remoteCandidate, group) || getValidatedMediaUrl(id, remoteCandidate)
   const mediaPending = !remoteUrl
   const isGif = remoteUrl?.endsWith('.gif')
 

@@ -69,6 +69,12 @@ export default function ExerciseDetailModal({ exercise, isOpen, onClose }) {
           {exercise.type && <span className="exercise-type-tag">{exercise.type}</span>}
         </div>
 
+        {secondary.length > 0 && (
+          <p className="exercise-modal__secondary">
+            Músculos secundários: {secondary.join(', ')}
+          </p>
+        )}
+
         {exercise.shortInstruction && (
           <section className="exercise-modal__section">
             <h3>Instrução</h3>
@@ -122,7 +128,7 @@ export default function ExerciseDetailModal({ exercise, isOpen, onClose }) {
 
         <div className="exercise-modal__meta-grid">
           <div className="exercise-modal__meta-item">
-            <span className="exercise-modal__meta-label">Séries</span>
+            <span className="exercise-modal__meta-label">Séries sugeridas</span>
             <strong>{exercise.sets}</strong>
           </div>
           <div className="exercise-modal__meta-item">
@@ -136,13 +142,13 @@ export default function ExerciseDetailModal({ exercise, isOpen, onClose }) {
         </div>
 
         <p className="exercise-modal__disclaimer">
-          Este conteúdo é informativo e não substitui orientação de um profissional. Em caso de dor, lesão
-          ou desconforto, interrompa o exercício e procure orientação especializada.
+          Este conteúdo é informativo e não substitui orientação profissional. Respeite seus limites. Em caso
+          de dor, interrompa o exercício e procure orientação especializada.
         </p>
 
         <div className="exercise-modal__footer exercise-modal__actions">
           <button type="button" className="btn btn--primary" onClick={handleAdd}>
-            + Adicionar ao treino
+            Adicionar ao treino
           </button>
         </div>
       </div>

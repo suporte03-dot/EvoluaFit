@@ -1,7 +1,7 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabaseClient.js'
 import { exercises as localExercises, DEFAULT_SAFETY_TIPS } from '../data/exercisesData.js'
-import { getFallbackKey, getFallbackMediaPath } from '../data/exerciseMediaMap.js'
-import { getValidatedMediaUrl, normalizeMuscleGroup, logMediaIssuesOnce } from '../data/exerciseValidationMap.js'
+import { resolveExerciseMedia } from '../data/exerciseMediaMap.js'
+import { normalizeMuscleGroup, logMediaIssuesOnce, resolveSafeMediaUrl } from '../utils/exerciseValidation.js'
 import { setExerciseCache } from '../data/exerciseCache.js'
 
 function normalizeArray(value) {
@@ -27,59 +27,106 @@ function normalizeMediaType(value) {
   return 'image'
 }
 
-export function mapSupabaseExercise(row) {
-  const rawCategory = row.muscle_group || row.muscleGroup || 'Outros'
+function indexLocalExercises() {
+  const byId = new Map()
+  for (const ex of localExercises) {
+    byId.set(String(ex.id), ex)
+    if (ex.slug) byId.set(String(ex.slug), ex)
+  }
+  return byId
+}
+
+/**
+ * Mapeia linha do Supabase + mídia local verificada (prioridade):
+ * 1) resolveExerciseMedia (local PNG / GIF validado)
+ * 2) media_url remota só se coerente
+ * 3) fallback do grupo
+ */
+export function mapSupabaseExercise(row, localIndex = indexLocalExercises()) {
+  const slug = row.slug ? String(row.slug) : null
+  const local =
+    (slug && localIndex.get(slug)) ||
+    localIndex.get(String(row.id)) ||
+    null
+
+  const rawCategory = row.muscle_group || row.muscleGroup || local?.category || 'Outros'
   const category = normalizeMuscleGroup(rawCategory)
-  const type = row.type || 'Funcional'
-  const fallbackKey = getFallbackKey(category, type)
-  const fallbackImage = getFallbackMediaPath(fallbackKey)
+  const type = row.type || local?.type || 'Funcional'
+  const mediaKey = slug || local?.id || String(row.id)
 
-  const mediaType = normalizeMediaType(row.media_type)
-  const candidateUrl = row.media_url || null
-  const exerciseId = String(row.slug || row.id)
-  const mediaUrl = getValidatedMediaUrl(exerciseId, candidateUrl)
-  const mediaPending = !mediaUrl
-  const thumbnailUrl = row.thumbnail_url || null
+  const media = resolveExerciseMedia(mediaKey, category, type)
+  const remoteCandidate = row.media_url || null
+  const safeRemote = resolveSafeMediaUrl(mediaKey, remoteCandidate, category)
 
-  const benefits = normalizeArray(row.benefits)
-  const commonMistakes = normalizeArray(row.common_mistakes)
-  const safetyTips = normalizeArray(row.safety_tips)
-  const executionSteps = normalizeArray(row.execution_steps)
-  const shortInstruction = row.short_instruction || executionSteps[0] || ''
+  let mediaPending = media.mediaPending
+  let mediaType = media.mediaType
+  let mediaUrl = media.mediaUrl
+  let image = media.image
+  let gif = media.gif
+  let thumbnail = media.thumbnail
+  let hasVerifiedMedia = media.hasVerifiedMedia
 
-  const resolvedVideo = !mediaPending && mediaType === 'video' ? mediaUrl : null
-  const resolvedGif = !mediaPending && mediaType === 'gif' ? mediaUrl : null
-  const resolvedImage = !mediaPending && mediaType === 'image' ? mediaUrl : null
+  // Só usa URL remota do Supabase se local não tiver mídia verificada
+  if (!hasVerifiedMedia && safeRemote) {
+    mediaPending = false
+    hasVerifiedMedia = true
+    mediaType = normalizeMediaType(row.media_type)
+    mediaUrl = safeRemote
+    image = mediaType === 'image' ? safeRemote : null
+    gif = mediaType === 'gif' ? safeRemote : null
+    thumbnail = row.thumbnail_url || safeRemote
+  } else if (!hasVerifiedMedia) {
+    mediaPending = true
+    mediaUrl = media.fallbackImage
+    thumbnail = media.fallbackImage
+  }
+
+  const benefits = normalizeArray(row.benefits).length
+    ? normalizeArray(row.benefits)
+    : local?.benefits || []
+  const commonMistakes = normalizeArray(row.common_mistakes).length
+    ? normalizeArray(row.common_mistakes)
+    : local?.commonMistakes || []
+  const safetyTips = normalizeArray(row.safety_tips).length
+    ? normalizeArray(row.safety_tips)
+    : local?.safetyTips || DEFAULT_SAFETY_TIPS
+  const executionSteps = normalizeArray(row.execution_steps).length
+    ? normalizeArray(row.execution_steps)
+    : local?.executionSteps || local?.execution || []
+  const shortInstruction =
+    row.short_instruction || executionSteps[0] || local?.shortInstruction || ''
 
   return {
-    id: String(row.id),
-    slug: row.slug || null,
-    name: row.name || 'Exercício',
+    id: slug || String(row.id),
+    slug: slug || null,
+    name: row.name || local?.name || 'Exercício',
     type,
     category,
     muscleGroup: category,
-    secondaryMuscles: normalizeArray(row.secondary_muscles),
-    equipment: row.equipment || '—',
-    level: row.level || 'Iniciante',
+    secondaryMuscles: normalizeArray(row.secondary_muscles).length
+      ? normalizeArray(row.secondary_muscles)
+      : local?.secondaryMuscles || [],
+    equipment: row.equipment || local?.equipment || '—',
+    level: row.level || local?.level || 'Iniciante',
     mediaType: mediaPending ? 'image' : mediaType,
-    mediaUrl: mediaUrl || thumbnailUrl || fallbackImage,
-    image: resolvedImage || thumbnailUrl,
-    thumbnail: thumbnailUrl || mediaUrl || fallbackImage,
-    gif: resolvedGif,
-    video: resolvedVideo,
-    fallbackImage,
-    fallbackSvg: fallbackImage,
+    mediaUrl,
+    image: mediaPending ? null : image,
+    thumbnail: thumbnail || media.fallbackImage,
+    gif: mediaPending ? null : gif,
+    video: !mediaPending && mediaType === 'video' ? mediaUrl : null,
+    fallbackImage: media.fallbackImage,
+    fallbackSvg: media.fallbackSvg,
     mediaPending,
-    hasVerifiedMedia: !mediaPending,
+    hasVerifiedMedia: hasVerifiedMedia && !mediaPending,
     shortInstruction,
     executionSteps: executionSteps.length ? executionSteps : shortInstruction ? [shortInstruction] : [],
     benefits,
     commonMistakes,
     safetyTips: safetyTips.length ? safetyTips : DEFAULT_SAFETY_TIPS,
-    sets: row.sets ?? '—',
-    reps: row.reps ?? '—',
-    rest: row.rest ?? '—',
-    muscles: [category, ...normalizeArray(row.secondary_muscles)],
+    sets: row.sets ?? local?.sets ?? '—',
+    reps: row.reps ?? local?.reps ?? '—',
+    rest: row.rest ?? local?.rest ?? '—',
+    muscles: [category, ...(normalizeArray(row.secondary_muscles) || local?.secondaryMuscles || [])],
     execution: executionSteps.length ? executionSteps : shortInstruction ? [shortInstruction] : [],
     source: 'supabase',
   }
@@ -97,17 +144,33 @@ export async function fetchExercisesFromSupabase() {
 
   if (error) return { data: null, error }
 
-  const mapped = (data || []).map(mapSupabaseExercise)
-  return { data: mapped, error: null }
+  const localIndex = indexLocalExercises()
+  const mapped = (data || []).map((row) => mapSupabaseExercise(row, localIndex))
+  return { data: mapped, error: null, localIndex }
 }
 
+/**
+ * Ordem segura:
+ * 1. Supabase enriquecido com mídia local validada
+ * 2. Exercícios locais que não vieram no Supabase
+ * 3. Só local se Supabase falhar
+ */
 export async function loadExercises() {
   logMediaIssuesOnce()
+  const localIndex = indexLocalExercises()
   const { data, error } = await fetchExercisesFromSupabase()
 
   if (!error && data?.length) {
-    setExerciseCache(data)
-    return { exercises: data, source: 'supabase', error: null }
+    const seen = new Set(data.map((ex) => String(ex.id)))
+    const extras = localExercises.filter((ex) => {
+      const key = String(ex.id)
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+    const merged = [...data, ...extras]
+    setExerciseCache(merged)
+    return { exercises: merged, source: 'supabase+local', error: null }
   }
 
   if (error) {

@@ -109,7 +109,7 @@ export default function WorkoutPlanner() {
               <input
                 type="range"
                 min="2"
-                max="6"
+                max="7"
                 value={form.daysPerWeek}
                 onChange={(e) => update('daysPerWeek', Number(e.target.value))}
               />

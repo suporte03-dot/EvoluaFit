@@ -69,7 +69,7 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
                 <h4>
                   Dia {day.day}: {day.name}
                 </h4>
-                <p className="plan-day__focus">{day.focus.join(' · ')}</p>
+                <p className="plan-day__focus">Grupos: {day.focus.join(', ')}</p>
               </div>
               <div className="plan-day__actions">
                 <button type="button" className="btn btn--primary btn--sm btn--start-workout" onClick={(e) => startDayWorkout(day, e)}>
@@ -93,6 +93,12 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
           </div>
         ))}
       </div>
+
+      {plan.usedFallback && (
+        <p className="plan-fallback-note">
+          Alguns exercícios foram completados com sugestões alternativas.
+        </p>
+      )}
 
       {plan.safetyNotes?.length > 0 && (
         <div className="safety-box">

@@ -636,6 +636,12 @@ main {
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
+.plan-fallback-note {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
 .safety-box {
   margin-top: 1rem;
   padding: 1rem;

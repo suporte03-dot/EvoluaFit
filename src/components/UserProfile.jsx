@@ -72,7 +72,7 @@ export default function UserProfile() {
               <input
                 type="number"
                 min="2"
-                max="6"
+                max="7"
                 value={form.daysPerWeek}
                 onChange={(e) => update('daysPerWeek', Number(e.target.value))}
               />

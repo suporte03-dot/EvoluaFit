@@ -12,8 +12,8 @@ const WEEKDAY_LABELS = [
 ]
 
 const HEADERS = [
-  'Dia da semana',
-  'Tipo de treino',
+  'Dia',
+  'Tipo do treino',
   'Grupo muscular',
   'Exercício',
   'Séries',
@@ -68,8 +68,8 @@ export function planToExcelRows(plan) {
       const meta = resolveExerciseMeta(exercise, plan)
 
       rows.push({
-        'Dia da semana': weekday,
-        'Tipo de treino': day.name,
+        Dia: `Dia ${day.day} (${weekday})`,
+        'Tipo do treino': day.name,
         'Grupo muscular': exercise.muscleGroup || muscleGroups,
         Exercício: exercise.name,
         Séries: exercise.sets ?? '—',

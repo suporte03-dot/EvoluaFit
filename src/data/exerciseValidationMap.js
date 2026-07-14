@@ -6,11 +6,8 @@
 
 /** Exercícios cuja URL atual é conhecida como incoerente — forçar fallback */
 export const MEDIA_BLOCKLIST = new Set([
-  'supino-inclinado', // imagem de banco reto (Bench-press-1)
-  'desenvolvimento-arnold', // reutiliza GIF do desenvolvimento comum
   'aquecimento-leve', // walking lunges
   'desaquecimento', // walking lunges
-  'puxada-neutra', // mídia corresponde a pull-up, não puxada neutra
 ])
 
 /**
@@ -20,15 +17,15 @@ export const MEDIA_BLOCKLIST = new Set([
  */
 export const exerciseMediaMap = {
   'supino-reto': {
-    expectedNames: ['Supino reto'],
-    expectedMediaKeywords: ['bench-press', 'bench', '3TZduzM', 'supino'],
+    expectedNames: ['Supino reto com barra'],
+    expectedMediaKeywords: ['supino-reto', 'peito', 'bench'],
     muscleGroup: 'Peitoral',
     equipment: ['Barra', 'Halteres', 'Máquina'],
-    invalidKeywords: ['fly', 'crucifixo', 'squat', 'row', 'pulldown', 'curl', 'incline'],
+    invalidKeywords: ['fly', 'crucifixo', 'squat', 'row', 'pulldown', 'curl'],
   },
   'supino-inclinado': {
-    expectedNames: ['Supino inclinado'],
-    expectedMediaKeywords: ['incline', 'inclinado'],
+    expectedNames: ['Supino inclinado com halteres'],
+    expectedMediaKeywords: ['inclinado', 'peito', 'incline'],
     muscleGroup: 'Peitoral',
     equipment: ['Halteres', 'Barra'],
     invalidKeywords: ['fly', 'crucifixo', 'squat', 'Bench-press-1'],
@@ -70,45 +67,66 @@ export const exerciseMediaMap = {
   },
   'remada-baixa-cabo': {
     expectedNames: ['Remada baixa no cabo'],
-    expectedMediaKeywords: ['row', 'seated', 'c8oybX6', 'cable'],
+    expectedMediaKeywords: ['remada-baixa', 'costas', 'cabo', 'row'],
     muscleGroup: 'Costas',
     equipment: ['Cabo'],
-    invalidKeywords: ['pulldown', 'lat-pulldown', 'puxada'],
+    invalidKeywords: ['pulldown', 'lat-pulldown', 'puxada', 'squat'],
   },
   'puxada-frontal': {
     expectedNames: ['Puxada frontal'],
-    expectedMediaKeywords: ['pulldown', 'lat', '1971'],
+    expectedMediaKeywords: ['puxada', 'costas', 'pulldown'],
     muscleGroup: 'Costas',
     equipment: ['Cabo'],
-    invalidKeywords: ['row', 'remada', 'c8oybX6'],
+    invalidKeywords: ['row', 'remada', 'squat'],
+  },
+  'puxada-neutra': {
+    expectedNames: ['Puxada neutra'],
+    expectedMediaKeywords: ['puxada-neutra', 'costas', 'neutra'],
+    muscleGroup: 'Costas',
+    equipment: ['Cabo'],
+    invalidKeywords: ['squat', 'bench', 'fly'],
+  },
+  'remada-curvada': {
+    expectedNames: ['Remada curvada com barra'],
+    expectedMediaKeywords: ['remada-curvada', 'costas', 'barra'],
+    muscleGroup: 'Costas',
+    equipment: ['Barra'],
+    invalidKeywords: ['squat', 'bench', 'curl'],
   },
   'rosca-direta': {
-    expectedNames: ['Rosca direta'],
-    expectedMediaKeywords: ['curl', '25GPyDY', 'barbell'],
+    expectedNames: ['Rosca direta com barra'],
+    expectedMediaKeywords: ['rosca-direta', 'biceps', 'barra'],
     muscleGroup: 'Bíceps',
     equipment: ['Barra'],
     invalidKeywords: ['tricep', 'pushdown', 'extens'],
   },
-  'rosca-alternada': {
-    expectedNames: ['Rosca alternada'],
-    expectedMediaKeywords: ['curl', '0IgNjSM', 'alternate'],
+  'rosca-martelo': {
+    expectedNames: ['Rosca martelo'],
+    expectedMediaKeywords: ['rosca-martelo', 'biceps', 'martelo'],
     muscleGroup: 'Bíceps',
     equipment: ['Halteres'],
-    invalidKeywords: ['barbell', 'tricep'],
+    invalidKeywords: ['tricep', 'pushdown'],
+  },
+  'rosca-alternada': {
+    expectedNames: ['Rosca alternada'],
+    expectedMediaKeywords: ['rosca-alternada', 'biceps'],
+    muscleGroup: 'Bíceps',
+    equipment: ['Halteres'],
+    invalidKeywords: ['tricep', 'pushdown'],
   },
   'triceps-pulley': {
     expectedNames: ['Tríceps na polia'],
-    expectedMediaKeywords: ['tricep', 'pushdown', '3ZflifB', 'rope'],
+    expectedMediaKeywords: ['triceps', 'cabos', 'extensao'],
     muscleGroup: 'Tríceps',
     equipment: ['Cabo'],
     invalidKeywords: ['curl', 'bicep', 'rosca'],
   },
   desenvolvimento: {
     expectedNames: ['Desenvolvimento com halteres'],
-    expectedMediaKeywords: ['shoulder-press', 'press', 'znQUdHY'],
+    expectedMediaKeywords: ['ombro', 'halteres', 'desenvolvimento', 'banco'],
     muscleGroup: 'Ombros',
     equipment: ['Halteres'],
-    invalidKeywords: ['lateral-raise', 'cALkHHX', 'fly'],
+    invalidKeywords: ['lateral-raise', 'cALkHHX', 'fly', 'rosca'],
   },
   'elevacao-lateral': {
     expectedNames: ['Elevação lateral'],
@@ -116,6 +134,13 @@ export const exerciseMediaMap = {
     muscleGroup: 'Ombros',
     equipment: ['Halteres'],
     invalidKeywords: ['press', 'znQUdHY', 'arnold'],
+  },
+  'face-pull': {
+    expectedNames: ['Face pull'],
+    expectedMediaKeywords: ['face-pull', 'trapezio', 'cabo', 'rosto'],
+    muscleGroup: 'Trapézio',
+    equipment: ['Cabo'],
+    invalidKeywords: ['curl', 'squat'],
   },
   prancha: {
     expectedNames: ['Prancha abdominal'],
@@ -150,16 +175,6 @@ export const exerciseMediaMap = {
 /** Issues internas para correção (não exibir ao usuário) */
 export const mediaIssues = [
   {
-    exercise: 'Supino inclinado',
-    issue: 'Mídia atual parece banco reto (Bench-press-1.png), não inclinado',
-    action: 'Substituir mídia por demonstração de supino inclinado',
-  },
-  {
-    exercise: 'Desenvolvimento Arnold',
-    issue: 'Usa o mesmo GIF do desenvolvimento comum',
-    action: 'Cadastrar mídia específica de Arnold press',
-  },
-  {
     exercise: 'Aquecimento leve',
     issue: 'Mídia atual é walking lunges',
     action: 'Substituir por aquecimento genérico ou caminhada',
@@ -170,14 +185,14 @@ export const mediaIssues = [
     action: 'Substituir por alongamento/desaquecimento',
   },
   {
-    exercise: 'Puxada neutra',
-    issue: 'Query/mídia associada a pull-up, não puxada neutra na polia',
-    action: 'Substituir por GIF de lat pulldown pegada neutra',
-  },
-  {
     exercise: 'Rosca direta',
     issue: 'Equipamento cadastrado como Halteres, mídia é barra',
     action: 'Alinhar equipamento para Barra (corrigido no código local)',
+  },
+  {
+    exercise: 'Elevação lateral / frontal',
+    issue: 'Ainda usam GIF remoto — lote de Ombros veio sem elevação dedicada',
+    action: 'Importar ilustrações locais de elevação lateral e frontal quando disponíveis',
   },
 ]
 
@@ -189,6 +204,8 @@ const CATEGORY_NORMALIZE = {
   Ombros: 'Ombros',
   Bíceps: 'Bíceps',
   Tríceps: 'Tríceps',
+  Antebraço: 'Antebraço',
+  Trapézio: 'Trapézio',
   Quadríceps: 'Pernas',
   Posterior: 'Pernas',
   Pernas: 'Pernas',
@@ -196,7 +213,7 @@ const CATEGORY_NORMALIZE = {
   Abdômen: 'Abdômen',
   Oblíquos: 'Abdômen',
   Core: 'Abdômen',
-  Lombar: 'Abdômen',
+  Lombar: 'Lombar',
   Cardiovascular: 'Cardio',
   Cardio: 'Cardio',
   'Corpo inteiro': 'Funcional',

@@ -5,8 +5,9 @@ export default defineConfig({
   plugins: [react()],
   base: process.env.NODE_ENV === 'production' ? '/EvoluaFit/' : '/',
   server: {
-    port: 5174,
+    host: 'localhost',
+    port: 5173,
     strictPort: false,
-    open: true,
+    open: false,
   },
 })

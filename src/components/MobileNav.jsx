@@ -12,7 +12,9 @@ export default function MobileNav({ activeSection }) {
         <button
           key={item.id}
           type="button"
-          className={`mobile-nav__item ${activeSection === item.id ? 'mobile-nav__item--active' : ''}`}
+          className={`mobile-nav__item ${activeSection === item.id ? 'mobile-nav__item--active' : ''} ${
+            item.id === 'coach-ia' ? 'mobile-nav__item--coach' : ''
+          }`}
           onClick={() => navigate(item.id)}
           aria-current={activeSection === item.id ? 'page' : undefined}
         >

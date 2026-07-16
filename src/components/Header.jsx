@@ -74,9 +74,16 @@ export default function Header({ activeSection }) {
             <a
               key={item.id}
               href={`#${item.id}`}
-              className={`header__link ${activeSection === item.id ? 'header__link--active' : ''}`}
+              className={`header__link ${activeSection === item.id ? 'header__link--active' : ''} ${
+                item.id === 'coach-ia' ? 'header__link--coach' : ''
+              } ${item.id === 'coach-ia' && activeSection === item.id ? 'header__link--coach-active' : ''}`}
               onClick={(e) => handleSectionClick(e, item.id, closeMenu)}
             >
+              {item.id === 'coach-ia' && (
+                <span className="header__link-icon" aria-hidden="true">
+                  ✦
+                </span>
+              )}
               {item.label}
             </a>
           ))}

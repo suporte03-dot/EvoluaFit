@@ -841,28 +841,33 @@
     padding: 1rem;
   }
 
+  .coach-ia__summary {
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+  }
+
+  .coach-ia__summary-card strong {
+    font-size: 0.84rem;
+  }
+
   .coach-ia__input {
-    min-height: 52px;
+    width: 100%;
+    min-height: 56px;
     font-size: 1rem;
   }
 
-  .coach-ia__quick-list {
-    grid-template-columns: 1fr;
+  .coach-ia__chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
     gap: 0.4rem;
+    margin: 0 -0.15rem;
+    padding: 0 0.15rem 0.35rem;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .coach-ia__quick-card {
-    min-height: 44px;
-    padding: 0.65rem 0.85rem;
-    font-size: 0.82rem;
-  }
-
-  .coach-ia__actions {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .coach-ia__action-btn {
-    min-height: 44px;
+  .coach-ia__chip {
+    flex: 0 0 auto;
+    min-height: 40px;
     font-size: 0.78rem;
   }
 
@@ -876,7 +881,37 @@
   }
 
   .coach-ia__chat {
-    max-height: 280px;
+    max-height: 360px;
+  }
+
+  .coach-ia__empty-examples {
+    grid-template-columns: 1fr;
+  }
+
+  .coach-ia__msg-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+
+  .coach-ia__msg-action {
+    width: 100%;
+    min-height: 46px;
+  }
+
+  .coach-ia__workout-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+  }
+
+  .mobile-nav__item--coach.mobile-nav__item--active {
+    color: #c4b5fd;
+  }
+
+  .mobile-nav__item--coach.mobile-nav__item--active .mobile-nav__icon {
+    color: #8b5cf6;
+    text-shadow: 0 0 12px rgba(0, 229, 143, 0.35);
   }
 
   /* Calendário lista */
@@ -960,7 +995,7 @@
     grid-template-columns: 1fr;
   }
 
-  .coach-ia__actions {
+  .coach-ia__summary {
     grid-template-columns: 1fr;
   }
 }

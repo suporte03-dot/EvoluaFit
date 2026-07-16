@@ -194,6 +194,23 @@ export default function ExerciseLibrary() {
     setVisibleCount(pageSize)
   }, [selectedGroup, searchQuery, equipment, level, type, filterGroup, pageSize])
 
+  // Coach IA → “Ver exercícios relacionados”
+  useEffect(() => {
+    const onFilter = (event) => {
+      const group = event?.detail?.group
+      if (!group || group === 'Todos') {
+        setSelectedGroup(null)
+        setFilterGroup('Todos')
+        return
+      }
+      setSearch('')
+      setSelectedGroup(group)
+      setFilterGroup(group)
+    }
+    window.addEventListener('evoluafit:filter-exercises', onFilter)
+    return () => window.removeEventListener('evoluafit:filter-exercises', onFilter)
+  }, [])
+
   const shownExercises = resultList.slice(0, visibleCount)
   const remaining = Math.max(0, resultList.length - visibleCount)
 

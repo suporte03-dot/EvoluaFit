@@ -207,37 +207,52 @@ export default function ExerciseLibrary() {
           Conteúdo informativo — respeite seus limites.
         </p>
 
-        <div className="gdt-library-toolbar">
-          <input
-            type="search"
-            placeholder="Pesquise exercícios..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="search-input gdt-library-search"
-            aria-label="Pesquisar exercícios"
-          />
-          <button
-            type="button"
-            className={`gdt-library-filters-btn${filtersOpen ? ' is-open' : ''}`}
-            onClick={() => setFiltersOpen((o) => !o)}
-            aria-expanded={filtersOpen}
-          >
-            Filtros
-            {activeFilterCount > 0 && (
-              <span className="gdt-library-filters-count">{activeFilterCount}</span>
-            )}
-          </button>
-        </div>
-
-        <div className="gdt-filter-groups" aria-label="Grupos musculares">
-          {GDT_FILTER_GROUPS.map((group) => (
-            <div key={group.id} className="gdt-filter-group">
-              <p className="gdt-filter-group__title">{group.label}</p>
-              <div className="gdt-library-chips" role="tablist" aria-label={group.label}>
-                {group.chips.map(renderChipButton)}
-              </div>
+        <div className="library-control-panel">
+          <div className="gdt-library-toolbar">
+            <div className="gdt-library-search-wrap">
+              <span className="gdt-library-search-icon" aria-hidden="true" />
+              <input
+                type="search"
+                placeholder="Buscar por nome, grupo ou equipamento..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="search-input gdt-library-search"
+                aria-label="Pesquisar exercícios"
+              />
             </div>
-          ))}
+            <button
+              type="button"
+              className={`gdt-library-filters-btn${filtersOpen ? ' is-open' : ''}`}
+              onClick={() => setFiltersOpen((o) => !o)}
+              aria-expanded={filtersOpen}
+            >
+              <span className="gdt-library-filters-btn__label">Filtros</span>
+              {activeFilterCount > 0 && (
+                <span className="gdt-library-filters-count">{activeFilterCount}</span>
+              )}
+            </button>
+          </div>
+
+          <div className="library-groups-panel" aria-label="Grupos musculares">
+            <div className="library-groups-panel__header">
+              <h3 className="library-groups-panel__title">Grupos musculares</h3>
+              <p className="library-groups-panel__hint">Selecione um grupo para filtrar a biblioteca</p>
+            </div>
+
+            <div className="gdt-filter-groups">
+              {GDT_FILTER_GROUPS.map((group) => (
+                <div key={group.id} className={`gdt-filter-group gdt-filter-group--${group.id}`}>
+                  <div className="gdt-filter-group__label-row">
+                    <span className="gdt-filter-group__dot" aria-hidden="true" />
+                    <p className="gdt-filter-group__title">{group.label}</p>
+                  </div>
+                  <div className="gdt-library-chips" role="tablist" aria-label={group.label}>
+                    {group.chips.map(renderChipButton)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         {filtersOpen && (
@@ -331,11 +346,15 @@ export default function ExerciseLibrary() {
         ) : (
           <>
             <p className="gdt-library-results">
-              {filtered.length}{' '}
-              {filtered.length === 1 ? 'exercício encontrado' : 'exercícios encontrados'}
-              {chip !== 'Todos' ? ` em ${muscleGroupLabel(chip)}` : ''}
-              {' · '}
-              toque em um grupo para expandir
+              <span className="gdt-library-results__badge">
+                <strong>{filtered.length}</strong>
+                {filtered.length === 1 ? ' exercício' : ' exercícios'}
+              </span>
+              <span className="gdt-library-results__meta">
+                {chip !== 'Todos' ? `Grupo: ${muscleGroupLabel(chip)}` : 'Todos os grupos'}
+                {' · '}
+                toque em um grupo abaixo para expandir
+              </span>
             </p>
 
             <div className="library-accordion" role="list">

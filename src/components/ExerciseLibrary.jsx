@@ -1,51 +1,130 @@
 import { useEffect, useMemo, useState } from 'react'
 import { equipmentTypes as defaultEquipment, levelTypes as defaultLevels, exerciseTypes as defaultTypes } from '../data/exercisesData'
 import { GDT_FILTER_GROUPS, matchesGdtChip, countExercisesByChip, muscleGroupLabel } from '../data/exerciseMediaMap'
-import { normalizeMuscleGroup } from '../utils/exerciseValidation'
 import { useFitness } from '../context/FitnessContext'
 import { useExercises } from '../hooks/useExercises'
 import SectionTitle from './SectionTitle'
 import ExerciseCard from './ExerciseCard'
 import ExerciseDetailModal from './ExerciseDetailModal'
 
-const INITIAL_VISIBLE = 6
-const LOAD_MORE_STEP = 6
+const GROUP_META = {
+  Peitoral: {
+    icon: 'PT',
+    tone: 'peito',
+    description: 'Supinos, crucifixos e variações para movimentos de empurrar.',
+  },
+  Costas: {
+    icon: 'CO',
+    tone: 'costas',
+    description: 'Remadas, puxadas e movimentos para força posterior.',
+  },
+  Pernas: {
+    icon: 'PR',
+    tone: 'pernas',
+    description: 'Agachamentos, presses e variações para membros inferiores.',
+  },
+  Glúteos: {
+    icon: 'GL',
+    tone: 'gluteos',
+    description: 'Hip thrust, ponte e ativação de glúteos com controle.',
+  },
+  Ombros: {
+    icon: 'OM',
+    tone: 'ombros',
+    description: 'Desenvolvimento, elevações e estabilidade dos ombros.',
+  },
+  Bíceps: {
+    icon: 'BI',
+    tone: 'biceps',
+    description: 'Roscas e variações para flexão de cotovelo.',
+  },
+  Tríceps: {
+    icon: 'TR',
+    tone: 'triceps',
+    description: 'Extensões e empurrões para a parte posterior do braço.',
+  },
+  Antebraço: {
+    icon: 'AN',
+    tone: 'antebraco',
+    description: 'Força de pegada, punho e estabilidade do antebraço.',
+  },
+  Trapézio: {
+    icon: 'TP',
+    tone: 'trapezio',
+    description: 'Encolhimentos e face pulls para trapézio e postura.',
+  },
+  Lombar: {
+    icon: 'LO',
+    tone: 'lombar',
+    description: 'Extensões e estabilização da região lombar.',
+  },
+  Abdômen: {
+    icon: 'AB',
+    tone: 'abdomen',
+    description: 'Core, prancha e estabilidade do tronco.',
+  },
+  Panturrilha: {
+    icon: 'PA',
+    tone: 'panturrilha',
+    description: 'Elevações e variações para panturrilha.',
+  },
+  Cardio: {
+    icon: 'CA',
+    tone: 'cardio',
+    description: 'Esteira, bike e opções de condicionamento aeróbico.',
+  },
+  Mobilidade: {
+    icon: 'MO',
+    tone: 'mobilidade',
+    description: 'Mobilidade articular para aquecer e recuperar melhor.',
+  },
+  Funcional: {
+    icon: 'FU',
+    tone: 'funcional',
+    description: 'Movimentos integrais para coordenação e força prática.',
+  },
+  Alongamento: {
+    icon: 'AL',
+    tone: 'alongamento',
+    description: 'Alongamentos para flexibilidade e relaxamento muscular.',
+  },
+}
+
+const SECTION_ORDER = GDT_FILTER_GROUPS.map((section) => ({
+  ...section,
+  groups: section.chips.filter((c) => c.id !== 'Todos'),
+}))
 
 function uniqueSorted(values) {
   return [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'))
 }
 
-/** Grupos oficiais da biblioteca (sem "Todos") */
-const LIBRARY_GROUPS = GDT_FILTER_GROUPS.flatMap((section) =>
-  section.chips.filter((chip) => chip.id !== 'Todos').map((chip) => ({
-    ...chip,
-    sectionId: section.id,
-    sectionLabel: section.label,
-  })),
-)
-
-function groupExercisesByMuscle(list) {
-  const map = new Map()
-  for (const ex of list) {
-    const key = normalizeMuscleGroup(ex.muscleGroup || ex.category || 'Funcional')
-    if (!map.has(key)) map.set(key, [])
-    map.get(key).push(ex)
-  }
-  return map
+function usePageSize() {
+  const [pageSize, setPageSize] = useState(12)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)')
+    const sync = () => setPageSize(mq.matches ? 6 : 12)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
+  return pageSize
 }
 
 export default function ExerciseLibrary() {
   const { addExerciseToPlan } = useFitness()
   const { exercises, loading } = useExercises()
+  const pageSize = usePageSize()
+
   const [search, setSearch] = useState('')
-  const [chip, setChip] = useState('Todos')
+  const [selectedGroup, setSelectedGroup] = useState(null)
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [equipment, setEquipment] = useState('Todos')
   const [level, setLevel] = useState('Todos')
   const [type, setType] = useState('Todos')
+  const [filterGroup, setFilterGroup] = useState('Todos')
   const [selectedExercise, setSelectedExercise] = useState(null)
-  const [openGroupId, setOpenGroupId] = useState(null)
-  const [visibleByGroup, setVisibleByGroup] = useState({})
+  const [visibleCount, setVisibleCount] = useState(12)
 
   const exerciseTypes = useMemo(
     () => (exercises.length ? uniqueSorted(exercises.map((ex) => ex.type)) : defaultTypes),
@@ -60,12 +139,15 @@ export default function ExerciseLibrary() {
     [exercises],
   )
 
-  const activeFilterCount = [equipment, level, type].filter((v) => v !== 'Todos').length
+  const activeFilterCount = [equipment, level, type, filterGroup].filter((v) => v !== 'Todos').length
+  const searchQuery = search.trim().toLowerCase()
+  const isSearchMode = searchQuery.length > 0
+  const showGroups = !selectedGroup && !isSearchMode
 
   const chipCounts = useMemo(() => {
     const map = {}
-    for (const group of GDT_FILTER_GROUPS) {
-      for (const item of group.chips) {
+    for (const section of SECTION_ORDER) {
+      for (const item of section.groups) {
         map[item.id] = countExercisesByChip(exercises, item.id)
       }
     }
@@ -77,143 +159,104 @@ export default function ExerciseLibrary() {
     [exercises],
   )
 
-  const baseFiltered = useMemo(() => {
-    const q = search.trim().toLowerCase()
+  const advancedFiltered = useMemo(() => {
     return exercises.filter((ex) => {
       const muscleGroup = ex.muscleGroup || ex.category || ''
-      const matchSearch =
-        !q ||
-        ex.name.toLowerCase().includes(q) ||
-        muscleGroup.toLowerCase().includes(q) ||
-        (ex.equipment || '').toLowerCase().includes(q)
       const matchEquip = equipment === 'Todos' || ex.equipment === equipment
       const matchLevel = level === 'Todos' || ex.level === level
       const matchType = type === 'Todos' || ex.type === type
-      return matchSearch && matchEquip && matchLevel && matchType
+      const matchGroup = filterGroup === 'Todos' || matchesGdtChip(filterGroup, muscleGroup)
+      return matchEquip && matchLevel && matchType && matchGroup
     })
-  }, [exercises, search, equipment, level, type])
+  }, [exercises, equipment, level, type, filterGroup])
 
-  const filtered = useMemo(() => {
-    if (chip === 'Todos') return baseFiltered
-    return baseFiltered.filter((ex) => matchesGdtChip(chip, ex.category || ex.muscleGroup))
-  }, [baseFiltered, chip])
+  const resultList = useMemo(() => {
+    let list = advancedFiltered
 
-  const grouped = useMemo(() => groupExercisesByMuscle(filtered), [filtered])
+    if (isSearchMode) {
+      list = list.filter((ex) => {
+        const muscleGroup = ex.muscleGroup || ex.category || ''
+        return (
+          ex.name.toLowerCase().includes(searchQuery) ||
+          muscleGroup.toLowerCase().includes(searchQuery) ||
+          (ex.equipment || '').toLowerCase().includes(searchQuery) ||
+          (ex.type || '').toLowerCase().includes(searchQuery)
+        )
+      })
+    } else if (selectedGroup) {
+      list = list.filter((ex) => matchesGdtChip(selectedGroup, ex.category || ex.muscleGroup))
+    }
 
-  const visibleSections = useMemo(() => {
-    return GDT_FILTER_GROUPS.map((section) => {
-      const groups = section.chips
-        .filter((c) => c.id !== 'Todos')
-        .map((c) => ({
-          id: c.id,
-          label: c.label,
-          exercises: grouped.get(c.id) || [],
-          totalInCatalog: chipCounts[c.id] ?? 0,
-        }))
-        .filter((g) => {
-          if (chip !== 'Todos' && chip !== g.id) return false
-          // Com busca/filtros ativos, esconde grupos vazios; no estado inicial mostra todos com catálogo
-          if (search || equipment !== 'Todos' || level !== 'Todos' || type !== 'Todos' || chip !== 'Todos') {
-            return g.exercises.length > 0
-          }
-          return g.totalInCatalog > 0
-        })
-      return { ...section, groups }
-    }).filter((section) => section.groups.length > 0)
-  }, [grouped, chip, chipCounts, search, equipment, level, type])
+    return list
+  }, [advancedFiltered, isSearchMode, searchQuery, selectedGroup])
 
-  // Abre automaticamente o grupo do chip ou o primeiro com resultados na busca
   useEffect(() => {
-    if (chip !== 'Todos') {
-      setOpenGroupId(chip)
-      setVisibleByGroup((prev) => ({ ...prev, [chip]: prev[chip] || INITIAL_VISIBLE }))
-      return
-    }
-    if (search.trim()) {
-      const firstWithResults = LIBRARY_GROUPS.find((g) => (grouped.get(g.id) || []).length > 0)
-      if (firstWithResults) {
-        setOpenGroupId(firstWithResults.id)
-        setVisibleByGroup((prev) => ({
-          ...prev,
-          [firstWithResults.id]: prev[firstWithResults.id] || INITIAL_VISIBLE,
-        }))
-      }
-    }
-  }, [chip, search, grouped])
+    setVisibleCount(pageSize)
+  }, [selectedGroup, searchQuery, equipment, level, type, filterGroup, pageSize])
 
-  const toggleGroup = (groupId) => {
-    setOpenGroupId((current) => {
-      const next = current === groupId ? null : groupId
-      if (next) {
-        setVisibleByGroup((prev) => ({ ...prev, [next]: prev[next] || INITIAL_VISIBLE }))
-      }
-      return next
-    })
-    if (chip !== 'Todos' && chip !== groupId) {
-      setChip('Todos')
+  const shownExercises = resultList.slice(0, visibleCount)
+  const remaining = Math.max(0, resultList.length - visibleCount)
+
+  const clearFilters = () => {
+    setSearch('')
+    setSelectedGroup(null)
+    setEquipment('Todos')
+    setLevel('Todos')
+    setType('Todos')
+    setFilterGroup('Todos')
+    setFiltersOpen(false)
+  }
+
+  const openGroup = (groupId) => {
+    setSelectedGroup(groupId)
+    setSearch('')
+    setVisibleCount(pageSize)
+    if (typeof window !== 'undefined') {
+      document.getElementById('library-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
   }
 
-  const handleChipClick = (id) => {
-    setChip(id)
-    if (id === 'Todos') {
-      setOpenGroupId(null)
-      return
+  const backToGroups = () => {
+    setSelectedGroup(null)
+    setSearch('')
+  }
+
+  const applyAdvancedFilters = () => {
+    if (filterGroup !== 'Todos') {
+      setSelectedGroup(filterGroup)
+      setSearch('')
     }
-    setOpenGroupId(id)
-    setVisibleByGroup((prev) => ({ ...prev, [id]: prev[id] || INITIAL_VISIBLE }))
+    setFiltersOpen(false)
   }
 
-  const showMore = (groupId, total) => {
-    setVisibleByGroup((prev) => ({
-      ...prev,
-      [groupId]: Math.min((prev[groupId] || INITIAL_VISIBLE) + LOAD_MORE_STEP, total),
-    }))
-  }
-
-  const showLess = (groupId) => {
-    setVisibleByGroup((prev) => ({ ...prev, [groupId]: INITIAL_VISIBLE }))
-  }
-
-  function renderChipButton(item, variant = 'default') {
-    const count = chipCounts[item.id] ?? 0
-    const showCount = item.id !== 'Todos'
-    const isAll = item.id === 'Todos'
-    return (
-      <button
-        key={item.id}
-        type="button"
-        role="tab"
-        aria-selected={chip === item.id}
-        className={[
-          'gdt-chip',
-          variant === 'principais' ? 'gdt-chip--featured' : '',
-          isAll ? 'gdt-chip--all' : '',
-          chip === item.id ? 'is-active' : '',
-        ]
-          .filter(Boolean)
-          .join(' ')}
-        onClick={() => handleChipClick(item.id)}
-      >
-        <span className="gdt-chip__label">{item.label}</span>
-        {showCount && <span className="gdt-chip__count">{count}</span>}
-      </button>
-    )
-  }
+  const resultsTitle = isSearchMode
+    ? 'Resultados da busca'
+    : selectedGroup
+      ? `Exercícios de ${muscleGroupLabel(selectedGroup)}`
+      : 'Exercícios'
 
   return (
-    <section id="exercicios" className="section section--alt exercise-library--gdt">
+    <section id="exercicios" className="section section--alt exercise-library--gdt exercise-library--browse">
       <div className="container">
         <SectionTitle
           tag="Biblioteca"
-          title="Exercícios"
-          subtitle="Escolha um grupo muscular para explorar. Abra só o que precisa — mais limpo e organizado."
+          title="Biblioteca de Exercícios"
+          subtitle="Escolha um grupo muscular para visualizar exercícios, instruções e cuidados de execução."
         />
-        <p className="gdt-library-subtitle-meta">
-          {loading ? 'Carregando…' : `${exercises.length} exercícios · ${verifiedCount} com mídia verificada`}
-          {' · '}
-          Conteúdo informativo — respeite seus limites.
-        </p>
+
+        <div className="library-stats">
+          <span className="library-stats__item">
+            {loading ? '…' : exercises.length} exercícios cadastrados
+          </span>
+          <span className="library-stats__sep" aria-hidden="true">
+            ·
+          </span>
+          <span className="library-stats__item">{verifiedCount} com mídia verificada</span>
+          <span className="library-stats__sep" aria-hidden="true">
+            ·
+          </span>
+          <span className="library-stats__item library-stats__item--muted">Conteúdo informativo</span>
+        </div>
 
         <div className="library-control-panel">
           <div className="gdt-library-toolbar">
@@ -221,9 +264,12 @@ export default function ExerciseLibrary() {
               <span className="gdt-library-search-icon" aria-hidden="true" />
               <input
                 type="search"
-                placeholder="Buscar por nome, grupo ou equipamento..."
+                placeholder="Buscar exercício, músculo ou equipamento..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value)
+                  if (e.target.value.trim()) setSelectedGroup(null)
+                }}
                 className="search-input gdt-library-search"
                 aria-label="Pesquisar exercícios"
               />
@@ -240,45 +286,6 @@ export default function ExerciseLibrary() {
               )}
             </button>
           </div>
-
-          <div className="library-groups-panel" aria-label="Grupos musculares">
-            <div className="library-groups-panel__header">
-              <h3 className="library-groups-panel__title">Grupos musculares</h3>
-              <p className="library-groups-panel__hint">Selecione um grupo para filtrar a biblioteca</p>
-            </div>
-
-            <div className="gdt-filter-groups">
-              {GDT_FILTER_GROUPS.map((group) => {
-                const isPrincipais = group.id === 'principais'
-                return (
-                  <div
-                    key={group.id}
-                    className={`gdt-filter-group gdt-filter-group--${group.id}${isPrincipais ? ' gdt-filter-group--featured' : ''}`}
-                  >
-                    <div className="gdt-filter-group__label-row">
-                      <span className="gdt-filter-group__dot" aria-hidden="true" />
-                      <div className="gdt-filter-group__heading">
-                        <p className="gdt-filter-group__title">{group.label}</p>
-                        {isPrincipais && (
-                          <p className="gdt-filter-group__subtitle">
-                            Base do treino — peitoral, costas, pernas e membros superiores
-                          </p>
-                        )}
-                      </div>
-                      {isPrincipais && <span className="gdt-filter-group__badge">Destaque</span>}
-                    </div>
-                    <div
-                      className={`gdt-library-chips${isPrincipais ? ' gdt-library-chips--featured' : ''}`}
-                      role="tablist"
-                      aria-label={group.label}
-                    >
-                      {group.chips.map((item) => renderChipButton(item, isPrincipais ? 'principais' : 'default'))}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
         </div>
 
         {filtersOpen && (
@@ -289,79 +296,71 @@ export default function ExerciseLibrary() {
               onClick={() => setFiltersOpen(false)}
               aria-label="Fechar filtros"
             />
-            <div className="library-filters glass-card gdt-library-advanced mobile-filter-sheet">
-              <div className="mobile-filter-sheet__header">
-                <span className="mobile-filter-sheet__title">Filtros</span>
+            <aside className="library-filter-drawer glass-card" aria-label="Filtros avançados">
+              <div className="library-filter-drawer__header">
+                <span>Filtros avançados</span>
                 <button type="button" className="btn btn--ghost btn--sm" onClick={() => setFiltersOpen(false)}>
                   Fechar
                 </button>
               </div>
 
-              <div className="gdt-filter-groups gdt-filter-groups--sheet">
-                {GDT_FILTER_GROUPS.map((group) => (
-                  <div key={`sheet-${group.id}`} className="gdt-filter-group">
-                    <p className="gdt-filter-group__title">{group.label}</p>
-                    <div className="gdt-library-chips gdt-library-chips--wrap">{group.chips.map(renderChipButton)}</div>
-                  </div>
-                ))}
-              </div>
+              <label className="library-filter-field">
+                <span>Grupo muscular</span>
+                <select value={filterGroup} onChange={(e) => setFilterGroup(e.target.value)}>
+                  <option value="Todos">Todos</option>
+                  {SECTION_ORDER.flatMap((s) => s.groups).map((g) => (
+                    <option key={g.id} value={g.id}>
+                      {g.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-              <select value={type} onChange={(e) => setType(e.target.value)} aria-label="Tipo de treino">
-                <option value="Todos">Tipo de treino</option>
-                {exerciseTypes.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-              <select value={equipment} onChange={(e) => setEquipment(e.target.value)} aria-label="Equipamento">
-                <option value="Todos">Equipamento</option>
-                {equipmentTypes.map((e) => (
-                  <option key={e} value={e}>
-                    {e}
-                  </option>
-                ))}
-              </select>
-              <select value={level} onChange={(e) => setLevel(e.target.value)} aria-label="Nível">
-                <option value="Todos">Nível</option>
-                {levelTypes.map((l) => (
-                  <option key={l} value={l}>
-                    {l}
-                  </option>
-                ))}
-              </select>
-              <button type="button" className="btn btn--primary" onClick={() => setFiltersOpen(false)}>
-                Aplicar filtros
-              </button>
-            </div>
-            <div className="library-filters glass-card gdt-library-advanced">
-              <div className="filter-scroll">
-                <select value={type} onChange={(e) => setType(e.target.value)} aria-label="Tipo de treino">
-                  <option value="Todos">Tipo de treino</option>
+              <label className="library-filter-field">
+                <span>Tipo de treino</span>
+                <select value={type} onChange={(e) => setType(e.target.value)}>
+                  <option value="Todos">Todos</option>
                   {exerciseTypes.map((t) => (
                     <option key={t} value={t}>
                       {t}
                     </option>
                   ))}
                 </select>
-                <select value={equipment} onChange={(e) => setEquipment(e.target.value)} aria-label="Equipamento">
-                  <option value="Todos">Equipamento</option>
+              </label>
+
+              <label className="library-filter-field">
+                <span>Equipamento</span>
+                <select value={equipment} onChange={(e) => setEquipment(e.target.value)}>
+                  <option value="Todos">Todos</option>
                   {equipmentTypes.map((e) => (
                     <option key={e} value={e}>
                       {e}
                     </option>
                   ))}
                 </select>
-                <select value={level} onChange={(e) => setLevel(e.target.value)} aria-label="Nível">
-                  <option value="Todos">Nível</option>
+              </label>
+
+              <label className="library-filter-field">
+                <span>Nível</span>
+                <select value={level} onChange={(e) => setLevel(e.target.value)}>
+                  <option value="Todos">Todos</option>
                   {levelTypes.map((l) => (
                     <option key={l} value={l}>
                       {l}
                     </option>
                   ))}
                 </select>
+              </label>
+
+              <div className="library-filter-drawer__actions">
+                <button type="button" className="btn btn--ghost" onClick={clearFilters}>
+                  Limpar filtros
+                </button>
+                <button type="button" className="btn btn--primary" onClick={applyAdvancedFilters}>
+                  Aplicar
+                </button>
               </div>
-            </div>
+            </aside>
           </>
         )}
 
@@ -371,111 +370,101 @@ export default function ExerciseLibrary() {
           </p>
         ) : (
           <>
-            <p className="gdt-library-results">
-              <span className="gdt-library-results__badge">
-                <strong>{filtered.length}</strong>
-                {filtered.length === 1 ? ' exercício' : ' exercícios'}
-              </span>
-              <span className="gdt-library-results__meta">
-                {chip !== 'Todos' ? `Grupo: ${muscleGroupLabel(chip)}` : 'Todos os grupos'}
-                {' · '}
-                toque em um grupo abaixo para expandir
-              </span>
-            </p>
-
-            <div className="library-accordion" role="list">
-              {visibleSections.map((section) => (
-                <div key={section.id} className="library-accordion__section">
-                  <p className="library-accordion__section-title">{section.label}</p>
-                  <div className="library-accordion__list">
-                    {section.groups.map((group) => {
-                      const isOpen = openGroupId === group.id
-                      const total = group.exercises.length
-                      const visible = Math.min(visibleByGroup[group.id] || INITIAL_VISIBLE, total || INITIAL_VISIBLE)
-                      const shown = group.exercises.slice(0, visible)
-                      const remaining = Math.max(0, total - visible)
-
-                      return (
-                        <div
-                          key={group.id}
-                          className={`library-acc-item${isOpen ? ' is-open' : ''}`}
-                          role="listitem"
-                        >
+            {showGroups && (
+              <div className="muscle-browse">
+                {SECTION_ORDER.map((section) => (
+                  <div key={section.id} className="muscle-browse__section">
+                    <div className="muscle-browse__section-head">
+                      <h3 className="muscle-browse__section-title">{section.label}</h3>
+                    </div>
+                    <div className="muscle-group-grid">
+                      {section.groups.map((group) => {
+                        const meta = GROUP_META[group.id] || {
+                          icon: group.label.slice(0, 2).toUpperCase(),
+                          tone: 'default',
+                          description: `Exercícios de ${group.label}.`,
+                        }
+                        const count = chipCounts[group.id] ?? 0
+                        return (
                           <button
+                            key={group.id}
                             type="button"
-                            className="library-acc-item__header"
-                            aria-expanded={isOpen}
-                            aria-controls={`library-panel-${group.id}`}
-                            id={`library-trigger-${group.id}`}
-                            onClick={() => toggleGroup(group.id)}
+                            className={`muscle-group-card muscle-group-card--${meta.tone}`}
+                            onClick={() => openGroup(group.id)}
                           >
-                            <span className="library-acc-item__title">{group.label}</span>
-                            <span className="library-acc-item__count">
-                              {total} {total === 1 ? 'exercício' : 'exercícios'}
+                            <span className="muscle-group-card__accent" aria-hidden="true" />
+                            <span className="muscle-group-card__icon" aria-hidden="true">
+                              {meta.icon}
                             </span>
-                            <span className="library-acc-item__chevron" aria-hidden="true" />
+                            <span className="muscle-group-card__body">
+                              <span className="muscle-group-card__top">
+                                <span className="muscle-group-card__name">{group.label}</span>
+                                <span className="muscle-group-card__count">{count}</span>
+                              </span>
+                              <span className="muscle-group-card__desc">{meta.description}</span>
+                              <span className="muscle-group-card__cta">Ver exercícios →</span>
+                            </span>
                           </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
 
-                          <div
-                            id={`library-panel-${group.id}`}
-                            role="region"
-                            aria-labelledby={`library-trigger-${group.id}`}
-                            className={`library-acc-item__panel${isOpen ? ' is-open' : ''}`}
-                            hidden={!isOpen}
-                          >
-                            {total === 0 ? (
-                              <p className="library-acc-item__empty">Nenhum exercício neste grupo com os filtros atuais.</p>
-                            ) : (
-                              <>
-                                <div className="gdt-exercise-grid gdt-exercise-grid--accordion">
-                                  {shown.map((ex) => (
-                                    <ExerciseCard
-                                      key={ex.id}
-                                      exercise={ex}
-                                      onAdd={addExerciseToPlan}
-                                      onClick={setSelectedExercise}
-                                      variant="gdt"
-                                    />
-                                  ))}
-                                </div>
-
-                                <div className="library-acc-item__footer">
-                                  {remaining > 0 && (
-                                    <button
-                                      type="button"
-                                      className="btn btn--ghost library-acc-more"
-                                      onClick={() => showMore(group.id, total)}
-                                    >
-                                      Ver mais ({remaining} restantes)
-                                    </button>
-                                  )}
-                                  {visible > INITIAL_VISIBLE && (
-                                    <button
-                                      type="button"
-                                      className="btn btn--ghost library-acc-less"
-                                      onClick={() => showLess(group.id)}
-                                    >
-                                      Ver menos
-                                    </button>
-                                  )}
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      )
-                    })}
+            {(selectedGroup || isSearchMode) && (
+              <div id="library-results" className="library-results-panel">
+                <div className="library-results-panel__header">
+                  <div>
+                    {(selectedGroup || isSearchMode) && (
+                      <button type="button" className="library-back-btn" onClick={backToGroups}>
+                        ← Voltar para grupos
+                      </button>
+                    )}
+                    <h3 className="library-results-panel__title">{resultsTitle}</h3>
+                    <p className="library-results-panel__meta">
+                      {resultList.length}{' '}
+                      {resultList.length === 1 ? 'exercício encontrado' : 'exercícios encontrados'}
+                    </p>
                   </div>
                 </div>
-              ))}
-            </div>
 
-            {filtered.length === 0 && (
-              <p className="empty-text">
-                {chip !== 'Todos'
-                  ? 'Nenhum exercício encontrado para este grupo.'
-                  : 'Nenhum exercício encontrado.'}
-              </p>
+                {resultList.length === 0 ? (
+                  <div className="library-empty">
+                    <p>Nenhum exercício encontrado.</p>
+                    <button type="button" className="btn btn--primary" onClick={clearFilters}>
+                      Limpar filtros
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="gdt-exercise-grid">
+                      {shownExercises.map((ex) => (
+                        <ExerciseCard
+                          key={ex.id}
+                          exercise={ex}
+                          onAdd={addExerciseToPlan}
+                          onClick={setSelectedExercise}
+                          variant="gdt"
+                        />
+                      ))}
+                    </div>
+
+                    {remaining > 0 && (
+                      <div className="library-load-more">
+                        <button
+                          type="button"
+                          className="btn btn--ghost"
+                          onClick={() => setVisibleCount((n) => n + pageSize)}
+                        >
+                          Ver mais exercícios ({remaining} restantes)
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
             )}
           </>
         )}

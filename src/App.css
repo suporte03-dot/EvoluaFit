@@ -3295,12 +3295,21 @@ main {
   }
 
   .exercise-modal {
+    position: relative;
     margin: 0;
     width: 100%;
     min-height: 100vh;
     max-height: none;
     border-radius: 0;
     overflow-y: auto;
+    padding-bottom: 5.5rem;
+  }
+
+  .exercise-modal__close {
+    position: sticky;
+    top: 0.65rem;
+    float: right;
+    margin: 0.65rem 0.65rem 0 0;
   }
 
   .exercise-modal__hero .exercise-media {
@@ -3311,10 +3320,22 @@ main {
     grid-template-columns: 1fr;
   }
 
+  .exercise-modal__footer.exercise-modal__actions {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 5;
+    margin: 0;
+    padding: 0.85rem 1rem calc(0.85rem + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(180deg, rgba(8, 15, 30, 0.2), rgba(8, 15, 30, 0.96) 28%);
+    border-top: 1px solid rgba(56, 97, 151, 0.35);
+  }
+
   .exercise-modal__actions .btn {
     flex: 1;
     min-width: 140px;
-    min-height: 44px;
+    min-height: 48px;
   }
 }
 
@@ -3447,7 +3468,304 @@ main {
   box-shadow: 0 0 12px rgba(0, 229, 143, 0.35);
 }
 
-/* Blocos de categorias */
+/* ===== Biblioteca browse (grupos → exercícios) ===== */
+.library-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.55rem;
+  margin: -0.35rem 0 1.25rem;
+  font-size: 0.8rem;
+  color: rgba(148, 163, 184, 0.95);
+}
+
+.library-stats__item--muted {
+  color: rgba(148, 163, 184, 0.72);
+}
+
+.library-stats__sep {
+  opacity: 0.5;
+}
+
+.muscle-browse {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.muscle-browse__section-title {
+  margin: 0 0 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(186, 198, 216, 0.95);
+}
+
+.muscle-group-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.85rem;
+}
+
+.muscle-group-card {
+  position: relative;
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  width: 100%;
+  padding: 1rem 1.05rem 1.05rem;
+  border-radius: 16px;
+  border: 1px solid rgba(56, 97, 151, 0.3);
+  background: linear-gradient(165deg, rgba(14, 26, 48, 0.96), rgba(8, 15, 30, 0.98));
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 28px rgba(0, 0, 0, 0.22);
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.muscle-group-card__accent {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  height: 3px;
+  background: var(--mg-accent, #00e58f);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--mg-accent, #00e58f) 55%, transparent);
+}
+
+.muscle-group-card__icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--mg-accent, #00e58f) 35%, transparent);
+  background: color-mix(in srgb, var(--mg-accent, #00e58f) 14%, rgba(8, 16, 32, 0.9));
+  color: var(--mg-accent, #00e58f);
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--mg-accent, #00e58f) 22%, transparent);
+}
+
+.muscle-group-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.muscle-group-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.muscle-group-card__name {
+  font-size: 1.02rem;
+  font-weight: 750;
+  color: #f1f5f9;
+}
+
+.muscle-group-card__count {
+  flex-shrink: 0;
+  min-width: 1.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--mg-accent, #00e58f) 35%, transparent);
+  background: color-mix(in srgb, var(--mg-accent, #00e58f) 12%, transparent);
+  color: var(--mg-accent, #00e58f);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.muscle-group-card__desc {
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: rgba(148, 163, 184, 0.95);
+}
+
+.muscle-group-card__cta {
+  margin-top: 0.25rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--mg-accent, #00e58f);
+}
+
+.muscle-group-card:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--mg-accent, #00e58f) 45%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--mg-accent, #00e58f) 18%, transparent),
+    0 14px 32px rgba(0, 0, 0, 0.3);
+}
+
+.muscle-group-card--peito { --mg-accent: #00e58f; }
+.muscle-group-card--costas { --mg-accent: #3b82f6; }
+.muscle-group-card--pernas { --mg-accent: #fb923c; }
+.muscle-group-card--gluteos { --mg-accent: #c084fc; }
+.muscle-group-card--ombros { --mg-accent: #22d3ee; }
+.muscle-group-card--biceps { --mg-accent: #facc15; }
+.muscle-group-card--triceps { --mg-accent: #86efac; }
+.muscle-group-card--antebraco { --mg-accent: #94a3b8; }
+.muscle-group-card--trapezio { --mg-accent: #60a5fa; }
+.muscle-group-card--lombar { --mg-accent: #0f766e; }
+.muscle-group-card--abdomen { --mg-accent: #a855f7; }
+.muscle-group-card--panturrilha { --mg-accent: #f59e0b; }
+.muscle-group-card--cardio { --mg-accent: #f43f5e; }
+.muscle-group-card--mobilidade { --mg-accent: #22d3ee; }
+.muscle-group-card--funcional { --mg-accent: #34d399; }
+.muscle-group-card--alongamento { --mg-accent: #818cf8; }
+.muscle-group-card--default { --mg-accent: #00e58f; }
+
+.library-results-panel {
+  margin-top: 0.5rem;
+  padding: 1.15rem 1.2rem 1.35rem;
+  border-radius: 18px;
+  border: 1px solid rgba(56, 97, 151, 0.3);
+  background: linear-gradient(180deg, rgba(14, 26, 48, 0.72), rgba(8, 15, 30, 0.92));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 14px 36px rgba(0, 0, 0, 0.22);
+}
+
+.library-results-panel__header {
+  margin-bottom: 1rem;
+}
+
+.library-back-btn {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 0.55rem;
+  padding: 0.35rem 0;
+  border: none;
+  background: transparent;
+  color: #00e58f;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.library-back-btn:hover {
+  color: #6effc2;
+}
+
+.library-results-panel__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 750;
+  color: #f8fafc;
+}
+
+.library-results-panel__meta {
+  margin: 0.3rem 0 0;
+  font-size: 0.84rem;
+  color: rgba(148, 163, 184, 0.95);
+}
+
+.library-load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.15rem;
+}
+
+.library-empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-muted);
+}
+
+.library-empty .btn {
+  margin-top: 1rem;
+}
+
+.library-filter-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 220;
+  width: min(380px, 92vw);
+  height: 100dvh;
+  margin: 0;
+  padding: 1.15rem 1.15rem calc(1.15rem + env(safe-area-inset-bottom, 0px));
+  border-radius: 18px 0 0 18px;
+  border-left: 1px solid rgba(0, 229, 143, 0.22);
+  background: linear-gradient(180deg, rgba(12, 22, 42, 0.98), rgba(6, 12, 24, 0.99));
+  box-shadow: -16px 0 40px rgba(0, 0, 0, 0.45);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  animation: libraryDrawerIn 0.22s ease;
+}
+
+@keyframes libraryDrawerIn {
+  from {
+    transform: translateX(18px);
+    opacity: 0.6;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.library-filter-drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(56, 97, 151, 0.3);
+  font-weight: 750;
+  color: #f1f5f9;
+}
+
+.library-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: rgba(148, 163, 184, 0.95);
+}
+
+.library-filter-field select {
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(56, 97, 151, 0.4);
+  background: rgba(8, 16, 32, 0.9);
+  color: #e8eef8;
+  padding: 0.55rem 0.75rem;
+}
+
+.library-filter-drawer__actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+}
+
+.library-filter-drawer__actions .btn {
+  flex: 1;
+}
+
+.mobile-filter-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 210;
+  border: none;
+  background: rgba(4, 10, 20, 0.62);
+  cursor: pointer;
+}
+
+/* Blocos de categorias (legado / sheet) */
 .library-groups-panel {
   position: relative;
   padding: 1.15rem 1.2rem 1.25rem;

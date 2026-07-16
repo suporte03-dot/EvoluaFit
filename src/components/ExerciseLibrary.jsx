@@ -175,19 +175,27 @@ export default function ExerciseLibrary() {
     setVisibleByGroup((prev) => ({ ...prev, [groupId]: INITIAL_VISIBLE }))
   }
 
-  function renderChipButton(item) {
+  function renderChipButton(item, variant = 'default') {
     const count = chipCounts[item.id] ?? 0
     const showCount = item.id !== 'Todos'
+    const isAll = item.id === 'Todos'
     return (
       <button
         key={item.id}
         type="button"
         role="tab"
         aria-selected={chip === item.id}
-        className={`gdt-chip${chip === item.id ? ' is-active' : ''}`}
+        className={[
+          'gdt-chip',
+          variant === 'principais' ? 'gdt-chip--featured' : '',
+          isAll ? 'gdt-chip--all' : '',
+          chip === item.id ? 'is-active' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
         onClick={() => handleChipClick(item.id)}
       >
-        {item.label}
+        <span className="gdt-chip__label">{item.label}</span>
         {showCount && <span className="gdt-chip__count">{count}</span>}
       </button>
     )
@@ -240,17 +248,35 @@ export default function ExerciseLibrary() {
             </div>
 
             <div className="gdt-filter-groups">
-              {GDT_FILTER_GROUPS.map((group) => (
-                <div key={group.id} className={`gdt-filter-group gdt-filter-group--${group.id}`}>
-                  <div className="gdt-filter-group__label-row">
-                    <span className="gdt-filter-group__dot" aria-hidden="true" />
-                    <p className="gdt-filter-group__title">{group.label}</p>
+              {GDT_FILTER_GROUPS.map((group) => {
+                const isPrincipais = group.id === 'principais'
+                return (
+                  <div
+                    key={group.id}
+                    className={`gdt-filter-group gdt-filter-group--${group.id}${isPrincipais ? ' gdt-filter-group--featured' : ''}`}
+                  >
+                    <div className="gdt-filter-group__label-row">
+                      <span className="gdt-filter-group__dot" aria-hidden="true" />
+                      <div className="gdt-filter-group__heading">
+                        <p className="gdt-filter-group__title">{group.label}</p>
+                        {isPrincipais && (
+                          <p className="gdt-filter-group__subtitle">
+                            Base do treino — peitoral, costas, pernas e membros superiores
+                          </p>
+                        )}
+                      </div>
+                      {isPrincipais && <span className="gdt-filter-group__badge">Destaque</span>}
+                    </div>
+                    <div
+                      className={`gdt-library-chips${isPrincipais ? ' gdt-library-chips--featured' : ''}`}
+                      role="tablist"
+                      aria-label={group.label}
+                    >
+                      {group.chips.map((item) => renderChipButton(item, isPrincipais ? 'principais' : 'default'))}
+                    </div>
                   </div>
-                  <div className="gdt-library-chips" role="tablist" aria-label={group.label}>
-                    {group.chips.map(renderChipButton)}
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         </div>

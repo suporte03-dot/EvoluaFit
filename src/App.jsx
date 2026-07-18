@@ -7,6 +7,7 @@ import { FitnessProvider, useFitness } from './context/FitnessContext'
 import { loadExercises } from './services/exerciseService'
 import Header from './components/Header'
 import Hero from './components/Hero'
+import HowItWorks from './components/HowItWorks'
 import Dashboard from './components/Dashboard'
 import TodaySuggestion from './components/TodaySuggestion'
 import MyWorkouts from './components/MyWorkouts'
@@ -37,6 +38,7 @@ function AppContent() {
       <Header activeSection={activeSection} />
       <main>
         <Hero />
+        <HowItWorks />
         <Dashboard />
         <TodaySuggestion />
         <MyWorkouts />

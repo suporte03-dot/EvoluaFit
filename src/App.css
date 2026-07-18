@@ -7,9 +7,9 @@
 .brand-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
   text-decoration: none;
-  height: 72px;
+  height: 64px;
   max-width: 260px;
   overflow: hidden;
   min-width: 0;
@@ -17,20 +17,22 @@
   border: none;
   box-shadow: none;
   padding: 0;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
 .brand-logo:hover {
-  opacity: 0.94;
+  opacity: 0.96;
+  transform: translateY(-1px);
 }
 
 .brand-icon {
-  width: 54px;
-  height: 54px;
+  width: 46px;
+  height: 46px;
   object-fit: contain;
   display: block;
   flex-shrink: 0;
-  filter: none;
+  filter: drop-shadow(0 3px 10px rgba(0, 229, 143, 0.28));
+  image-rendering: -webkit-optimize-contrast;
 }
 
 .brand-copy {
@@ -45,10 +47,10 @@
 .brand-name {
   display: block;
   font-family: var(--font-brand);
-  font-size: 34px;
+  font-size: 28px;
   font-weight: 900;
   font-style: italic;
-  letter-spacing: -0.06em;
+  letter-spacing: -0.05em;
   color: #ffffff;
   white-space: nowrap;
   text-shadow: 0 2px 14px rgba(0, 229, 143, 0.22);
@@ -356,6 +358,118 @@ main {
   color: var(--text-muted);
   padding: 0.35rem 0 0.5rem;
   border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+/* Bottom nav is mobile-only; hidden on desktop (see mobile.css for layout) */
+.mobile-nav {
+  display: none;
+}
+
+/* ===== Como funciona ===== */
+.how-it-works {
+  padding: 2.5rem 0 1.5rem;
+}
+
+.how-it-works__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.9rem;
+  margin-top: 1.5rem;
+}
+
+.hiw-card {
+  --hiw-tone: var(--accent);
+  --hiw-tone-soft: rgba(0, 229, 143, 0.12);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+  padding: 1.15rem 1.1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--hiw-tone);
+  background: linear-gradient(165deg, var(--hiw-tone-soft), rgba(17, 24, 39, 0.55));
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.hiw-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.3);
+  border-color: color-mix(in srgb, var(--hiw-tone) 45%, transparent);
+}
+
+.hiw-card--green { --hiw-tone: #00e58f; --hiw-tone-soft: rgba(0, 229, 143, 0.12); }
+.hiw-card--orange { --hiw-tone: #ff9f1c; --hiw-tone-soft: rgba(255, 159, 28, 0.14); }
+.hiw-card--purple { --hiw-tone: #a78bfa; --hiw-tone-soft: rgba(167, 139, 250, 0.14); }
+.hiw-card--cyan { --hiw-tone: #22d3ee; --hiw-tone-soft: rgba(34, 211, 238, 0.14); }
+.hiw-card--blue { --hiw-tone: #3b82f6; --hiw-tone-soft: rgba(59, 130, 246, 0.14); }
+
+.hiw-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hiw-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 12px;
+  font-size: 1.25rem;
+  background: var(--hiw-tone-soft);
+  border: 1px solid color-mix(in srgb, var(--hiw-tone) 35%, transparent);
+}
+
+.hiw-card__step {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: color-mix(in srgb, var(--hiw-tone) 55%, transparent);
+  line-height: 1;
+}
+
+.hiw-card__title {
+  font-family: var(--font-heading);
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--snow);
+}
+
+.hiw-card__desc {
+  font-size: 0.83rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.hiw-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: auto;
+  padding-top: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--hiw-tone);
+}
+
+.hiw-card:hover .hiw-card__cta span {
+  transform: translateX(3px);
+}
+
+.hiw-card__cta span {
+  transition: transform 0.18s ease;
+}
+
+.hiw-note {
+  margin-top: 1.25rem;
+  font-size: 0.74rem;
+  color: var(--text-muted);
   text-align: center;
 }
 
@@ -940,54 +1054,125 @@ main {
 
 .generated-plan__days {
   display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1rem;
 }
 
+/* Premium day card, colored by workout type */
 .plan-day {
-  padding: 1rem;
-  background: rgba(11, 16, 32, 0.4);
-  border-radius: var(--radius-sm);
+  --day-tone: var(--accent);
+  --day-tone-soft: rgba(0, 229, 143, 0.12);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1.15rem 1.15rem 1rem;
+  background:
+    linear-gradient(160deg, var(--day-tone-soft), rgba(11, 16, 32, 0)) ,
+    rgba(11, 16, 32, 0.55);
+  border-radius: var(--radius);
   border: 1px solid var(--border);
+  border-top: 3px solid var(--day-tone);
+  overflow: hidden;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
+
+.plan-day:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+  border-color: color-mix(in srgb, var(--day-tone) 45%, transparent);
+}
+
+.plan-day--push { --day-tone: #00e58f; --day-tone-soft: rgba(0, 229, 143, 0.14); }
+.plan-day--pull { --day-tone: #3b82f6; --day-tone-soft: rgba(59, 130, 246, 0.16); }
+.plan-day--legs { --day-tone: #ff9f1c; --day-tone-soft: rgba(255, 159, 28, 0.16); }
+.plan-day--core { --day-tone: #a78bfa; --day-tone-soft: rgba(167, 139, 250, 0.16); }
+.plan-day--cardio { --day-tone: #f97316; --day-tone-soft: rgba(249, 115, 22, 0.16); }
+.plan-day--mobility { --day-tone: #22d3ee; --day-tone-soft: rgba(34, 211, 238, 0.16); }
+.plan-day--rest { --day-tone: #9ca3af; --day-tone-soft: rgba(156, 163, 175, 0.14); }
+.plan-day--full { --day-tone: #00e58f; --day-tone-soft: rgba(0, 229, 143, 0.12); }
 
 .plan-day__header {
+  margin-bottom: 0.85rem;
+}
+
+.plan-day__daytag {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 0.75rem;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.plan-day__daynum {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.plan-day__type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--day-tone);
+  background: var(--day-tone-soft);
+  border: 1px solid color-mix(in srgb, var(--day-tone) 40%, transparent);
+}
+
+.plan-day__name {
+  font-size: 1.05rem;
+  margin-bottom: 0.2rem;
+  color: var(--snow);
 }
 
 .plan-day__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  flex-shrink: 0;
+  margin-top: auto;
+  padding-top: 0.9rem;
 }
 
 .plan-day__actions .btn {
   min-height: 44px;
+  flex: 1;
+  min-width: 120px;
 }
 
-.plan-day__header .plan-day__focus {
-  margin-bottom: 0;
-}
-
-.plan-day h4 {
-  font-size: 1rem;
-  margin-bottom: 0.25rem;
-}
-
-.plan-day__focus {
-  font-size: 0.8rem;
-  color: var(--text-muted);
+.plan-day__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.85rem;
+  padding: 0.6rem 0;
   margin-bottom: 0.35rem;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.plan-day__stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.plan-day__stat-icon {
+  font-size: 0.85rem;
 }
 
 .plan-day__weekday {
-  margin: 0 0 0.25rem;
+  margin: 0;
   font-size: 0.78rem;
   color: rgba(148, 163, 184, 0.95);
+}
+
+.plan-day__exercises {
+  margin-bottom: 0.25rem;
 }
 
 .plan-day__exercises li {

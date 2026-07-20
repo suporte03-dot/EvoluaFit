@@ -142,7 +142,16 @@ export default function CoachIA() {
   }, [messages])
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    const end = chatEndRef.current
+    if (!end) return
+    // Scroll only inside the chat panel — never the page (scrollIntoView was
+    // jumping the home viewport past the hero on mount).
+    const panel = end.closest('.coach-ia__chat')
+    if (panel) {
+      panel.scrollTop = panel.scrollHeight
+      return
+    }
+    end.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }, [messages, loading])
 
   const pushExchange = useCallback((question, result) => {

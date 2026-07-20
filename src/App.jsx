@@ -17,7 +17,6 @@ import ExerciseLibrary from './components/ExerciseLibrary'
 import ExerciseDetailPage from './components/ExerciseDetailPage'
 import TrainingCalendar from './components/TrainingCalendar'
 import PerformanceDashboard from './components/PerformanceDashboard'
-import WorkoutHistory from './components/WorkoutHistory'
 import Goals from './components/Goals'
 import UserProfile from './components/UserProfile'
 import Footer from './components/Footer'
@@ -47,7 +46,6 @@ function AppContent() {
         <ExerciseLibrary />
         <TrainingCalendar />
         <PerformanceDashboard />
-        <WorkoutHistory />
         <Goals />
         <UserProfile />
         <Footer />

@@ -75,6 +75,8 @@ export function formatDashboardValue(key, metrics) {
     case 'avgDuration':
       return metrics.avgDuration > 0 ? `${metrics.avgDuration} min` : '—'
     case 'nextWorkout': {
+      const name = metrics.nextWorkout?.name?.split('—')[0]?.trim()
+      if (name) return name
       if (!metrics.nextWorkout?.date) return '—'
       return new Date(metrics.nextWorkout.date + 'T12:00:00').toLocaleDateString('pt-BR', {
         weekday: 'short',

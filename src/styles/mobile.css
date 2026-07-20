@@ -1183,4 +1183,39 @@
     width: 100%;
     min-height: 48px;
   }
+
+  /* Progressive disclosure mobile polish */
+  .how-it-works--compact {
+    padding-top: 1.5rem;
+    padding-bottom: 1.25rem;
+  }
+
+  .dashboard-secondary {
+    grid-template-columns: 1fr;
+  }
+
+  .muscle-group-card--compact {
+    min-height: 88px;
+  }
+
+  .muscle-group-card__cta {
+    font-size: 0.78rem;
+  }
+
+  .plan-day__actions {
+    flex-wrap: wrap;
+  }
+
+  .plan-day__actions .btn {
+    flex: 1 1 calc(50% - 0.35rem);
+    min-height: 44px;
+  }
+
+  .cal-mobile-list {
+    display: block;
+  }
+
+  .calendar--desktop {
+    display: none;
+  }
 }

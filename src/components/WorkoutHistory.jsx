@@ -3,30 +3,26 @@ import { useFitness } from '../context/FitnessContext'
 import Modal from './Modal'
 import EmptyState from './EmptyState'
 
-export default function WorkoutHistory() {
+export default function WorkoutHistory({ embedded = false }) {
   const { history } = useFitness()
   const [selected, setSelected] = useState(null)
 
-  if (!history.length) {
-    return (
-      <section className="section">
-        <div className="container">
-          <EmptyState
-            icon="📋"
-            title="Nenhum treino registrado"
-            description="Finalize uma sessão para ver seu histórico aqui."
-            ctaLabel="Ver meus treinos"
-            ctaSection="treinos"
-          />
-        </div>
-      </section>
-    )
-  }
+  const empty = (
+    <EmptyState
+      icon="📋"
+      title="Nenhum treino registrado"
+      description="Finalize uma sessão para ver seu histórico aqui."
+      ctaLabel="Ver meus treinos"
+      ctaSection="treinos"
+    />
+  )
 
-  return (
-    <section className="section">
-      <div className="container">
-        <h3 className="subsection-title">Histórico de treinos</h3>
+  const content = (
+    <>
+      {!embedded && <h3 className="subsection-title">Histórico de treinos</h3>}
+      {!history.length ? (
+        empty
+      ) : (
         <div className="history-list">
           {history.map((session) => (
             <button
@@ -52,7 +48,7 @@ export default function WorkoutHistory() {
             </button>
           ))}
         </div>
-      </div>
+      )}
 
       <Modal isOpen={Boolean(selected)} onClose={() => setSelected(null)} title={selected?.name || 'Detalhes'}>
         {selected && (
@@ -75,6 +71,14 @@ export default function WorkoutHistory() {
           </div>
         )}
       </Modal>
+    </>
+  )
+
+  if (embedded) return <div className="workout-history--embedded">{content}</div>
+
+  return (
+    <section className="section">
+      <div className="container">{content}</div>
     </section>
   )
 }

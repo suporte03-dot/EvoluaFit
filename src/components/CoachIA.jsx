@@ -11,7 +11,6 @@ import {
   createHomeWorkoutSuggestion,
   createRecoverySuggestion,
   createShortWorkoutSuggestion,
-  EMPTY_EXAMPLES,
   explainExercise,
   generateVariation,
   generateWorkoutSuggestion,
@@ -22,6 +21,8 @@ import {
   saveCoachExchange,
   saveCoachSuggestionToPlan,
 } from '../services/coachService'
+
+const MAIN_CHIP_IDS = ['hoje', 'montar', 'explicar', 'ajustar']
 
 function formatTime(iso) {
   if (!iso) return ''
@@ -101,6 +102,8 @@ export default function CoachIA() {
   const [messages, setMessages] = useState(() => loadCoachMessages())
   const [showExercisePicker, setShowExercisePicker] = useState(false)
   const [selectedExerciseId, setSelectedExerciseId] = useState('')
+  const [moreOpen, setMoreOpen] = useState(false)
+  const [summaryOpen, setSummaryOpen] = useState(false)
   const chatEndRef = useRef(null)
   const inputRef = useRef(null)
 
@@ -110,6 +113,15 @@ export default function CoachIA() {
   )
 
   const summary = useMemo(() => getCoachSummary(context), [context])
+
+  const mainChips = useMemo(
+    () => QUICK_CHIPS.filter((c) => MAIN_CHIP_IDS.includes(c.id)),
+    [],
+  )
+  const extraChips = useMemo(
+    () => QUICK_CHIPS.filter((c) => !MAIN_CHIP_IDS.includes(c.id)),
+    [],
+  )
 
   const exerciseOptions = useMemo(() => {
     const cached = getExerciseCache()
@@ -314,63 +326,47 @@ export default function CoachIA() {
           <SectionTitle
             tag="Assistente de treino"
             title="Coach IA"
-            subtitle="Sugestões inteligentes a partir da sua rotina, objetivo e histórico — tudo local, sem login e sem chave de API no app."
+            subtitle="Pergunte sobre treino, planilha ou exercícios — respostas locais e seguras."
           />
-          <span className="coach-ia__badge-pill">Assistente de treino</span>
         </div>
 
-        <div className="coach-ia__summary" aria-label="Resumo inteligente">
-          <article className="coach-ia__summary-card coach-ia__summary-card--next">
-            <span className="coach-ia__summary-label">Próxima sugestão</span>
-            <strong>{summary.nextSuggestion}</strong>
-          </article>
-          <article className="coach-ia__summary-card">
-            <span className="coach-ia__summary-label">Último treino considerado</span>
-            <strong>
-              {summary.lastWorkout
-                ? `${summary.lastWorkout.name} · ${formatDateLabel(summary.lastWorkout.date)}`
-                : 'Nenhum ainda'}
-            </strong>
-          </article>
-          <article className="coach-ia__summary-card coach-ia__summary-card--group">
-            <span className="coach-ia__summary-label">Grupo recomendado</span>
-            <strong>{summary.recommendedGroup}</strong>
-          </article>
-          <article className="coach-ia__summary-card coach-ia__summary-card--care">
-            <span className="coach-ia__summary-label">Atenção / segurança</span>
-            <strong>{summary.attention}</strong>
-          </article>
+        <div className="coach-ia__summary-wrap">
+          <button
+            type="button"
+            className={`disclose-toggle${summaryOpen ? ' is-open' : ''}`}
+            onClick={() => setSummaryOpen((o) => !o)}
+            aria-expanded={summaryOpen}
+          >
+            <span>{summaryOpen ? 'Ocultar contexto' : 'Ver contexto do coach'}</span>
+            <span aria-hidden="true">{summaryOpen ? '▲' : '▼'}</span>
+          </button>
+          {summaryOpen && (
+            <div className="coach-ia__summary" aria-label="Resumo inteligente">
+              <article className="coach-ia__summary-card coach-ia__summary-card--next">
+                <span className="coach-ia__summary-label">Próxima sugestão</span>
+                <strong>{summary.nextSuggestion}</strong>
+              </article>
+              <article className="coach-ia__summary-card">
+                <span className="coach-ia__summary-label">Último treino</span>
+                <strong>
+                  {summary.lastWorkout
+                    ? `${summary.lastWorkout.name} · ${formatDateLabel(summary.lastWorkout.date)}`
+                    : 'Nenhum ainda'}
+                </strong>
+              </article>
+              <article className="coach-ia__summary-card coach-ia__summary-card--group">
+                <span className="coach-ia__summary-label">Grupo recomendado</span>
+                <strong>{summary.recommendedGroup}</strong>
+              </article>
+              <article className="coach-ia__summary-card coach-ia__summary-card--care">
+                <span className="coach-ia__summary-label">Atenção</span>
+                <strong>{summary.attention}</strong>
+              </article>
+            </div>
+          )}
         </div>
 
         <div className="coach-ia__main glass-card">
-          <div className="coach-ia__hero">
-            <span className="coach-ia__badge" aria-hidden="true">
-              ✦
-            </span>
-            <div>
-              <p className="coach-ia__hero-title">Pergunte ao Coach IA</p>
-              <p>
-                Use os atalhos ou descreva seu dia. As respostas usam seus treinos salvos, planilhas,
-                histórico e perfil — com linguagem segura e realista.
-              </p>
-            </div>
-          </div>
-
-          <div className="coach-ia__chips" role="list" aria-label="Atalhos rápidos">
-            {QUICK_CHIPS.map((chip) => (
-              <button
-                key={chip.id}
-                type="button"
-                role="listitem"
-                className="coach-ia__chip"
-                onClick={() => handleChip(chip)}
-                disabled={loading}
-              >
-                {chip.label}
-              </button>
-            ))}
-          </div>
-
           <form className="coach-ia__form" onSubmit={handleSubmit}>
             <label htmlFor="coach-question" className="sr-only">
               Pergunte ao Coach IA sobre seu treino
@@ -379,7 +375,7 @@ export default function CoachIA() {
               ref={inputRef}
               id="coach-question"
               className="coach-ia__input"
-              rows={3}
+              rows={2}
               placeholder="Pergunte ao Coach IA sobre seu treino..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -396,6 +392,49 @@ export default function CoachIA() {
               )}
             </div>
           </form>
+
+          <div className="coach-ia__main-actions" role="list" aria-label="Ações principais">
+            {mainChips.map((chip) => (
+              <button
+                key={chip.id}
+                type="button"
+                role="listitem"
+                className="coach-ia__main-btn"
+                onClick={() => handleChip(chip)}
+                disabled={loading}
+              >
+                {chip.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="coach-ia__more">
+            <button
+              type="button"
+              className={`disclose-toggle disclose-toggle--inline${moreOpen ? ' is-open' : ''}`}
+              onClick={() => setMoreOpen((o) => !o)}
+              aria-expanded={moreOpen}
+            >
+              <span>{moreOpen ? 'Ocultar sugestões' : 'Mais sugestões'}</span>
+              <span aria-hidden="true">{moreOpen ? '▲' : '▼'}</span>
+            </button>
+            {moreOpen && (
+              <div className="coach-ia__chips" role="list">
+                {extraChips.map((chip) => (
+                  <button
+                    key={chip.id}
+                    type="button"
+                    role="listitem"
+                    className="coach-ia__chip"
+                    onClick={() => handleChip(chip)}
+                    disabled={loading}
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
           {showExercisePicker && (
             <div className="coach-ia__picker glass-card">
@@ -429,30 +468,10 @@ export default function CoachIA() {
 
           <div className="coach-ia__chat" aria-live="polite">
             {chronological.length === 0 && !loading && (
-              <div className="coach-ia__empty">
-                <div className="coach-ia__empty-icon" aria-hidden="true">
-                  ✦
-                </div>
-                <h3 className="coach-ia__empty-title">Como posso ajudar seu treino hoje?</h3>
+              <div className="coach-ia__empty coach-ia__empty--lean">
                 <p className="coach-ia__empty-desc">
-                  Escolha um exemplo ou digite sua pergunta. As sugestões são locais e baseadas nos
-                  seus dados salvos neste dispositivo.
+                  Digite uma pergunta ou use um dos atalhos acima.
                 </p>
-                <div className="coach-ia__empty-examples">
-                  {EMPTY_EXAMPLES.map((ex) => (
-                    <button
-                      key={ex.label}
-                      type="button"
-                      className="coach-ia__example-card"
-                      onClick={() =>
-                        fillAndAsk(ex.prompt, () => askCoach(ex.prompt, context))
-                      }
-                      disabled={loading}
-                    >
-                      {ex.label}
-                    </button>
-                  ))}
-                </div>
               </div>
             )}
 
@@ -472,7 +491,7 @@ export default function CoachIA() {
                     ✦
                   </span>
                   <div className="coach-ia__bubble-wrap coach-ia__bubble-wrap--coach">
-                    <div className="coach-ia__bubble coach-ia__bubble--answer">
+                    <div className="coach-ia__bubble coach-ia__bubble--answer coach-ia__answer-card">
                       {msg.blocks?.title && (
                         <div className="coach-ia__block-meta">
                           <span className="coach-ia__block-title">{msg.blocks.title}</span>

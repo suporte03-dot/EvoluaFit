@@ -16,7 +16,6 @@ function formatFocus(focus = []) {
   return `${focus.slice(0, -1).join(', ')} e ${focus[focus.length - 1]}`
 }
 
-/** Resolve a day's visual type + tone from its name/focus. */
 function resolveDayType(day) {
   const name = String(day?.workoutName || day?.name || day?.workoutType || '').toLowerCase()
   const focus = (day?.muscleGroups || day?.focus || []).join(' ').toLowerCase()
@@ -51,8 +50,18 @@ function getPlanDays(plan) {
 export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
   const { addPlanWorkouts, startWorkout, showToast } = useFitness()
   const [detailWorkout, setDetailWorkout] = useState(null)
+  const [expandedDays, setExpandedDays] = useState(() => new Set())
 
   const days = getPlanDays(plan)
+
+  const toggleDay = (dayNum) => {
+    setExpandedDays((prev) => {
+      const next = new Set(prev)
+      if (next.has(dayNum)) next.delete(dayNum)
+      else next.add(dayNum)
+      return next
+    })
+  }
 
   const handleAddWorkouts = () => {
     if (onSaveToPlan) {
@@ -135,8 +144,13 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
           const exerciseCount = (day.exercises || []).length
           const duration = estimateDuration(day)
           const muscleGroups = day.muscleGroups || day.focus || []
+          const isExpanded = expandedDays.has(day.day)
+
           return (
-            <article key={day.day} className={`plan-day plan-day--${type.tone}`}>
+            <article
+              key={day.day}
+              className={`plan-day plan-day--${type.tone}${isExpanded ? ' is-expanded' : ' is-collapsed'}`}
+            >
               <header className="plan-day__header">
                 <div className="plan-day__head-main">
                   <div className="plan-day__daytag">
@@ -162,52 +176,56 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
                     🏋️
                   </span>
                   {exerciseCount} {exerciseCount === 1 ? 'exercício' : 'exercícios'}
-                </span>
-                <span className="plan-day__stat">
-                  <span className="plan-day__stat-icon" aria-hidden="true">
-                    ⏱️
+                  <span className="plan-day__stat-sep" aria-hidden="true">
+                    ·
                   </span>
                   ~{duration} min
                 </span>
-                {day.intensity && (
-                  <span className="plan-day__stat">
-                    <span className="plan-day__stat-icon" aria-hidden="true">
-                      📶
-                    </span>
-                    {day.intensity}
-                  </span>
-                )}
               </div>
 
-              <ul className="plan-day__exercises">
-                {(day.exercises || []).map((ex) => (
-                  <li key={ex.exerciseId || ex.name}>
-                    <div className="plan-day__ex-main">
-                      <strong>{ex.name}</strong>
-                      <span className="plan-day__ex-group">{ex.muscleGroup}</span>
-                    </div>
-                    <span className="plan-day__ex-meta">
-                      {ex.sets}x {ex.reps} · descanso {ex.rest ?? ex.restSeconds}s
-                      {ex.equipment ? ` · ${ex.equipment}` : ''}
-                    </span>
-                    {ex.observation && (
-                      <span className="plan-day__ex-note">
-                        <em>Obs:</em> {ex.observation}
+              {isExpanded && (
+                <ul className="plan-day__exercises">
+                  {(day.exercises || []).map((ex) => (
+                    <li key={ex.exerciseId || ex.name}>
+                      <div className="plan-day__ex-main">
+                        <strong>{ex.name}</strong>
+                        <span className="plan-day__ex-group">{ex.muscleGroup}</span>
+                      </div>
+                      <span className="plan-day__ex-meta">
+                        {ex.sets}x {ex.reps} · descanso {ex.rest ?? ex.restSeconds}s
+                        {ex.equipment ? ` · ${ex.equipment}` : ''}
                       </span>
-                    )}
-                    {ex.safetyTip && (
-                      <span className="plan-day__ex-care">
-                        <em>Cuidado:</em> {ex.safetyTip}
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
+                      {ex.observation && (
+                        <span className="plan-day__ex-note">
+                          <em>Obs:</em> {ex.observation}
+                        </span>
+                      )}
+                      {ex.safetyTip && (
+                        <span className="plan-day__ex-care">
+                          <em>Cuidado:</em> {ex.safetyTip}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
 
               <div className="plan-day__actions">
-                <button type="button" className="btn btn--ghost btn--sm" onClick={() => openDayDetail(day)}>
-                  Ver treino
+                <button
+                  type="button"
+                  className="btn btn--ghost btn--sm"
+                  onClick={() => {
+                    if (!isExpanded) toggleDay(day.day)
+                    else openDayDetail(day)
+                  }}
+                >
+                  {isExpanded ? 'Detalhes' : 'Ver treino'}
                 </button>
+                {isExpanded && (
+                  <button type="button" className="btn btn--ghost btn--sm" onClick={() => toggleDay(day.day)}>
+                    Recolher
+                  </button>
+                )}
                 <button
                   type="button"
                   className="btn btn--primary btn--sm btn--start-workout"

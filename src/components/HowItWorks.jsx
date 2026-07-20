@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { scrollToSection } from '../utils/scrollToSection'
 import SectionTitle from './SectionTitle'
 
@@ -8,7 +9,7 @@ const STEPS = [
     icon: '📝',
     step: '01',
     title: 'Criar planilha',
-    desc: 'Responda seu objetivo, nível e dias por semana. Geramos uma divisão equilibrada e ajustável.',
+    desc: 'Defina objetivo, nível e dias. Geramos uma divisão equilibrada.',
     cta: 'Montar planilha',
   },
   {
@@ -17,7 +18,7 @@ const STEPS = [
     icon: '▶️',
     step: '02',
     title: 'Iniciar treino',
-    desc: 'Execute série a série com carga, repetições, descanso e cronômetro. Tudo salvo no seu dispositivo.',
+    desc: 'Série a série com carga, descanso e cronômetro no dispositivo.',
     cta: 'Ver meus treinos',
   },
   {
@@ -26,7 +27,7 @@ const STEPS = [
     icon: '✦',
     step: '03',
     title: 'Coach IA',
-    desc: 'Peça o que treinar hoje, monte ou ajuste treinos com sugestões baseadas na sua rotina.',
+    desc: 'Sugestões de treino e ajustes com base na sua rotina.',
     cta: 'Abrir Coach IA',
   },
   {
@@ -35,7 +36,7 @@ const STEPS = [
     icon: '💪',
     step: '04',
     title: 'Exercícios',
-    desc: 'Explore por grupo muscular, veja demonstrações e adicione movimentos à sua planilha.',
+    desc: 'Explore por grupo muscular e adicione à planilha.',
     cta: 'Explorar exercícios',
   },
   {
@@ -44,52 +45,69 @@ const STEPS = [
     icon: '📈',
     step: '05',
     title: 'Desempenho',
-    desc: 'Acompanhe frequência, volume e sequência mês a mês, com indicadores claros e honestos.',
+    desc: 'Frequência, volume e sequência com indicadores claros.',
     cta: 'Ver desempenho',
   },
 ]
 
 export default function HowItWorks() {
-  return (
-    <section className="how-it-works" aria-labelledby="how-it-works-title">
-      <div className="container">
-        <SectionTitle
-          id="how-it-works-title"
-          tag="Como funciona"
-          title="Da planilha ao progresso, em 5 passos"
-          subtitle="Um fluxo simples e informativo para organizar sua rotina com equilíbrio — sem promessas de resultado rápido."
-        />
+  const [open, setOpen] = useState(false)
 
-        <div className="how-it-works__grid">
-          {STEPS.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              className={`hiw-card hiw-card--${s.tone}`}
-              onClick={() => scrollToSection(s.id)}
-            >
-              <span className="hiw-card__top">
-                <span className="hiw-card__icon" aria-hidden="true">
-                  {s.icon}
-                </span>
-                <span className="hiw-card__step" aria-hidden="true">
-                  {s.step}
-                </span>
-              </span>
-              <span className="hiw-card__title">{s.title}</span>
-              <span className="hiw-card__desc">{s.desc}</span>
-              <span className="hiw-card__cta">
-                {s.cta}
-                <span aria-hidden="true">→</span>
-              </span>
-            </button>
-          ))}
+  return (
+    <section className="how-it-works how-it-works--compact" aria-labelledby="how-it-works-title">
+      <div className="container">
+        <div className="how-it-works__intro">
+          <SectionTitle
+            id="how-it-works-title"
+            tag="Como funciona"
+            title="Da planilha ao progresso"
+            subtitle="Fluxo simples para organizar sua rotina com equilíbrio."
+          />
+          <button
+            type="button"
+            className={`disclose-toggle${open ? ' is-open' : ''}`}
+            onClick={() => setOpen((o) => !o)}
+            aria-expanded={open}
+          >
+            <span>{open ? 'Ocultar passos' : 'Ver os 5 passos'}</span>
+            <span aria-hidden="true">{open ? '▲' : '▼'}</span>
+          </button>
         </div>
 
-        <p className="hiw-note">
-          Este conteúdo é informativo. Respeite seus limites. Em caso de dor, interrompa. Procure
-          orientação profissional se tiver lesão ou desconforto.
-        </p>
+        {open && (
+          <>
+            <div className="how-it-works__grid">
+              {STEPS.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  className={`hiw-card hiw-card--${s.tone}`}
+                  onClick={() => scrollToSection(s.id)}
+                >
+                  <span className="hiw-card__top">
+                    <span className="hiw-card__icon" aria-hidden="true">
+                      {s.icon}
+                    </span>
+                    <span className="hiw-card__step" aria-hidden="true">
+                      {s.step}
+                    </span>
+                  </span>
+                  <span className="hiw-card__title">{s.title}</span>
+                  <span className="hiw-card__desc">{s.desc}</span>
+                  <span className="hiw-card__cta">
+                    {s.cta}
+                    <span aria-hidden="true">→</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            <p className="hiw-note">
+              Este conteúdo é informativo. Respeite seus limites. Em caso de dor, interrompa. Procure
+              orientação profissional se tiver lesão ou desconforto.
+            </p>
+          </>
+        )}
       </div>
     </section>
   )

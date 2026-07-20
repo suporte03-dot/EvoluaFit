@@ -6799,3 +6799,454 @@ main {
     text-align: center;
   }
 }
+
+/* ===== Progressive disclosure / cleaner UI (2026 revision) ===== */
+
+.section {
+  padding: 4.5rem 0;
+}
+
+.disclose-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.85rem 1.1rem;
+  margin: 0.75rem 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(7, 20, 38, 0.65);
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.disclose-toggle:hover,
+.disclose-toggle.is-open {
+  border-color: rgba(0, 229, 143, 0.35);
+  color: var(--snow);
+  background: rgba(11, 34, 56, 0.85);
+}
+
+.disclose-toggle--inline {
+  width: auto;
+  margin: 0.5rem 0;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.82rem;
+}
+
+.hero__inner--lean {
+  grid-template-columns: 1fr;
+  max-width: 720px;
+  min-height: min(72vh, 640px);
+  align-items: center;
+}
+
+.hero__inner--lean .hero__content {
+  max-width: 560px;
+}
+
+.dashboard-primary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-panel {
+  margin: 0.35rem 0 1rem;
+}
+
+.dashboard-panel__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.8rem 1.1rem;
+  border: 1px dashed rgba(148, 163, 184, 0.28);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.dashboard-panel__toggle:hover,
+.dashboard-panel__toggle.is-open {
+  border-color: rgba(0, 217, 255, 0.4);
+  color: var(--snow);
+}
+
+.dashboard-panel__chevron {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+.dashboard-secondary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.planner-wizard-progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.35rem;
+}
+
+.planner-wizard-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(7, 20, 38, 0.7);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.planner-wizard-dot span {
+  display: inline-grid;
+  place-items: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 50%;
+  background: rgba(148, 163, 184, 0.15);
+  font-size: 0.72rem;
+}
+
+.planner-wizard-dot.is-active {
+  border-color: rgba(0, 229, 143, 0.5);
+  color: var(--snow);
+  background: rgba(0, 229, 143, 0.1);
+}
+
+.planner-wizard-dot.is-active span {
+  background: var(--accent);
+  color: #041018;
+}
+
+.planner-wizard-dot.is-done {
+  border-color: rgba(0, 217, 255, 0.35);
+  color: var(--text-secondary);
+}
+
+.planner-wizard-dot.is-done span {
+  background: rgba(0, 217, 255, 0.25);
+  color: var(--cyan);
+}
+
+.planner-wizard-dot__label {
+  font-style: normal;
+}
+
+.planner-wizard-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.planner-wizard-nav .btn--primary {
+  margin-left: auto;
+}
+
+.planner-summary-inline {
+  padding: 1rem 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.planner-layout--wizard .planner-preview {
+  position: sticky;
+  top: calc(var(--header-h, 72px) + 1rem);
+  align-self: start;
+}
+
+.plan-day.is-collapsed .plan-day__exercises {
+  display: none;
+}
+
+.plan-day.is-collapsed {
+  padding-bottom: 0.85rem;
+}
+
+.plan-day__stat-sep {
+  margin: 0 0.35rem;
+  opacity: 0.5;
+}
+
+.coach-ia__main-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 0.85rem 0 0.5rem;
+}
+
+.coach-ia__main-btn {
+  min-height: 48px;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 229, 143, 0.28);
+  background: linear-gradient(160deg, rgba(0, 229, 143, 0.12), rgba(11, 34, 56, 0.6));
+  color: var(--snow);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.coach-ia__main-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(0, 229, 143, 0.55);
+  box-shadow: 0 8px 20px rgba(0, 229, 143, 0.12);
+}
+
+.coach-ia__main-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.coach-ia__more {
+  margin-bottom: 0.75rem;
+}
+
+.coach-ia__answer-card {
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(5, 11, 24, 0.45);
+}
+
+.coach-ia__empty--lean {
+  padding: 1rem 0.5rem;
+  text-align: center;
+}
+
+.coach-ia__summary-wrap {
+  margin-bottom: 1rem;
+}
+
+.perf-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.perf-tab {
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.perf-tab.is-active {
+  border-color: rgba(0, 229, 143, 0.45);
+  background: rgba(0, 229, 143, 0.12);
+  color: var(--snow);
+}
+
+.perf-panel {
+  animation: heroFadeUp 0.35s ease both;
+}
+
+.perf-stats--compact {
+  margin-top: 1rem;
+}
+
+.goals-summary,
+.profile-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.goals-summary__label,
+.profile-summary__meta {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 0.2rem;
+}
+
+.goals-summary__value,
+.profile-summary__name {
+  font-size: 1.15rem;
+  color: var(--snow);
+}
+
+.goals-summary__hint {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.goal-card__summary {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+}
+
+.goal-card__chevron {
+  position: absolute;
+  top: 0.15rem;
+  right: 0;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.goal-card__details {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.goal-card__auto {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.profile-backup-wrap {
+  margin-top: 1rem;
+}
+
+.muscle-group-card--compact .muscle-group-card__desc {
+  display: none;
+}
+
+.muscle-browse__more {
+  margin-top: 1rem;
+}
+
+.cal-summary-collapsible,
+.cal-filters-wrap {
+  margin-bottom: 0.85rem;
+}
+
+.cal-day__badge--compact {
+  font-size: 0.7rem;
+  padding: 0.1rem 0.35rem;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-primary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .planner-wizard-dot__label {
+    display: none;
+  }
+
+  .coach-ia__main-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 3.25rem 0;
+  }
+
+  .hero__inner--lean {
+    min-height: auto;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .dashboard-primary {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+  }
+
+  .dashboard-card {
+    padding: 0.85rem 0.75rem;
+  }
+
+  .dashboard-card__value {
+    font-size: 0.98rem;
+  }
+
+  .goals-summary,
+  .profile-summary {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .goals-summary .btn,
+  .profile-summary .btn {
+    width: 100%;
+  }
+
+  .coach-ia__main-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .coach-ia__main-btn {
+    min-height: 52px;
+    font-size: 0.95rem;
+  }
+
+  .perf-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .perf-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .perf-tab {
+    flex: 0 0 auto;
+    min-height: 44px;
+  }
+
+  .planner-wizard-nav .btn--primary {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .planner-wizard-nav .btn--ghost {
+    width: 100%;
+  }
+
+  .planner-layout--wizard .planner-preview {
+    position: static;
+    order: 2;
+  }
+
+  .planner-layout--wizard .planner-config {
+    order: 1;
+  }
+}

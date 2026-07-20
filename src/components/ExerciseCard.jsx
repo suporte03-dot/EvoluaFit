@@ -46,7 +46,6 @@ export default function ExerciseCard({ exercise, onAdd, onClick, variant = 'defa
                 {exercise.level}
               </span>
             )}
-            {exercise.type && <span className="exercise-type-tag">{exercise.type}</span>}
           </div>
 
           <div className="gdt-exercise-card__actions">

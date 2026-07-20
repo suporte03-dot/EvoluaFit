@@ -109,6 +109,8 @@ export default function TrainingCalendar() {
   const [noteTargetId, setNoteTargetId] = useState(null)
   const [syncConfirm, setSyncConfirm] = useState(false)
   const [safetyHint, setSafetyHint] = useState('')
+  const [summaryOpen, setSummaryOpen] = useState(false)
+  const [filtersPanelOpen, setFiltersPanelOpen] = useState(false)
 
   const year = current.getFullYear()
   const month = current.getMonth()
@@ -339,7 +341,7 @@ export default function TrainingCalendar() {
         <SectionTitle
           tag="Calendário"
           title="Calendário de treinos"
-          subtitle="Planeje sua rotina, acompanhe treinos realizados e reserve dias de descanso com equilíbrio."
+          subtitle="Planeje a rotina e reserve dias de descanso."
         />
 
         <div className="cal-toolbar glass-card">
@@ -366,7 +368,7 @@ export default function TrainingCalendar() {
               disabled={!planSource}
               title={planSource ? 'Distribuir planilha nos dias' : 'Gere uma planilha primeiro'}
             >
-              Enviar planilha para o calendário
+              Enviar planilha
             </button>
           </div>
           <p className="cal-toolbar__summary">
@@ -374,34 +376,62 @@ export default function TrainingCalendar() {
           </p>
         </div>
 
-        <div className="cal-summary-grid">
-          <SummaryCard tone="planned" icon="◉" label="Planejados" value={summary.planned} desc="Agendados no mês" />
-          <SummaryCard tone="completed" icon="✓" label="Realizados" value={summary.completed} desc="Concluídos no mês" />
-          <SummaryCard tone="rest" icon="☾" label="Descanso" value={summary.rest} desc="Recuperação" />
-          <SummaryCard tone="pending" icon="◐" label="Pendentes" value={summary.pending} desc="A fazer / parciais" />
-          <SummaryCard tone="streak" icon="⌁" label="Sequência" value={summary.streak} desc="Dias com treino" />
-          <SummaryCard
-            tone="next"
-            icon="→"
-            label="Próximo treino"
-            value={summary.nextWorkout ? summary.nextWorkout.name : '—'}
-            desc={summary.nextLabel}
-          />
+        <div className="cal-summary-collapsible">
+          <button
+            type="button"
+            className={`disclose-toggle${summaryOpen ? ' is-open' : ''}`}
+            onClick={() => setSummaryOpen((o) => !o)}
+            aria-expanded={summaryOpen}
+          >
+            <span>{summaryOpen ? 'Ocultar resumo' : 'Ver resumo do mês'}</span>
+            <span aria-hidden="true">{summaryOpen ? '▲' : '▼'}</span>
+          </button>
+          {summaryOpen && (
+            <div className="cal-summary-grid">
+              <SummaryCard tone="planned" icon="◉" label="Planejados" value={summary.planned} desc="Agendados no mês" />
+              <SummaryCard tone="completed" icon="✓" label="Realizados" value={summary.completed} desc="Concluídos no mês" />
+              <SummaryCard tone="rest" icon="☾" label="Descanso" value={summary.rest} desc="Recuperação" />
+              <SummaryCard tone="pending" icon="◐" label="Pendentes" value={summary.pending} desc="A fazer / parciais" />
+              <SummaryCard tone="streak" icon="⌁" label="Sequência" value={summary.streak} desc="Dias com treino" />
+              <SummaryCard
+                tone="next"
+                icon="→"
+                label="Próximo treino"
+                value={summary.nextWorkout ? summary.nextWorkout.name : '—'}
+                desc={summary.nextLabel}
+              />
+            </div>
+          )}
         </div>
 
-        <div className="cal-filters" role="tablist" aria-label="Filtros do calendário">
-          {FILTERS.map((f) => (
-            <button
-              key={f.id}
-              type="button"
-              role="tab"
-              aria-selected={filter === f.id}
-              className={`cal-filter-chip ${filter === f.id ? 'cal-filter-chip--active' : ''}`}
-              onClick={() => setFilter(f.id)}
-            >
-              {f.label}
-            </button>
-          ))}
+        <div className="cal-filters-wrap">
+          <button
+            type="button"
+            className={`disclose-toggle disclose-toggle--inline${filtersPanelOpen ? ' is-open' : ''}`}
+            onClick={() => setFiltersPanelOpen((o) => !o)}
+            aria-expanded={filtersPanelOpen}
+          >
+            <span>
+              Filtros{filter !== 'all' ? ` · ${FILTERS.find((f) => f.id === filter)?.label}` : ''}
+            </span>
+            <span aria-hidden="true">{filtersPanelOpen ? '▲' : '▼'}</span>
+          </button>
+          {filtersPanelOpen && (
+            <div className="cal-filters" role="tablist" aria-label="Filtros do calendário">
+              {FILTERS.map((f) => (
+                <button
+                  key={f.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={filter === f.id}
+                  className={`cal-filter-chip ${filter === f.id ? 'cal-filter-chip--active' : ''}`}
+                  onClick={() => setFilter(f.id)}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {safetyHint && (
@@ -421,7 +451,6 @@ export default function TrainingCalendar() {
             {monthCells.map((cell, i) => {
               if (!cell) return <div key={`empty-${i}`} className="calendar__day calendar__day--empty" />
               const status = cell.status
-              const name = cell.primary?.name
               return (
                 <button
                   key={cell.date}
@@ -435,18 +464,14 @@ export default function TrainingCalendar() {
                     .filter(Boolean)
                     .join(' ')}
                   onClick={() => openDay(cell.date)}
+                  title={cell.primary?.name || (cell.isRestOnly ? 'Descanso' : undefined)}
                 >
                   <span className="cal-day__num">{cell.day}</span>
                   {status && (
-                    <span className={`cal-day__badge cal-day__badge--${status}`}>
+                    <span className={`cal-day__badge cal-day__badge--${status} cal-day__badge--compact`}>
                       <StatusIcon status={status} />
-                      {statusLabel(status)}
                     </span>
                   )}
-                  {name && !cell.isRestOnly && (
-                    <span className="cal-day__name">{name}</span>
-                  )}
-                  {cell.isRestOnly && <span className="cal-day__name">Descanso</span>}
                   {status && <i className={`cal-day__marker cal-day__marker--${status}`} />}
                 </button>
               )
@@ -480,7 +505,7 @@ export default function TrainingCalendar() {
             onAdd={openAdd}
           />
           <div className="cal-mobile-section">
-            <h4 className="cal-mobile-section__title">Próximos dias</h4>
+            <h4 className="cal-mobile-section__title">Próximos treinos</h4>
             {mobileAgenda.upcoming.map((block) => (
               <MobileDayBlock
                 key={block.date}

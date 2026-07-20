@@ -7,93 +7,41 @@ import SectionTitle from './SectionTitle'
 import ExerciseCard from './ExerciseCard'
 import ExerciseDetailModal from './ExerciseDetailModal'
 
+/** Spec order — primary browse groups */
+const PRIMARY_GROUP_IDS = [
+  'Peitoral',
+  'Costas',
+  'Pernas',
+  'Glúteos',
+  'Ombros',
+  'Bíceps',
+  'Tríceps',
+  'Abdômen',
+  'Lombar',
+  'Cardio',
+  'Mobilidade',
+]
+
 const GROUP_META = {
-  Peitoral: {
-    icon: 'PT',
-    tone: 'peito',
-    description: 'Supinos, crucifixos e variações para movimentos de empurrar.',
-  },
-  Costas: {
-    icon: 'CO',
-    tone: 'costas',
-    description: 'Remadas, puxadas e movimentos para força posterior.',
-  },
-  Pernas: {
-    icon: 'PR',
-    tone: 'pernas',
-    description: 'Agachamentos, presses e variações para membros inferiores.',
-  },
-  Glúteos: {
-    icon: 'GL',
-    tone: 'gluteos',
-    description: 'Hip thrust, ponte e ativação de glúteos com controle.',
-  },
-  Ombros: {
-    icon: 'OM',
-    tone: 'ombros',
-    description: 'Desenvolvimento, elevações e estabilidade dos ombros.',
-  },
-  Bíceps: {
-    icon: 'BI',
-    tone: 'biceps',
-    description: 'Roscas e variações para flexão de cotovelo.',
-  },
-  Tríceps: {
-    icon: 'TR',
-    tone: 'triceps',
-    description: 'Extensões e empurrões para a parte posterior do braço.',
-  },
-  Antebraço: {
-    icon: 'AN',
-    tone: 'antebraco',
-    description: 'Força de pegada, punho e estabilidade do antebraço.',
-  },
-  Trapézio: {
-    icon: 'TP',
-    tone: 'trapezio',
-    description: 'Encolhimentos e face pulls para trapézio e postura.',
-  },
-  Lombar: {
-    icon: 'LO',
-    tone: 'lombar',
-    description: 'Extensões e estabilização da região lombar.',
-  },
-  Abdômen: {
-    icon: 'AB',
-    tone: 'abdomen',
-    description: 'Core, prancha e estabilidade do tronco.',
-  },
-  Panturrilha: {
-    icon: 'PA',
-    tone: 'panturrilha',
-    description: 'Elevações e variações para panturrilha.',
-  },
-  Cardio: {
-    icon: 'CA',
-    tone: 'cardio',
-    description: 'Esteira, bike e opções de condicionamento aeróbico.',
-  },
-  Mobilidade: {
-    icon: 'MO',
-    tone: 'mobilidade',
-    description: 'Mobilidade articular para aquecer e recuperar melhor.',
-  },
-  Funcional: {
-    icon: 'FU',
-    tone: 'funcional',
-    description: 'Movimentos integrais para coordenação e força prática.',
-  },
-  Alongamento: {
-    icon: 'AL',
-    tone: 'alongamento',
-    description: 'Alongamentos para flexibilidade e relaxamento muscular.',
-  },
+  Peitoral: { icon: 'PT', tone: 'peito' },
+  Costas: { icon: 'CO', tone: 'costas' },
+  Pernas: { icon: 'PR', tone: 'pernas' },
+  Glúteos: { icon: 'GL', tone: 'gluteos' },
+  Ombros: { icon: 'OM', tone: 'ombros' },
+  Bíceps: { icon: 'BI', tone: 'biceps' },
+  Tríceps: { icon: 'TR', tone: 'triceps' },
+  Antebraço: { icon: 'AN', tone: 'antebraco' },
+  Trapézio: { icon: 'TP', tone: 'trapezio' },
+  Lombar: { icon: 'LO', tone: 'lombar' },
+  Abdômen: { icon: 'AB', tone: 'abdomen' },
+  Panturrilha: { icon: 'PA', tone: 'panturrilha' },
+  Cardio: { icon: 'CA', tone: 'cardio' },
+  Mobilidade: { icon: 'MO', tone: 'mobilidade' },
+  Funcional: { icon: 'FU', tone: 'funcional' },
+  Alongamento: { icon: 'AL', tone: 'alongamento' },
 }
 
-const SECTION_ORDER = GDT_FILTER_GROUPS.map((section) => ({
-  ...section,
-  groups: section.chips.filter((c) => c.id !== 'Todos'),
-}))
+const ALL_GROUPS = GDT_FILTER_GROUPS.flatMap((section) => section.chips.filter((c) => c.id !== 'Todos'))
 
 function uniqueSorted(values) {
   return [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'))
@@ -103,7 +51,7 @@ function usePageSize() {
   const [pageSize, setPageSize] = useState(12)
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 768px)')
-    const sync = () => setPageSize(mq.matches ? 6 : 12)
+    const sync = () => setPageSize(mq.matches ? 8 : 12)
     sync()
     mq.addEventListener('change', sync)
     return () => mq.removeEventListener('change', sync)
@@ -125,6 +73,7 @@ export default function ExerciseLibrary() {
   const [filterGroup, setFilterGroup] = useState('Todos')
   const [selectedExercise, setSelectedExercise] = useState(null)
   const [visibleCount, setVisibleCount] = useState(12)
+  const [moreGroupsOpen, setMoreGroupsOpen] = useState(false)
 
   const exerciseTypes = useMemo(
     () => (exercises.length ? uniqueSorted(exercises.map((ex) => ex.type)) : defaultTypes),
@@ -139,6 +88,16 @@ export default function ExerciseLibrary() {
     [exercises],
   )
 
+  const primaryGroups = useMemo(
+    () =>
+      PRIMARY_GROUP_IDS.map((id) => ALL_GROUPS.find((g) => g.id === id)).filter(Boolean),
+    [],
+  )
+  const extraGroups = useMemo(
+    () => ALL_GROUPS.filter((g) => !PRIMARY_GROUP_IDS.includes(g.id)),
+    [],
+  )
+
   const activeFilterCount = [equipment, level, type, filterGroup].filter((v) => v !== 'Todos').length
   const searchQuery = search.trim().toLowerCase()
   const isSearchMode = searchQuery.length > 0
@@ -146,18 +105,11 @@ export default function ExerciseLibrary() {
 
   const chipCounts = useMemo(() => {
     const map = {}
-    for (const section of SECTION_ORDER) {
-      for (const item of section.groups) {
-        map[item.id] = countExercisesByChip(exercises, item.id)
-      }
+    for (const item of ALL_GROUPS) {
+      map[item.id] = countExercisesByChip(exercises, item.id)
     }
     return map
   }, [exercises])
-
-  const verifiedCount = useMemo(
-    () => exercises.filter((ex) => ex.hasVerifiedMedia && !ex.mediaPending).length,
-    [exercises],
-  )
 
   const advancedFiltered = useMemo(() => {
     return exercises.filter((ex) => {
@@ -194,7 +146,6 @@ export default function ExerciseLibrary() {
     setVisibleCount(pageSize)
   }, [selectedGroup, searchQuery, equipment, level, type, filterGroup, pageSize])
 
-  // Coach IA → “Ver exercícios relacionados”
   useEffect(() => {
     const onFilter = (event) => {
       const group = event?.detail?.group
@@ -252,28 +203,42 @@ export default function ExerciseLibrary() {
       ? `Exercícios de ${muscleGroupLabel(selectedGroup)}`
       : 'Exercícios'
 
+  const renderGroupCard = (group) => {
+    const meta = GROUP_META[group.id] || {
+      icon: group.label.slice(0, 2).toUpperCase(),
+      tone: 'default',
+    }
+    const count = chipCounts[group.id] ?? 0
+    return (
+      <button
+        key={group.id}
+        type="button"
+        className={`muscle-group-card muscle-group-card--${meta.tone} muscle-group-card--compact`}
+        onClick={() => openGroup(group.id)}
+      >
+        <span className="muscle-group-card__accent" aria-hidden="true" />
+        <span className="muscle-group-card__icon" aria-hidden="true">
+          {meta.icon}
+        </span>
+        <span className="muscle-group-card__body">
+          <span className="muscle-group-card__top">
+            <span className="muscle-group-card__name">{group.label}</span>
+            <span className="muscle-group-card__count">{count}</span>
+          </span>
+          <span className="muscle-group-card__cta">Ver exercícios →</span>
+        </span>
+      </button>
+    )
+  }
+
   return (
     <section id="exercicios" className="section section--alt exercise-library--gdt exercise-library--browse">
       <div className="container">
         <SectionTitle
           tag="Biblioteca"
           title="Biblioteca de Exercícios"
-          subtitle="Escolha um grupo muscular para visualizar exercícios, instruções e cuidados de execução."
+          subtitle="Escolha um grupo muscular e explore exercícios com instruções claras."
         />
-
-        <div className="library-stats">
-          <span className="library-stats__item">
-            {loading ? '…' : exercises.length} exercícios cadastrados
-          </span>
-          <span className="library-stats__sep" aria-hidden="true">
-            ·
-          </span>
-          <span className="library-stats__item">{verifiedCount} com mídia verificada</span>
-          <span className="library-stats__sep" aria-hidden="true">
-            ·
-          </span>
-          <span className="library-stats__item library-stats__item--muted">Conteúdo informativo</span>
-        </div>
 
         <div className="library-control-panel">
           <div className="gdt-library-toolbar">
@@ -297,7 +262,7 @@ export default function ExerciseLibrary() {
               onClick={() => setFiltersOpen((o) => !o)}
               aria-expanded={filtersOpen}
             >
-              <span className="gdt-library-filters-btn__label">Filtros</span>
+              <span className="gdt-library-filters-btn__label">Filtros avançados</span>
               {activeFilterCount > 0 && (
                 <span className="gdt-library-filters-count">{activeFilterCount}</span>
               )}
@@ -325,7 +290,7 @@ export default function ExerciseLibrary() {
                 <span>Grupo muscular</span>
                 <select value={filterGroup} onChange={(e) => setFilterGroup(e.target.value)}>
                   <option value="Todos">Todos</option>
-                  {SECTION_ORDER.flatMap((s) => s.groups).map((g) => (
+                  {ALL_GROUPS.map((g) => (
                     <option key={g.id} value={g.id}>
                       {g.label}
                     </option>
@@ -389,44 +354,26 @@ export default function ExerciseLibrary() {
           <>
             {showGroups && (
               <div className="muscle-browse">
-                {SECTION_ORDER.map((section) => (
-                  <div key={section.id} className="muscle-browse__section">
-                    <div className="muscle-browse__section-head">
-                      <h3 className="muscle-browse__section-title">{section.label}</h3>
-                    </div>
-                    <div className="muscle-group-grid">
-                      {section.groups.map((group) => {
-                        const meta = GROUP_META[group.id] || {
-                          icon: group.label.slice(0, 2).toUpperCase(),
-                          tone: 'default',
-                          description: `Exercícios de ${group.label}.`,
-                        }
-                        const count = chipCounts[group.id] ?? 0
-                        return (
-                          <button
-                            key={group.id}
-                            type="button"
-                            className={`muscle-group-card muscle-group-card--${meta.tone}`}
-                            onClick={() => openGroup(group.id)}
-                          >
-                            <span className="muscle-group-card__accent" aria-hidden="true" />
-                            <span className="muscle-group-card__icon" aria-hidden="true">
-                              {meta.icon}
-                            </span>
-                            <span className="muscle-group-card__body">
-                              <span className="muscle-group-card__top">
-                                <span className="muscle-group-card__name">{group.label}</span>
-                                <span className="muscle-group-card__count">{count}</span>
-                              </span>
-                              <span className="muscle-group-card__desc">{meta.description}</span>
-                              <span className="muscle-group-card__cta">Ver exercícios →</span>
-                            </span>
-                          </button>
-                        )
-                      })}
-                    </div>
+                <div className="muscle-group-grid">
+                  {primaryGroups.map(renderGroupCard)}
+                </div>
+
+                {extraGroups.length > 0 && (
+                  <div className="muscle-browse__more">
+                    <button
+                      type="button"
+                      className={`disclose-toggle${moreGroupsOpen ? ' is-open' : ''}`}
+                      onClick={() => setMoreGroupsOpen((o) => !o)}
+                      aria-expanded={moreGroupsOpen}
+                    >
+                      <span>{moreGroupsOpen ? 'Ocultar outros grupos' : 'Mais grupos'}</span>
+                      <span aria-hidden="true">{moreGroupsOpen ? '▲' : '▼'}</span>
+                    </button>
+                    {moreGroupsOpen && (
+                      <div className="muscle-group-grid">{extraGroups.map(renderGroupCard)}</div>
+                    )}
                   </div>
-                ))}
+                )}
               </div>
             )}
 
@@ -434,11 +381,9 @@ export default function ExerciseLibrary() {
               <div id="library-results" className="library-results-panel">
                 <div className="library-results-panel__header">
                   <div>
-                    {(selectedGroup || isSearchMode) && (
-                      <button type="button" className="library-back-btn" onClick={backToGroups}>
-                        ← Voltar para grupos
-                      </button>
-                    )}
+                    <button type="button" className="library-back-btn" onClick={backToGroups}>
+                      ← Voltar para grupos
+                    </button>
                     <h3 className="library-results-panel__title">{resultsTitle}</h3>
                     <p className="library-results-panel__meta">
                       {resultList.length}{' '}
@@ -475,7 +420,7 @@ export default function ExerciseLibrary() {
                           className="btn btn--ghost"
                           onClick={() => setVisibleCount((n) => n + pageSize)}
                         >
-                          Ver mais exercícios ({remaining} restantes)
+                          Ver mais ({remaining} restantes)
                         </button>
                       </div>
                     )}

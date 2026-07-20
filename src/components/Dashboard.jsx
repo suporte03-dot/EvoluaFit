@@ -1,44 +1,40 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
 import { getDashboardMetrics, formatDashboardValue } from '../utils/dashboardMetrics'
 import { scrollToSection } from '../utils/scrollToSection'
 
-const DASHBOARD_BLOCKS = [
-  {
-    id: 'rotina',
-    title: 'Rotina',
-    tone: 'cyan',
-    cards: [
-      { key: 'nextWorkout', label: 'Próximo treino', icon: '⚡', tone: 'orange' },
-      { key: 'weeklyWorkouts', label: 'Treinos na semana', icon: '📅', tone: 'cyan' },
-      { key: 'streak', label: 'Sequência', icon: '🔥', tone: 'orange' },
-      { key: 'restDays', label: 'Descanso (7d)', icon: '🌙', tone: 'gray' },
-    ],
-  },
-  {
-    id: 'desempenho',
-    title: 'Desempenho',
-    tone: 'blue',
-    cards: [
-      { key: 'monthlyWorkouts', label: 'Treinos no mês', icon: '📆', tone: 'green' },
-      { key: 'monthlyPerformancePct', label: 'Evolução mensal', icon: '📈', tone: 'blue' },
-      { key: 'totalVolume', label: 'Volume total', icon: '🏋️', tone: 'blue' },
-      { key: 'avgDuration', label: 'Tempo médio', icon: '⏱️', tone: 'cyan' },
-    ],
-  },
-  {
-    id: 'foco',
-    title: 'Foco',
-    tone: 'purple',
-    cards: [
-      { key: 'topMuscleGroup', label: 'Grupo mais treinado', icon: '💪', tone: 'purple' },
-      { key: 'activeGoals', label: 'Metas ativas', icon: '🎯', tone: 'green' },
-    ],
-  },
+const PRIMARY_CARDS = [
+  { key: 'nextWorkout', label: 'Próximo treino', icon: '⚡', tone: 'orange' },
+  { key: 'weeklyWorkouts', label: 'Treinos na semana', icon: '📅', tone: 'cyan' },
+  { key: 'monthlyPerformancePct', label: 'Desempenho mensal', icon: '📈', tone: 'green' },
+  { key: 'streak', label: 'Sequência', icon: '🔥', tone: 'orange' },
 ]
+
+const SECONDARY_CARDS = [
+  { key: 'totalVolume', label: 'Volume total', icon: '🏋️', tone: 'blue' },
+  { key: 'avgDuration', label: 'Tempo médio', icon: '⏱️', tone: 'cyan' },
+  { key: 'topMuscleGroup', label: 'Grupo mais treinado', icon: '💪', tone: 'purple' },
+  { key: 'restDays', label: 'Dias de descanso', icon: '🌙', tone: 'gray' },
+  { key: 'activeGoals', label: 'Metas ativas', icon: '🎯', tone: 'green' },
+]
+
+function MetricCard({ card, metrics }) {
+  return (
+    <div className={`dashboard-card glass-card dashboard-card--${card.tone}`}>
+      <span className="dashboard-card__icon" aria-hidden="true">
+        {card.icon}
+      </span>
+      <div className="dashboard-card__body">
+        <span className="dashboard-card__label">{card.label}</span>
+        <span className="dashboard-card__value">{formatDashboardValue(card.key, metrics)}</span>
+      </div>
+    </div>
+  )
+}
 
 export default function Dashboard() {
   const { profile, workouts, history, goals, performance } = useFitness()
+  const [panelOpen, setPanelOpen] = useState(false)
 
   const metrics = useMemo(
     () => getDashboardMetrics({ profile, workouts, history, goals, performance }),
@@ -69,31 +65,35 @@ export default function Dashboard() {
             </div>
           </div>
         ) : (
-          <div className="dashboard__blocks">
-            {DASHBOARD_BLOCKS.map((block) => (
-              <div key={block.id} className={`dashboard-block dashboard-block--${block.tone}`}>
-                <h2 className="dashboard-block__title">{block.title}</h2>
-                <div className="dashboard-block__grid">
-                  {block.cards.map((card) => (
-                    <div
-                      key={card.key}
-                      className={`dashboard-card glass-card dashboard-card--${card.tone}`}
-                    >
-                      <span className="dashboard-card__icon" aria-hidden="true">
-                        {card.icon}
-                      </span>
-                      <div className="dashboard-card__body">
-                        <span className="dashboard-card__label">{card.label}</span>
-                        <span className="dashboard-card__value">
-                          {formatDashboardValue(card.key, metrics)}
-                        </span>
-                      </div>
-                    </div>
+          <>
+            <div className="dashboard-primary">
+              {PRIMARY_CARDS.map((card) => (
+                <MetricCard key={card.key} card={card} metrics={metrics} />
+              ))}
+            </div>
+
+            <div className="dashboard-panel">
+              <button
+                type="button"
+                className={`dashboard-panel__toggle${panelOpen ? ' is-open' : ''}`}
+                onClick={() => setPanelOpen((o) => !o)}
+                aria-expanded={panelOpen}
+              >
+                <span>{panelOpen ? 'Ocultar painel completo' : 'Ver painel completo'}</span>
+                <span className="dashboard-panel__chevron" aria-hidden="true">
+                  {panelOpen ? '▲' : '▼'}
+                </span>
+              </button>
+
+              {panelOpen && (
+                <div className="dashboard-secondary" id="dashboard-full-panel">
+                  {SECONDARY_CARDS.map((card) => (
+                    <MetricCard key={card.key} card={card} metrics={metrics} />
                   ))}
                 </div>
-              </div>
-            ))}
-          </div>
+              )}
+            </div>
+          </>
         )}
 
         <button
@@ -106,9 +106,7 @@ export default function Dashboard() {
           </span>
           <span className="dashboard-calendar-cta__body">
             <span className="dashboard-calendar-cta__title">Ver calendário completo</span>
-            <span className="dashboard-calendar-cta__desc">
-              Visualize sua rotina mensal com status de cada dia
-            </span>
+            <span className="dashboard-calendar-cta__desc">Rotina mensal com status de cada dia</span>
           </span>
           <span className="dashboard-calendar-cta__arrow" aria-hidden="true">
             →

@@ -7,10 +7,10 @@
 .brand-logo {
   display: flex;
   align-items: center;
-  gap: 13px;
+  gap: 14px;
   text-decoration: none;
-  height: 64px;
-  max-width: 320px;
+  height: 78px;
+  max-width: 360px;
   overflow: hidden;
   min-width: 0;
   background: transparent;
@@ -26,12 +26,12 @@
 }
 
 .brand-icon {
-  width: 58px;
-  height: 58px;
+  width: 72px;
+  height: 72px;
   object-fit: contain;
   display: block;
   flex-shrink: 0;
-  filter: drop-shadow(0 4px 12px rgba(0, 229, 143, 0.3));
+  filter: drop-shadow(0 4px 14px rgba(0, 229, 143, 0.32));
   image-rendering: -webkit-optimize-contrast;
 }
 
@@ -3212,13 +3212,13 @@ main {
   }
 
   .brand-logo {
-    height: 68px;
-    max-width: 280px;
+    height: 72px;
+    max-width: 300px;
   }
 
   .brand-icon {
-    width: 58px;
-    height: 58px;
+    width: 64px;
+    height: 64px;
   }
 
   .brand-name {
@@ -3311,14 +3311,14 @@ main {
   }
 
   .brand-logo {
-    height: 56px;
-    max-width: 210px;
-    gap: 9px;
+    height: 60px;
+    max-width: 230px;
+    gap: 10px;
   }
 
   .brand-icon {
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: 56px;
   }
 
   .brand-name {

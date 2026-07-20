@@ -42,8 +42,8 @@ export default function Header({ activeSection }) {
             src={logoUrl('evoluafit-icon.png')}
             alt=""
             className="brand-icon"
-            width={58}
-            height={58}
+            width={72}
+            height={72}
           />
           <div className="brand-copy">
             <strong className="brand-name">

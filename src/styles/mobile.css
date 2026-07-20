@@ -44,13 +44,13 @@
   }
 
   .brand-logo {
-    height: 56px;
-    max-width: 210px;
+    height: 60px;
+    max-width: 230px;
   }
 
   .brand-icon {
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: 56px;
     object-fit: contain;
   }
 

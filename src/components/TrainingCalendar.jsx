@@ -8,7 +8,6 @@ import {
   WEEKDAYS_FULL,
   addWorkoutToCalendar,
   filterCalendarEntries,
-  formatDisplayDate,
   formatMonthLabel,
   getCalendarSummary,
   getCurrentMonthDays,
@@ -23,6 +22,7 @@ import {
   updateCalendarWorkout,
   wouldCreateSevenIntenseDays,
 } from '../utils/calendarUtils'
+import { formatDateLong } from '../utils/dateFormat'
 
 const FILTERS = [
   { id: 'all', label: 'Todos' },
@@ -69,23 +69,9 @@ function StatusIcon({ status }) {
     partial: '◑',
     rest: '☾',
     missed: '!',
+    skipped: '⊘',
   }
   return <span className="cal-status-icon" aria-hidden="true">{map[status] || '·'}</span>
-}
-
-function SummaryCard({ tone, icon, label, value, desc }) {
-  return (
-    <article className={`cal-summary-card cal-summary-card--${tone}`}>
-      <span className="cal-summary-card__icon" aria-hidden="true">
-        {icon}
-      </span>
-      <div className="cal-summary-card__body">
-        <span className="cal-summary-card__label">{label}</span>
-        <strong className="cal-summary-card__value">{value}</strong>
-        <span className="cal-summary-card__desc">{desc}</span>
-      </div>
-    </article>
-  )
 }
 
 export default function TrainingCalendar() {
@@ -93,6 +79,8 @@ export default function TrainingCalendar() {
     workouts,
     plans,
     generatedPlan,
+    profile,
+    goals,
     addWorkout,
     replaceWorkouts,
     startWorkout,
@@ -110,7 +98,6 @@ export default function TrainingCalendar() {
   const [syncConfirm, setSyncConfirm] = useState(false)
   const [safetyHint, setSafetyHint] = useState('')
   const [summaryOpen, setSummaryOpen] = useState(false)
-  const [filtersPanelOpen, setFiltersPanelOpen] = useState(false)
 
   const year = current.getFullYear()
   const month = current.getMonth()
@@ -126,7 +113,17 @@ export default function TrainingCalendar() {
     [year, month, filteredWorkouts],
   )
 
-  const summary = useMemo(() => getCalendarSummary(workouts, new Date()), [workouts])
+  const weekGoal = useMemo(() => {
+    const fromGoal = goals?.find((g) => g.type === 'weekly_workouts')?.target
+    if (fromGoal > 0) return fromGoal
+    if (profile?.daysPerWeek > 0) return profile.daysPerWeek
+    return null
+  }, [goals, profile])
+
+  const summary = useMemo(
+    () => getCalendarSummary(workouts, new Date(), { weekGoal }),
+    [workouts, weekGoal],
+  )
   const mobileAgenda = useMemo(() => getMobileAgenda(workouts, new Date()), [workouts])
 
   const dayEntries = useMemo(() => {
@@ -332,7 +329,7 @@ export default function TrainingCalendar() {
   }
 
   const dayTitle = selectedDate
-    ? `${WEEKDAYS_FULL[new Date(`${selectedDate}T12:00:00`).getDay()]}, ${formatDisplayDate(selectedDate)}`
+    ? `${WEEKDAYS_FULL[new Date(`${selectedDate}T12:00:00`).getDay()]}, ${formatDateLong(selectedDate)}`
     : ''
 
   return (
@@ -344,6 +341,8 @@ export default function TrainingCalendar() {
           subtitle="Planeje a rotina e reserve dias de descanso."
         />
 
+        <div className="cal-layout">
+          <div className="cal-layout__main">
         <div className="cal-toolbar glass-card">
           <div className="cal-toolbar__month">
             <button type="button" className="btn btn--ghost btn--sm" onClick={prevMonth} aria-label="Mês anterior">
@@ -363,75 +362,52 @@ export default function TrainingCalendar() {
             </button>
             <button
               type="button"
-              className="btn btn--ghost btn--sm"
+              className="btn btn--outline btn--sm"
               onClick={() => setSyncConfirm(true)}
               disabled={!planSource}
-              title={planSource ? 'Distribuir planilha nos dias' : 'Gere uma planilha primeiro'}
+              title={planSource ? 'Distribuir planilha nos dias do calendário' : 'Gere uma planilha primeiro'}
             >
-              Enviar planilha
+              Sincronizar planilha
+            </button>
+            <button
+              type="button"
+              className="btn btn--ghost btn--sm cal-toolbar__panel-btn"
+              onClick={() => setSummaryOpen(true)}
+              aria-expanded={summaryOpen}
+            >
+              Resumo e filtros
             </button>
           </div>
-          <p className="cal-toolbar__summary">
-            Semana: {summary.weekLabel} · Mês: {summary.monthLabel}
-          </p>
-        </div>
 
-        <div className="cal-summary-collapsible">
-          <button
-            type="button"
-            className={`disclose-toggle${summaryOpen ? ' is-open' : ''}`}
-            onClick={() => setSummaryOpen((o) => !o)}
-            aria-expanded={summaryOpen}
-          >
-            <span>{summaryOpen ? 'Ocultar resumo' : 'Ver resumo do mês'}</span>
-            <span aria-hidden="true">{summaryOpen ? '▲' : '▼'}</span>
-          </button>
-          {summaryOpen && (
-            <div className="cal-summary-grid">
-              <SummaryCard tone="planned" icon="◉" label="Planejados" value={summary.planned} desc="Agendados no mês" />
-              <SummaryCard tone="completed" icon="✓" label="Realizados" value={summary.completed} desc="Concluídos no mês" />
-              <SummaryCard tone="rest" icon="☾" label="Descanso" value={summary.rest} desc="Recuperação" />
-              <SummaryCard tone="pending" icon="◐" label="Pendentes" value={summary.pending} desc="A fazer / parciais" />
-              <SummaryCard tone="streak" icon="⌁" label="Sequência" value={summary.streak} desc="Dias com treino" />
-              <SummaryCard
-                tone="next"
-                icon="→"
-                label="Próximo treino"
-                value={summary.nextWorkout ? summary.nextWorkout.name : '—'}
-                desc={summary.nextLabel}
+          <div className="cal-week-progress">
+            <div className="cal-week-progress__head">
+              <span className="cal-week-progress__label">Progresso da semana</span>
+              <strong className="cal-week-progress__value">
+                {summary.weekGoal != null
+                  ? `${summary.weekCompleted} de ${summary.weekGoal}`
+                  : `${summary.weekCompleted} realizados`}
+              </strong>
+            </div>
+            <div
+              className="cal-week-progress__bar"
+              role="progressbar"
+              aria-valuenow={summary.weekCompleted}
+              aria-valuemin={0}
+              aria-valuemax={summary.weekGoal || Math.max(summary.weekCompleted, 1)}
+            >
+              <div
+                className="cal-week-progress__fill"
+                style={{ width: `${summary.weekGoal ? summary.weekPct : summary.weekCompleted > 0 ? 100 : 0}%` }}
               />
             </div>
-          )}
-        </div>
-
-        <div className="cal-filters-wrap">
-          <button
-            type="button"
-            className={`disclose-toggle disclose-toggle--inline${filtersPanelOpen ? ' is-open' : ''}`}
-            onClick={() => setFiltersPanelOpen((o) => !o)}
-            aria-expanded={filtersPanelOpen}
-          >
-            <span>
-              Filtros{filter !== 'all' ? ` · ${FILTERS.find((f) => f.id === filter)?.label}` : ''}
-            </span>
-            <span aria-hidden="true">{filtersPanelOpen ? '▲' : '▼'}</span>
-          </button>
-          {filtersPanelOpen && (
-            <div className="cal-filters" role="tablist" aria-label="Filtros do calendário">
-              {FILTERS.map((f) => (
-                <button
-                  key={f.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={filter === f.id}
-                  className={`cal-filter-chip ${filter === f.id ? 'cal-filter-chip--active' : ''}`}
-                  onClick={() => setFilter(f.id)}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-          )}
+            <p className="cal-week-progress__hint">
+              {summary.weekGoalSource === 'meta'
+                ? `Meta semanal: ${summary.weekGoal} treinos (perfil / metas)`
+                : summary.weekGoalSource === 'agenda'
+                  ? `Baseado nos ${summary.weekGoal} treinos agendados nesta semana`
+                  : 'Defina dias/semana no perfil ou agende treinos para ter uma meta clara'}
+            </p>
+          </div>
         </div>
 
         {safetyHint && (
@@ -484,6 +460,7 @@ export default function TrainingCalendar() {
             <span><i className="dot dot--pending" /> Pendente</span>
             <span><i className="dot dot--rest" /> Descanso</span>
             <span><i className="dot dot--missed" /> Atrasado</span>
+            <span><i className="dot dot--skipped" /> Pulado</span>
           </div>
         </div>
 
@@ -519,12 +496,82 @@ export default function TrainingCalendar() {
             ))}
           </div>
         </div>
+          </div>
 
-        <p className="cal-disclaimer">
-          Treinar com consistência importa mais do que intensidade todos os dias. Inclua descanso e
-          recuperação — se sentir dor aguda ou fadiga excessiva, reduza a carga e procure orientação
-          profissional.
-        </p>
+          {/* Desktop side panel */}
+          <aside className="cal-side-panel glass-card cal-side-panel--desktop" aria-label="Resumo e filtros">
+            <h3 className="cal-side-panel__title">Resumo do mês</h3>
+            {!summary.hasMonthActivity ? (
+              <p className="cal-side-panel__empty">
+                Nenhum treino neste mês. Adicione um dia ou sincronize sua planilha.
+              </p>
+            ) : (
+              <div className="cal-side-panel__stats">
+                <div><span>Planejados</span><strong>{summary.planned}</strong></div>
+                <div><span>Realizados</span><strong>{summary.completed}</strong></div>
+                <div><span>Descanso</span><strong>{summary.rest}</strong></div>
+                <div><span>Pendentes</span><strong>{summary.pending}</strong></div>
+                <div><span>Sequência</span><strong>{summary.streak || '—'}</strong></div>
+              </div>
+            )}
+            <p className="cal-side-panel__next">
+              <span>Próximo</span>
+              <strong>{summary.nextWorkout ? summary.nextWorkout.name : 'Nada agendado'}</strong>
+            </p>
+            <h4 className="cal-side-panel__filters-title">Filtros</h4>
+            <div className="cal-filters cal-filters--stack" role="tablist" aria-label="Filtros do calendário">
+              {FILTERS.map((f) => (
+                <button
+                  key={f.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={filter === f.id}
+                  className={`cal-filter-chip ${filter === f.id ? 'cal-filter-chip--active' : ''}`}
+                  onClick={() => setFilter(f.id)}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          </aside>
+        </div>
+
+        {/* Mobile/tablet: summary + filters as modal */}
+        <Modal
+          isOpen={summaryOpen}
+          onClose={() => setSummaryOpen(false)}
+          title="Resumo e filtros"
+          size="md"
+        >
+          <div className="cal-side-panel__stats">
+            <div><span>Planejados</span><strong>{summary.planned}</strong></div>
+            <div><span>Realizados</span><strong>{summary.completed}</strong></div>
+            <div><span>Descanso</span><strong>{summary.rest}</strong></div>
+            <div><span>Pendentes</span><strong>{summary.pending}</strong></div>
+            <div><span>Sequência</span><strong>{summary.streak || '—'}</strong></div>
+          </div>
+          <p className="cal-side-panel__next" style={{ margin: '1rem 0' }}>
+            <span>Próximo</span>
+            <strong>{summary.nextWorkout ? summary.nextWorkout.name : 'Nada agendado'}</strong>
+          </p>
+          <div className="cal-filters" role="tablist" aria-label="Filtros do calendário">
+            {FILTERS.map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                role="tab"
+                aria-selected={filter === f.id}
+                className={`cal-filter-chip ${filter === f.id ? 'cal-filter-chip--active' : ''}`}
+                onClick={() => {
+                  setFilter(f.id)
+                  setSummaryOpen(false)
+                }}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+        </Modal>
       </div>
 
       {/* Day detail modal */}
@@ -800,7 +847,7 @@ export default function TrainingCalendar() {
       </Modal>
 
       {/* Sync confirm */}
-      <Modal isOpen={syncConfirm} onClose={() => setSyncConfirm(false)} title="Enviar planilha">
+      <Modal isOpen={syncConfirm} onClose={() => setSyncConfirm(false)} title="Sincronizar planilha">
         <p>
           Isso vai distribuir os treinos da planilha atual nos próximos dias. Entradas não concluídas
           nas datas alvo podem ser substituídas. Treinos já realizados serão mantidos.
@@ -813,7 +860,7 @@ export default function TrainingCalendar() {
         )}
         <div className="cal-day-actions">
           <button type="button" className="btn btn--primary" onClick={confirmSyncPlan}>
-            Confirmar envio
+            Confirmar sincronização
           </button>
           <button type="button" className="btn btn--ghost" onClick={() => setSyncConfirm(false)}>
             Cancelar

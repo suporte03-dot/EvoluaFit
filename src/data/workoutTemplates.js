@@ -114,7 +114,7 @@ export const levelConfig = {
 }
 
 export const PROFESSIONAL_DISCLAIMER =
-  'Plano demonstrativo e informativo. Não substitui avaliação de um profissional de educação física ou saúde. Ajuste o treino conforme sua condição, objetivo e limitações — respeite seus limites e interrompa em caso de dor.'
+  'Conteúdo informativo: não substitui orientação de um profissional de educação física ou saúde. Respeite seus limites.'
 
 const DEFAULT_PRECAUTIONS = [
   'Aqueça 5–10 minutos antes de cada sessão.',

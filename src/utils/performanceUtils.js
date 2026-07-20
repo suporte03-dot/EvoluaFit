@@ -162,8 +162,9 @@ export function getRestDays(workouts, days = 7) {
 }
 
 export function getNextWorkout(workouts) {
+  const pendingStatuses = new Set(['Pendente', 'Parcial', 'planned', 'pending', 'partial'])
   const pending = workouts
-    .filter((w) => w.status === 'Pendente' || w.status === 'Parcial')
+    .filter((w) => !w.isRest && pendingStatuses.has(w.status))
     .sort((a, b) => new Date(a.date) - new Date(b.date))
   return pending[0] || null
 }

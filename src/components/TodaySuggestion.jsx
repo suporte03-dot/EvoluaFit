@@ -71,9 +71,12 @@ export default function TodaySuggestion() {
             💡
           </div>
           <div className="suggestion-card__content">
-            <span className="suggestion-card__label">Sugestão de hoje</span>
+            <span className="suggestion-card__label">Sugestão rápida do dia</span>
             <h3>{suggestion.title}</h3>
             <p>{suggestion.desc}</p>
+            <p className="suggestion-card__coach-hint">
+              Quer ajustar com conversa? Use o Coach IA.
+            </p>
             {suggestion.muscles.length > 0 && (
               <div className="suggestion-card__muscles">
                 {suggestion.muscles.map((m) => (

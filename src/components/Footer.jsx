@@ -15,10 +15,11 @@ export default function Footer() {
             />
           </a>
         </div>
-        <p className="footer__disclaimer">{BRAND.disclaimer}</p>
+        <p className="footer__disclaimer" role="note">
+          {BRAND.disclaimer}
+        </p>
         <p className="footer__copy">
-          © {new Date().getFullYear()} {BRAND.name} — Plataforma fitness demonstrativa. Sem backend, dados salvos
-          localmente.
+          © {new Date().getFullYear()} {BRAND.name} — Dados salvos localmente neste aparelho.
         </p>
       </div>
     </footer>

@@ -23,23 +23,26 @@ const PRIMARY_GROUP_IDS = [
 ]
 
 const GROUP_META = {
-  Peitoral: { icon: 'PT', tone: 'peito' },
-  Costas: { icon: 'CO', tone: 'costas' },
-  Pernas: { icon: 'PR', tone: 'pernas' },
-  Glúteos: { icon: 'GL', tone: 'gluteos' },
-  Ombros: { icon: 'OM', tone: 'ombros' },
-  Bíceps: { icon: 'BI', tone: 'biceps' },
-  Tríceps: { icon: 'TR', tone: 'triceps' },
-  Antebraço: { icon: 'AN', tone: 'antebraco' },
-  Trapézio: { icon: 'TP', tone: 'trapezio' },
-  Lombar: { icon: 'LO', tone: 'lombar' },
-  Abdômen: { icon: 'AB', tone: 'abdomen' },
-  Panturrilha: { icon: 'PA', tone: 'panturrilha' },
-  Cardio: { icon: 'CA', tone: 'cardio' },
-  Mobilidade: { icon: 'MO', tone: 'mobilidade' },
-  Funcional: { icon: 'FU', tone: 'funcional' },
-  Alongamento: { icon: 'AL', tone: 'alongamento' },
+  Peitoral: { icon: '🫁', tone: 'peito' },
+  Costas: { icon: '🔼', tone: 'costas' },
+  Pernas: { icon: '🦵', tone: 'pernas' },
+  Glúteos: { icon: '◇', tone: 'gluteos' },
+  Ombros: { icon: '🔶', tone: 'ombros' },
+  Bíceps: { icon: '💪', tone: 'biceps' },
+  Tríceps: { icon: '🦾', tone: 'triceps' },
+  Antebraço: { icon: '✊', tone: 'antebraco' },
+  Trapézio: { icon: '△', tone: 'trapezio' },
+  Lombar: { icon: '🦴', tone: 'lombar' },
+  Abdômen: { icon: '◎', tone: 'abdomen' },
+  Panturrilha: { icon: '🦿', tone: 'panturrilha' },
+  Cardio: { icon: '♥', tone: 'cardio' },
+  Mobilidade: { icon: '〜', tone: 'mobilidade' },
+  Funcional: { icon: '⚡', tone: 'funcional' },
+  Alongamento: { icon: '∿', tone: 'alongamento' },
 }
+
+/** Groups with thinner catalogs get an “em expansão” badge instead of looking broken */
+const EXPANDING_THRESHOLD = 8
 
 const ALL_GROUPS = GDT_FILTER_GROUPS.flatMap((section) => section.chips.filter((c) => c.id !== 'Todos'))
 
@@ -205,10 +208,11 @@ export default function ExerciseLibrary() {
 
   const renderGroupCard = (group) => {
     const meta = GROUP_META[group.id] || {
-      icon: group.label.slice(0, 2).toUpperCase(),
+      icon: '◆',
       tone: 'default',
     }
     const count = chipCounts[group.id] ?? 0
+    const expanding = count > 0 && count < EXPANDING_THRESHOLD
     return (
       <button
         key={group.id}
@@ -217,13 +221,16 @@ export default function ExerciseLibrary() {
         onClick={() => openGroup(group.id)}
       >
         <span className="muscle-group-card__accent" aria-hidden="true" />
-        <span className="muscle-group-card__icon" aria-hidden="true">
+        <span className="muscle-group-card__icon muscle-group-card__icon--symbol" aria-hidden="true">
           {meta.icon}
         </span>
         <span className="muscle-group-card__body">
           <span className="muscle-group-card__top">
             <span className="muscle-group-card__name">{group.label}</span>
-            <span className="muscle-group-card__count">{count}</span>
+            <span className="muscle-group-card__count">
+              {count}
+              {expanding ? <em className="muscle-group-card__expanding"> em expansão</em> : ''}
+            </span>
           </span>
           <span className="muscle-group-card__cta">Ver exercícios →</span>
         </span>
@@ -262,7 +269,9 @@ export default function ExerciseLibrary() {
               onClick={() => setFiltersOpen((o) => !o)}
               aria-expanded={filtersOpen}
             >
-              <span className="gdt-library-filters-btn__label">Filtros avançados</span>
+              <span className="gdt-library-filters-btn__label">
+                Filtros{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+              </span>
               {activeFilterCount > 0 && (
                 <span className="gdt-library-filters-count">{activeFilterCount}</span>
               )}

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
 import { getExerciseCache } from '../data/exerciseCache'
 import { scrollToSection } from '../utils/scrollToSection'
+import { formatDateShort } from '../utils/dateFormat'
 import SectionTitle from './SectionTitle'
 import {
   askCoach,
@@ -35,14 +36,7 @@ function formatTime(iso) {
 
 function formatDateLabel(iso) {
   if (!iso) return 'Sem registro'
-  try {
-    return new Date(iso).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: 'short',
-    })
-  } catch {
-    return 'Sem registro'
-  }
+  return formatDateShort(iso)
 }
 
 function renderAnswer(text) {
@@ -103,7 +97,6 @@ export default function CoachIA() {
   const [showExercisePicker, setShowExercisePicker] = useState(false)
   const [selectedExerciseId, setSelectedExerciseId] = useState('')
   const [moreOpen, setMoreOpen] = useState(false)
-  const [summaryOpen, setSummaryOpen] = useState(false)
   const chatEndRef = useRef(null)
   const inputRef = useRef(null)
 
@@ -335,44 +328,29 @@ export default function CoachIA() {
           <SectionTitle
             tag="Assistente de treino"
             title="Coach IA"
-            subtitle="Pergunte sobre treino, planilha ou exercícios — respostas locais e seguras."
+            subtitle="Suas perguntas e rotina ficam neste aparelho — privacidade primeiro, sugestões responsáveis."
           />
         </div>
 
-        <div className="coach-ia__summary-wrap">
-          <button
-            type="button"
-            className={`disclose-toggle${summaryOpen ? ' is-open' : ''}`}
-            onClick={() => setSummaryOpen((o) => !o)}
-            aria-expanded={summaryOpen}
-          >
-            <span>{summaryOpen ? 'Ocultar contexto' : 'Ver contexto do coach'}</span>
-            <span aria-hidden="true">{summaryOpen ? '▲' : '▼'}</span>
-          </button>
-          {summaryOpen && (
-            <div className="coach-ia__summary" aria-label="Resumo inteligente">
-              <article className="coach-ia__summary-card coach-ia__summary-card--next">
-                <span className="coach-ia__summary-label">Próxima sugestão</span>
-                <strong>{summary.nextSuggestion}</strong>
-              </article>
-              <article className="coach-ia__summary-card">
-                <span className="coach-ia__summary-label">Último treino</span>
-                <strong>
-                  {summary.lastWorkout
-                    ? `${summary.lastWorkout.name} · ${formatDateLabel(summary.lastWorkout.date)}`
-                    : 'Nenhum ainda'}
-                </strong>
-              </article>
-              <article className="coach-ia__summary-card coach-ia__summary-card--group">
-                <span className="coach-ia__summary-label">Grupo recomendado</span>
-                <strong>{summary.recommendedGroup}</strong>
-              </article>
-              <article className="coach-ia__summary-card coach-ia__summary-card--care">
-                <span className="coach-ia__summary-label">Atenção</span>
-                <strong>{summary.attention}</strong>
-              </article>
-            </div>
-          )}
+        <div className="coach-ia__context" aria-label="O que o Coach considera">
+          <p className="coach-ia__context-label">O Coach considera agora</p>
+          <div className="coach-ia__context-chips">
+            <span className="coach-ia__context-chip">
+              Último treino:{' '}
+              {summary.lastWorkout
+                ? `${summary.lastWorkout.name} · ${formatDateLabel(summary.lastWorkout.date)}`
+                : 'ainda nenhum'}
+            </span>
+            <span className="coach-ia__context-chip">
+              Sugestão: {summary.nextSuggestion}
+            </span>
+            <span className="coach-ia__context-chip">
+              Grupo: {summary.recommendedGroup}
+            </span>
+            <span className="coach-ia__context-chip coach-ia__context-chip--care">
+              {summary.attention}
+            </span>
+          </div>
         </div>
 
         <div className="coach-ia__main glass-card">
@@ -385,7 +363,7 @@ export default function CoachIA() {
               id="coach-question"
               className="coach-ia__input"
               rows={2}
-              placeholder="Pergunte ao Coach IA sobre seu treino..."
+              placeholder="Ex.: Monte um treino de costas de 40 min para academia"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               disabled={loading}
@@ -477,9 +455,19 @@ export default function CoachIA() {
 
           <div className="coach-ia__chat" aria-live="polite">
             {chronological.length === 0 && !loading && (
-              <div className="coach-ia__empty coach-ia__empty--lean">
+              <div className="coach-ia__empty coach-ia__empty--example">
+                <p className="coach-ia__empty-title">Exemplo de conversa</p>
+                <div className="coach-ia__example">
+                  <div className="coach-ia__example-user">
+                    “Monte um treino de pernas leve para casa, ~30 min.”
+                  </div>
+                  <div className="coach-ia__example-coach">
+                    O Coach responde com sessão moderada, foco em técnica e lembrete de recuperação —
+                    sem prometer resultados milagrosos.
+                  </div>
+                </div>
                 <p className="coach-ia__empty-desc">
-                  Digite uma pergunta ou use um dos atalhos acima.
+                  Diferente da “Sugestão de hoje” no Início, aqui você conversa e ajusta o plano.
                 </p>
               </div>
             )}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { navItems, BRAND } from '../data/siteData'
+import { navItems } from '../data/siteData'
 import { scrollToSection, handleSectionClick } from '../utils/scrollToSection'
 
 const logoUrl = (file) => `${import.meta.env.BASE_URL}assets/${file}`
@@ -123,8 +123,6 @@ export default function Header({ activeSection }) {
           aria-label="Fechar menu"
         />
       )}
-
-      <p className="header__disclaimer container">{BRAND.disclaimer}</p>
     </header>
   )
 }

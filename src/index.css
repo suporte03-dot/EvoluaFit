@@ -53,8 +53,8 @@
   --font-brand: 'Manrope', 'Sora', system-ui, sans-serif;
   --font: 'Inter', system-ui, sans-serif;
   --header-h: 96px;
-  /* Fixed header disclaimer strip (desktop); zeroed on mobile when hidden */
-  --header-banner-h: 2.2rem;
+  /* Disclaimer lives in footer only — no header banner strip */
+  --header-banner-h: 0px;
   --container: 1140px;
   --shadow: 0 10px 38px rgba(0, 0, 0, 0.45);
   --glow-green: 0 0 40px rgba(0, 229, 143, 0.18);

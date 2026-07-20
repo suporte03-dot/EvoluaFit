@@ -119,23 +119,15 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
           </p>
         </div>
         <div className="generated-plan__actions">
-          {onDownloadExcel && (
-            <button type="button" className="btn btn--ghost" onClick={onDownloadExcel}>
-              Baixar Excel
-            </button>
-          )}
           <button type="button" className="btn btn--primary" onClick={handleAddWorkouts}>
             Salvar na minha planilha
           </button>
+          {onDownloadExcel && (
+            <button type="button" className="btn btn--outline" onClick={onDownloadExcel}>
+              Exportar Excel
+            </button>
+          )}
         </div>
-      </div>
-
-      <div className="generated-plan__disclaimer" role="note">
-        <strong>Aviso importante</strong>
-        <p>
-          {plan.disclaimer ||
-            'Plano demonstrativo e informativo. Não substitui avaliação de um profissional de educação física. Ajuste conforme sua condição e interrompa em caso de dor.'}
-        </p>
       </div>
 
       <div className="generated-plan__days">
@@ -213,7 +205,14 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
               <div className="plan-day__actions">
                 <button
                   type="button"
-                  className="btn btn--ghost btn--sm"
+                  className="btn btn--primary btn--sm btn--start-workout"
+                  onClick={(e) => startDayWorkout(day, e)}
+                >
+                  Iniciar treino
+                </button>
+                <button
+                  type="button"
+                  className="btn btn--outline btn--sm"
                   onClick={() => {
                     if (!isExpanded) toggleDay(day.day)
                     else openDayDetail(day)
@@ -226,13 +225,6 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
                     Recolher
                   </button>
                 )}
-                <button
-                  type="button"
-                  className="btn btn--primary btn--sm btn--start-workout"
-                  onClick={(e) => startDayWorkout(day, e)}
-                >
-                  Iniciar treino
-                </button>
               </div>
             </article>
           )
@@ -255,11 +247,6 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
           </ul>
         </div>
       )}
-
-      <p className="safety-note">
-        {plan.disclaimer ||
-          'Plano demonstrativo. Este conteúdo é informativo. Respeite seus limites. Em caso de dor, interrompa o exercício e procure orientação profissional.'}
-      </p>
 
       <WorkoutDetailModal
         workout={detailWorkout}

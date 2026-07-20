@@ -462,7 +462,12 @@ export function wouldCreateSevenIntenseDays(workouts, dateKey, payload) {
   return countConsecutiveIntenseDays(simulated, dateKey) >= 7
 }
 
-export function getCalendarSummary(workouts = [], referenceDate = new Date()) {
+/**
+ * @param {object[]} workouts
+ * @param {Date} referenceDate
+ * @param {{ weekGoal?: number }} [options] — weekGoal from profile.daysPerWeek or weekly goal
+ */
+export function getCalendarSummary(workouts = [], referenceDate = new Date(), options = {}) {
   const month = referenceDate.getMonth()
   const year = referenceDate.getFullYear()
   const today = todayKey(referenceDate)
@@ -505,12 +510,22 @@ export function getCalendarSummary(workouts = [], referenceDate = new Date()) {
   const weekCompleted = week.filter((d) =>
     d.entries.some((e) => getTrainingStatusByDate(e, d.date, referenceDate) === 'completed'),
   ).length
-  const weekPlanned = week.filter((d) =>
+  const weekScheduled = week.filter((d) =>
     d.entries.some((e) => {
       const st = getTrainingStatusByDate(e, d.date, referenceDate)
       return st === 'planned' || st === 'pending' || st === 'completed' || st === 'partial'
     }),
   ).length
+
+  // Prefer explicit user goal; fall back to scheduled count; never invent a fake "1"
+  const weekGoal =
+    options.weekGoal > 0
+      ? options.weekGoal
+      : weekScheduled > 0
+        ? weekScheduled
+        : null
+
+  const weekPct = weekGoal ? Math.min((weekCompleted / weekGoal) * 100, 100) : 0
 
   return {
     planned,
@@ -524,9 +539,18 @@ export function getCalendarSummary(workouts = [], referenceDate = new Date()) {
     nextLabel: nextWorkout
       ? `${nextWorkout.name} · ${formatDisplayDate(nextWorkout.date)}`
       : 'Nenhum treino agendado',
-    weekLabel: `${weekCompleted}/${Math.max(weekPlanned, 1)} na semana`,
+    weekCompleted,
+    weekGoal,
+    weekScheduled,
+    weekPct,
+    weekGoalSource: options.weekGoal > 0 ? 'meta' : weekScheduled > 0 ? 'agenda' : null,
+    weekLabel:
+      weekGoal != null
+        ? `${weekCompleted} de ${weekGoal} na semana`
+        : `${weekCompleted} realizados na semana`,
     monthLabel: `${completed} realizados em ${MONTHS_PT[month]}`,
     intenseStreak: countConsecutiveIntenseDays(workouts, today),
+    hasMonthActivity: planned + completed + rest + pending + missed > 0,
   }
 }
 

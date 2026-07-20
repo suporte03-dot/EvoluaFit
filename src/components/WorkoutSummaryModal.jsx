@@ -52,7 +52,7 @@ export default function WorkoutSummaryModal({ isOpen, onClose, onConfirm, sessio
         )}
 
         <p className="safety-note">
-          Ótimo trabalho! Hidrate-se, alongue-se e respeite o tempo de recuperação muscular.
+          Hidrate-se e respeite o tempo de recuperação. Consistência importa mais que intensidade.
         </p>
 
         <div className="workout-summary__actions">

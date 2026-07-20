@@ -104,9 +104,8 @@ export default function Goals() {
           })}
         </div>
 
-        <p className="safety-note">
-          Metas extremas de composição corporal ou volume de treino não são promovidas nesta plataforma.
-          Consulte um profissional para objetivos personalizados.
+        <p className="safety-note safety-note--link">
+          Conteúdo informativo — detalhes no rodapé.
         </p>
       </div>
     </section>

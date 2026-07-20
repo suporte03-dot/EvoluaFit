@@ -25,8 +25,15 @@ export const navItems = [
 export const mobileNavItems = [
   { id: 'inicio', label: 'Início', icon: '🏠' },
   { id: 'treinos', label: 'Treinos', icon: '🏋️' },
-  { id: 'exercicios', label: 'Exercícios', icon: '💪' },
+  { id: 'planilha', label: 'Planilha', icon: '📋' },
   { id: 'coach-ia', label: 'Coach IA', icon: '✦' },
+]
+
+export const mobileNavMoreItems = [
+  { id: 'exercicios', label: 'Exercícios', icon: '💪' },
+  { id: 'calendario', label: 'Calendário', icon: '🗓️' },
+  { id: 'desempenho', label: 'Desempenho', icon: '📈' },
+  { id: 'metas', label: 'Metas', icon: '🎯' },
   { id: 'perfil', label: 'Perfil', icon: '👤' },
 ]
 
@@ -34,6 +41,7 @@ export const BRAND = {
   name: 'EvoluaFit',
   slogan: 'Treinos inteligentes, evolução real.',
   sloganHighlight: 'evolução real',
+  /** Single global disclaimer — footer only */
   disclaimer:
-    'Este plano é informativo e não substitui orientação de um profissional de educação física ou saúde. Respeite seus limites e evite overtraining.',
+    'Conteúdo informativo: não substitui orientação de um profissional de educação física ou saúde. Respeite seus limites.',
 }

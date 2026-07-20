@@ -144,46 +144,71 @@ export default function WorkoutPlanner() {
     addPlanWorkouts(workouts)
   }
 
-  const daysPct = ((form.daysPerWeek - 2) / (7 - 2)) * 100
-  const durationPct = ((form.duration - 20) / (90 - 20)) * 100
   const currentStep = STEPS.find((s) => s.id === step) || STEPS[0]
+
+  const stepField = (key, value) => {
+    if (step < 5) {
+      // Fields fill as user progresses; show — until visited
+      const visited = { objective: 1, level: 1, daysPerWeek: 2, duration: 2, location: 3, equipment: 3, restrictions: 4 }
+      if (step < (visited[key] || 5)) return '—'
+    }
+    return value
+  }
+
+  const bumpDays = (delta) => {
+    update('daysPerWeek', Math.min(7, Math.max(2, form.daysPerWeek + delta)))
+  }
+  const bumpDuration = (delta) => {
+    update('duration', Math.min(90, Math.max(20, form.duration + delta)))
+  }
 
   const summaryPanel = (
     <aside className="planner-preview" aria-live="polite">
       <div className="planner-preview__card">
         <p className="planner-preview__eyebrow">Prévia</p>
         <h3 className="planner-preview__title">Resumo do plano</h3>
+        <div className="planner-preview__progress-label">
+          Etapa {step} de {STEPS.length}
+        </div>
+        <div className="planner-preview__progress-bar" role="progressbar" aria-valuenow={step} aria-valuemin={1} aria-valuemax={5}>
+          <div className="planner-preview__progress-fill" style={{ width: `${(step / STEPS.length) * 100}%` }} />
+        </div>
         <ul className="planner-preview__list">
           <li>
             <span>Objetivo</span>
-            <strong>{objectiveLabel}</strong>
+            <strong>{stepField('objective', objectiveLabel)}</strong>
           </li>
           <li>
             <span>Nível</span>
-            <strong>{form.level}</strong>
+            <strong>{stepField('level', form.level)}</strong>
           </li>
           <li>
             <span>Frequência</span>
-            <strong>{form.daysPerWeek}x por semana</strong>
+            <strong>{stepField('daysPerWeek', `${form.daysPerWeek}x por semana`)}</strong>
           </li>
           <li>
             <span>Duração</span>
-            <strong>{form.duration} min</strong>
+            <strong>{stepField('duration', `${form.duration} min`)}</strong>
           </li>
           <li>
             <span>Local</span>
-            <strong>{form.location}</strong>
+            <strong>{stepField('location', form.location)}</strong>
           </li>
           <li>
             <span>Equipamentos</span>
-            <strong>{form.equipment.length ? form.equipment.join(', ') : '—'}</strong>
+            <strong>
+              {stepField('equipment', form.equipment.length ? form.equipment.join(', ') : '—')}
+            </strong>
           </li>
           <li>
             <span>Cuidados</span>
             <strong>
-              {noRestrictions || !form.restrictions.length
-                ? NONE_RESTRICTION
-                : form.restrictions.join(', ')}
+              {stepField(
+                'restrictions',
+                noRestrictions || !form.restrictions.length
+                  ? NONE_RESTRICTION
+                  : form.restrictions.join(', '),
+              )}
             </strong>
           </li>
         </ul>
@@ -203,20 +228,28 @@ export default function WorkoutPlanner() {
           subtitle="Siga as etapas e gere um plano equilibrado para a sua rotina."
         />
 
-        <div className="planner-wizard-progress" aria-label="Progresso">
-          {STEPS.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              className={`planner-wizard-dot${step === s.id ? ' is-active' : ''}${step > s.id ? ' is-done' : ''}`}
-              onClick={() => setStep(s.id)}
-              aria-current={step === s.id ? 'step' : undefined}
-              title={s.title}
-            >
-              <span>{s.id}</span>
-              <em className="planner-wizard-dot__label">{s.title}</em>
-            </button>
-          ))}
+        <div className="planner-wizard-progress" aria-label={`Etapa ${step} de ${STEPS.length}`}>
+          <div className="planner-wizard-progress__meta">
+            <strong>Etapa {step} de {STEPS.length}</strong>
+            <span>{currentStep.title}</span>
+          </div>
+          <div className="planner-wizard-progress__bar" role="progressbar" aria-valuenow={step} aria-valuemin={1} aria-valuemax={5}>
+            <div className="planner-wizard-progress__fill" style={{ width: `${(step / STEPS.length) * 100}%` }} />
+          </div>
+          <div className="planner-wizard-dots">
+            {STEPS.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                className={`planner-wizard-dot${step === s.id ? ' is-active' : ''}${step > s.id ? ' is-done' : ''}`}
+                onClick={() => setStep(s.id)}
+                aria-current={step === s.id ? 'step' : undefined}
+                title={s.title}
+              >
+                <span>{s.id}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="planner-layout planner-layout--wizard">
@@ -260,45 +293,46 @@ export default function WorkoutPlanner() {
               )}
 
               {step === 2 && (
-                <div className="planner-step__grid planner-step__grid--sliders">
-                  <label className="planner-field planner-field--slider">
+                <div className="planner-step__grid planner-step__grid--steppers">
+                  <div className="planner-field planner-field--stepper">
                     <span className="planner-field__row">
                       Dias por semana
                       <strong className="planner-badge">{form.daysPerWeek} dias</strong>
                     </span>
-                    <input
-                      type="range"
-                      min="2"
-                      max="7"
-                      value={form.daysPerWeek}
-                      onChange={(e) => update('daysPerWeek', Number(e.target.value))}
-                      style={{ '--range-pct': `${daysPct}%` }}
-                    />
+                    <div className="planner-stepper">
+                      <button type="button" className="planner-stepper__btn" onClick={() => bumpDays(-1)} aria-label="Menos um dia" disabled={form.daysPerWeek <= 2}>
+                        −
+                      </button>
+                      <span className="planner-stepper__value">{form.daysPerWeek}</span>
+                      <button type="button" className="planner-stepper__btn" onClick={() => bumpDays(1)} aria-label="Mais um dia" disabled={form.daysPerWeek >= 7}>
+                        +
+                      </button>
+                    </div>
                     <span className="planner-scale">
                       <em>2</em>
                       <em>7</em>
                     </span>
-                  </label>
+                  </div>
 
-                  <label className="planner-field planner-field--slider">
+                  <div className="planner-field planner-field--stepper">
                     <span className="planner-field__row">
                       Tempo por treino
                       <strong className="planner-badge">{form.duration} min</strong>
                     </span>
-                    <input
-                      type="range"
-                      min="20"
-                      max="90"
-                      step="5"
-                      value={form.duration}
-                      onChange={(e) => update('duration', Number(e.target.value))}
-                      style={{ '--range-pct': `${durationPct}%` }}
-                    />
+                    <div className="planner-stepper">
+                      <button type="button" className="planner-stepper__btn" onClick={() => bumpDuration(-5)} aria-label="Menos 5 minutos" disabled={form.duration <= 20}>
+                        −
+                      </button>
+                      <span className="planner-stepper__value">{form.duration}</span>
+                      <button type="button" className="planner-stepper__btn" onClick={() => bumpDuration(5)} aria-label="Mais 5 minutos" disabled={form.duration >= 90}>
+                        +
+                      </button>
+                    </div>
                     <span className="planner-scale">
                       <em>20 min</em>
                       <em>90 min</em>
                     </span>
-                  </label>
+                  </div>
                 </div>
               )}
 
@@ -386,16 +420,6 @@ export default function WorkoutPlanner() {
                       </li>
                     </ul>
                   </div>
-
-                  <div className="planner-alert" role="note">
-                    <span className="planner-alert__icon" aria-hidden="true">
-                      ⚠
-                    </span>
-                    <p>
-                      Plano demonstrativo e informativo. Não substitui avaliação de um profissional de
-                      educação física. Ajuste conforme sua condição e interrompa em caso de dor.
-                    </p>
-                  </div>
                 </>
               )}
             </div>
@@ -423,12 +447,21 @@ export default function WorkoutPlanner() {
             </div>
 
             {plan && step === 5 && (
-              <div className="planner-actions">
-                <button type="button" className="btn btn--lg planner-btn--excel" onClick={handleDownloadExcel}>
-                  Baixar Excel
-                </button>
-                <button type="button" className="btn btn--lg planner-btn--save" onClick={handleSaveToMyPlan}>
+              <div className="planner-actions planner-actions--hierarchy">
+                <button type="button" className="btn btn--primary btn--lg planner-btn--save" onClick={handleSaveToMyPlan}>
                   Salvar na minha planilha
+                </button>
+                <button type="button" className="btn btn--outline btn--lg planner-btn--excel" onClick={handleDownloadExcel}>
+                  Exportar Excel
+                </button>
+                <button
+                  type="button"
+                  className="btn btn--ghost"
+                  onClick={() => {
+                    document.getElementById('calendario')?.scrollIntoView({ behavior: 'smooth' })
+                  }}
+                >
+                  Ir ao calendário
                 </button>
               </div>
             )}

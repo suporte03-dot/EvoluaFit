@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
 import { inferWorkoutType } from '../utils/workoutSession'
+import { formatDateShort } from '../utils/dateFormat'
 import SectionTitle from './SectionTitle'
 import EmptyState from './EmptyState'
 import WorkoutDetailModal from './WorkoutDetailModal'
@@ -113,13 +114,7 @@ export default function MyWorkouts() {
                     </div>
 
                     <div className="workout-card__meta">
-                      <span>
-                        {new Date(workout.date + 'T12:00:00').toLocaleDateString('pt-BR', {
-                          weekday: 'long',
-                          day: 'numeric',
-                          month: 'short',
-                        })}
-                      </span>
+                      <span>{formatDateShort(workout.date)}</span>
                       <span>{exerciseCount} exercícios</span>
                       <span>{duration} min</span>
                     </div>

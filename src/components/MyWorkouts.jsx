@@ -11,6 +11,7 @@ export default function MyWorkouts() {
   const [editName, setEditName] = useState('')
   const [detailWorkout, setDetailWorkout] = useState(null)
   const [openId, setOpenId] = useState(null)
+  const [isTreinosOpen, setIsTreinosOpen] = useState(false)
 
   const toggleOpen = (id) => {
     setOpenId((current) => (current === id ? null : id))
@@ -59,27 +60,50 @@ export default function MyWorkouts() {
               secondaryCtaSection="coach-ia"
             />
           ) : (
-            <div className="workout-list">
-              {workouts.map((workout, index) => (
-                <CollapsibleWorkoutCard
-                  key={workout.id}
-                  workout={workout}
-                  index={index}
-                  isOpen={openId === workout.id}
-                  onToggle={toggleOpen}
-                  editingId={editingId}
-                  editName={editName}
-                  onEditNameChange={setEditName}
-                  onSaveEdit={saveEdit}
-                  onStartWorkout={startWorkout}
-                  onViewWorkout={setDetailWorkout}
-                  onEdit={startEdit}
-                  onDuplicate={duplicateWorkout}
-                  onComplete={markDone}
-                  onDelete={deleteWorkout}
-                />
-              ))}
-            </div>
+            <>
+              <button
+                type="button"
+                className={`disclose-toggle${isTreinosOpen ? ' is-open' : ''}`}
+                onClick={() => setIsTreinosOpen((o) => !o)}
+                aria-expanded={isTreinosOpen}
+                aria-controls="meus-treinos-panel"
+              >
+                <span>{isTreinosOpen ? 'Ocultar meus treinos' : 'Ver meus treinos'}</span>
+                <span className="disclose-toggle__chevron" aria-hidden="true">
+                  ▼
+                </span>
+              </button>
+
+              <div
+                id="meus-treinos-panel"
+                className={`disclose-panel${isTreinosOpen ? ' is-open' : ''}`}
+                aria-hidden={!isTreinosOpen}
+              >
+                <div className="disclose-panel__inner">
+                  <div className="workout-list">
+                    {workouts.map((workout, index) => (
+                      <CollapsibleWorkoutCard
+                        key={workout.id}
+                        workout={workout}
+                        index={index}
+                        isOpen={openId === workout.id}
+                        onToggle={toggleOpen}
+                        editingId={editingId}
+                        editName={editName}
+                        onEditNameChange={setEditName}
+                        onSaveEdit={saveEdit}
+                        onStartWorkout={startWorkout}
+                        onViewWorkout={setDetailWorkout}
+                        onEdit={startEdit}
+                        onDuplicate={duplicateWorkout}
+                        onComplete={markDone}
+                        onDelete={deleteWorkout}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>

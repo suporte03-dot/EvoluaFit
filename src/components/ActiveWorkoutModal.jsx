@@ -411,9 +411,11 @@ export default function ActiveWorkoutModal() {
               exercise={current}
               index={exerciseIndex}
               isCurrent
-              expanded={expandedIndex === exerciseIndex || expandedIndex < 0}
+              expanded={expandedIndex === exerciseIndex || expandedIndex === -1}
               onToggle={() =>
-                setExpandedIndex((cur) => (cur === exerciseIndex || cur < 0 ? -2 : exerciseIndex))
+                setExpandedIndex((cur) =>
+                  cur === exerciseIndex || cur === -1 ? -2 : exerciseIndex,
+                )
               }
               draft={drafts[exerciseIndex] || { weight: '', reps: '' }}
               onDraftChange={(d) => setDrafts((prev) => ({ ...prev, [exerciseIndex]: d }))}

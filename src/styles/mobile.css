@@ -1056,7 +1056,10 @@
 
   /* Coach IA */
   .coach-ia__main {
-    padding: 1rem;
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
   }
 
   .coach-ia__summary {
@@ -1068,13 +1071,44 @@
     font-size: 0.84rem;
   }
 
+  .coach-ia__context {
+    margin-bottom: 0.65rem;
+  }
+
+  .coach-ia__context-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0.4rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .coach-ia__context-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .coach-ia__context-chip--privacy {
+    display: none;
+  }
+
+  .coach-ia__form {
+    position: sticky;
+    bottom: calc(var(--mobile-nav-h) + var(--safe-bottom) + 4px);
+    z-index: 5;
+    order: 20;
+    margin-top: auto;
+    padding: 0.65rem 0.15rem calc(0.35rem + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(to top, var(--bg-card) 75%, transparent);
+  }
+
   .coach-ia__input-row {
     gap: 0.45rem;
   }
 
   .coach-ia__input {
     width: 100%;
-    min-height: 56px;
+    min-height: 52px;
     font-size: 1rem;
   }
 
@@ -1087,11 +1121,6 @@
   .coach-ia__voice-bar {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .coach-ia__context-chip--privacy {
-    font-size: 0.68rem;
-    line-height: 1.35;
   }
 
   .coach-ia__chips {
@@ -1119,7 +1148,8 @@
   }
 
   .coach-ia__chat {
-    max-height: 360px;
+    max-height: 320px;
+    order: 10;
   }
 
   .coach-ia__empty-examples {
@@ -1210,10 +1240,49 @@
     min-height: 44px;
   }
 
+  .cal-month-toggle {
+    width: 100%;
+    margin-top: 0.75rem;
+  }
+
+  .calendar--mobile-month {
+    display: block;
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .calendar--mobile-month .calendar__weekdays,
+  .calendar--mobile-month .cal-month-grid {
+    gap: 0.25rem;
+  }
+
+  .calendar--mobile-month .calendar__day {
+    min-height: 42px;
+    padding: 0.25rem;
+  }
+
   /* Desempenho */
   .perf-stats {
     grid-template-columns: 1fr 1fr;
     gap: 0.6rem;
+  }
+
+  .perf-stat-slot--desktop {
+    display: none;
+  }
+
+  .perf-extras-toggle {
+    width: 100%;
+    margin: 0.65rem 0;
+  }
+
+  .perf-stats--mobile-extras {
+    margin-bottom: 0.85rem;
+  }
+
+  .perf-charts,
+  .chart-card {
+    width: 100%;
   }
 
   .perf-charts {
@@ -1225,16 +1294,54 @@
     font-size: 0.78rem;
   }
 
+  .perf-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0.35rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .perf-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .perf-tab {
+    flex: 0 0 auto;
+    min-height: 40px;
+    font-size: 0.78rem;
+  }
+
   /* Metas */
   .goal-card {
-    padding: 1rem;
+    padding: 14px;
+    border-radius: 16px;
   }
 
   .goal-card__progress {
     height: 8px;
   }
 
+  .goal-card__summary {
+    width: 100%;
+    text-align: left;
+  }
+
   /* Perfil */
+  .profile-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 14px;
+  }
+
+  .profile-summary .btn {
+    width: 100%;
+    min-height: 44px;
+  }
+
   .profile-form .form-field input,
   .profile-form .form-field select {
     min-height: 48px;
@@ -1250,6 +1357,54 @@
     width: 100%;
     min-height: 44px;
     margin-bottom: 0.5rem;
+  }
+
+  /* Planilha gerada */
+  .generated-plan {
+    padding: 14px;
+  }
+
+  .generated-plan__header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .generated-plan__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .generated-plan__actions .btn {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .generated-plan__excel {
+    order: 2;
+  }
+
+  .plan-day {
+    padding: 12px 14px;
+    border-radius: 16px;
+  }
+
+  .plan-day.is-collapsed .plan-day__stats {
+    margin-bottom: 0.55rem;
+  }
+
+  .plan-day__actions {
+    flex-direction: column;
+  }
+
+  .plan-day__actions .btn {
+    width: 100%;
+    flex: none;
+    min-height: 44px;
+  }
+
+  .plan-day__actions .btn--start-workout {
+    min-height: 48px;
   }
 
   /* Botões globais */
@@ -1306,6 +1461,44 @@
     padding: 1rem 0 0;
     background: transparent;
     border: none;
+  }
+
+  .perf-extras-toggle,
+  .perf-stats--mobile-extras,
+  .cal-month-toggle,
+  .calendar--mobile-month {
+    display: none !important;
+  }
+
+  .perf-stat-slot--desktop {
+    display: contents;
+  }
+
+  .workout-session__topbar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .workout-session__top-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .workout-session__top-actions .btn--primary {
+    margin-left: auto;
+  }
+
+  .workout-card__more {
+    margin-top: 0.85rem;
+  }
+
+  .workout-card__date-hint {
+    margin: 0.25rem 0 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
   }
 }
 
@@ -1401,11 +1594,13 @@
   }
 
   .plan-day__actions {
-    flex-wrap: wrap;
+    flex-direction: column;
+    flex-wrap: nowrap;
   }
 
   .plan-day__actions .btn {
-    flex: 1 1 calc(50% - 0.35rem);
+    width: 100%;
+    flex: none;
     min-height: 44px;
   }
 
@@ -1415,5 +1610,9 @@
 
   .calendar--desktop {
     display: none;
+  }
+
+  .calendar--mobile-month {
+    display: block;
   }
 }

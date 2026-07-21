@@ -2024,7 +2024,7 @@ main {
 }
 
 .workouts-panel .section-title {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .workouts-panel .section-title__heading {
@@ -4595,31 +4595,31 @@ main {
 
 @media (max-width: 768px) {
   :root {
-    --header-h: 68px;
+    --header-h: 56px;
     --header-banner-h: 0px;
   }
 
   .section {
-    padding: 2.5rem 0;
+    padding: 20px 14px;
   }
 
   .container {
-    width: min(var(--container), 100% - 1.25rem);
+    width: min(var(--container), 100% - 1.75rem);
   }
 
   .brand-logo {
-    height: 60px;
-    max-width: 230px;
-    gap: 10px;
+    height: 44px;
+    max-width: 180px;
+    gap: 8px;
   }
 
   .brand-icon {
-    width: 56px;
-    height: 56px;
+    width: 40px;
+    height: 40px;
   }
 
   .brand-name {
-    font-size: 26px;
+    font-size: 20px;
   }
 
   .brand-slogan {
@@ -4627,7 +4627,7 @@ main {
   }
 
   .header__brand {
-    gap: 0.55rem;
+    gap: 0.4rem;
   }
 
   .header__disclaimer {
@@ -4635,7 +4635,7 @@ main {
   }
 
   .calendar--desktop,
-  .cal-grid-wrap {
+  .cal-grid-wrap:not(.calendar--mobile-month) {
     display: none;
   }
 
@@ -7613,11 +7613,56 @@ main {
   background: rgba(11, 34, 56, 0.85);
 }
 
+.disclose-toggle__chevron {
+  display: inline-block;
+  flex-shrink: 0;
+  line-height: 1;
+  font-size: 0.72rem;
+  opacity: 0.75;
+  transition: transform 0.32s ease, opacity 0.2s ease;
+  transform-origin: center;
+}
+
+.disclose-toggle.is-open .disclose-toggle__chevron,
+.disclose-toggle:hover .disclose-toggle__chevron {
+  opacity: 1;
+}
+
+.disclose-toggle.is-open .disclose-toggle__chevron {
+  transform: rotate(180deg);
+}
+
 .disclose-toggle--inline {
   width: auto;
   margin: 0.5rem 0;
   padding: 0.55rem 0.85rem;
   font-size: 0.82rem;
+}
+
+.disclose-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.32s ease;
+}
+
+.disclose-panel.is-open {
+  grid-template-rows: 1fr;
+}
+
+.disclose-panel__inner {
+  overflow: hidden;
+  min-height: 0;
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+
+.disclose-panel.is-open .disclose-panel__inner {
+  opacity: 1;
+}
+
+.workouts-panel > .disclose-toggle {
+  margin-top: 0;
+  margin-bottom: 0.85rem;
 }
 
 .hero__inner--lean {

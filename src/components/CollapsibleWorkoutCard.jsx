@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useId } from 'react'
 import { inferWorkoutType } from '../utils/workoutSession'
 import { formatDateShort } from '../utils/dateFormat'
 
@@ -23,20 +23,20 @@ function exerciseNote(ex) {
 
 export default function CollapsibleWorkoutCard({
   workout,
+  isOpen = false,
+  onToggle,
+  onStartWorkout,
+  onViewWorkout,
+  onEdit,
+  onDuplicate,
+  onComplete,
+  onDelete,
   index = 0,
   editingId,
   editName,
   onEditNameChange,
-  onStartEdit,
   onSaveEdit,
-  onStart,
-  onView,
-  onDuplicate,
-  onMarkDone,
-  onDelete,
 }) {
-  const [open, setOpen] = useState(false)
-  const [moreOpen, setMoreOpen] = useState(false)
   const panelId = useId()
   const type = inferWorkoutType(workout)
   const exerciseCount = workout.exercises?.length || 0
@@ -44,46 +44,29 @@ export default function CollapsibleWorkoutCard({
   const dateLabel = workout.dayLabel || formatDateShort(workout.date)
   const isEditing = editingId === workout.id
 
-  const toggle = () => setOpen((v) => !v)
+  const handleToggle = () => {
+    onToggle?.(workout.id)
+  }
 
   const onHeaderKeyDown = (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
-      toggle()
+      handleToggle()
     }
   }
 
-  const secondaryActions = (
-    <>
-      <button type="button" className="btn btn--ghost btn--sm" onClick={(e) => onStartEdit(workout, e)}>
-        Editar
-      </button>
-      <button type="button" className="btn btn--ghost btn--sm" onClick={() => onDuplicate(workout.id)}>
-        Duplicar
-      </button>
-      {workout.status !== 'Realizado' && (
-        <button type="button" className="btn btn--ghost btn--sm" onClick={(e) => onMarkDone(workout, e)}>
-          Marcar realizado
-        </button>
-      )}
-      <button type="button" className="btn btn--danger btn--sm" onClick={() => onDelete(workout.id)}>
-        Excluir
-      </button>
-    </>
-  )
-
   return (
     <article
-      className={`workout-card glass-card workout-card--accordion${open ? ' workout-card--expanded' : ''}`}
+      className={`workout-card glass-card workout-card--accordion${isOpen ? ' workout-card--expanded' : ''}`}
       style={{ '--card-delay': `${Math.min(index, 8) * 40}ms` }}
     >
       <div
         className="workout-card__summary"
-        onClick={isEditing ? undefined : toggle}
+        onClick={isEditing ? undefined : handleToggle}
         onKeyDown={isEditing ? undefined : onHeaderKeyDown}
         role={isEditing ? undefined : 'button'}
         tabIndex={isEditing ? undefined : 0}
-        aria-expanded={open}
+        aria-expanded={isOpen}
         aria-controls={panelId}
       >
         <div className="workout-card__top">
@@ -107,15 +90,28 @@ export default function CollapsibleWorkoutCard({
               </button>
             </div>
           ) : (
-            <div className="workout-card__heading">
-              <h3 className="workout-card__name">{workout.name}</h3>
-              <span className="workout-card__type">{type}</span>
-            </div>
+            <h3 className="workout-card__name">{workout.name}</h3>
           )}
-          <span className={`status-badge ${statusClass[workout.status] || ''}`}>{workout.status}</span>
+          <button
+            type="button"
+            className="workout-card__toggle"
+            onClick={(e) => {
+              e.stopPropagation()
+              handleToggle()
+            }}
+            aria-expanded={isOpen}
+            aria-controls={panelId}
+            aria-label={isOpen ? 'Recolher detalhes do treino' : 'Expandir detalhes do treino'}
+          >
+            <span className="workout-card__toggle-icon" aria-hidden="true">
+              ▼
+            </span>
+          </button>
         </div>
 
         <p className="workout-card__meta">
+          <span>{type}</span>
+          <span aria-hidden="true">·</span>
           <span>{dateLabel}</span>
           <span aria-hidden="true">·</span>
           <span>
@@ -123,56 +119,43 @@ export default function CollapsibleWorkoutCard({
           </span>
           <span aria-hidden="true">·</span>
           <span>{duration} min</span>
+          <span aria-hidden="true">·</span>
+          <span className={`workout-card__status ${statusClass[workout.status] || ''}`}>
+            {workout.status}
+          </span>
         </p>
-
-        {workout.muscleGroups?.length > 0 && (
-          <div className="workout-card__muscles">
-            {workout.muscleGroups.map((g) => (
-              <span key={g} className="muscle-tag">
-                {g}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
 
       <div className="workout-card__primary">
         <button
           type="button"
           className="btn btn--primary btn--sm btn--start-workout"
-          onClick={() => onStart(workout)}
+          onClick={(e) => {
+            e.stopPropagation()
+            onStartWorkout?.(workout)
+          }}
           disabled={workout.status === 'Realizado'}
         >
           Iniciar treino
-        </button>
-        <button
-          type="button"
-          className="btn btn--ghost btn--sm workout-card__view"
-          onClick={(e) => {
-            e.stopPropagation()
-            onView(workout)
-          }}
-        >
-          Ver treino
-        </button>
-        <button
-          type="button"
-          className="workout-card__toggle"
-          onClick={toggle}
-          aria-expanded={open}
-          aria-controls={panelId}
-          aria-label={open ? 'Recolher detalhes do treino' : 'Expandir detalhes do treino'}
-        >
-          <span aria-hidden="true">{open ? '▲' : '▼'}</span>
         </button>
       </div>
 
       <div
         id={panelId}
-        className={`workout-card__panel${open ? ' is-open' : ''}`}
-        aria-hidden={!open}
+        className={`workout-card__panel${isOpen ? ' is-open' : ''}`}
+        aria-hidden={!isOpen}
       >
         <div className="workout-card__panel-inner">
+          {workout.muscleGroups?.length > 0 && (
+            <div className="workout-card__muscles">
+              {workout.muscleGroups.map((g) => (
+                <span key={g} className="muscle-tag">
+                  {g}
+                </span>
+              ))}
+            </div>
+          )}
+
           {exerciseCount > 0 && (
             <ul className="workout-card__exercises">
               {workout.exercises.map((ex, i) => {
@@ -194,20 +177,59 @@ export default function CollapsibleWorkoutCard({
             </ul>
           )}
 
-          <div className="workout-card__actions workout-card__actions--extra workout-card__actions--desktop">
-            {secondaryActions}
-          </div>
-
-          <div className="workout-card__more">
+          <div className="workout-card__actions workout-card__actions--extra">
             <button
               type="button"
-              className="btn btn--ghost btn--sm workout-card__more-toggle"
-              aria-expanded={moreOpen}
-              onClick={() => setMoreOpen((v) => !v)}
+              className="btn btn--ghost btn--sm workout-card__view"
+              onClick={(e) => {
+                e.stopPropagation()
+                onViewWorkout?.(workout)
+              }}
             >
-              Mais opções {moreOpen ? '▲' : '▼'}
+              Ver treino
             </button>
-            {moreOpen && <div className="workout-card__more-panel">{secondaryActions}</div>}
+            <button
+              type="button"
+              className="btn btn--ghost btn--sm"
+              onClick={(e) => {
+                e.stopPropagation()
+                onEdit?.(workout, e)
+              }}
+            >
+              Editar
+            </button>
+            <button
+              type="button"
+              className="btn btn--ghost btn--sm"
+              onClick={(e) => {
+                e.stopPropagation()
+                onDuplicate?.(workout.id)
+              }}
+            >
+              Duplicar
+            </button>
+            {workout.status !== 'Realizado' && (
+              <button
+                type="button"
+                className="btn btn--ghost btn--sm"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onComplete?.(workout, e)
+                }}
+              >
+                Marcar realizado
+              </button>
+            )}
+            <button
+              type="button"
+              className="btn btn--danger btn--sm"
+              onClick={(e) => {
+                e.stopPropagation()
+                onDelete?.(workout.id)
+              }}
+            >
+              Excluir
+            </button>
           </div>
         </div>
       </div>

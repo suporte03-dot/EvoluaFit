@@ -10,6 +10,11 @@ export default function MyWorkouts() {
   const [editingId, setEditingId] = useState(null)
   const [editName, setEditName] = useState('')
   const [detailWorkout, setDetailWorkout] = useState(null)
+  const [openId, setOpenId] = useState(null)
+
+  const toggleOpen = (id) => {
+    setOpenId((current) => (current === id ? null : id))
+  }
 
   const startEdit = (workout, e) => {
     e?.stopPropagation()
@@ -60,15 +65,17 @@ export default function MyWorkouts() {
                   key={workout.id}
                   workout={workout}
                   index={index}
+                  isOpen={openId === workout.id}
+                  onToggle={toggleOpen}
                   editingId={editingId}
                   editName={editName}
                   onEditNameChange={setEditName}
-                  onStartEdit={startEdit}
                   onSaveEdit={saveEdit}
-                  onStart={startWorkout}
-                  onView={setDetailWorkout}
+                  onStartWorkout={startWorkout}
+                  onViewWorkout={setDetailWorkout}
+                  onEdit={startEdit}
                   onDuplicate={duplicateWorkout}
-                  onMarkDone={markDone}
+                  onComplete={markDone}
                   onDelete={deleteWorkout}
                 />
               ))}

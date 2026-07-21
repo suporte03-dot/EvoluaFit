@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 
-export default function RestTimer({ seconds, onSkip, onAdjust, isPaused, onComplete, soundEnabled = false }) {
+export default function RestTimer({
+  seconds,
+  onSkip,
+  onAdjust,
+  isPaused,
+  onComplete,
+  soundEnabled = false,
+  className = '',
+}) {
   const mins = Math.floor(seconds / 60)
   const secs = seconds % 60
   const display = mins > 0 ? `${mins}:${String(secs).padStart(2, '0')}` : `${secs}s`
@@ -42,7 +50,9 @@ export default function RestTimer({ seconds, onSkip, onAdjust, isPaused, onCompl
   if (seconds <= 0 && !justDone) return null
 
   return (
-    <div className={`rest-timer ${isPaused ? 'rest-timer--paused' : ''} ${justDone ? 'rest-timer--done' : ''}`}>
+    <div
+      className={`rest-timer ${isPaused ? 'rest-timer--paused' : ''} ${justDone ? 'rest-timer--done' : ''} ${className}`.trim()}
+    >
       <div className="rest-timer__info">
         <span className="rest-timer__label">{justDone ? 'Pronto' : 'Descanso'}</span>
         <strong className="rest-timer__time">{justDone ? '✓' : display}</strong>

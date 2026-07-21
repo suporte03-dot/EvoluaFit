@@ -17,14 +17,18 @@ export default function Hero() {
             <span className="hero__title-rest">Seu treino, com clareza</span>
           </h1>
           <p className="hero__subtitle">
-            Monte planilhas, acompanhe a rotina e evolua com consistência.
+            Planilhas, rotina e evolução — com clareza.
           </p>
           <div className="hero__actions">
             <button type="button" className="btn btn--primary btn--lg" onClick={() => scrollToSection('planilha')}>
               Criar minha planilha
             </button>
-            <button type="button" className="btn btn--outline btn--lg" onClick={() => scrollToSection('desempenho')}>
-              Ver desempenho
+            <button
+              type="button"
+              className="btn btn--outline btn--lg hero__secondary-cta"
+              onClick={() => scrollToSection('treinos')}
+            >
+              Ver meus treinos
             </button>
           </div>
         </div>

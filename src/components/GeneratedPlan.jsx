@@ -124,7 +124,7 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
             Salvar na minha planilha
           </button>
           {onDownloadExcel && (
-            <button type="button" className="btn btn--outline" onClick={onDownloadExcel}>
+            <button type="button" className="btn btn--outline generated-plan__excel" onClick={onDownloadExcel}>
               Exportar Excel
             </button>
           )}
@@ -176,37 +176,38 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
                 </span>
               </div>
 
-              <DayVolumeSummary
-                exercises={day.exercises}
-                dayType={day.workoutType || type.label}
-                volumeSummary={day.volumeSummary}
-              />
-
               {isExpanded && (
-                <ul className="plan-day__exercises">
-                  {(day.exercises || []).map((ex) => (
-                    <li key={ex.exerciseId || ex.name}>
-                      <div className="plan-day__ex-main">
-                        <strong>{ex.name}</strong>
-                        <span className="plan-day__ex-group">{ex.muscleGroup}</span>
-                      </div>
-                      <span className="plan-day__ex-meta">
-                        {ex.sets}x {ex.reps} · descanso {ex.rest ?? ex.restSeconds}s
-                        {ex.equipment ? ` · ${ex.equipment}` : ''}
-                      </span>
-                      {ex.observation && (
-                        <span className="plan-day__ex-note">
-                          <em>Obs:</em> {ex.observation}
+                <>
+                  <DayVolumeSummary
+                    exercises={day.exercises}
+                    dayType={day.workoutType || type.label}
+                    volumeSummary={day.volumeSummary}
+                  />
+                  <ul className="plan-day__exercises">
+                    {(day.exercises || []).map((ex) => (
+                      <li key={ex.exerciseId || ex.name}>
+                        <div className="plan-day__ex-main">
+                          <strong>{ex.name}</strong>
+                          <span className="plan-day__ex-group">{ex.muscleGroup}</span>
+                        </div>
+                        <span className="plan-day__ex-meta">
+                          {ex.sets}x {ex.reps} · descanso {ex.rest ?? ex.restSeconds}s
+                          {ex.equipment ? ` · ${ex.equipment}` : ''}
                         </span>
-                      )}
-                      {ex.safetyTip && (
-                        <span className="plan-day__ex-care">
-                          <em>Cuidado:</em> {ex.safetyTip}
-                        </span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+                        {ex.observation && (
+                          <span className="plan-day__ex-note">
+                            <em>Obs:</em> {ex.observation}
+                          </span>
+                        )}
+                        {ex.safetyTip && (
+                          <span className="plan-day__ex-care">
+                            <em>Cuidado:</em> {ex.safetyTip}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </>
               )}
 
               <div className="plan-day__actions">

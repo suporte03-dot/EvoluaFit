@@ -52,7 +52,8 @@ export default function ActiveWorkoutModal() {
   } = useFitness()
 
   const [exerciseIndex, setExerciseIndex] = useState(0)
-  const [expandedIndex, setExpandedIndex] = useState(0)
+  const [expandedIndex, setExpandedIndex] = useState(-1)
+  const [listOpen, setListOpen] = useState(false)
   const [sessionExercises, setSessionExercises] = useState([])
   const [drafts, setDrafts] = useState({})
   const [restTimer, setRestTimer] = useState(0)
@@ -124,7 +125,8 @@ export default function ActiveWorkoutModal() {
       const restored = restoreSessionExercises(saved.sessionExercises)
       setSessionExercises(restored)
       setExerciseIndex(saved.exerciseIndex ?? 0)
-      setExpandedIndex(saved.expandedIndex ?? saved.exerciseIndex ?? 0)
+      setExpandedIndex(saved.expandedIndex ?? -1)
+      setListOpen(false)
       setSessionNotes(saved.sessionNotes || '')
       setDrafts(saved.drafts || {})
       startTimeRef.current = saved.startedAt || Date.now()
@@ -147,6 +149,7 @@ export default function ActiveWorkoutModal() {
     const exs = createSessionExercises(activeWorkout)
     setExerciseIndex(0)
     setExpandedIndex(0)
+    setListOpen(false)
     setSessionExercises(exs)
     setDrafts({})
     setRestTimer(0)
@@ -244,6 +247,7 @@ export default function ActiveWorkoutModal() {
     }
 
     setExerciseIndex(getSessionProgress(updated).currentExerciseIndex)
+    setExpandedIndex(getSessionProgress(updated).currentExerciseIndex)
     setDrafts((d) => ({
       ...d,
       [exIndex]: { weight: draft.weight, reps: '' },
@@ -333,6 +337,28 @@ export default function ActiveWorkoutModal() {
         className="active-workout-modal"
       >
         <div className={`workout-session workout-session--active ${isPaused ? 'workout-session--paused' : ''}`}>
+          <div className="workout-session__topbar">
+            <WorkoutProgressBar
+              percent={progress.percent}
+              completedSets={progress.completedSets}
+              totalSets={progress.totalSets}
+              currentExercise={current?.name || progress.currentExerciseName}
+            />
+            <div className="workout-session__top-actions">
+              <button type="button" className="btn btn--ghost btn--sm" onClick={togglePause}>
+                {isPaused ? 'Retomar' : 'Pausar'}
+              </button>
+              <button
+                type="button"
+                className="btn btn--primary"
+                onClick={() => openSummary(false)}
+                disabled={isPaused || progress.completedSets === 0}
+              >
+                Finalizar treino
+              </button>
+            </div>
+          </div>
+
           <div className="workout-session__header">
             <div className="workout-session__meta">
               <h3 className="workout-session__name">{activeWorkout.name}</h3>
@@ -352,12 +378,93 @@ export default function ActiveWorkoutModal() {
             )}
           </div>
 
-          <WorkoutProgressBar
-            percent={progress.percent}
-            completedSets={progress.completedSets}
-            totalSets={progress.totalSets}
-            currentExercise={current?.name || progress.currentExerciseName}
-          />
+          {current && (
+            <p className="workout-session__now">
+              Agora: <strong>{current.name}</strong>
+              {current.muscleGroup ? ` · ${current.muscleGroup}` : ''}
+            </p>
+          )}
+
+          {timerActive && restTimer > 0 && (
+            <RestTimer
+              className="rest-timer--lg"
+              seconds={restTimer}
+              onSkip={skipRest}
+              onAdjust={adjustRest}
+              isPaused={isPaused}
+              soundEnabled={false}
+            />
+          )}
+          {restDoneToast && (
+            <div className="rest-timer rest-timer--done rest-timer--lg" role="status">
+              <div className="rest-timer__info">
+                <span className="rest-timer__label">Pronto</span>
+                <strong className="rest-timer__time">✓</strong>
+              </div>
+              <p className="rest-timer__done-msg">Descanso concluído. Próxima série pronta.</p>
+            </div>
+          )}
+
+          {!listOpen && current && (
+            <ExerciseSessionCard
+              key={`focus-${current.exerciseId || current.name}-${exerciseIndex}`}
+              exercise={current}
+              index={exerciseIndex}
+              isCurrent
+              expanded={expandedIndex === exerciseIndex || expandedIndex < 0}
+              onToggle={() =>
+                setExpandedIndex((cur) => (cur === exerciseIndex || cur < 0 ? -2 : exerciseIndex))
+              }
+              draft={drafts[exerciseIndex] || { weight: '', reps: '' }}
+              onDraftChange={(d) => setDrafts((prev) => ({ ...prev, [exerciseIndex]: d }))}
+              onCompleteSet={(setNumber, draft) => handleCompleteSet(exerciseIndex, setNumber, draft)}
+              onSubstitute={() => setSubstituteIndex(exerciseIndex)}
+              disabled={isPaused}
+            />
+          )}
+
+          <div className="workout-session__list-wrap">
+            <button
+              type="button"
+              className={`disclose-toggle${listOpen ? ' is-open' : ''}`}
+              onClick={() => setListOpen((o) => !o)}
+              aria-expanded={listOpen}
+            >
+              <span>
+                {listOpen
+                  ? 'Ocultar lista'
+                  : `Lista de exercícios (${sessionExercises.length})`}
+              </span>
+              <span aria-hidden="true">{listOpen ? '▲' : '▼'}</span>
+            </button>
+
+            {listOpen && (
+              <div className="workout-session__exercise-list">
+                {sessionExercises.map((ex, i) => (
+                  <ExerciseSessionCard
+                    key={`${ex.exerciseId || ex.name}-${i}`}
+                    exercise={ex}
+                    index={i}
+                    isCurrent={i === exerciseIndex}
+                    expanded={expandedIndex === i}
+                    onToggle={() => {
+                      setExerciseIndex(i)
+                      setExpandedIndex((cur) => (cur === i ? -1 : i))
+                    }}
+                    draft={drafts[i] || { weight: '', reps: '' }}
+                    onDraftChange={(d) => setDrafts((prev) => ({ ...prev, [i]: d }))}
+                    onCompleteSet={(setNumber, draft) => handleCompleteSet(i, setNumber, draft)}
+                    onSubstitute={() => setSubstituteIndex(i)}
+                    disabled={isPaused}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {!sessionExercises.length && (
+            <p className="empty-text">Este treino não possui exercícios cadastrados.</p>
+          )}
 
           <DayVolumeSummary
             exercises={sessionExercises}
@@ -378,54 +485,6 @@ export default function ActiveWorkoutModal() {
             </div>
           )}
 
-          {current && (
-            <p className="workout-session__now">
-              Agora: <strong>{current.name}</strong>
-              {current.muscleGroup ? ` · ${current.muscleGroup}` : ''}
-            </p>
-          )}
-
-          {timerActive && restTimer > 0 && (
-            <RestTimer
-              seconds={restTimer}
-              onSkip={skipRest}
-              onAdjust={adjustRest}
-              isPaused={isPaused}
-              soundEnabled={false}
-            />
-          )}
-          {restDoneToast && (
-            <div className="rest-timer rest-timer--done" role="status">
-              <div className="rest-timer__info">
-                <span className="rest-timer__label">Pronto</span>
-                <strong className="rest-timer__time">✓</strong>
-              </div>
-              <p className="rest-timer__done-msg">Descanso concluído. Próxima série pronta.</p>
-            </div>
-          )}
-
-          <div className="workout-session__exercise-list">
-            {sessionExercises.map((ex, i) => (
-              <ExerciseSessionCard
-                key={`${ex.exerciseId || ex.name}-${i}`}
-                exercise={ex}
-                index={i}
-                isCurrent={i === exerciseIndex}
-                expanded={expandedIndex === i}
-                onToggle={() => setExpandedIndex((cur) => (cur === i ? -1 : i))}
-                draft={drafts[i] || { weight: '', reps: '' }}
-                onDraftChange={(d) => setDrafts((prev) => ({ ...prev, [i]: d }))}
-                onCompleteSet={(setNumber, draft) => handleCompleteSet(i, setNumber, draft)}
-                onSubstitute={() => setSubstituteIndex(i)}
-                disabled={isPaused}
-              />
-            ))}
-          </div>
-
-          {!sessionExercises.length && (
-            <p className="empty-text">Este treino não possui exercícios cadastrados.</p>
-          )}
-
           <label className="form-field workout-session__notes">
             <span>Observações da sessão</span>
             <textarea
@@ -436,23 +495,6 @@ export default function ActiveWorkoutModal() {
               disabled={isPaused}
             />
           </label>
-
-          <div className="workout-session__toolbar">
-            <button type="button" className="btn btn--ghost btn--sm" onClick={togglePause}>
-              {isPaused ? 'Retomar' : 'Pausar'}
-            </button>
-          </div>
-
-          <div className="workout-session__nav">
-            <button
-              type="button"
-              className="btn btn--primary btn--lg"
-              onClick={() => openSummary(false)}
-              disabled={isPaused || progress.completedSets === 0}
-            >
-              Finalizar treino
-            </button>
-          </div>
 
           <p className="safety-note">{SAFETY_NOTE}</p>
         </div>

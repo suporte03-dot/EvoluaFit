@@ -98,6 +98,7 @@ export default function TrainingCalendar() {
   const [syncConfirm, setSyncConfirm] = useState(false)
   const [safetyHint, setSafetyHint] = useState('')
   const [summaryOpen, setSummaryOpen] = useState(false)
+  const [showFullMonth, setShowFullMonth] = useState(false)
 
   const year = current.getFullYear()
   const month = current.getMonth()
@@ -495,6 +496,56 @@ export default function TrainingCalendar() {
               />
             ))}
           </div>
+
+          <button
+            type="button"
+            className={`disclose-toggle cal-month-toggle${showFullMonth ? ' is-open' : ''}`}
+            onClick={() => setShowFullMonth((o) => !o)}
+            aria-expanded={showFullMonth}
+          >
+            <span>{showFullMonth ? 'Ocultar mês' : 'Ver mês completo'}</span>
+            <span aria-hidden="true">{showFullMonth ? '▲' : '▼'}</span>
+          </button>
+
+          {showFullMonth && (
+            <div className="calendar glass-card calendar--mobile-month cal-grid-wrap">
+              <div className="calendar__weekdays">
+                {WEEKDAYS_SHORT.map((d) => (
+                  <span key={d}>{d}</span>
+                ))}
+              </div>
+              <div className="calendar__grid cal-month-grid">
+                {monthCells.map((cell, i) => {
+                  if (!cell) return <div key={`m-empty-${i}`} className="calendar__day calendar__day--empty" />
+                  const status = cell.status
+                  return (
+                    <button
+                      key={`m-${cell.date}`}
+                      type="button"
+                      className={[
+                        'calendar__day',
+                        'cal-day',
+                        status ? `calendar__day--${status} cal-day--${status}` : '',
+                        cell.isToday ? 'calendar__day--today cal-day--today' : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
+                      onClick={() => openDay(cell.date)}
+                      title={cell.primary?.name || (cell.isRestOnly ? 'Descanso' : undefined)}
+                    >
+                      <span className="cal-day__num">{cell.day}</span>
+                      {status && (
+                        <span className={`cal-day__badge cal-day__badge--${status} cal-day__badge--compact`}>
+                          <StatusIcon status={status} />
+                        </span>
+                      )}
+                      {status && <i className={`cal-day__marker cal-day__marker--${status}`} />}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
         </div>
           </div>
 

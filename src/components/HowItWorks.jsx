@@ -69,7 +69,7 @@ export default function HowItWorks() {
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
           >
-            <span>{open ? 'Ocultar passos' : 'Ver os 5 passos'}</span>
+            <span>{open ? 'Ocultar detalhes' : 'Ver mais detalhes'}</span>
             <span aria-hidden="true">{open ? '▲' : '▼'}</span>
           </button>
         </div>

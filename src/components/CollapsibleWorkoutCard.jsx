@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { useId, useState } from 'react'
 import { inferWorkoutType } from '../utils/workoutSession'
 import { formatDateShort } from '../utils/dateFormat'
 import DayVolumeSummary from './DayVolumeSummary'
@@ -54,6 +54,7 @@ export default function CollapsibleWorkoutCard({
   onSaveEdit,
 }) {
   const panelId = useId()
+  const [moreOpen, setMoreOpen] = useState(false)
   const type = inferWorkoutType(workout)
   const typeTone = workoutTypeClass(type)
   const exerciseCount = workout.exercises?.length || 0
@@ -62,6 +63,7 @@ export default function CollapsibleWorkoutCard({
   const isEditing = editingId === workout.id
 
   const handleToggle = () => {
+    if (isOpen) setMoreOpen(false)
     onToggle?.(workout.id)
   }
 
@@ -129,17 +131,15 @@ export default function CollapsibleWorkoutCard({
         <p className="workout-card__meta">
           <span>{type}</span>
           <span aria-hidden="true">·</span>
-          <span>{dateLabel}</span>
+          <span className={`workout-card__status ${statusClass[workout.status] || ''}`}>
+            {workout.status}
+          </span>
           <span aria-hidden="true">·</span>
           <span>
             {exerciseCount} {exerciseCount === 1 ? 'exercício' : 'exercícios'}
           </span>
           <span aria-hidden="true">·</span>
           <span>{duration} min</span>
-          <span aria-hidden="true">·</span>
-          <span className={`workout-card__status ${statusClass[workout.status] || ''}`}>
-            {workout.status}
-          </span>
         </p>
       </div>
 
@@ -173,6 +173,8 @@ export default function CollapsibleWorkoutCard({
             </div>
           )}
 
+          <p className="workout-card__date-hint">{dateLabel}</p>
+
           <DayVolumeSummary
             exercises={workout.exercises}
             dayType={workout.workoutType || type}
@@ -200,59 +202,76 @@ export default function CollapsibleWorkoutCard({
             </ul>
           )}
 
-          <div className="workout-card__actions workout-card__actions--extra">
+          <div className="workout-card__more">
             <button
               type="button"
-              className="btn btn--ghost btn--sm workout-card__view"
+              className={`disclose-toggle disclose-toggle--inline${moreOpen ? ' is-open' : ''}`}
               onClick={(e) => {
                 e.stopPropagation()
-                onViewWorkout?.(workout)
+                setMoreOpen((o) => !o)
               }}
+              aria-expanded={moreOpen}
             >
-              Ver treino
+              <span>{moreOpen ? 'Ocultar opções' : 'Mais opções'}</span>
+              <span aria-hidden="true">{moreOpen ? '▲' : '▼'}</span>
             </button>
-            <button
-              type="button"
-              className="btn btn--ghost btn--sm"
-              onClick={(e) => {
-                e.stopPropagation()
-                onEdit?.(workout, e)
-              }}
-            >
-              Editar
-            </button>
-            <button
-              type="button"
-              className="btn btn--ghost btn--sm"
-              onClick={(e) => {
-                e.stopPropagation()
-                onDuplicate?.(workout.id)
-              }}
-            >
-              Duplicar
-            </button>
-            {workout.status !== 'Realizado' && (
-              <button
-                type="button"
-                className="btn btn--ghost btn--sm"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onComplete?.(workout, e)
-                }}
-              >
-                Marcar realizado
-              </button>
+
+            {moreOpen && (
+              <div className="workout-card__actions workout-card__actions--extra">
+                <button
+                  type="button"
+                  className="btn btn--ghost btn--sm workout-card__view"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onViewWorkout?.(workout)
+                  }}
+                >
+                  Ver treino
+                </button>
+                <button
+                  type="button"
+                  className="btn btn--ghost btn--sm"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onEdit?.(workout, e)
+                  }}
+                >
+                  Editar
+                </button>
+                <button
+                  type="button"
+                  className="btn btn--ghost btn--sm"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onDuplicate?.(workout.id)
+                  }}
+                >
+                  Duplicar
+                </button>
+                {workout.status !== 'Realizado' && (
+                  <button
+                    type="button"
+                    className="btn btn--ghost btn--sm"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onComplete?.(workout, e)
+                    }}
+                  >
+                    Marcar realizado
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className="btn btn--danger btn--sm"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onDelete?.(workout.id)
+                  }}
+                >
+                  Excluir
+                </button>
+              </div>
             )}
-            <button
-              type="button"
-              className="btn btn--danger btn--sm"
-              onClick={(e) => {
-                e.stopPropagation()
-                onDelete?.(workout.id)
-              }}
-            >
-              Excluir
-            </button>
           </div>
         </div>
       </div>

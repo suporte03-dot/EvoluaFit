@@ -72,6 +72,7 @@ function TrendLine({ points, emptyLabel }) {
 export default function PerformanceDashboard() {
   const { performance, history, workouts } = useFitness()
   const [tab, setTab] = useState('resumo')
+  const [extrasOpen, setExtrasOpen] = useState(false)
 
   const hasData = Boolean(history?.length || workouts?.some((w) => w.status === 'Realizado'))
 
@@ -95,7 +96,7 @@ export default function PerformanceDashboard() {
     [performance.muscleVolume],
   )
 
-  const stats = [
+  const primaryStats = [
     {
       label: 'Treinos semanais',
       value: hasData ? performance.weeklyWorkouts : null,
@@ -103,16 +104,19 @@ export default function PerformanceDashboard() {
       max: 7,
     },
     {
-      label: 'Treinos mensais',
-      value: hasData ? performance.monthlyWorkouts : null,
-      hint: 'Concluídos neste mês',
-      max: 20,
-    },
-    {
       label: 'Sequência atual',
       value: hasData && performance.streak > 0 ? performance.streak : null,
       hint: 'Dias consecutivos com treino',
       max: 30,
+    },
+  ]
+
+  const extraStats = [
+    {
+      label: 'Treinos mensais',
+      value: hasData ? performance.monthlyWorkouts : null,
+      hint: 'Concluídos neste mês',
+      max: 20,
     },
     {
       label: 'Tempo médio',
@@ -122,6 +126,31 @@ export default function PerformanceDashboard() {
       suffix: ' min',
     },
   ]
+
+  const renderStat = (s) => (
+    <div key={s.label} className="perf-stat glass-card perf-stat--neutral">
+      <span className="perf-stat__label">{s.label}</span>
+      <span className="perf-stat__value">
+        {s.value !== null ? (
+          <>
+            {s.value}
+            {s.suffix || ''}
+          </>
+        ) : (
+          '—'
+        )}
+      </span>
+      <span className="perf-stat__hint">{s.value !== null ? s.hint : 'Sem dados ainda'}</span>
+      {s.value !== null && (
+        <div className="bar-chart">
+          <div
+            className="bar-chart__fill bar-chart__fill--green"
+            style={{ width: `${Math.min((s.value / s.max) * 100, 100)}%` }}
+          />
+        </div>
+      )}
+    </div>
+  )
 
   return (
     <section id="desempenho" className="section section--alt">
@@ -163,31 +192,27 @@ export default function PerformanceDashboard() {
             {tab === 'resumo' && (
               <div className="perf-panel" role="tabpanel">
                 <div className="perf-stats">
-                  {stats.map((s) => (
-                    <div key={s.label} className="perf-stat glass-card perf-stat--neutral">
-                      <span className="perf-stat__label">{s.label}</span>
-                      <span className="perf-stat__value">
-                        {s.value !== null ? (
-                          <>
-                            {s.value}
-                            {s.suffix || ''}
-                          </>
-                        ) : (
-                          '—'
-                        )}
-                      </span>
-                      <span className="perf-stat__hint">{s.value !== null ? s.hint : 'Sem dados ainda'}</span>
-                      {s.value !== null && (
-                        <div className="bar-chart">
-                          <div
-                            className="bar-chart__fill bar-chart__fill--green"
-                            style={{ width: `${Math.min((s.value / s.max) * 100, 100)}%` }}
-                          />
-                        </div>
-                      )}
+                  {primaryStats.map(renderStat)}
+                  {extraStats.map((s) => (
+                    <div key={s.label} className="perf-stat-slot perf-stat-slot--desktop">
+                      {renderStat(s)}
                     </div>
                   ))}
                 </div>
+                <button
+                  type="button"
+                  className={`disclose-toggle perf-extras-toggle${extrasOpen ? ' is-open' : ''}`}
+                  onClick={() => setExtrasOpen((o) => !o)}
+                  aria-expanded={extrasOpen}
+                >
+                  <span>{extrasOpen ? 'Ocultar métricas' : 'Mais métricas'}</span>
+                  <span aria-hidden="true">{extrasOpen ? '▲' : '▼'}</span>
+                </button>
+                {extrasOpen && (
+                  <div className="perf-stats perf-stats--mobile-extras">
+                    {extraStats.map(renderStat)}
+                  </div>
+                )}
                 <div className="chart-card glass-card">
                   <h3>Tendência de carga (semanas recentes)</h3>
                   <TrendLine

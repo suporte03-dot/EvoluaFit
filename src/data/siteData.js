@@ -26,11 +26,11 @@ export const mobileNavItems = [
   { id: 'inicio', label: 'Início', icon: '🏠' },
   { id: 'treinos', label: 'Treinos', icon: '🏋️' },
   { id: 'planilha', label: 'Planilha', icon: '📋' },
+  { id: 'exercicios', label: 'Exercícios', icon: '💪' },
   { id: 'coach-ia', label: 'Coach IA', icon: '✦' },
 ]
 
 export const mobileNavMoreItems = [
-  { id: 'exercicios', label: 'Exercícios', icon: '💪' },
   { id: 'calendario', label: 'Calendário', icon: '🗓️' },
   { id: 'desempenho', label: 'Desempenho', icon: '📈' },
   { id: 'metas', label: 'Metas', icon: '🎯' },

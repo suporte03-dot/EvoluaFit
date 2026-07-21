@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
 import {
   buildCompletionPayload,
@@ -14,7 +14,9 @@ import {
   loadActiveSession,
   saveActiveSession,
 } from '../utils/progressStorage'
-import { replaceExerciseInList } from '../utils/exerciseSubstitution'
+import { appendExerciseToList, replaceExerciseInList } from '../utils/exerciseSubstitution'
+import { summarizeDayVolume } from '../utils/workoutGenerator'
+import DayVolumeSummary from './DayVolumeSummary'
 import ExerciseSessionCard from './ExerciseSessionCard'
 import ExerciseSubstitutionModal from './ExerciseSubstitutionModal'
 import Modal from './Modal'
@@ -25,6 +27,20 @@ import WorkoutSummaryModal from './WorkoutSummaryModal'
 const SAFETY_NOTE =
   'Priorize técnica e recuperação. Pare se sentir dor aguda e consulte um profissional se o desconforto persistir.'
 
+function persistableExercises(list) {
+  return (list || []).map((ex) => ({
+    exerciseId: ex.exerciseId,
+    name: ex.name,
+    muscleGroup: ex.muscleGroup,
+    sets: ex.sets,
+    reps: ex.reps,
+    restSeconds: ex.restSeconds,
+    load: ex.load || '',
+    movementType: ex.movementType,
+    movementRoleLabel: ex.movementRoleLabel,
+  }))
+}
+
 export default function ActiveWorkoutModal() {
   const {
     activeWorkout,
@@ -32,6 +48,7 @@ export default function ActiveWorkoutModal() {
     completeWorkout,
     updateWorkout,
     showToast,
+    profile,
   } = useFitness()
 
   const [exerciseIndex, setExerciseIndex] = useState(0)
@@ -45,7 +62,17 @@ export default function ActiveWorkoutModal() {
   const [showSummary, setShowSummary] = useState(false)
   const [pendingPayload, setPendingPayload] = useState(null)
   const [substituteIndex, setSubstituteIndex] = useState(null)
+  const [showAdd, setShowAdd] = useState(false)
   const [restDoneToast, setRestDoneToast] = useState(false)
+
+  const isAdvanced = profile?.level === 'Avançado'
+  const muscleOptions = useMemo(() => {
+    const fromWorkout = activeWorkout?.muscleGroups || []
+    const fromExercises = (sessionExercises.length ? sessionExercises : activeWorkout?.exercises || [])
+      .map((ex) => ex.muscleGroup)
+      .filter(Boolean)
+    return [...new Set([...fromWorkout, ...fromExercises].filter(Boolean))]
+  }, [activeWorkout, sessionExercises])
 
   const startTimeRef = useRef(Date.now())
   const pausedMsRef = useRef(0)
@@ -250,49 +277,35 @@ export default function ActiveWorkoutModal() {
     setPendingPayload(null)
   }
 
+  const syncWorkoutExercises = (nextExercises) => {
+    const clean = persistableExercises(nextExercises)
+    const volumeSummary = summarizeDayVolume(
+      clean,
+      activeWorkout?.workoutType || activeWorkout?.name || '',
+    ).text
+    if (activeWorkout?.id) {
+      updateWorkout(activeWorkout.id, { exercises: clean, volumeSummary })
+    }
+    setActiveWorkout((prev) => (prev ? { ...prev, exercises: clean, volumeSummary } : prev))
+  }
+
   const handleSubstitute = (catalogEx) => {
     if (substituteIndex == null) return
-    setSessionExercises((prev) => replaceExerciseInList(prev, substituteIndex, catalogEx, true))
+    const nextExercises = replaceExerciseInList(sessionExercises, substituteIndex, catalogEx, true)
+    setSessionExercises(nextExercises)
     setDrafts((d) => ({ ...d, [substituteIndex]: { weight: '', reps: '' } }))
-
-    if (activeWorkout?.id) {
-      const nextExercises = replaceExerciseInList(
-        activeWorkout.exercises || sessionExercises,
-        substituteIndex,
-        catalogEx,
-        true,
-      )
-      updateWorkout(activeWorkout.id, {
-        exercises: nextExercises.map((ex) => ({
-          exerciseId: ex.exerciseId,
-          name: ex.name,
-          muscleGroup: ex.muscleGroup,
-          sets: ex.sets,
-          reps: ex.reps,
-          restSeconds: ex.restSeconds,
-          load: ex.load || '',
-        })),
-      })
-      setActiveWorkout((prev) =>
-        prev
-          ? {
-              ...prev,
-              exercises: nextExercises.map((ex) => ({
-                exerciseId: ex.exerciseId,
-                name: ex.name,
-                muscleGroup: ex.muscleGroup,
-                sets: ex.sets,
-                reps: ex.reps,
-                restSeconds: ex.restSeconds,
-                load: ex.load || '',
-              })),
-            }
-          : prev,
-      )
-    }
-
+    syncWorkoutExercises(nextExercises)
     setSubstituteIndex(null)
     showToast('Exercício substituído com sucesso!')
+  }
+
+  const handleAddExercise = (catalogEx) => {
+    const nextExercises = appendExerciseToList(sessionExercises, catalogEx, { sets: 3, reps: '8-12' })
+    setSessionExercises(nextExercises)
+    syncWorkoutExercises(nextExercises)
+    setShowAdd(false)
+    setExpandedIndex(nextExercises.length - 1)
+    showToast('Exercício adicionado ao treino!')
   }
 
   const skipRest = () => {
@@ -345,6 +358,25 @@ export default function ActiveWorkoutModal() {
             totalSets={progress.totalSets}
             currentExercise={current?.name || progress.currentExerciseName}
           />
+
+          <DayVolumeSummary
+            exercises={sessionExercises}
+            dayType={workoutType || activeWorkout?.workoutType}
+            volumeSummary={activeWorkout?.volumeSummary}
+          />
+
+          {isAdvanced && (
+            <div className="workout-session__add-row">
+              <button
+                type="button"
+                className="btn btn--outline btn--sm"
+                onClick={() => setShowAdd(true)}
+                disabled={isPaused}
+              >
+                Adicionar exercício
+              </button>
+            </div>
+          )}
 
           {current && (
             <p className="workout-session__now">
@@ -439,6 +471,16 @@ export default function ActiveWorkoutModal() {
         onClose={() => setSubstituteIndex(null)}
         currentExercise={substituteIndex != null ? sessionExercises[substituteIndex] : null}
         onSelect={handleSubstitute}
+      />
+
+      <ExerciseSubstitutionModal
+        isOpen={showAdd}
+        onClose={() => setShowAdd(false)}
+        mode="add"
+        muscleGroupOptions={muscleOptions.length ? muscleOptions : ['Peitoral', 'Ombros', 'Tríceps']}
+        defaultMuscleGroup={muscleOptions[0] || 'Peitoral'}
+        excludeIds={sessionExercises.map((ex) => ex.exerciseId).filter(Boolean)}
+        onSelect={handleAddExercise}
       />
     </>
   )

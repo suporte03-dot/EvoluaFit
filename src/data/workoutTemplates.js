@@ -104,7 +104,7 @@ export const levelConfig = {
   Avançado: {
     setsMultiplier: 1.1,
     restBonus: -5,
-    maxExercises: 9,
+    maxExercises: 10,
     setsMin: 3,
     setsMax: 5,
     restMin: 60,

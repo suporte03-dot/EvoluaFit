@@ -6,7 +6,7 @@ const server = await createServer({
 })
 
 try {
-  const { generateWorkoutPlan } = await server.ssrLoadModule('/src/utils/workoutGenerator.js')
+  const { generateWorkoutPlan, summarizeDayVolume } = await server.ssrLoadModule('/src/utils/workoutGenerator.js')
 
   function mix(day) {
     const cats = {}
@@ -14,6 +14,14 @@ try {
       cats[ex.muscleGroup] = (cats[ex.muscleGroup] || 0) + 1
     }
     return cats
+  }
+
+  function setTotals(day) {
+    const totals = {}
+    for (const ex of day.exercises || []) {
+      totals[ex.muscleGroup] = (totals[ex.muscleGroup] || 0) + (Number(ex.sets) || 0)
+    }
+    return totals
   }
 
   function assert(cond, msg) {
@@ -40,7 +48,7 @@ try {
   for (const day of plan.weeklyPlan) {
     const m = mix(day)
     console.log(
-      `D${day.day} ${day.workoutName} | n=${day.exercises.length} | ${day.intensity} | ${JSON.stringify(m)}`,
+      `D${day.day} ${day.workoutName} | n=${day.exercises.length} | ${day.intensity} | ${JSON.stringify(m)} | vol=${day.volumeSummary || summarizeDayVolume(day.exercises, day.workoutType).text}`,
     )
     assert(day.exercises.length > 0, `Dia vazio: ${day.workoutName}`)
     const ids = day.exercises.map((e) => e.exerciseId)
@@ -49,15 +57,27 @@ try {
 
   for (const day of hardDays) {
     assert(
-      day.exercises.length >= 7 && day.exercises.length <= 9,
-      `${day.workoutName} esperava 7–9, got ${day.exercises.length}`,
+      day.exercises.length >= 7 && day.exercises.length <= 10,
+      `${day.workoutName} esperava 7–10, got ${day.exercises.length}`,
     )
     const cats = day.exercises.map((e) => e.muscleGroup)
+    const counts = mix(day)
     if (/push/i.test(day.workoutName)) {
       assert(cats.includes('Peitoral'), `${day.workoutName} sem Peitoral`)
       assert(cats.includes('Ombros'), `${day.workoutName} sem Ombros`)
       assert(cats.includes('Tríceps'), `${day.workoutName} sem Tríceps`)
       assert(!cats.includes('Costas'), `${day.workoutName} tem Costas`)
+      assert((counts.Peitoral || 0) >= 4, `${day.workoutName} peito < 4 (${counts.Peitoral})`)
+      assert((counts.Ombros || 0) >= 3, `${day.workoutName} ombros < 3 (${counts.Ombros})`)
+      assert((counts.Tríceps || 0) >= 2, `${day.workoutName} tríceps < 2 (${counts.Tríceps})`)
+      const sets = setTotals(day)
+      assert(sets.Peitoral >= 14 && sets.Peitoral <= 16, `${day.workoutName} séries peito ${sets.Peitoral}`)
+      assert(sets.Ombros >= 10 && sets.Ombros <= 12, `${day.workoutName} séries ombro ${sets.Ombros}`)
+      assert(sets.Tríceps >= 9 && sets.Tríceps <= 10, `${day.workoutName} séries tríceps ${sets.Tríceps}`)
+      const roles = new Set(
+        day.exercises.filter((e) => e.muscleGroup === 'Peitoral').map((e) => e.movementType),
+      )
+      assert(roles.size >= 3, `${day.workoutName} peito pouco diverso (${[...roles].join(',')})`)
     }
     if (/pull/i.test(day.workoutName)) {
       assert(cats.includes('Costas'), `${day.workoutName} sem Costas`)
@@ -84,9 +104,9 @@ try {
   const table = [
     ['Iniciante', 30, 3],
     ['Iniciante', 90, 6],
-    ['Intermediário', 60, 6],
-    ['Avançado', 60, 7],
-    ['Avançado', 90, 9],
+    ['Intermediário', 60, 7],
+    ['Avançado', 60, 9],
+    ['Avançado', 90, 10],
   ]
   for (const [level, mins, expect] of table) {
     const p = generateWorkoutPlan({

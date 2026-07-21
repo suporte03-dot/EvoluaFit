@@ -2,18 +2,49 @@ import { useMemo, useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
 import { enrichWorkoutDetail } from '../data/workoutTemplates'
 import { navigateToExercise } from '../hooks/useHashRoute'
-import { replaceExerciseInList } from '../utils/exerciseSubstitution'
+import { appendExerciseToList, replaceExerciseInList } from '../utils/exerciseSubstitution'
+import { summarizeDayVolume } from '../utils/workoutGenerator'
+import DayVolumeSummary from './DayVolumeSummary'
 import ExerciseMedia from './ExerciseMedia'
 import ExerciseSubstitutionModal from './ExerciseSubstitutionModal'
 import Modal from './Modal'
 
+function persistableExercises(list) {
+  return (list || []).map((ex) => ({
+    exerciseId: ex.exerciseId,
+    name: ex.name,
+    muscleGroup: ex.muscleGroup,
+    sets: ex.sets,
+    reps: ex.reps,
+    restSeconds: ex.restSeconds,
+    load: ex.load || '',
+    note: ex.note || '',
+    movementType: ex.movementType,
+    movementRoleLabel: ex.movementRoleLabel,
+  }))
+}
+
 export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
-  const { startWorkout, addWorkoutToPlan, updateWorkout, showToast } = useFitness()
+  const { startWorkout, addWorkoutToPlan, updateWorkout, showToast, profile } = useFitness()
   const [substituteIndex, setSubstituteIndex] = useState(null)
+  const [showAdd, setShowAdd] = useState(false)
 
   const detail = useMemo(() => enrichWorkoutDetail(workout), [workout])
+  const isAdvanced = profile?.level === 'Avançado'
+  const canEdit = Boolean(workout?.id)
+
+  const muscleOptions = useMemo(() => {
+    const fromWorkout = workout?.muscleGroups || detail?.secondaryMuscleGroups || []
+    const fromExercises = (workout?.exercises || []).map((ex) => ex.muscleGroup).filter(Boolean)
+    const main = detail?.mainMuscleGroup ? [detail.mainMuscleGroup] : []
+    return [...new Set([...main, ...fromWorkout, ...fromExercises].filter(Boolean))]
+  }, [workout, detail])
 
   if (!isOpen || !detail) return null
+
+  const volumeText =
+    workout?.volumeSummary ||
+    summarizeDayVolume(workout?.exercises || detail.exercises, workout?.workoutType || detail.type).text
 
   const handleStart = () => {
     startWorkout(detail.sourceWorkout)
@@ -28,19 +59,22 @@ export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
     if (substituteIndex == null || !workout?.id) return
     const next = replaceExerciseInList(workout.exercises || [], substituteIndex, catalogEx, true)
     updateWorkout(workout.id, {
-      exercises: next.map((ex) => ({
-        exerciseId: ex.exerciseId,
-        name: ex.name,
-        muscleGroup: ex.muscleGroup,
-        sets: ex.sets,
-        reps: ex.reps,
-        restSeconds: ex.restSeconds,
-        load: ex.load || '',
-        note: ex.note || '',
-      })),
+      exercises: persistableExercises(next),
+      volumeSummary: summarizeDayVolume(next, workout.workoutType || detail.type).text,
     })
     setSubstituteIndex(null)
     showToast('Exercício substituído com sucesso!')
+  }
+
+  const handleAddExercise = (catalogEx) => {
+    if (!workout?.id) return
+    const next = appendExerciseToList(workout.exercises || [], catalogEx, { sets: 3, reps: '8-12' })
+    updateWorkout(workout.id, {
+      exercises: persistableExercises(next),
+      volumeSummary: summarizeDayVolume(next, workout.workoutType || detail.type).text,
+    })
+    setShowAdd(false)
+    showToast('Exercício adicionado ao treino!')
   }
 
   return (
@@ -55,6 +89,12 @@ export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
               </span>
             )}
           </div>
+
+          <DayVolumeSummary
+            exercises={workout?.exercises || detail.exercises}
+            dayType={workout?.workoutType || detail.type}
+            volumeSummary={volumeText}
+          />
 
           <div className="workout-detail__meta-grid">
             <div className="workout-detail__meta-item">
@@ -113,7 +153,14 @@ export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
           </div>
 
           <div className="workout-detail__section">
-            <h3 className="workout-detail__section-title">Exercícios ({detail.exercises.length})</h3>
+            <div className="workout-detail__section-head">
+              <h3 className="workout-detail__section-title">Exercícios ({detail.exercises.length})</h3>
+              {canEdit && isAdvanced && (
+                <button type="button" className="btn btn--outline btn--sm" onClick={() => setShowAdd(true)}>
+                  Adicionar exercício
+                </button>
+              )}
+            </div>
             <div className="workout-detail__exercises">
               {detail.exercises.map((ex, i) => (
                 <div key={`${ex.id || ex.name}-${i}`} className="workout-detail__exercise-card">
@@ -142,6 +189,11 @@ export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
                     </div>
 
                     {ex.type && <span className="exercise-type-tag">{ex.type}</span>}
+                    {(ex.movementRoleLabel || workout?.exercises?.[i]?.movementRoleLabel) && (
+                      <span className="exercise-role-tag">
+                        {ex.movementRoleLabel || workout.exercises[i].movementRoleLabel}
+                      </span>
+                    )}
 
                     {ex.muscles?.length > 0 && (
                       <div className="workout-detail__exercise-muscles">
@@ -159,7 +211,7 @@ export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
                       <span>Descanso {ex.rest}</span>
                     </div>
 
-                    {workout?.id && (
+                    {canEdit && (
                       <button
                         type="button"
                         className="btn btn--ghost btn--sm"
@@ -243,6 +295,16 @@ export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
             : null
         }
         onSelect={handleSubstitute}
+      />
+
+      <ExerciseSubstitutionModal
+        isOpen={showAdd}
+        onClose={() => setShowAdd(false)}
+        mode="add"
+        muscleGroupOptions={muscleOptions.length ? muscleOptions : ['Peitoral', 'Ombros', 'Tríceps']}
+        defaultMuscleGroup={muscleOptions[0] || 'Peitoral'}
+        excludeIds={(workout?.exercises || []).map((ex) => ex.exerciseId).filter(Boolean)}
+        onSelect={handleAddExercise}
       />
     </>
   )

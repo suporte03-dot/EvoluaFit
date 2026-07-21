@@ -1914,6 +1914,70 @@ main {
   color: #00d9ff;
 }
 
+.day-volume-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.65rem;
+  margin: 0.55rem 0 0.15rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid rgba(0, 229, 143, 0.18);
+  background: linear-gradient(135deg, rgba(0, 229, 143, 0.08), rgba(8, 18, 35, 0.35));
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.day-volume-summary__label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #00e58f;
+}
+
+.day-volume-summary__text {
+  color: var(--text-primary, #e2e8f0);
+  font-weight: 560;
+}
+
+.workout-detail__section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+}
+
+.workout-detail__section-head .workout-detail__section-title {
+  margin: 0;
+}
+
+.exercise-role-tag {
+  display: inline-block;
+  margin: 0.25rem 0 0.35rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  color: #a7f3d0;
+  background: rgba(0, 229, 143, 0.1);
+  border: 1px solid rgba(0, 229, 143, 0.2);
+}
+
+.workout-session__add-row {
+  margin: 0.55rem 0 0.75rem;
+}
+
+.exercise-substitution__add-header {
+  margin-bottom: 0.75rem;
+}
+
+.exercise-substitution__add-header .form-field {
+  margin-top: 0.5rem;
+}
+
 /* ===== Workouts ===== */
 .workout-list {
   display: grid;

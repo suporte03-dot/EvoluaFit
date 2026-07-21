@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
 import { planToWorkouts } from '../utils/workoutGenerator'
+import DayVolumeSummary from './DayVolumeSummary'
 import WorkoutDetailModal from './WorkoutDetailModal'
 
 const WEEKDAYS = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo']
@@ -174,6 +175,12 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
                   ~{duration} min
                 </span>
               </div>
+
+              <DayVolumeSummary
+                exercises={day.exercises}
+                dayType={day.workoutType || type.label}
+                volumeSummary={day.volumeSummary}
+              />
 
               {isExpanded && (
                 <ul className="plan-day__exercises">

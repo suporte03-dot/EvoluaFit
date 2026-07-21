@@ -49,15 +49,15 @@ const TIME_EXERCISE_TABLE = {
   Intermediário: [
     [30, 4],
     [45, 5],
-    [60, 6],
+    [60, 7],
     [75, 7],
     [90, 8],
   ],
   Avançado: [
-    [30, 4],
-    [45, 6],
-    [60, 7],
-    [75, 8],
+    [30, 5],
+    [45, 7],
+    [60, 8],
+    [75, 9],
     [90, 9],
   ],
 }
@@ -65,7 +65,24 @@ const TIME_EXERCISE_TABLE = {
 const LEVEL_CAPS = {
   Iniciante: { min: 3, max: 6 },
   Intermediário: { min: 4, max: 8 },
-  Avançado: { min: 4, max: 9 },
+  Avançado: { min: 4, max: 10 },
+}
+
+/**
+ * Metas de volume (séries totais) por grupo — Push avançado profissional.
+ * Cotas de exercícios: Peito 4 · Ombros 3 · Tríceps 2–3
+ */
+const ADVANCED_PUSH_VOLUME = {
+  Peitoral: { min: 14, max: 16 },
+  Ombros: { min: 10, max: 12 },
+  Tríceps: { min: 9, max: 10 },
+}
+
+/** Ordem preferencial de ângulos/papéis por grupo (diversidade no Push) */
+const ROLE_PRIORITY = {
+  Peitoral: ['chest_upper', 'chest_flat', 'chest_lower', 'chest_isolation'],
+  Ombros: ['shoulder_press', 'shoulder_lateral', 'shoulder_rear', 'shoulder_front', 'shoulder_other'],
+  Tríceps: ['tri_long', 'tri_pushdown', 'tri_other'],
 }
 
 /** Aliases → categoria oficial do catálogo */
@@ -259,6 +276,137 @@ function preferSimple(pool, level) {
   })
 }
 
+function normalizeText(value = '') {
+  return String(value)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+}
+
+/**
+ * Infere ângulo/papel do movimento a partir do nome, músculos e tags.
+ * Usa movement_type / movementType do catálogo quando existir.
+ */
+export function inferMovementRole(exercise) {
+  if (!exercise) return 'general'
+  const explicit = exercise.movement_type || exercise.movementType || exercise.movementRole
+  if (explicit) return String(explicit)
+
+  const cat = normalizeCategory(exercise.category || exercise.muscleGroup)
+  const hay = normalizeText(
+    [exercise.name, ...(exercise.muscles || []), ...(exercise.tags || []), exercise.equipment || ''].join(' '),
+  )
+
+  if (cat === 'Peitoral') {
+    if (/inclin/.test(hay)) return 'chest_upper'
+    if (/declin|paralela|mergulho|dip/.test(hay)) return 'chest_lower'
+    if (/crucifix|peck|crossover|voador|fly|pullover|isol/.test(hay)) return 'chest_isolation'
+    if (/maquina|smith|pec deck/.test(hay) && /supino|press|peito/.test(hay)) return 'chest_isolation'
+    if (/reto|horizontal|supino|press|banco/.test(hay)) return 'chest_flat'
+    return 'chest_flat'
+  }
+
+  if (cat === 'Ombros') {
+    if (/posterior|invertid|face.?pull|crucifix.*invers|remada alta/.test(hay)) return 'shoulder_rear'
+    if (/lateral|elevacao lateral/.test(hay)) return 'shoulder_lateral'
+    if (/frontal|elevacao frontal/.test(hay)) return 'shoulder_front'
+    if (/desenvolvimento|overhead|militar|arnold|press/.test(hay)) return 'shoulder_press'
+    return 'shoulder_other'
+  }
+
+  if (cat === 'Tríceps') {
+    if (
+      /franc|overhead|testa|skull|coice|sobre a cabeca|atras da cabeca|extensao.*cabeca|halter.*cabeca/.test(
+        hay,
+      )
+    ) {
+      return 'tri_long'
+    }
+    if (/pulley|polia|push.?down|corda|barra.?[vw]|kickback|cabo/.test(hay)) return 'tri_pushdown'
+    return 'tri_other'
+  }
+
+  return 'general'
+}
+
+function roleLabel(role) {
+  const map = {
+    chest_upper: 'Superior/inclinado',
+    chest_flat: 'Reto/geral',
+    chest_lower: 'Inferior/alongamento',
+    chest_isolation: 'Isolador/máquina',
+    shoulder_press: 'Desenvolvimento',
+    shoulder_lateral: 'Elevação lateral',
+    shoulder_rear: 'Posterior',
+    shoulder_front: 'Elevação frontal',
+    shoulder_other: 'Ombros',
+    tri_long: 'Cabeça longa',
+    tri_pushdown: 'Pushdown/corda',
+    tri_other: 'Tríceps',
+  }
+  return map[role] || role
+}
+
+/**
+ * Resume volume (séries) por grupo muscular — UI Push/Pull/Legs.
+ * Ex.: "Peito: 16 séries | Ombro: 10 séries | Tríceps: 9 séries"
+ */
+export function summarizeDayVolume(exercises = [], dayTypeOrName = '') {
+  const totals = {}
+  for (const ex of exercises) {
+    const g = normalizeCategory(ex.muscleGroup || ex.category)
+    const sets = Number(ex.sets) || 0
+    if (!g || !sets) continue
+    totals[g] = (totals[g] || 0) + sets
+  }
+
+  const hay = normalizeText(dayTypeOrName)
+  let order = Object.keys(totals)
+  if (/push|peito|ombro|triceps/.test(hay) || (totals.Peitoral && totals.Tríceps)) {
+    order = ['Peitoral', 'Ombros', 'Tríceps'].filter((g) => totals[g])
+  } else if (/pull|costas|biceps/.test(hay) || totals.Costas) {
+    order = ['Costas', 'Bíceps', 'Trapézio', 'Lombar'].filter((g) => totals[g])
+  } else if (/legs|perna|glute/.test(hay) || totals.Pernas || totals.Glúteos) {
+    order = ['Pernas', 'Glúteos', 'Panturrilha', 'Abdômen'].filter((g) => totals[g])
+  }
+
+  const short = {
+    Peitoral: 'Peito',
+    Ombros: 'Ombro',
+    Tríceps: 'Tríceps',
+    Costas: 'Costas',
+    Bíceps: 'Bíceps',
+    Trapézio: 'Trapézio',
+    Lombar: 'Lombar',
+    Pernas: 'Pernas',
+    Glúteos: 'Glúteos',
+    Panturrilha: 'Panturrilha',
+    Abdômen: 'Abdômen',
+  }
+
+  const parts = order.map((g) => ({
+    group: g,
+    label: short[g] || g,
+    sets: totals[g],
+  }))
+
+  if (!parts.length) {
+    const fallback = Object.entries(totals)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 4)
+      .map(([g, sets]) => ({ group: g, label: short[g] || g, sets }))
+    return {
+      parts: fallback,
+      text: fallback.map((p) => `${p.label}: ${p.sets} séries`).join(' | '),
+    }
+  }
+
+  return {
+    parts,
+    text: parts.map((p) => `${p.label}: ${p.sets} séries`).join(' | '),
+  }
+}
+
 function buildPool(options) {
   const { level, equipment, restrictions, location } = options
   let pool = exercises.filter(
@@ -281,7 +429,7 @@ function buildPool(options) {
 
 /**
  * Cotas por nível × tempo × tipo de dia.
- * Soma ≈ maxExercises para o preenchimento atingir a meta (ex.: Avançado 90 → 9).
+ * Push avançado: 4 peito + 3 ombros + 2–3 tríceps (pode passar do antigo teto de 9).
  */
 function buildLevelQuotas(dayType, level, maxExercises, minutes, restrictions = []) {
   const advanced = level === 'Avançado'
@@ -290,29 +438,36 @@ function buildLevelQuotas(dayType, level, maxExercises, minutes, restrictions = 
 
   if (dayType === 'Push') {
     if (advanced && minutes >= 75) {
-      // 75–90: 3 peito, 2 ombros, 2–3 tríceps (+ mobilidade opcional no fill)
+      // 75–90: 4 peito, 3 ombros, 2–3 tríceps ≈ 9–10
       return {
-        Peitoral: 3,
-        Ombros: 2,
-        Tríceps: maxExercises >= 9 ? 3 : 2,
-        ...(maxExercises >= 9 ? { Mobilidade: 1 } : {}),
+        Peitoral: 4,
+        Ombros: 3,
+        Tríceps: maxExercises >= 10 ? 3 : 2,
       }
     }
     if (advanced && minutes >= 60) {
+      return { Peitoral: 4, Ombros: 3, Tríceps: 2 }
+    }
+    if (advanced && minutes >= 45) {
       return { Peitoral: 3, Ombros: 2, Tríceps: 2 }
     }
     if (advanced) {
-      return { Peitoral: 2, Ombros: 1, Tríceps: 1 }
+      return { Peitoral: 2, Ombros: 2, Tríceps: 1 }
     }
     if (intermediate) {
+      // Intermediário: 3 peito, 2 ombros, 2 tríceps
       return {
-        Peitoral: 2,
+        Peitoral: 3,
         Ombros: 2,
-        Tríceps: maxExercises >= 6 ? 2 : 1,
+        Tríceps: maxExercises >= 7 ? 2 : 1,
       }
     }
-    // Iniciante: 2 peito, 1 ombro, 1 tríceps
-    return { Peitoral: 2, Ombros: 1, Tríceps: 1 }
+    // Iniciante: 2 peito, 1–2 ombros, 1 tríceps
+    return {
+      Peitoral: 2,
+      Ombros: maxExercises >= 5 || minutes >= 45 ? 2 : 1,
+      Tríceps: 1,
+    }
   }
 
   if (dayType === 'Pull') {
@@ -345,7 +500,7 @@ function buildLevelQuotas(dayType, level, maxExercises, minutes, restrictions = 
         Glúteos: 2,
         Panturrilha: maxExercises >= 8 ? 2 : 1,
         Abdômen: 1,
-        ...(maxExercises >= 9 ? { Mobilidade: 1 } : {}),
+        ...(maxExercises >= 10 ? { Mobilidade: 1 } : {}),
       }
     }
     if (advanced && maxExercises >= 7) {
@@ -368,7 +523,7 @@ function expandFocusForQuotas(dayType, focusGroups, level, restrictions = []) {
 
   if (dayType === 'Push') {
     ;['Peitoral', 'Ombros', 'Tríceps'].forEach(add)
-    if (level === 'Avançado') add('Mobilidade')
+    // Não forçar Mobilidade no Push — prioriza cotas musculares profissionais
   }
   if (dayType === 'Pull') {
     ;['Costas', 'Bíceps', 'Trapézio'].forEach(add)
@@ -421,9 +576,28 @@ function buildScopedQuotas(dayType, focusGroups, maxExercises, minutes = 45, lev
 /** Grupos com poucos itens no catálogo — podem repetir entre dias A/B */
 const SCARCE_GROUPS = new Set(['Panturrilha', 'Trapézio', 'Lombar', 'Alongamento'])
 
+/**
+ * Escolhe candidatos priorizando papéis/ângulos ainda não cobertos no grupo.
+ */
+function pickDiverseCandidate(candidates, group, usedRoles) {
+  const priority = ROLE_PRIORITY[group] || []
+  if (!priority.length || !candidates.length) return candidates[0] || null
+
+  for (const role of priority) {
+    if (usedRoles.has(role)) continue
+    const match = candidates.find((ex) => inferMovementRole(ex) === role)
+    if (match) return match
+  }
+
+  // Sem papel novo: evita repetir o mesmo papel se houver alternativa
+  const unused = candidates.find((ex) => !usedRoles.has(inferMovementRole(ex)))
+  return unused || candidates[0]
+}
+
 function pickByQuotas(pool, quotas, maxExercises, usedIds, allowReuse = false, requiredGroups = []) {
   const selected = []
   const counts = Object.fromEntries(Object.keys(quotas).map((k) => [k, 0]))
+  const usedRolesByGroup = Object.fromEntries(Object.keys(quotas).map((k) => [k, new Set()]))
 
   const tryAdd = (ex, group) => {
     if (selected.length >= maxExercises) return false
@@ -432,6 +606,8 @@ function pickByQuotas(pool, quotas, maxExercises, usedIds, allowReuse = false, r
     selected.push(ex)
     counts[group] = (counts[group] || 0) + 1
     usedIds.add(ex.id)
+    const roles = usedRolesByGroup[group] || (usedRolesByGroup[group] = new Set())
+    roles.add(inferMovementRole(ex))
     return true
   }
 
@@ -445,26 +621,24 @@ function pickByQuotas(pool, quotas, maxExercises, usedIds, allowReuse = false, r
       ),
     )
 
-  // 1) Garantir 1 de cada grupo obrigatório
+  // 1) Garantir 1 de cada grupo obrigatório (com diversidade de papel)
   for (const group of requiredGroups) {
     if (selected.length >= maxExercises) break
     if ((counts[group] || 0) >= 1) continue
-    for (const ex of candidatesFor(group)) {
-      if (tryAdd(ex, group)) break
-    }
+    const candidates = candidatesFor(group)
+    const pick = pickDiverseCandidate(candidates, group, usedRolesByGroup[group] || new Set())
+    if (pick) tryAdd(pick, group)
   }
 
-  // 2) Preencher cotas na ordem definida
+  // 2) Preencher cotas na ordem definida, diversificando ângulos/papéis
   for (const group of Object.keys(quotas)) {
     const quota = quotas[group]
-    let candidates = candidatesFor(group)
-    if (!candidates.length && quota > 0) {
-      candidates = candidatesFor(group, true)
-    }
-    for (const ex of candidates) {
-      if (selected.length >= maxExercises) break
-      if ((counts[group] || 0) >= quota) break
-      tryAdd(ex, group)
+    while ((counts[group] || 0) < quota && selected.length < maxExercises) {
+      let candidates = candidatesFor(group)
+      if (!candidates.length) candidates = candidatesFor(group, true)
+      if (!candidates.length) break
+      const pick = pickDiverseCandidate(candidates, group, usedRolesByGroup[group] || new Set())
+      if (!pick || !tryAdd(pick, group)) break
     }
   }
 
@@ -703,6 +877,73 @@ function getMaxExercises(level, duration, goal) {
   return max
 }
 
+/**
+ * Push avançado pode precisar de 9–10 slots para cotas 4+3+2–3
+ * (prioridade às cotas musculares sobre o teto genérico antigo).
+ */
+function getDayMaxExercises(dayType, level, duration, goal) {
+  let max = getMaxExercises(level, duration, goal)
+  if (dayType === 'Push' && level === 'Avançado') {
+    const pushTarget = duration >= 75 ? 10 : duration >= 60 ? 9 : duration >= 45 ? 7 : 5
+    max = Math.max(max, Math.min(pushTarget, LEVEL_CAPS.Avançado.max))
+  }
+  return max
+}
+
+/**
+ * Distribui séries totais do grupo entre os exercícios (alvo min–max).
+ */
+function distributeGroupSets(entries, group, minSets, maxSets) {
+  const groupIdxs = entries
+    .map((ex, i) => (normalizeCategory(ex.muscleGroup) === group ? i : -1))
+    .filter((i) => i >= 0)
+  if (!groupIdxs.length) return entries
+
+  const n = groupIdxs.length
+  const target = clamp(Math.round((minSets + maxSets) / 2), minSets, maxSets)
+  const next = [...entries]
+
+  // Distribuição quase uniforme, compostos (índice 0) podem ficar com +1
+  const base = Math.floor(target / n)
+  let rem = target - base * n
+  groupIdxs.forEach((idx) => {
+    const sets = clamp(base + (rem > 0 ? 1 : 0), 3, 5)
+    if (rem > 0) rem -= 1
+    next[idx] = { ...next[idx], sets }
+  })
+
+  let total = groupIdxs.reduce((s, i) => s + next[i].sets, 0)
+  let guard = 0
+  while (total < minSets && guard < 24) {
+    const i = groupIdxs[guard % groupIdxs.length]
+    if (next[i].sets < 5) {
+      next[i] = { ...next[i], sets: next[i].sets + 1 }
+      total += 1
+    }
+    guard += 1
+  }
+  guard = 0
+  while (total > maxSets && guard < 24) {
+    const i = groupIdxs[groupIdxs.length - 1 - (guard % groupIdxs.length)]
+    if (next[i].sets > 3) {
+      next[i] = { ...next[i], sets: next[i].sets - 1 }
+      total -= 1
+    }
+    guard += 1
+  }
+
+  return next
+}
+
+function applyAdvancedPushVolume(entries, level, dayType) {
+  if (level !== 'Avançado' || dayType !== 'Push') return entries
+  let next = entries
+  for (const [group, range] of Object.entries(ADVANCED_PUSH_VOLUME)) {
+    next = distributeGroupSets(next, group, range.min, range.max)
+  }
+  return next
+}
+
 function buildSetsRepsRest(exercise, level, goal, dayType) {
   const config = levelConfig[level] || levelConfig.Intermediário
   let sets = clamp(Math.round(parseSets(exercise.sets) * config.setsMultiplier), config.setsMin, config.setsMax)
@@ -819,6 +1060,7 @@ function buildExerciseEntry(exercise, level, goal, dayType, restrictions) {
   const { sets, reps, rest, observation, intensityBias } = buildSetsRepsRest(exercise, level, goal, dayType)
   const full = getExerciseById(exercise.id) || exercise
   const safetyTip = buildSafetyTip(exercise, restrictions, dayType)
+  const movementType = inferMovementRole(full)
   const obs =
     observation ||
     full.shortInstruction ||
@@ -840,6 +1082,8 @@ function buildExerciseEntry(exercise, level, goal, dayType, restrictions) {
     load: '',
     completed: false,
     level: exercise.level,
+    movementType,
+    movementRoleLabel: roleLabel(movementType),
     _intensityBias: intensityBias,
   }
 }
@@ -880,8 +1124,11 @@ export function generateWorkoutPlan(input = {}) {
   let usedFallback = false
 
   const weeklyPlan = template.map((dayTemplate) => {
-    const recovery = isRecoveryDay(inferDayType(dayTemplate.name, dayTemplate.focus), dayTemplate.name)
-    const dayMax = recovery ? Math.min(4, Math.max(3, maxExercises - 1)) : maxExercises
+    const dayTypePreview = inferDayType(dayTemplate.name, dayTemplate.focus)
+    const recovery = isRecoveryDay(dayTypePreview, dayTemplate.name)
+    const dayMax = recovery
+      ? Math.min(4, Math.max(3, maxExercises - 1))
+      : getDayMaxExercises(dayTypePreview, level, minutesPerWorkout, goal)
 
     const { selected, usedFallback: dayFallback, dayType, focusGroups } = pickExercisesForDay(
       dayTemplate,
@@ -898,7 +1145,9 @@ export function generateWorkoutPlan(input = {}) {
     )
     if (dayFallback) usedFallback = true
 
-    const exerciseEntries = selected.map((ex) => buildExerciseEntry(ex, level, goal, dayType, restrictions))
+    let exerciseEntries = selected.map((ex) => buildExerciseEntry(ex, level, goal, dayType, restrictions))
+    exerciseEntries = applyAdvancedPushVolume(exerciseEntries, level, dayType)
+
     const avgBias =
       exerciseEntries.reduce((sum, ex) => sum + (ex._intensityBias || 0), 0) /
       Math.max(exerciseEntries.length, 1)
@@ -910,6 +1159,7 @@ export function generateWorkoutPlan(input = {}) {
       : minutesPerWorkout
 
     const cleanExercises = exerciseEntries.map(({ _intensityBias, ...ex }) => ex)
+    const volumeSummary = summarizeDayVolume(cleanExercises, workoutType || dayTemplate.name)
 
     return {
       day: dayTemplate.day,
@@ -919,6 +1169,8 @@ export function generateWorkoutPlan(input = {}) {
       estimatedDuration,
       intensity,
       exercises: cleanExercises,
+      volumeSummary: volumeSummary.text,
+      volumeParts: volumeSummary.parts,
       name: dayTemplate.name,
       focus: muscleGroups,
       estimatedMinutes: estimatedDuration,
@@ -1009,7 +1261,12 @@ export function planToWorkouts(plan) {
       load: ex.load || '',
       completed: false,
       level: ex.level,
+      movementType: ex.movementType,
+      movementRoleLabel: ex.movementRoleLabel,
     }))
+
+    const volumeSummary =
+      day.volumeSummary || summarizeDayVolume(exercises, day.workoutType || day.workoutName || day.name).text
 
     return {
       id: `workout-${plan.id || stamp}-${day.day}-${index}`,
@@ -1021,6 +1278,8 @@ export function planToWorkouts(plan) {
       dayNumber: day.day,
       muscleGroups,
       exercises,
+      volumeSummary,
+      volumeParts: day.volumeParts || summarizeDayVolume(exercises, day.workoutType || day.workoutName).parts,
       status: 'Pendente',
       estimatedMinutes: day.estimatedDuration || day.estimatedMinutes || plan.minutesPerWorkout || plan.duration,
       intensity: day.intensity,

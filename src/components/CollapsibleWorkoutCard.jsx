@@ -1,6 +1,7 @@
 import { useId } from 'react'
 import { inferWorkoutType } from '../utils/workoutSession'
 import { formatDateShort } from '../utils/dateFormat'
+import DayVolumeSummary from './DayVolumeSummary'
 
 const statusClass = {
   Pendente: 'status--pending',
@@ -155,6 +156,12 @@ export default function CollapsibleWorkoutCard({
               ))}
             </div>
           )}
+
+          <DayVolumeSummary
+            exercises={workout.exercises}
+            dayType={workout.workoutType || type}
+            volumeSummary={workout.volumeSummary}
+          />
 
           {exerciseCount > 0 && (
             <ul className="workout-card__exercises">

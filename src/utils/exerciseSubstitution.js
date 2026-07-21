@@ -128,3 +128,63 @@ export function replaceExerciseInList(exercisesList, index, catalogExercise, kee
   if (!next) return exercisesList
   return exercisesList.map((ex, i) => (i === index ? { ...ex, ...next, setsLog: [], completedSets: 0 } : ex))
 }
+
+/**
+ * Lista exercícios do catálogo do mesmo grupo muscular (para adicionar ao treino).
+ */
+export function findExercisesByMuscleGroup(muscleGroup, options = {}) {
+  const {
+    userLevel = null,
+    restrictions = [],
+    availableEquipment = [],
+    excludeIds = [],
+    limit = 12,
+  } = options
+
+  const group = normalizeGroup(muscleGroup)
+  if (!group) {
+    return { alternatives: [], emptyMessage: 'Selecione um grupo muscular.' }
+  }
+
+  const excluded = new Set((excludeIds || []).filter(Boolean))
+
+  const scored = exercises
+    .filter((ex) => {
+      if (excluded.has(ex.id)) return false
+      const g = normalizeGroup(getExerciseMuscleGroup(ex))
+      if (g !== group) {
+        const muscles = (ex.muscles || []).map(normalizeGroup)
+        if (!muscles.includes(group)) return false
+      }
+      if (!levelOk(ex.level, userLevel)) return false
+      if (!respectsRestrictions(ex, restrictions)) return false
+      return true
+    })
+    .map((ex) => {
+      let score = equipmentScore(ex.equipment, '', availableEquipment)
+      if (ex.level === userLevel) score += 1
+      return { ex, score }
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map(({ ex }) => ex)
+
+  if (!scored.length) {
+    return { alternatives: [], emptyMessage: 'Nenhum exercício encontrado para este grupo.' }
+  }
+
+  return { alternatives: scored, emptyMessage: null }
+}
+
+/** Adiciona exercício do catálogo ao final da lista do treino. */
+export function appendExerciseToList(exercisesList, catalogExercise, defaults = {}) {
+  const entry = toWorkoutExerciseEntry(catalogExercise, {
+    sets: defaults.sets ?? 3,
+    reps: defaults.reps ?? catalogExercise?.reps ?? '8-12',
+    restSeconds: defaults.restSeconds,
+    rest: defaults.rest,
+    load: '',
+  })
+  if (!entry) return exercisesList
+  return [...(exercisesList || []), { ...entry, setsLog: [], completedSets: 0 }]
+}

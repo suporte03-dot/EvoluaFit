@@ -113,7 +113,7 @@ main {
 }
 
 .section {
-  padding: 4rem 0;
+  padding: 3rem 0;
 }
 
 .section--alt {
@@ -768,7 +768,7 @@ main {
 
 /* ===== Dashboard ===== */
 .dashboard {
-  padding: 0 0 2rem;
+  padding: 0 0 1.25rem;
 }
 
 .dashboard__blocks {
@@ -2409,7 +2409,7 @@ main {
 
 /* ===== Today suggestion ===== */
 .today-suggestion {
-  padding: 1rem 0 2rem;
+  padding: 0.75rem 0 1rem;
 }
 
 .suggestion-card {
@@ -4600,7 +4600,7 @@ main {
   }
 
   .section {
-    padding: 20px 14px;
+    padding: 18px 14px;
   }
 
   .container {
@@ -7585,7 +7585,7 @@ main {
 /* ===== Progressive disclosure / cleaner UI (2026 revision) ===== */
 
 .section {
-  padding: 4.5rem 0;
+  padding: 3rem 0;
 }
 
 .disclose-toggle {
@@ -8001,7 +8001,7 @@ main {
 
 @media (max-width: 768px) {
   .section {
-    padding: 3.25rem 0;
+    padding: 2rem 0;
   }
 
   .hero__inner--lean {
@@ -9167,5 +9167,203 @@ main {
   .week-strip__actions .btn {
     flex: 1;
     min-height: 44px;
+  }
+}
+
+/* ===== SectionDivider — premium module separators ===== */
+.section-divider {
+  --sd-accent: color-mix(in srgb, var(--secondary) 55%, var(--text-main) 45%);
+  --sd-accent-soft: color-mix(in srgb, var(--secondary) 18%, transparent);
+  --sd-glow:
+    0 0 10px color-mix(in srgb, var(--sd-accent) 42%, transparent),
+    0 0 18px color-mix(in srgb, var(--sd-accent) 22%, transparent);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: min(80%, 42rem);
+  max-width: 80%;
+  margin: 48px auto;
+  padding: 6px 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.section-divider__line {
+  flex: 1 1 auto;
+  height: 1.5px;
+  min-width: 1.5rem;
+  border-radius: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--sd-accent) 48%, transparent) 38%,
+    color-mix(in srgb, var(--sd-accent) 92%, transparent) 100%
+  );
+  opacity: 0.95;
+  position: relative;
+  overflow: hidden;
+}
+
+.section-divider__line:last-child {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--sd-accent) 92%, transparent) 0%,
+    color-mix(in srgb, var(--sd-accent) 48%, transparent) 62%,
+    transparent 100%
+  );
+}
+
+.section-divider__line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--sd-accent) 85%, transparent) 50%,
+    transparent 100%
+  );
+  transform: translateX(-120%);
+  animation: section-divider-shimmer 5.5s ease-in-out infinite;
+  opacity: 0.7;
+}
+
+.section-divider__line:last-child::after {
+  animation-delay: 0.45s;
+}
+
+.section-divider__center {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex: 0 0 auto;
+}
+
+.section-divider__marker {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--sd-accent);
+  box-shadow: var(--sd-glow);
+  flex-shrink: 0;
+}
+
+.section-divider__label {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--sd-accent) 55%, var(--text-secondary) 45%);
+  white-space: nowrap;
+  line-height: 1;
+  opacity: 0.95;
+}
+
+.section-divider--workouts {
+  --sd-accent: color-mix(in srgb, var(--primary) 70%, var(--secondary) 30%);
+  --sd-accent-soft: var(--primary-soft);
+  --sd-glow:
+    0 0 10px color-mix(in srgb, var(--primary) 48%, transparent),
+    0 0 18px color-mix(in srgb, var(--primary) 24%, transparent);
+}
+
+.section-divider--calendar {
+  --sd-accent: var(--performance);
+  --sd-accent-soft: var(--performance-soft);
+  --sd-glow:
+    0 0 10px color-mix(in srgb, var(--performance) 46%, transparent),
+    0 0 18px color-mix(in srgb, var(--performance) 22%, transparent);
+}
+
+.section-divider--progress {
+  --sd-accent: color-mix(in srgb, var(--coach) 45%, var(--performance) 55%);
+  --sd-accent-soft: var(--performance-soft);
+  --sd-glow:
+    0 0 10px color-mix(in srgb, var(--performance) 44%, transparent),
+    0 0 18px color-mix(in srgb, var(--performance) 20%, transparent);
+}
+
+.section-divider--coach {
+  --sd-accent: var(--coach);
+  --sd-accent-soft: var(--coach-soft);
+  --sd-glow:
+    0 0 10px color-mix(in srgb, var(--coach) 50%, transparent),
+    0 0 20px color-mix(in srgb, var(--coach) 26%, transparent);
+}
+
+.section-divider--profile {
+  --sd-accent: var(--text-secondary);
+  --sd-accent-soft: rgba(148, 163, 184, 0.14);
+  --sd-glow:
+    0 0 8px color-mix(in srgb, var(--text-secondary) 28%, transparent),
+    0 0 14px color-mix(in srgb, var(--text-secondary) 14%, transparent);
+}
+
+.section-divider--default {
+  --sd-accent: color-mix(in srgb, var(--text-main) 40%, var(--secondary) 60%);
+  --sd-accent-soft: var(--secondary-soft);
+  --sd-glow:
+    0 0 10px color-mix(in srgb, var(--secondary) 40%, transparent),
+    0 0 16px color-mix(in srgb, var(--secondary) 18%, transparent);
+}
+
+@keyframes section-divider-shimmer {
+  0%,
+  28% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  42% {
+    opacity: 0.75;
+  }
+  58% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .section-divider {
+    width: min(88%, 22rem);
+    max-width: 88%;
+    gap: 0.5rem;
+    margin: 34px auto;
+    padding: 4px 0;
+  }
+
+  .section-divider__marker {
+    width: 8px;
+    height: 8px;
+  }
+
+  .section-divider__label {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+  }
+}
+
+@media (max-width: 320px) {
+  .section-divider {
+    width: min(88%, 18rem);
+    max-width: 88%;
+  }
+
+  .section-divider__label {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-divider__line::after {
+    animation: none;
+    display: none;
   }
 }

@@ -104,6 +104,14 @@
   --shadow: 0 10px 38px rgba(0, 0, 0, 0.45);
   --glow-green: var(--glow-primary);
   --glow-cyan: var(--glow-secondary);
+
+  /* SaaS dashboard accents */
+  --dash-orange: var(--energy);
+  --dash-orange-soft: var(--energy-soft);
+  --dash-module-green: var(--primary);
+  --dash-module-blue: var(--performance);
+  --dash-module-purple: var(--coach);
+  --dash-module-cyan: var(--secondary);
 }
 
 *,

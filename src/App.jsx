@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { sectionIds } from './data/siteData'
 import { useScrollSpy } from './hooks/useScrollSpy'
 import { useSectionHash } from './hooks/useSectionHash'
@@ -6,10 +6,8 @@ import { useHashRoute } from './hooks/useHashRoute'
 import { FitnessProvider, useFitness } from './context/FitnessContext'
 import { loadExercises } from './services/exerciseService'
 import Header from './components/Header'
-import Hero from './components/Hero'
 import HowItWorks from './components/HowItWorks'
-import Dashboard from './components/Dashboard'
-import TodaySuggestion from './components/TodaySuggestion'
+import SectionDivider from './components/SectionDivider'
 import MyWorkouts from './components/MyWorkouts'
 import WorkoutPlanner from './components/WorkoutPlanner'
 import CoachIA from './components/CoachIA'
@@ -23,33 +21,81 @@ import Footer from './components/Footer'
 import Toast from './components/Toast'
 import StartWorkoutModal from './components/StartWorkoutModal'
 import MobileNav from './components/MobileNav'
+import DashboardShell from './components/dashboard/DashboardShell'
+import DashboardSidebar from './components/dashboard/DashboardSidebar'
 import './App.css'
+import './styles/dashboard.css'
 import './styles/mobile.css'
 
 function AppContent() {
   const activeSection = useScrollSpy(sectionIds)
   useSectionHash(sectionIds)
-  const { toasts } = useFitness()
+  const { toasts, profile, history, workouts } = useFitness()
   const { page, id: exerciseId } = useHashRoute()
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth > 900) setMobileMenuOpen(false)
+    }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return undefined
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [mobileMenuOpen])
 
   return (
-    <div className="app">
-      <Header activeSection={activeSection} />
-      <main>
-        <Hero />
-        <HowItWorks />
-        <Dashboard />
-        <TodaySuggestion />
-        <MyWorkouts />
-        <WorkoutPlanner />
-        <CoachIA />
-        <ExerciseLibrary />
-        <TrainingCalendar />
-        <PerformanceDashboard />
-        <Goals />
-        <UserProfile />
-        <Footer />
-      </main>
+    <div
+      className={`app app--saas${sidebarCollapsed ? ' app--sidebar-collapsed' : ''}${
+        mobileMenuOpen ? ' app--drawer-open' : ''
+      }`}
+    >
+      <div className="app__frame">
+        <DashboardSidebar
+          activeSection={activeSection}
+          profile={profile}
+          history={history}
+          workouts={workouts}
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
+          mobileOpen={mobileMenuOpen}
+          onCloseMobile={() => setMobileMenuOpen(false)}
+        />
+
+        <div className="app__content">
+          <Header
+            activeSection={activeSection}
+            onOpenDashboardMenu={() => setMobileMenuOpen(true)}
+          />
+          <main>
+            <DashboardShell />
+            <HowItWorks />
+            <SectionDivider variant="workouts" label="TREINOS" />
+            <MyWorkouts />
+            <WorkoutPlanner />
+            <SectionDivider variant="coach" label="COACH IA" />
+            <CoachIA />
+            <ExerciseLibrary />
+            <SectionDivider variant="calendar" label="CALENDÁRIO" />
+            <TrainingCalendar />
+            <SectionDivider variant="progress" label="EVOLUÇÃO" />
+            <PerformanceDashboard />
+            <Goals />
+            <SectionDivider variant="profile" label="PERFIL" />
+            <UserProfile />
+            <Footer />
+          </main>
+        </div>
+      </div>
+
       <Toast toasts={toasts} />
       <StartWorkoutModal />
       <MobileNav activeSection={activeSection} />

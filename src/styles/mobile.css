@@ -18,18 +18,38 @@
     padding-bottom: calc(var(--mobile-nav-h) + var(--safe-bottom) + 12px);
   }
 
-  /* Spec spacing */
+  /* Spec spacing — tighter vertical; SectionDivider provides module breathing room */
   .section {
-    padding: 20px 14px;
+    padding: 18px 14px;
   }
 
   .section .container,
   .dashboard .container,
-  .hero .container {
+  .hero .container,
+  .dash-home__inner {
     width: 100%;
     max-width: 100%;
     padding-left: 0;
     padding-right: 0;
+  }
+
+  .dash-home {
+    padding: 0.85rem 14px 1rem;
+    overflow-x: clip;
+  }
+
+  .dash-modules,
+  .dash-indicators__grid,
+  .dash-weekbar {
+    max-width: 100%;
+  }
+
+  .dash-weekbar__actions .btn {
+    width: 100%;
+  }
+
+  .mobile-nav__icon svg {
+    display: block;
   }
 
   .glass-card,
@@ -386,7 +406,7 @@
 
   /* Treinos */
   .section {
-    padding: 20px 14px;
+    padding: 18px 14px;
   }
 
   .workouts-panel {

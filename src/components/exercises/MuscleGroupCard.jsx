@@ -1,17 +1,19 @@
 import { getMuscleGroupVisual } from '../../data/muscleGroupVisualConfig'
+import { MuscleGroupIllustration } from './MuscleGroupIllustrations'
 
 /**
- * Premium letter-badge muscle-group browse card (PT, CO, PN…).
+ * Premium anatomical muscle-group browse card — matches reference composition.
  */
 export default function MuscleGroupCard({
   group,
   count = 0,
+  index,
   isActive = false,
   onSelect,
 }) {
   const visual = getMuscleGroupVisual(group.id)
   const expanding = Boolean(visual.expanding)
-  const letter = visual.letter || visual.shortCode
+  const orderLabel = typeof index === 'number' ? String(index + 1).padStart(2, '0') : null
 
   const style = {
     '--mg-accent': visual.color,
@@ -33,13 +35,27 @@ export default function MuscleGroupCard({
       aria-pressed={isActive}
       aria-label={`${group.label}: ${count} ${count === 1 ? 'exercício' : 'exercícios'}`}
     >
-      <span className="muscle-group-card__letter" aria-hidden="true">
-        {letter}
+      <span className="muscle-group-card__glow" aria-hidden="true" />
+
+      <span className="muscle-group-card__top">
+        {orderLabel ? (
+          <span className="muscle-group-card__order" aria-hidden="true">
+            {orderLabel}
+          </span>
+        ) : (
+          <span className="muscle-group-card__order muscle-group-card__order--spacer" aria-hidden="true" />
+        )}
+        <span className="muscle-group-card__code" aria-hidden="true">
+          {visual.shortCode}
+        </span>
       </span>
 
       <span className="muscle-group-card__body">
         <span className="muscle-group-card__name">{group.label}</span>
         <span className="muscle-group-card__subtitle">{visual.subtitle}</span>
+        <span className="muscle-group-card__count">
+          {count} {count === 1 ? 'exercício' : 'exercícios'}
+        </span>
         {expanding ? (
           <em className="muscle-group-card__expanding">em expansão</em>
         ) : null}
@@ -51,8 +67,8 @@ export default function MuscleGroupCard({
         </span>
       </span>
 
-      <span className="muscle-group-card__badge" aria-hidden="true">
-        {count}
+      <span className="muscle-group-card__art" aria-hidden="true">
+        <MuscleGroupIllustration name={visual.illustration} />
       </span>
     </button>
   )

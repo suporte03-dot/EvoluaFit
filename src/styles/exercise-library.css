@@ -212,21 +212,21 @@
   align-items: stretch;
   width: 100%;
   min-width: 0;
-  min-height: 280px;
+  min-height: 300px;
   height: auto;
-  padding: 1rem 1rem 0.95rem;
-  border-radius: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1.05rem 1.05rem 1rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
   background:
-    radial-gradient(ellipse 80% 55% at 50% 18%, rgba(var(--mg-rgb), 0.14), transparent 62%),
-    linear-gradient(180deg, rgba(12, 22, 40, 0.98), rgba(7, 14, 28, 0.98));
+    radial-gradient(ellipse 90% 58% at 50% 16%, rgba(var(--mg-rgb), 0.18), transparent 64%),
+    linear-gradient(165deg, rgba(18, 26, 42, 0.98) 0%, rgba(10, 14, 26, 0.99) 55%, rgba(8, 12, 22, 1) 100%);
   color: inherit;
   text-align: left;
   cursor: pointer;
   overflow: hidden;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 10px 28px rgba(0, 0, 0, 0.28);
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 12px 32px rgba(0, 0, 0, 0.35);
   transition:
     transform 0.22s ease,
     border-color 0.22s ease,
@@ -238,18 +238,44 @@
   display: grid;
   place-items: center;
   flex: 0 0 auto;
-  height: 148px;
-  margin: 0 0 0.55rem;
+  height: 158px;
+  margin: 0 0 0.65rem;
   color: var(--mg-accent);
 }
 
 .exercise-library .muscle-group-card__glow {
   position: absolute;
-  inset: 12% 18% 18%;
+  inset: 6% 12% 12%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(var(--mg-rgb), 0.42), rgba(var(--mg-rgb), 0.08) 48%, transparent 72%);
-  filter: blur(10px);
+  background: radial-gradient(circle, rgba(var(--mg-rgb), 0.5), rgba(var(--mg-rgb), 0.12) 45%, transparent 70%);
+  filter: blur(14px);
   pointer-events: none;
+}
+
+.exercise-library .muscle-group-card--neon {
+  border-color: rgba(34, 211, 238, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 0 1px rgba(34, 211, 238, 0.08),
+    0 0 22px rgba(34, 211, 238, 0.1),
+    0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.exercise-library .muscle-group-card__neon {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  max-width: 168px;
+  max-height: 150px;
+  object-fit: contain;
+  object-position: center top;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  filter:
+    drop-shadow(0 0 6px rgba(34, 211, 238, 0.35))
+    drop-shadow(0 0 16px rgba(34, 211, 238, 0.16));
 }
 
 .exercise-library .mg-illust-wrap {
@@ -257,18 +283,18 @@
   z-index: 1;
   display: grid;
   place-items: center;
-  width: min(100%, 132px);
+  width: min(100%, 148px);
   height: 100%;
   filter:
-    drop-shadow(0 0 6px rgba(var(--mg-rgb), 0.75))
-    drop-shadow(0 0 16px rgba(var(--mg-rgb), 0.4))
-    drop-shadow(0 0 28px rgba(var(--mg-rgb), 0.2));
+    drop-shadow(0 0 5px rgba(var(--mg-rgb), 0.9))
+    drop-shadow(0 0 14px rgba(var(--mg-rgb), 0.45))
+    drop-shadow(0 0 28px rgba(var(--mg-rgb), 0.22));
 }
 
 .exercise-library .mg-illust {
   width: 100%;
   height: auto;
-  max-height: 136px;
+  max-height: 150px;
   display: block;
 }
 
@@ -279,35 +305,35 @@
 .exercise-library .muscle-group-card__body {
   display: flex;
   flex-direction: column;
-  gap: 0.22rem;
+  gap: 0.28rem;
   min-width: 0;
   flex: 1 1 auto;
-  padding: 0 0.15rem;
+  padding: 0 0.2rem;
 }
 
 .exercise-library .muscle-group-card__name {
-  font-size: clamp(1.12rem, 1rem + 0.45vw, 1.32rem);
-  font-weight: 850;
+  font-size: clamp(1.18rem, 1.05rem + 0.5vw, 1.38rem);
+  font-weight: 800;
   letter-spacing: -0.03em;
-  line-height: 1.15;
-  color: #f8fafc;
+  line-height: 1.12;
+  color: #ffffff;
 }
 
 .exercise-library .muscle-group-card__subtitle {
-  font-size: 0.84rem;
+  font-size: 0.86rem;
   font-weight: 500;
   line-height: 1.35;
-  color: rgba(186, 198, 216, 0.92);
+  color: rgba(203, 213, 225, 0.88);
 }
 
 .exercise-library .muscle-group-card__expanding {
   display: inline-flex;
   align-items: center;
   align-self: flex-start;
-  margin-top: 0.15rem;
-  padding: 0.1rem 0.4rem;
+  margin-top: 0.2rem;
+  padding: 0.12rem 0.45rem;
   border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.28);
+  border: 1px solid rgba(148, 163, 184, 0.3);
   background: rgba(148, 163, 184, 0.1);
   font-style: normal;
   font-size: 0.62rem;
@@ -322,8 +348,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  margin-top: 0.85rem;
-  padding-top: 0.65rem;
+  margin-top: 0.95rem;
+  padding-top: 0.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
@@ -331,28 +357,42 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 2rem;
-  height: 2rem;
+  min-width: 2.15rem;
+  height: 2.15rem;
   padding: 0 0.55rem;
   border-radius: 999px;
-  border: 1px solid rgba(var(--mg-rgb), 0.55);
-  background: rgba(var(--mg-rgb), 0.16);
+  border: 1.5px solid rgba(var(--mg-rgb), 0.65);
+  background: rgba(var(--mg-rgb), 0.12);
   color: var(--mg-accent);
-  font-size: 0.82rem;
+  font-size: 0.86rem;
   font-weight: 800;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  box-shadow: 0 0 14px rgba(var(--mg-rgb), 0.28);
+  box-shadow: 0 0 16px rgba(var(--mg-rgb), 0.28);
+}
+
+.exercise-library .muscle-group-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--mg-accent);
+}
+
+.exercise-library .muscle-group-card__cta-label {
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  opacity: 0.9;
 }
 
 .exercise-library .muscle-group-card__cta-arrow {
   display: inline-grid;
   place-items: center;
-  width: 2rem;
-  height: 2rem;
+  width: 2.15rem;
+  height: 2.15rem;
   border-radius: 999px;
-  border: 1px solid rgba(var(--mg-rgb), 0.35);
-  background: rgba(var(--mg-rgb), 0.08);
+  border: 1.5px solid rgba(var(--mg-rgb), 0.45);
+  background: rgba(var(--mg-rgb), 0.1);
   color: var(--mg-accent);
   font-size: 1rem;
   font-weight: 700;
@@ -363,36 +403,42 @@
   transform: translateY(-4px);
   border-color: rgba(var(--mg-rgb), 0.55);
   background:
-    radial-gradient(ellipse 80% 55% at 50% 18%, rgba(var(--mg-rgb), 0.2), transparent 62%),
-    linear-gradient(180deg, rgba(12, 22, 40, 0.98), rgba(7, 14, 28, 0.98));
+    radial-gradient(ellipse 90% 58% at 50% 16%, rgba(var(--mg-rgb), 0.26), transparent 64%),
+    linear-gradient(165deg, rgba(18, 26, 42, 0.98) 0%, rgba(10, 14, 26, 0.99) 55%, rgba(8, 12, 22, 1) 100%);
   box-shadow:
-    0 0 0 1px rgba(var(--mg-rgb), 0.35),
-    0 0 28px rgba(var(--mg-rgb), 0.28),
-    0 18px 40px rgba(0, 0, 0, 0.35);
+    0 0 0 1px rgba(var(--mg-rgb), 0.4),
+    0 0 32px rgba(var(--mg-rgb), 0.28),
+    0 18px 42px rgba(0, 0, 0, 0.4);
 }
 
 .exercise-library .muscle-group-card:hover .muscle-group-card__cta-arrow {
   transform: translateX(3px);
-  background: rgba(var(--mg-rgb), 0.18);
-  box-shadow: 0 0 16px rgba(var(--mg-rgb), 0.3);
+  background: rgba(var(--mg-rgb), 0.2);
+  box-shadow: 0 0 18px rgba(var(--mg-rgb), 0.35);
 }
 
 .exercise-library .muscle-group-card:hover .mg-illust-wrap {
   filter:
-    drop-shadow(0 0 8px rgba(var(--mg-rgb), 0.95))
-    drop-shadow(0 0 20px rgba(var(--mg-rgb), 0.55))
-    drop-shadow(0 0 36px rgba(var(--mg-rgb), 0.3));
+    drop-shadow(0 0 7px rgba(var(--mg-rgb), 1))
+    drop-shadow(0 0 18px rgba(var(--mg-rgb), 0.55))
+    drop-shadow(0 0 36px rgba(var(--mg-rgb), 0.28));
+}
+
+.exercise-library .muscle-group-card--neon:hover .muscle-group-card__neon {
+  filter:
+    drop-shadow(0 0 8px rgba(34, 211, 238, 0.48))
+    drop-shadow(0 0 20px rgba(34, 211, 238, 0.22));
 }
 
 .exercise-library .muscle-group-card.is-active {
-  border-color: rgba(var(--mg-rgb), 0.6);
+  border-color: rgba(var(--mg-rgb), 0.7);
   background:
-    radial-gradient(ellipse 85% 58% at 50% 16%, rgba(var(--mg-rgb), 0.22), transparent 64%),
-    linear-gradient(180deg, rgba(var(--mg-rgb), 0.12), rgba(7, 14, 28, 0.98) 55%);
+    radial-gradient(ellipse 92% 60% at 50% 14%, rgba(var(--mg-rgb), 0.28), transparent 66%),
+    linear-gradient(165deg, rgba(var(--mg-rgb), 0.1) 0%, rgba(10, 14, 26, 0.99) 50%, rgba(8, 12, 22, 1) 100%);
   box-shadow:
-    0 0 0 1px rgba(var(--mg-rgb), 0.28),
-    0 0 32px rgba(var(--mg-rgb), 0.22),
-    0 16px 36px rgba(0, 0, 0, 0.3);
+    0 0 0 1px rgba(var(--mg-rgb), 0.45),
+    0 0 36px rgba(var(--mg-rgb), 0.3),
+    0 16px 40px rgba(0, 0, 0, 0.38);
 }
 
 .exercise-library .muscle-group-card:focus-visible {

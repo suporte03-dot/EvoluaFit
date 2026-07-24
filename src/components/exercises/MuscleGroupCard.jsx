@@ -1,8 +1,7 @@
 import { getMuscleGroupVisual } from '../../data/muscleGroupVisualConfig'
-import { MuscleGroupIllustration } from './MuscleGroupIllustrations'
 
 /**
- * Premium portrait library card — neon anatomical wireframe + title + desc + count/arrow.
+ * Premium portrait library card — neon PNG art + title + desc + count/arrow.
  * Absolute visual pattern for all muscle-group module cards in EvoluaFit.
  */
 export default function MuscleGroupCard({
@@ -13,6 +12,7 @@ export default function MuscleGroupCard({
 }) {
   const visual = getMuscleGroupVisual(group.id)
   const expanding = Boolean(visual.expanding)
+  const neonImage = visual.neonImage
 
   const style = {
     '--mg-accent': visual.color,
@@ -25,6 +25,7 @@ export default function MuscleGroupCard({
       className={[
         'muscle-group-card',
         `muscle-group-card--${visual.tone}`,
+        neonImage ? 'muscle-group-card--neon' : '',
         isActive ? 'is-active' : '',
       ]
         .filter(Boolean)
@@ -36,7 +37,14 @@ export default function MuscleGroupCard({
     >
       <span className="muscle-group-card__art" aria-hidden="true">
         <span className="muscle-group-card__glow" />
-        <MuscleGroupIllustration name={visual.illustration} />
+        {neonImage ? (
+          <img
+            src={neonImage}
+            alt=""
+            className="muscle-group-card__neon"
+            draggable={false}
+          />
+        ) : null}
       </span>
 
       <span className="muscle-group-card__body">

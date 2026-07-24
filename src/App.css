@@ -6004,28 +6004,42 @@ main {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 2rem;
-  height: 2rem;
+  min-width: 2.15rem;
+  height: 2.15rem;
   padding: 0 0.55rem;
   border-radius: 999px;
-  border: 1px solid rgba(var(--mg-rgb), 0.55);
-  background: rgba(var(--mg-rgb), 0.16);
+  border: 1.5px solid rgba(var(--mg-rgb), 0.65);
+  background: rgba(var(--mg-rgb), 0.12);
   color: var(--mg-accent);
-  font-size: 0.82rem;
+  font-size: 0.86rem;
   font-weight: 800;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  box-shadow: 0 0 14px rgba(var(--mg-rgb), 0.28);
+  box-shadow: 0 0 16px rgba(var(--mg-rgb), 0.28);
+}
+
+.muscle-group-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--mg-accent);
+}
+
+.muscle-group-card__cta-label {
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  opacity: 0.9;
 }
 
 .muscle-group-card__cta-arrow {
   display: inline-grid;
   place-items: center;
-  width: 2rem;
-  height: 2rem;
+  width: 2.15rem;
+  height: 2.15rem;
   border-radius: 999px;
-  border: 1px solid rgba(var(--mg-rgb), 0.35);
-  background: rgba(var(--mg-rgb), 0.08);
+  border: 1.5px solid rgba(var(--mg-rgb), 0.45);
+  background: rgba(var(--mg-rgb), 0.1);
   color: var(--mg-accent);
   font-size: 1rem;
   font-weight: 700;
@@ -6078,13 +6092,13 @@ main {
 .muscle-group-card--ombros { --mg-accent: #38bdf8; --mg-rgb: 56, 189, 248; }
 .muscle-group-card--biceps { --mg-accent: #facc15; --mg-rgb: 250, 204, 21; }
 .muscle-group-card--triceps { --mg-accent: #a3e635; --mg-rgb: 163, 230, 53; }
-.muscle-group-card--antebraco { --mg-accent: #84cc16; --mg-rgb: 132, 204, 22; }
+.muscle-group-card--antebraco { --mg-accent: #4ade80; --mg-rgb: 74, 222, 128; }
 .muscle-group-card--trapezio { --mg-accent: #818cf8; --mg-rgb: 129, 140, 248; }
-.muscle-group-card--lombar { --mg-accent: #34d399; --mg-rgb: 52, 211, 153; }
+.muscle-group-card--lombar { --mg-accent: #2dd4bf; --mg-rgb: 45, 212, 191; }
 .muscle-group-card--abdomen { --mg-accent: #e879f9; --mg-rgb: 232, 121, 249; }
 .muscle-group-card--panturrilha { --mg-accent: #fbbf24; --mg-rgb: 251, 191, 36; }
-.muscle-group-card--cardio { --mg-accent: #f87171; --mg-rgb: 248, 113, 113; }
-.muscle-group-card--mobilidade { --mg-accent: #22d3ee; --mg-rgb: 34, 211, 238; }
+.muscle-group-card--cardio { --mg-accent: #ff4d6d; --mg-rgb: 255, 77, 109; }
+.muscle-group-card--mobilidade { --mg-accent: #6366f1; --mg-rgb: 99, 102, 241; }
 .muscle-group-card--funcional { --mg-accent: #2dd4bf; --mg-rgb: 45, 212, 191; }
 .muscle-group-card--alongamento { --mg-accent: #7dd3fc; --mg-rgb: 125, 211, 252; }
 .muscle-group-card--default { --mg-accent: #22d3ee; --mg-rgb: 34, 211, 238; }

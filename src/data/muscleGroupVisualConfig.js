@@ -1,7 +1,34 @@
 /**
  * Visual registry for Biblioteca de Exercícios muscle-group cards.
- * Colors, short codes, expanding flags, and illustration keys.
+ * Colors, short codes, expanding flags, and neon PNG assets.
  */
+
+import absNeon from '../assets/muscle-groups/abs-neon.png'
+import backNeon from '../assets/muscle-groups/back-neon.png'
+import bicepsNeon from '../assets/muscle-groups/biceps-neon.png'
+import cardioNeon from '../assets/muscle-groups/cardio-neon.png'
+import chestNeon from '../assets/muscle-groups/chest-neon.png'
+import glutesNeon from '../assets/muscle-groups/glutes-neon.png'
+import legsNeon from '../assets/muscle-groups/legs-neon.png'
+import lowerBackNeon from '../assets/muscle-groups/lower-back-neon.png'
+import mobilityNeon from '../assets/muscle-groups/mobility-neon.png'
+import shouldersNeon from '../assets/muscle-groups/shoulders-neon.png'
+import tricepsNeon from '../assets/muscle-groups/triceps-neon.png'
+
+/** Neon PNG assets mapped to primary browse group ids */
+export const MUSCLE_GROUP_NEON_IMAGES = {
+  Peitoral: chestNeon,
+  Costas: backNeon,
+  Pernas: legsNeon,
+  Glúteos: glutesNeon,
+  Ombros: shouldersNeon,
+  Bíceps: bicepsNeon,
+  Tríceps: tricepsNeon,
+  Abdômen: absNeon,
+  Lombar: lowerBackNeon,
+  Cardio: cardioNeon,
+  Mobilidade: mobilityNeon,
+}
 
 export const GROUP_VISUAL_CONFIG = {
   Todos: {
@@ -173,10 +200,16 @@ const DEFAULT_VISUAL = {
 /** Resolve visual config for a muscle group id */
 export function getMuscleGroupVisual(groupId) {
   const cfg = GROUP_VISUAL_CONFIG[groupId]
-  if (!cfg) return DEFAULT_VISUAL
+  if (!cfg) {
+    return {
+      ...DEFAULT_VISUAL,
+      neonImage: null,
+    }
+  }
   return {
     ...cfg,
     letter: cfg.shortCode,
+    neonImage: MUSCLE_GROUP_NEON_IMAGES[groupId] || null,
   }
 }
 

@@ -335,23 +335,26 @@ export default function ExerciseLibrary() {
                       className={`disclose-toggle${moreGroupsOpen ? ' is-open' : ''}`}
                       onClick={() => setMoreGroupsOpen((o) => !o)}
                       aria-expanded={moreGroupsOpen}
+                      aria-controls="muscle-browse-extra"
                     >
-                      <span>{moreGroupsOpen ? 'Ocultar outros grupos' : 'Mais grupos'}</span>
+                      <span>{moreGroupsOpen ? 'Menos grupos' : 'Mais grupos'}</span>
                       <span aria-hidden="true">{moreGroupsOpen ? '▲' : '▼'}</span>
                     </button>
-                    {moreGroupsOpen && (
-                      <div className="muscle-group-grid">
-                        {extraGroups.map((group) => (
-                          <MuscleGroupCard
-                            key={group.id}
-                            group={group}
-                            count={chipCounts[group.id] ?? 0}
-                            isActive={selectedGroup === group.id}
-                            onSelect={openGroup}
-                          />
-                        ))}
-                      </div>
-                    )}
+                    <div
+                      id="muscle-browse-extra"
+                      className={`muscle-group-grid muscle-browse__extra${moreGroupsOpen ? ' is-open' : ''}`}
+                      aria-hidden={!moreGroupsOpen}
+                    >
+                      {extraGroups.map((group) => (
+                        <MuscleGroupCard
+                          key={group.id}
+                          group={group}
+                          count={chipCounts[group.id] ?? 0}
+                          isActive={selectedGroup === group.id}
+                          onSelect={openGroup}
+                        />
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

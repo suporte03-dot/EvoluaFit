@@ -6,28 +6,60 @@
 import absNeon from '../assets/muscle-groups/abs-neon.png'
 import backNeon from '../assets/muscle-groups/back-neon.png'
 import bicepsNeon from '../assets/muscle-groups/biceps-neon.png'
+import calvesNeon from '../assets/muscle-groups/calves-neon.png'
 import cardioNeon from '../assets/muscle-groups/cardio-neon.png'
 import chestNeon from '../assets/muscle-groups/chest-neon.png'
+import forearmNeon from '../assets/muscle-groups/forearm-neon.png'
+import functionalNeon from '../assets/muscle-groups/functional-neon.png'
 import glutesNeon from '../assets/muscle-groups/glutes-neon.png'
 import legsNeon from '../assets/muscle-groups/legs-neon.png'
 import lowerBackNeon from '../assets/muscle-groups/lower-back-neon.png'
 import mobilityNeon from '../assets/muscle-groups/mobility-neon.png'
 import shouldersNeon from '../assets/muscle-groups/shoulders-neon.png'
+import stretchingNeon from '../assets/muscle-groups/stretching-neon.png'
+import trapsNeon from '../assets/muscle-groups/traps-neon.png'
 import tricepsNeon from '../assets/muscle-groups/triceps-neon.png'
 
-/** Neon PNG assets mapped to primary browse group ids */
-export const MUSCLE_GROUP_NEON_IMAGES = {
-  Peitoral: chestNeon,
-  Costas: backNeon,
-  Pernas: legsNeon,
-  Glúteos: glutesNeon,
-  Ombros: shouldersNeon,
-  Bíceps: bicepsNeon,
-  Tríceps: tricepsNeon,
-  Abdômen: absNeon,
-  Lombar: lowerBackNeon,
-  Cardio: cardioNeon,
-  Mobilidade: mobilityNeon,
+/**
+ * Central neon module registry (slug → image + accent).
+ * Group ids in GROUP_VISUAL_CONFIG resolve against this map.
+ */
+export const NEON_MODULE_CONFIG = {
+  chest: { image: chestNeon, accent: '#22D3EE' },
+  back: { image: backNeon, accent: '#3B82F6' },
+  legs: { image: legsNeon, accent: '#FB923C' },
+  glutes: { image: glutesNeon, accent: '#C084FC' },
+  shoulders: { image: shouldersNeon, accent: '#38BDF8' },
+  biceps: { image: bicepsNeon, accent: '#FACC15' },
+  triceps: { image: tricepsNeon, accent: '#A3E635' },
+  abs: { image: absNeon, accent: '#E879F9' },
+  lowerBack: { image: lowerBackNeon, accent: '#2DD4BF' },
+  cardio: { image: cardioNeon, accent: '#FF4D6D' },
+  mobility: { image: mobilityNeon, accent: '#6366F1' },
+  stretching: { image: stretchingNeon, accent: '#38BDF8' },
+  functional: { image: functionalNeon, accent: '#06B6D4' },
+  calves: { image: calvesNeon, accent: '#FACC15' },
+  traps: { image: trapsNeon, accent: '#60A5FA' },
+  forearm: { image: forearmNeon, accent: '#22C55E' },
+}
+
+function hexToRgb(hex) {
+  const h = hex.replace('#', '')
+  const full = h.length === 3 ? h.split('').map((c) => c + c).join('') : h
+  const n = Number.parseInt(full, 16)
+  return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`
+}
+
+function withNeon(base, moduleKey) {
+  const neon = NEON_MODULE_CONFIG[moduleKey]
+  if (!neon) return base
+  return {
+    ...base,
+    color: neon.accent,
+    rgb: hexToRgb(neon.accent),
+    image: neon.image,
+    neonKey: moduleKey,
+  }
 }
 
 export const GROUP_VISUAL_CONFIG = {
@@ -37,154 +69,160 @@ export const GROUP_VISUAL_CONFIG = {
     color: '#2DD4BF',
     rgb: '45, 212, 191',
     subtitle: 'Todos os grupos',
-    illustration: 'chest',
     expanding: false,
   },
-  Peitoral: {
-    shortCode: 'PT',
-    tone: 'peito',
-    color: '#22D3EE',
-    rgb: '34, 211, 238',
-    subtitle: 'Peito e empurrar',
-    illustration: 'chest',
-    expanding: false,
-  },
-  Costas: {
-    shortCode: 'CO',
-    tone: 'costas',
-    color: '#3B82F6',
-    rgb: '59, 130, 246',
-    subtitle: 'Puxar e postura',
-    illustration: 'back',
-    expanding: false,
-  },
-  Pernas: {
-    shortCode: 'PN',
-    tone: 'pernas',
-    color: '#FB923C',
-    rgb: '251, 146, 60',
-    subtitle: 'Base e potência',
-    illustration: 'legs',
-    expanding: false,
-  },
-  Glúteos: {
-    shortCode: 'GL',
-    tone: 'gluteos',
-    color: '#C084FC',
-    rgb: '192, 132, 252',
-    subtitle: 'Posterior e estabilidade',
-    illustration: 'glutes',
-    expanding: true,
-  },
-  Ombros: {
-    shortCode: 'OM',
-    tone: 'ombros',
-    color: '#38BDF8',
-    rgb: '56, 189, 248',
-    subtitle: 'Deltoides e mobilidade',
-    illustration: 'shoulders',
-    expanding: false,
-  },
-  Bíceps: {
-    shortCode: 'BI',
-    tone: 'biceps',
-    color: '#FACC15',
-    rgb: '250, 204, 21',
-    subtitle: 'Flexão e controle',
-    illustration: 'biceps',
-    expanding: false,
-  },
-  Tríceps: {
-    shortCode: 'TR',
-    tone: 'triceps',
-    color: '#A3E635',
-    rgb: '163, 230, 53',
-    subtitle: 'Extensão e trava',
-    illustration: 'triceps',
-    expanding: false,
-  },
-  Abdômen: {
-    shortCode: 'AB',
-    tone: 'abdomen',
-    color: '#E879F9',
-    rgb: '232, 121, 249',
-    subtitle: 'Core e estabilidade',
-    illustration: 'abs',
-    expanding: true,
-  },
-  Mobilidade: {
-    shortCode: 'MO',
-    tone: 'mobilidade',
-    color: '#6366F1',
-    rgb: '99, 102, 241',
-    subtitle: 'Movimento livre',
-    illustration: 'mobility',
-    expanding: true,
-  },
-  Antebraço: {
-    shortCode: 'AN',
-    tone: 'antebraco',
-    color: '#4ADE80',
-    rgb: '74, 222, 128',
-    subtitle: 'Pegada e controle',
-    illustration: 'forearm',
-    expanding: false,
-  },
-  Lombar: {
-    shortCode: 'LO',
-    tone: 'lombar',
-    color: '#2DD4BF',
-    rgb: '45, 212, 191',
-    subtitle: 'Suporte e postura',
-    illustration: 'lower-back',
-    expanding: false,
-  },
-  Cardio: {
-    shortCode: 'CA',
-    tone: 'cardio',
-    color: '#FF4D6D',
-    rgb: '255, 77, 109',
-    subtitle: 'Resistência e energia',
-    illustration: 'cardio',
-    expanding: true,
-  },
-  Trapézio: {
-    shortCode: 'TP',
-    tone: 'trapezio',
-    color: '#818CF8',
-    rgb: '129, 140, 248',
-    subtitle: 'Pescoço e postura',
-    illustration: 'traps',
-    expanding: false,
-  },
-  Panturrilha: {
-    shortCode: 'PA',
-    tone: 'panturrilha',
-    color: '#FBBF24',
-    rgb: '251, 191, 36',
-    subtitle: 'Impulso e estabilidade',
-    illustration: 'calves',
-    expanding: false,
-  },
-  Funcional: {
-    shortCode: 'FU',
-    tone: 'funcional',
-    color: '#2DD4BF',
-    rgb: '45, 212, 191',
-    subtitle: 'Movimento integrado',
-    illustration: 'functional',
-    expanding: false,
-  },
-  Alongamento: {
-    shortCode: 'AL',
-    tone: 'alongamento',
-    color: '#7DD3FC',
-    rgb: '125, 211, 252',
-    subtitle: 'Flexibilidade e relax',
-    illustration: 'stretch',
-    expanding: false,
-  },
+  Peitoral: withNeon(
+    {
+      shortCode: 'PT',
+      tone: 'peito',
+      subtitle: 'Peito e empurrar',
+      expanding: false,
+    },
+    'chest',
+  ),
+  Costas: withNeon(
+    {
+      shortCode: 'CO',
+      tone: 'costas',
+      subtitle: 'Puxar e postura',
+      expanding: false,
+    },
+    'back',
+  ),
+  Pernas: withNeon(
+    {
+      shortCode: 'PN',
+      tone: 'pernas',
+      subtitle: 'Base e potência',
+      expanding: false,
+    },
+    'legs',
+  ),
+  Glúteos: withNeon(
+    {
+      shortCode: 'GL',
+      tone: 'gluteos',
+      subtitle: 'Posterior e estabilidade',
+      expanding: true,
+    },
+    'glutes',
+  ),
+  Ombros: withNeon(
+    {
+      shortCode: 'OM',
+      tone: 'ombros',
+      subtitle: 'Deltoides e mobilidade',
+      expanding: false,
+    },
+    'shoulders',
+  ),
+  Bíceps: withNeon(
+    {
+      shortCode: 'BI',
+      tone: 'biceps',
+      subtitle: 'Flexão e controle',
+      expanding: false,
+    },
+    'biceps',
+  ),
+  Tríceps: withNeon(
+    {
+      shortCode: 'TR',
+      tone: 'triceps',
+      subtitle: 'Extensão e trava',
+      expanding: false,
+    },
+    'triceps',
+  ),
+  Abdômen: withNeon(
+    {
+      shortCode: 'AB',
+      tone: 'abdomen',
+      subtitle: 'Core e estabilidade',
+      expanding: true,
+    },
+    'abs',
+  ),
+  Mobilidade: withNeon(
+    {
+      shortCode: 'MO',
+      tone: 'mobilidade',
+      subtitle: 'Movimento livre',
+      expanding: true,
+    },
+    'mobility',
+  ),
+  Antebraço: withNeon(
+    {
+      shortCode: 'AN',
+      tone: 'antebraco',
+      subtitle: 'Pegada e controle',
+      expanding: false,
+    },
+    'forearm',
+  ),
+  Lombar: withNeon(
+    {
+      shortCode: 'LO',
+      tone: 'lombar',
+      subtitle: 'Suporte e postura',
+      expanding: false,
+    },
+    'lowerBack',
+  ),
+  Cardio: withNeon(
+    {
+      shortCode: 'CA',
+      tone: 'cardio',
+      subtitle: 'Resistência e energia',
+      expanding: true,
+    },
+    'cardio',
+  ),
+  Trapézio: withNeon(
+    {
+      shortCode: 'TP',
+      tone: 'trapezio',
+      subtitle: 'Pescoço e postura',
+      expanding: false,
+    },
+    'traps',
+  ),
+  Panturrilha: withNeon(
+    {
+      shortCode: 'PA',
+      tone: 'panturrilha',
+      subtitle: 'Impulso e estabilidade',
+      expanding: false,
+    },
+    'calves',
+  ),
+  Funcional: withNeon(
+    {
+      shortCode: 'FU',
+      tone: 'funcional',
+      subtitle: 'Movimento integrado',
+      expanding: false,
+    },
+    'functional',
+  ),
+  Alongamento: withNeon(
+    {
+      shortCode: 'AL',
+      tone: 'alongamento',
+      subtitle: 'Flexibilidade e relax',
+      expanding: false,
+    },
+    'stretching',
+  ),
 }
+
+/** Neon PNG assets mapped to browse group ids (legacy export) */
+export const MUSCLE_GROUP_NEON_IMAGES = Object.fromEntries(
+  Object.entries(GROUP_VISUAL_CONFIG)
+    .filter(([, cfg]) => cfg.image)
+    .map(([id, cfg]) => [id, cfg.image]),
+)
 
 const DEFAULT_VISUAL = {
   shortCode: 'MG',
@@ -193,23 +231,19 @@ const DEFAULT_VISUAL = {
   color: '#2DD4BF',
   rgb: '45, 212, 191',
   subtitle: 'Grupo muscular',
-  illustration: 'chest',
   expanding: false,
+  image: null,
+  neonImage: null,
 }
 
 /** Resolve visual config for a muscle group id */
 export function getMuscleGroupVisual(groupId) {
   const cfg = GROUP_VISUAL_CONFIG[groupId]
-  if (!cfg) {
-    return {
-      ...DEFAULT_VISUAL,
-      neonImage: null,
-    }
-  }
+  if (!cfg) return DEFAULT_VISUAL
   return {
     ...cfg,
     letter: cfg.shortCode,
-    neonImage: MUSCLE_GROUP_NEON_IMAGES[groupId] || null,
+    neonImage: cfg.image || null,
   }
 }
 

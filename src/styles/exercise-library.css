@@ -453,6 +453,30 @@
   gap: 0.85rem;
 }
 
+.exercise-library .muscle-browse__extra {
+  display: none;
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.exercise-library .muscle-browse__extra.is-open {
+  display: grid;
+  opacity: 1;
+  transform: translateY(0);
+  animation: muscleBrowseExtraIn 0.22s ease;
+}
+
+@keyframes muscleBrowseExtraIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .exercise-library .disclose-toggle {
   display: inline-flex;
   align-items: center;
@@ -489,6 +513,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .exercise-library .muscle-browse__extra.is-open {
+    animation: none;
+  }
+
   .exercise-library .muscle-group-card,
   .exercise-library .muscle-group-card__cta-arrow,
   .exercise-library .mg-illust-wrap,

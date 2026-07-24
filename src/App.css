@@ -6092,15 +6092,15 @@ main {
 .muscle-group-card--ombros { --mg-accent: #38bdf8; --mg-rgb: 56, 189, 248; }
 .muscle-group-card--biceps { --mg-accent: #facc15; --mg-rgb: 250, 204, 21; }
 .muscle-group-card--triceps { --mg-accent: #a3e635; --mg-rgb: 163, 230, 53; }
-.muscle-group-card--antebraco { --mg-accent: #4ade80; --mg-rgb: 74, 222, 128; }
-.muscle-group-card--trapezio { --mg-accent: #818cf8; --mg-rgb: 129, 140, 248; }
+.muscle-group-card--antebraco { --mg-accent: #22c55e; --mg-rgb: 34, 197, 94; }
+.muscle-group-card--trapezio { --mg-accent: #60a5fa; --mg-rgb: 96, 165, 250; }
 .muscle-group-card--lombar { --mg-accent: #2dd4bf; --mg-rgb: 45, 212, 191; }
 .muscle-group-card--abdomen { --mg-accent: #e879f9; --mg-rgb: 232, 121, 249; }
-.muscle-group-card--panturrilha { --mg-accent: #fbbf24; --mg-rgb: 251, 191, 36; }
+.muscle-group-card--panturrilha { --mg-accent: #facc15; --mg-rgb: 250, 204, 21; }
 .muscle-group-card--cardio { --mg-accent: #ff4d6d; --mg-rgb: 255, 77, 109; }
 .muscle-group-card--mobilidade { --mg-accent: #6366f1; --mg-rgb: 99, 102, 241; }
-.muscle-group-card--funcional { --mg-accent: #2dd4bf; --mg-rgb: 45, 212, 191; }
-.muscle-group-card--alongamento { --mg-accent: #7dd3fc; --mg-rgb: 125, 211, 252; }
+.muscle-group-card--funcional { --mg-accent: #06b6d4; --mg-rgb: 6, 182, 212; }
+.muscle-group-card--alongamento { --mg-accent: #38bdf8; --mg-rgb: 56, 189, 248; }
 .muscle-group-card--default { --mg-accent: #22d3ee; --mg-rgb: 34, 211, 238; }
 
 .library-results-panel {

@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import AuthLayout from './AuthLayout'
-import AuthLoading from './AuthLoading'
+import AuthLayout from '../../components/auth/AuthLayout'
+import AuthLoading from '../../components/auth/AuthLoading'
 
-export default function ResetPasswordPage() {
+export default function UpdatePasswordPage() {
   const { user, loading, updatePassword } = useAuth()
   const navigate = useNavigate()
   const [password, setPassword] = useState('')
@@ -24,7 +24,7 @@ export default function ResetPasswordPage() {
         subtitle="Abra o link do e-mail de recuperação ou solicite um novo."
         footer={
           <p>
-            <Link to="/recuperar-senha">Solicitar novo link</Link>
+            <Link to="/esqueci-senha">Solicitar novo link</Link>
             {' · '}
             <Link to="/login">Ir para login</Link>
           </p>
@@ -42,13 +42,13 @@ export default function ResetPasswordPage() {
     setError('')
     setInfo('')
 
-    if (password !== confirmPassword) {
-      setError('As senhas não coincidem.')
+    if (password.length < 8) {
+      setError('A senha deve ter pelo menos 8 caracteres.')
       return
     }
 
-    if (password.length < 6) {
-      setError('A senha deve ter pelo menos 6 caracteres.')
+    if (password !== confirmPassword) {
+      setError('As senhas não coincidem.')
       return
     }
 
@@ -62,7 +62,7 @@ export default function ResetPasswordPage() {
     }
 
     setInfo('Senha atualizada com sucesso.')
-    window.setTimeout(() => navigate('/', { replace: true }), 900)
+    window.setTimeout(() => navigate('/login', { replace: true }), 900)
   }
 
   return (
@@ -84,8 +84,8 @@ export default function ResetPasswordPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            minLength={6}
-            placeholder="Mínimo 6 caracteres"
+            minLength={8}
+            placeholder="Mínimo 8 caracteres"
           />
         </label>
 
@@ -97,7 +97,7 @@ export default function ResetPasswordPage() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
-            minLength={6}
+            minLength={8}
             placeholder="Repita a senha"
           />
         </label>
@@ -114,7 +114,11 @@ export default function ResetPasswordPage() {
           </p>
         ) : null}
 
-        <button type="submit" className="btn btn--primary auth-form__submit" disabled={submitting}>
+        <button
+          type="submit"
+          className="btn btn--primary auth-form__submit"
+          disabled={submitting}
+        >
           {submitting ? 'Salvando...' : 'Salvar nova senha'}
         </button>
       </form>

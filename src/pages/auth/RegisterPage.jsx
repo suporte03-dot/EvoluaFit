@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import AuthLayout from './AuthLayout'
+import AuthLayout from '../../components/auth/AuthLayout'
 
-export default function SignupPage() {
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+export default function RegisterPage() {
   const { signUp } = useAuth()
   const navigate = useNavigate()
   const [name, setName] = useState('')
@@ -19,18 +21,35 @@ export default function SignupPage() {
     setError('')
     setInfo('')
 
+    const trimmedName = name.trim()
+    const trimmedEmail = email.trim()
+
+    if (!trimmedName) {
+      setError('Informe seu nome.')
+      return
+    }
+
+    if (!EMAIL_PATTERN.test(trimmedEmail)) {
+      setError('Informe um e-mail válido.')
+      return
+    }
+
+    if (password.length < 8) {
+      setError('A senha deve ter pelo menos 8 caracteres.')
+      return
+    }
+
     if (password !== confirmPassword) {
       setError('As senhas não coincidem.')
       return
     }
 
-    if (password.length < 6) {
-      setError('A senha deve ter pelo menos 6 caracteres.')
-      return
-    }
-
     setSubmitting(true)
-    const { data, error: signUpError } = await signUp({ name, email, password })
+    const { data, error: signUpError } = await signUp({
+      name: trimmedName,
+      email: trimmedEmail,
+      password,
+    })
     setSubmitting(false)
 
     if (signUpError) {
@@ -39,11 +58,11 @@ export default function SignupPage() {
     }
 
     if (data?.session) {
-      navigate('/', { replace: true })
+      navigate('/app', { replace: true })
       return
     }
 
-    setInfo('Conta criada. Verifique seu e-mail para confirmar o cadastro e depois faça login.')
+    setInfo('Cadastro realizado. Verifique seu e-mail para confirmar a conta.')
   }
 
   return (
@@ -89,8 +108,8 @@ export default function SignupPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            minLength={6}
-            placeholder="Mínimo 6 caracteres"
+            minLength={8}
+            placeholder="Mínimo 8 caracteres"
           />
         </label>
 
@@ -102,7 +121,7 @@ export default function SignupPage() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
-            minLength={6}
+            minLength={8}
             placeholder="Repita a senha"
           />
         </label>
@@ -119,7 +138,11 @@ export default function SignupPage() {
           </p>
         ) : null}
 
-        <button type="submit" className="btn btn--primary auth-form__submit" disabled={submitting}>
+        <button
+          type="submit"
+          className="btn btn--primary auth-form__submit"
+          disabled={submitting}
+        >
           {submitting ? 'Criando conta...' : 'Criar conta'}
         </button>
       </form>

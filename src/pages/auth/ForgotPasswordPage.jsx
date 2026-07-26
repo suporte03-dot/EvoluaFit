@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import AuthLayout from './AuthLayout'
+import AuthLayout from '../../components/auth/AuthLayout'
 
 export default function ForgotPasswordPage() {
-  const { resetPasswordForEmail } = useAuth()
+  const { resetPassword } = useAuth()
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
   const [info, setInfo] = useState('')
@@ -16,7 +16,7 @@ export default function ForgotPasswordPage() {
     setInfo('')
     setSubmitting(true)
 
-    const { error: resetError } = await resetPasswordForEmail(email)
+    const { error: resetError } = await resetPassword(email)
     setSubmitting(false)
 
     if (resetError) {
@@ -24,12 +24,14 @@ export default function ForgotPasswordPage() {
       return
     }
 
-    setInfo('Se existir uma conta com este e-mail, enviamos um link para redefinir a senha.')
+    setInfo(
+      'Se existir uma conta com este e-mail, enviamos um link para redefinir a senha.',
+    )
   }
 
   return (
     <AuthLayout
-      title="Recuperar senha"
+      title="Esqueci a senha"
       subtitle="Informe seu e-mail para receber o link de redefinição."
       footer={
         <p>
@@ -62,7 +64,11 @@ export default function ForgotPasswordPage() {
           </p>
         ) : null}
 
-        <button type="submit" className="btn btn--primary auth-form__submit" disabled={submitting}>
+        <button
+          type="submit"
+          className="btn btn--primary auth-form__submit"
+          disabled={submitting}
+        >
           {submitting ? 'Enviando...' : 'Enviar link'}
         </button>
       </form>

@@ -39,8 +39,8 @@ export function AuthProvider({ children }) {
       options: {
         data: {
           full_name: name.trim(),
-          name: name.trim(),
         },
+        emailRedirectTo: `${window.location.origin}/login`,
       },
     })
     return { data, error }
@@ -59,10 +59,9 @@ export function AuthProvider({ children }) {
     return { error }
   }, [])
 
-  const resetPasswordForEmail = useCallback(async (email) => {
-    const redirectTo = `${window.location.origin}/redefinir-senha`
+  const resetPassword = useCallback(async (email) => {
     const { data, error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo,
+      redirectTo: `${window.location.origin}/atualizar-senha`,
     })
     return { data, error }
   }, [])
@@ -74,16 +73,16 @@ export function AuthProvider({ children }) {
 
   const value = useMemo(
     () => ({
-      session,
       user,
+      session,
       loading,
-      signUp,
       signIn,
+      signUp,
       signOut,
-      resetPasswordForEmail,
+      resetPassword,
       updatePassword,
     }),
-    [session, user, loading, signUp, signIn, signOut, resetPasswordForEmail, updatePassword],
+    [user, session, loading, signIn, signUp, signOut, resetPassword, updatePassword],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -18,10 +18,11 @@ import DashboardShell from './components/dashboard/DashboardShell'
 import DashboardSidebar from './components/dashboard/DashboardSidebar'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import GuestRoute from './components/auth/GuestRoute'
-import LoginPage from './components/auth/LoginPage'
-import SignupPage from './components/auth/SignupPage'
-import ForgotPasswordPage from './components/auth/ForgotPasswordPage'
-import ResetPasswordPage from './components/auth/ResetPasswordPage'
+import RootRedirect from './components/auth/RootRedirect'
+import LoginPage from './pages/auth/LoginPage'
+import RegisterPage from './pages/auth/RegisterPage'
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
+import UpdatePasswordPage from './pages/auth/UpdatePasswordPage'
 import './App.css'
 import './styles/dashboard.css'
 import './styles/mobile.css'
@@ -149,6 +150,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+          <Route path="/" element={<RootRedirect />} />
           <Route
             path="/login"
             element={
@@ -161,21 +163,21 @@ function App() {
             path="/cadastro"
             element={
               <GuestRoute>
-                <SignupPage />
+                <RegisterPage />
               </GuestRoute>
             }
           />
           <Route
-            path="/recuperar-senha"
+            path="/esqueci-senha"
             element={
               <GuestRoute>
                 <ForgotPasswordPage />
               </GuestRoute>
             }
           />
-          <Route path="/redefinir-senha" element={<ResetPasswordPage />} />
+          <Route path="/atualizar-senha" element={<UpdatePasswordPage />} />
           <Route
-            path="/"
+            path="/app"
             element={
               <ProtectedRoute>
                 <DashboardApp />

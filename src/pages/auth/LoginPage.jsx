@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import AuthLayout from './AuthLayout'
+import AuthLayout from '../../components/auth/AuthLayout'
 
 export default function LoginPage() {
   const { signIn } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -24,7 +25,7 @@ export default function LoginPage() {
       return
     }
 
-    navigate('/', { replace: true })
+    navigate('/app', { replace: true })
   }
 
   return (
@@ -37,7 +38,7 @@ export default function LoginPage() {
             Não tem conta? <Link to="/cadastro">Criar conta</Link>
           </p>
           <p>
-            <Link to="/recuperar-senha">Esqueci minha senha</Link>
+            <Link to="/esqueci-senha">Esqueci minha senha</Link>
           </p>
         </>
       }
@@ -57,15 +58,25 @@ export default function LoginPage() {
 
         <label className="form-field">
           <span>Senha</span>
-          <input
-            type="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={6}
-            placeholder="••••••••"
-          />
+          <div className="auth-password-field">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={8}
+              placeholder="••••••••"
+            />
+            <button
+              type="button"
+              className="auth-password-field__toggle"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+            >
+              {showPassword ? 'Ocultar' : 'Mostrar'}
+            </button>
+          </div>
         </label>
 
         {error ? (
@@ -74,7 +85,11 @@ export default function LoginPage() {
           </p>
         ) : null}
 
-        <button type="submit" className="btn btn--primary auth-form__submit" disabled={submitting}>
+        <button
+          type="submit"
+          className="btn btn--primary auth-form__submit"
+          disabled={submitting}
+        >
           {submitting ? 'Entrando...' : 'Entrar'}
         </button>
       </form>

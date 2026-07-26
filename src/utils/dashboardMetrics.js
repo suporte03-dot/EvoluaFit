@@ -190,7 +190,7 @@ export function metricEmptyCopy(key) {
     case 'monthlyPerformancePct':
       return {
         value: 'Sem dados',
-        hint: 'Conclua treinos em pelo menos duas semanas',
+        hint: 'Ainda não há dados suficientes para comparar este período.',
       }
     case 'streak':
       return {

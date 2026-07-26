@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useFitness } from '../../context/FitnessContext'
+import { useProgress } from '../../context/ProgressContext'
 import { getDashboardMetrics } from '../../utils/dashboardMetrics'
 import DashboardHero from './DashboardHero'
 import IndicatorsSection from './IndicatorsSection'
@@ -23,11 +24,36 @@ export default function DashboardShell() {
     plans,
     generatedPlan,
   } = useFitness()
+  const { homeProgressMetrics, weeklyFrequency, loadingProgress } = useProgress()
 
-  const metrics = useMemo(
-    () => getDashboardMetrics({ profile, workouts, history, goals, performance }),
-    [profile, workouts, history, goals, performance],
-  )
+  const metrics = useMemo(() => {
+    const base = getDashboardMetrics({ profile, workouts, history, goals, performance })
+    const progressReady = !loadingProgress
+    const progressHasData = Boolean(progressReady && homeProgressMetrics?.hasData)
+
+    return {
+      ...base,
+      progressHasData,
+      progressLoading: loadingProgress,
+      weeklyGoal: homeProgressMetrics?.weeklyGoal ?? base.weeklyGoal,
+      weeklyWorkouts: progressReady
+        ? progressHasData
+          ? homeProgressMetrics.weeklyWorkouts
+          : null
+        : null,
+      streak: progressReady
+        ? progressHasData
+          ? homeProgressMetrics.streak
+          : null
+        : null,
+      monthlyPerformancePct: progressReady
+        ? homeProgressMetrics?.monthlyPerformancePct ?? null
+        : null,
+      monthlyComparisonLabel: progressReady
+        ? homeProgressMetrics?.monthlyComparisonLabel || null
+        : null,
+    }
+  }, [profile, workouts, history, goals, performance, homeProgressMetrics, loadingProgress])
 
   return (
     <section id="inicio" className="dash-home" aria-label="Dashboard EvoluaFit">
@@ -49,7 +75,10 @@ export default function DashboardShell() {
             goals={goals}
           />
           <CalendarOverviewCard workouts={workouts} />
-          <ProgressOverviewCard metrics={metrics} history={history} workouts={workouts} />
+          <ProgressOverviewCard
+            metrics={metrics}
+            weeklyFrequency={weeklyFrequency}
+          />
           <CoachOverviewCard
             workouts={workouts}
             history={history}

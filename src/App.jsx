@@ -8,6 +8,7 @@ import { AuthProvider } from './context/AuthContext'
 import { ProfileProvider } from './context/ProfileContext'
 import { WorkoutPlanProvider } from './context/WorkoutPlanContext'
 import { WorkoutSessionProvider } from './context/WorkoutSessionContext'
+import { ProgressProvider } from './context/ProgressContext'
 import { FitnessProvider, useFitness } from './context/FitnessContext'
 import { loadExercises } from './services/exerciseService'
 import Header from './components/Header'
@@ -152,12 +153,14 @@ function DashboardApp() {
       <FitnessProvider>
         <WorkoutPlanProvider>
           <WorkoutSessionProvider>
-          <Routes>
-            <Route element={<AppLayout />}>
-              <Route index element={<DashboardHome />} />
-              <Route path="perfil" element={<ProfilePage />} />
-            </Route>
-          </Routes>
+            <ProgressProvider>
+              <Routes>
+                <Route element={<AppLayout />}>
+                  <Route index element={<DashboardHome />} />
+                  <Route path="perfil" element={<ProfilePage />} />
+                </Route>
+              </Routes>
+            </ProgressProvider>
           </WorkoutSessionProvider>
         </WorkoutPlanProvider>
       </FitnessProvider>

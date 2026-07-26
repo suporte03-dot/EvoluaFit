@@ -1,27 +1,25 @@
 import { useMemo } from 'react'
 import { scrollToSection } from '../../utils/scrollToSection'
 import { EvolutionChartVisual, IconChevron } from './icons'
-import { weeklyActivitySeries } from './dashboardUtils'
 import {
   formatDashboardValue,
   metricAvailability,
 } from '../../utils/dashboardMetrics'
 
-export default function ProgressOverviewCard({ metrics, history = [], workouts = [] }) {
-  const series = useMemo(() => weeklyActivitySeries(history, workouts, 7), [history, workouts])
-  const hasActivity = series.some((v) => v > 0)
+export default function ProgressOverviewCard({
+  metrics,
+  weeklyFrequency = [],
+}) {
+  const hasData = Boolean(metrics?.progressHasData)
   const monthReady = metricAvailability('monthlyPerformancePct', metrics)
   const monthPct = monthReady ? metrics.monthlyPerformancePct : null
-  const hasData = hasActivity || metrics?.hasData
 
   const chartSeries = useMemo(() => {
-    if (!hasData) return []
-    return series.map((v, i, arr) => {
-      const prev = arr[i - 1] ?? v
-      const next = arr[i + 1] ?? v
-      return 0.15 + ((prev + v * 2 + next) / 4) * 0.85
-    })
-  }, [series, hasData])
+    if (!hasData || !weeklyFrequency.length) return []
+    const values = weeklyFrequency.map((p) => Number(p.value) || 0)
+    const max = Math.max(...values, 1)
+    return values.map((v) => 0.12 + (v / max) * 0.88)
+  }, [weeklyFrequency, hasData])
 
   return (
     <article className="dash-module dash-module--purple">
@@ -44,26 +42,25 @@ export default function ProgressOverviewCard({ metrics, history = [], workouts =
         </div>
 
         <div className="dash-module__visual dash-module__visual--evo">
-          {hasData ? (
+          {hasData && chartSeries.length ? (
             <>
               <EvolutionChartVisual series={chartSeries} className="dash-visual-evo" />
               {monthReady && monthPct != null ? (
                 <p className="dash-evo-badge">
                   {formatDashboardValue('monthlyPerformancePct', metrics)}
-                  <span>Melhoria no último mês</span>
+                  <span>Volume vs. mês anterior</span>
                 </p>
               ) : (
                 <p className="dash-evo-badge dash-evo-badge--soft">
-                  <span>Comparativo mensal disponível após 2 meses de volume</span>
+                  <span>
+                    {metrics.monthlyComparisonLabel ||
+                      'Ainda não há dados suficientes para comparar este período.'}
+                  </span>
                 </p>
               )}
             </>
           ) : (
             <div className="dash-module__empty-visual">
-              <EvolutionChartVisual
-                series={[0.2, 0.22, 0.2, 0.24, 0.22, 0.26, 0.24]}
-                className="dash-visual-evo is-muted"
-              />
               <p>Sem dados suficientes ainda. Conclua treinos para ver a curva.</p>
             </div>
           )}

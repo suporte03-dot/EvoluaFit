@@ -38,6 +38,7 @@ const INDICATORS = [
 ]
 
 function weeklyProgressPct(metrics) {
+  if (!metrics.progressHasData) return null
   const done = metrics.weeklyWorkouts ?? 0
   const goal = metrics.weeklyGoal
   if (!goal || goal <= 0) return null
@@ -45,6 +46,9 @@ function weeklyProgressPct(metrics) {
 }
 
 function weeklyDisplay(metrics) {
+  if (!metrics.progressHasData) {
+    return metricEmptyCopy('weeklyWorkouts').value
+  }
   const goal = metrics.weeklyGoal
   if (goal != null && goal > 0) {
     return `${metrics.weeklyWorkouts ?? 0}/${goal}`
@@ -58,8 +62,10 @@ function weeklyDisplay(metrics) {
 export function IndicatorCard({ card, metrics }) {
   const ready =
     card.key === 'weeklyWorkouts'
-      ? metrics.weeklyGoal != null || metricAvailability(card.key, metrics)
-      : metricAvailability(card.key, metrics)
+      ? Boolean(metrics.progressHasData)
+      : card.key === 'streak'
+        ? Boolean(metrics.progressHasData && metrics.streak)
+        : metricAvailability(card.key, metrics)
 
   const value =
     card.key === 'weeklyWorkouts'
@@ -68,7 +74,13 @@ export function IndicatorCard({ card, metrics }) {
         ? formatDashboardValue(card.key, metrics)
         : metricEmptyCopy(card.key).value
 
-  const hint = ready ? metricHint(card.key, metrics) : metricEmptyCopy(card.key).hint
+  const hint = ready
+    ? card.key === 'monthlyPerformancePct' && metrics.monthlyComparisonLabel && metrics.monthlyPerformancePct == null
+      ? metrics.monthlyComparisonLabel
+      : metricHint(card.key, metrics)
+    : card.key === 'monthlyPerformancePct' && metrics.monthlyComparisonLabel
+      ? metrics.monthlyComparisonLabel
+      : metricEmptyCopy(card.key).hint
   const pct = card.progress ? weeklyProgressPct(metrics) : null
   const Icon = card.Icon
 

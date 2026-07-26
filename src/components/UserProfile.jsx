@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useFitness } from '../context/FitnessContext'
 import { useAuth } from '../context/AuthContext'
 import SectionTitle from './SectionTitle'
@@ -47,6 +47,12 @@ export default function UserProfile() {
           title="Seu perfil"
           subtitle="Dados que alimentam o gerador de planilhas."
         />
+
+        <p className="profile-page__account-link">
+          <Link to="/app/perfil" className="btn btn--ghost btn--sm">
+            Editar conta (nome, objetivo e nível)
+          </Link>
+        </p>
 
         <div className="profile-summary glass-card">
           <div className="profile-summary__main">

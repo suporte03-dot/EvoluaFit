@@ -120,6 +120,20 @@ export default function MobileNav({ activeSection }) {
 
   const navigate = (id) => {
     setMoreOpen(false)
+    if (id === 'perfil') {
+      routerNavigate('/app/perfil')
+      return
+    }
+    if (window.location.pathname.startsWith('/app/perfil')) {
+      routerNavigate('/app')
+      window.setTimeout(() => {
+        scrollToSection(id)
+        if (id === 'coach-ia') {
+          document.getElementById('coach-question')?.focus?.()
+        }
+      }, 80)
+      return
+    }
     scrollToSection(id)
     if (id === 'coach-ia') {
       window.setTimeout(() => {

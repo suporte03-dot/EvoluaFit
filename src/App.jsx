@@ -1,10 +1,11 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { sectionIds } from './data/siteData'
 import { useScrollSpy } from './hooks/useScrollSpy'
 import { useSectionHash } from './hooks/useSectionHash'
 import { useHashRoute } from './hooks/useHashRoute'
 import { AuthProvider } from './context/AuthContext'
+import { ProfileProvider } from './context/ProfileContext'
 import { FitnessProvider, useFitness } from './context/FitnessContext'
 import { loadExercises } from './services/exerciseService'
 import Header from './components/Header'
@@ -23,6 +24,7 @@ import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
 import UpdatePasswordPage from './pages/auth/UpdatePasswordPage'
+import ProfilePage from './pages/ProfilePage'
 import './App.css'
 import './styles/dashboard.css'
 import './styles/mobile.css'
@@ -49,13 +51,15 @@ function SectionFallback({ label = 'Carregando' }) {
   )
 }
 
-function AppContent() {
+function AppLayout() {
+  const location = useLocation()
   const activeSection = useScrollSpy(sectionIds)
   useSectionHash(sectionIds)
-  const { toasts, profile, history, workouts } = useFitness()
+  const { toasts, history, workouts } = useFitness()
   const { page, id: exerciseId } = useHashRoute()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const isProfileRoute = location.pathname.startsWith('/app/perfil')
 
   useEffect(() => {
     const onResize = () => {
@@ -82,8 +86,7 @@ function AppContent() {
     >
       <div className="app__frame">
         <DashboardSidebar
-          activeSection={activeSection}
-          profile={profile}
+          activeSection={isProfileRoute ? 'perfil' : activeSection}
           history={history}
           workouts={workouts}
           collapsed={sidebarCollapsed}
@@ -94,36 +97,18 @@ function AppContent() {
 
         <div className="app__content">
           <Header
-            activeSection={activeSection}
+            activeSection={isProfileRoute ? 'perfil' : activeSection}
             onOpenDashboardMenu={() => setMobileMenuOpen(true)}
           />
           <main>
-            <SessionResumeBanner />
-            <DashboardShell />
-            <Suspense fallback={<SectionFallback label="Carregando conteúdo" />}>
-              <HowItWorks />
-              <SectionDivider variant="workouts" label="TREINOS" />
-              <MyWorkouts />
-              <WorkoutPlanner />
-              <SectionDivider variant="coach" label="COACH IA" />
-              <CoachIA />
-              <ExerciseLibrary />
-              <SectionDivider variant="calendar" label="CALENDÁRIO" />
-              <TrainingCalendar />
-              <SectionDivider variant="progress" label="EVOLUÇÃO" />
-              <PerformanceDashboard />
-              <Goals />
-              <SectionDivider variant="profile" label="PERFIL" />
-              <UserProfile />
-              <Footer />
-            </Suspense>
+            <Outlet />
           </main>
         </div>
       </div>
 
       <Toast toasts={toasts} />
       <StartWorkoutModal />
-      <MobileNav activeSection={activeSection} />
+      <MobileNav activeSection={isProfileRoute ? 'perfil' : activeSection} />
       {page === 'exercise' && exerciseId && (
         <Suspense fallback={<SectionFallback label="Carregando exercício" />}>
           <ExerciseDetailPage exerciseId={exerciseId} />
@@ -133,11 +118,44 @@ function AppContent() {
   )
 }
 
+function DashboardHome() {
+  return (
+    <>
+      <SessionResumeBanner />
+      <DashboardShell />
+      <Suspense fallback={<SectionFallback label="Carregando conteúdo" />}>
+        <HowItWorks />
+        <SectionDivider variant="workouts" label="TREINOS" />
+        <MyWorkouts />
+        <WorkoutPlanner />
+        <SectionDivider variant="coach" label="COACH IA" />
+        <CoachIA />
+        <ExerciseLibrary />
+        <SectionDivider variant="calendar" label="CALENDÁRIO" />
+        <TrainingCalendar />
+        <SectionDivider variant="progress" label="EVOLUÇÃO" />
+        <PerformanceDashboard />
+        <Goals />
+        <SectionDivider variant="profile" label="PERFIL" />
+        <UserProfile />
+        <Footer />
+      </Suspense>
+    </>
+  )
+}
+
 function DashboardApp() {
   return (
-    <FitnessProvider>
-      <AppContent />
-    </FitnessProvider>
+    <ProfileProvider>
+      <FitnessProvider>
+        <Routes>
+          <Route element={<AppLayout />}>
+            <Route index element={<DashboardHome />} />
+            <Route path="perfil" element={<ProfilePage />} />
+          </Route>
+        </Routes>
+      </FitnessProvider>
+    </ProfileProvider>
   )
 }
 
@@ -177,7 +195,7 @@ function App() {
           />
           <Route path="/atualizar-senha" element={<UpdatePasswordPage />} />
           <Route
-            path="/app"
+            path="/app/*"
             element={
               <ProtectedRoute>
                 <DashboardApp />

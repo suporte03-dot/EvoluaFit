@@ -1642,3 +1642,68 @@ html:has(.app--saas) body {
   0%, 100% { opacity: 0.45; transform: scale(0.9); }
   50% { opacity: 1; transform: scale(1.1); }
 }
+
+/* Profile page + sidebar placeholders */
+.dash-sidebar__user--button {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.dash-sidebar__user--button:focus-visible {
+  outline: 2px solid var(--accent-primary, #14e0b5);
+  outline-offset: 2px;
+}
+
+.dash-sidebar__placeholder {
+  display: inline-block;
+  min-width: 4.5rem;
+  color: rgba(148, 163, 184, 0.55);
+  font-weight: 600;
+}
+
+.dash-sidebar__avatar--loading {
+  opacity: 0.55;
+}
+
+.profile-page__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 0 0 1rem;
+}
+
+.profile-page__message {
+  margin: 0.85rem 0 0;
+  padding: 0.7rem 0.85rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.profile-page__message--error {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.profile-page__message--success {
+  background: rgba(20, 224, 181, 0.1);
+  border: 1px solid rgba(20, 224, 181, 0.28);
+  color: #6eec75;
+}
+
+.profile-page .profile-form {
+  margin-top: 1rem;
+}
+
+.profile-page__account-link {
+  margin: 0 0 1rem;
+}
+
+.profile-placeholder {
+  color: rgba(148, 163, 184, 0.65);
+  font-weight: 600;
+}

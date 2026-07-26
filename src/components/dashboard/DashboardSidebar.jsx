@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
   IconCalendar,
   IconChart,
@@ -15,6 +15,7 @@ import EvoluaFitBrand from '../branding/EvoluaFitBrand'
 import { deriveXpProgress, initialsFromName } from './dashboardUtils'
 import { scrollToSection, handleSectionClick } from '../../utils/scrollToSection'
 import { useAuth } from '../../context/AuthContext'
+import { useProfile } from '../../context/ProfileContext'
 
 const MAIN_NAV = [
   { id: 'inicio', label: 'Dashboard', Icon: IconHome, tone: 'blue' },
@@ -26,7 +27,7 @@ const MAIN_NAV = [
   { id: 'desempenho', label: 'Evolução', Icon: IconTrend, tone: 'purple' },
   { id: 'coach-ia', label: 'Coach IA', Icon: IconSpark, tone: 'cyan' },
   { id: 'metas', label: 'Metas', Icon: IconChart, tone: 'orange' },
-  { id: 'perfil', label: 'Perfil', Icon: IconSettings, tone: 'blue' },
+  { id: 'perfil', label: 'Perfil', Icon: IconSettings, tone: 'blue', to: '/app/perfil' },
 ]
 
 function navTarget(item) {
@@ -42,7 +43,6 @@ function navTarget(item) {
 
 export default function DashboardSidebar({
   activeSection,
-  profile,
   history,
   workouts,
   collapsed,
@@ -50,16 +50,18 @@ export default function DashboardSidebar({
   mobileOpen,
   onCloseMobile,
 }) {
-  const { user, signOut } = useAuth()
+  const { signOut } = useAuth()
+  const { profile, loadingProfile } = useProfile()
   const navigate = useNavigate()
+  const location = useLocation()
   const [signingOut, setSigningOut] = useState(false)
   const xp = deriveXpProgress({ history, workouts })
-  const authName = user?.user_metadata?.full_name || user?.user_metadata?.name
-  const name = authName || profile?.name || 'Atleta'
-  const levelLabel = profile?.level ? `Nível ${profile.level}` : `Nível ${xp.levelNumber}`
-  const initials = initialsFromName(name)
+  const name = profile?.full_name?.trim() || 'Atleta'
+  const levelLabel = profile?.level ? `Nível ${profile.level}` : 'Nível —'
+  const initials = loadingProfile ? '··' : initialsFromName(name)
   const xpCeiling = xp.xp - xp.intoLevel + xp.nextLevelAt
   const xpLabel = `${xp.xp.toLocaleString('pt-BR')} / ${xpCeiling.toLocaleString('pt-BR')} XP`
+  const onProfilePage = location.pathname.startsWith('/app/perfil')
 
   const handleLogout = async () => {
     if (signingOut) return
@@ -73,6 +75,8 @@ export default function DashboardSidebar({
   }
 
   const isActive = (item) => {
+    if (item.to === '/app/perfil') return onProfilePage
+    if (onProfilePage) return false
     if (item.label === 'Dashboard') return activeSection === 'inicio' && !item.hash
     if (item.hash) return false
     return activeSection === item.id
@@ -80,7 +84,29 @@ export default function DashboardSidebar({
 
   const go = (item) => {
     onCloseMobile?.()
+
+    if (item.to) {
+      navigate(item.to)
+      return
+    }
+
+    if (onProfilePage) {
+      navigate('/app')
+      window.setTimeout(() => navTarget(item), 80)
+      return
+    }
+
     navTarget(item)
+  }
+
+  const goHome = (e) => {
+    onCloseMobile?.()
+    if (onProfilePage) {
+      e?.preventDefault?.()
+      navigate('/app')
+      return
+    }
+    handleSectionClick(e, 'inicio', onCloseMobile)
   }
 
   return (
@@ -103,7 +129,7 @@ export default function DashboardSidebar({
         <div className="dash-sidebar__top">
           <EvoluaFitBrand
             collapsed={collapsed}
-            onNavigateHome={(e) => handleSectionClick(e, 'inicio', onCloseMobile)}
+            onNavigateHome={goHome}
             collapseControl={
               <button
                 type="button"
@@ -148,14 +174,35 @@ export default function DashboardSidebar({
         </nav>
 
         <div className="dash-sidebar__account">
-          <div className="dash-sidebar__user" title={`${name} · ${levelLabel}`}>
-            <div className="dash-sidebar__avatar" aria-hidden="true">
+          <button
+            type="button"
+            className="dash-sidebar__user dash-sidebar__user--button"
+            title={loadingProfile ? 'Carregando perfil' : `${name} · ${levelLabel}`}
+            onClick={() => {
+              onCloseMobile?.()
+              navigate('/app/perfil')
+            }}
+            aria-label="Abrir perfil"
+          >
+            <div
+              className={`dash-sidebar__avatar${loadingProfile ? ' dash-sidebar__avatar--loading' : ''}`}
+              aria-hidden="true"
+            >
               {initials}
             </div>
             {!collapsed && (
               <div className="dash-sidebar__user-meta">
-                <strong>{name}</strong>
-                <span>{levelLabel}</span>
+                {loadingProfile ? (
+                  <>
+                    <strong className="dash-sidebar__placeholder">Carregando</strong>
+                    <span className="dash-sidebar__placeholder">Nível —</span>
+                  </>
+                ) : (
+                  <>
+                    <strong>{name}</strong>
+                    <span>{levelLabel}</span>
+                  </>
+                )}
                 <div
                   className="dash-sidebar__xp"
                   role="progressbar"
@@ -169,7 +216,7 @@ export default function DashboardSidebar({
                 <small className="dash-sidebar__xp-label">{xpLabel}</small>
               </div>
             )}
-          </div>
+          </button>
           <button
             type="button"
             className={`btn btn--ghost btn--sm dash-sidebar__logout${collapsed ? ' dash-sidebar__logout--icon' : ''}`}

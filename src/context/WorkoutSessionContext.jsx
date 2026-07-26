@@ -14,39 +14,28 @@ import {
   cancelWorkoutSession,
   completeWorkoutSession,
   getActiveSession,
-  getWorkoutSession,
   listWorkoutSessions,
-  startWorkoutSession,
-  updateWorkoutSession,
+  upsertWorkoutSession,
 } from '../services/workoutSessionService'
 import {
   listSessionSets,
-  saveWorkoutSet,
+  upsertWorkoutSet,
 } from '../services/workoutSetService'
+import {
+  deleteWorkoutDraft,
+  enqueueOperation,
+  getPendingCount,
+  getWorkoutDraft,
+  listWorkoutDrafts,
+  saveWorkoutDraft,
+  syncPendingOperations,
+} from '../services/offlineSyncService'
 
 const WorkoutSessionContext = createContext(null)
 
-const PENDING_SETS_KEY = 'evoluafit-pending-workout-sets'
 const HISTORY_MIGRATION_KEY = (userId) => `evoluafit-workout-history-migrated-${userId}`
 const LOCAL_OWNER_KEY = 'evoluafit-workout-session-local-owner'
-
-function readPendingSets() {
-  try {
-    const raw = localStorage.getItem(PENDING_SETS_KEY)
-    const parsed = raw ? JSON.parse(raw) : []
-    return Array.isArray(parsed) ? parsed : []
-  } catch {
-    return []
-  }
-}
-
-function writePendingSets(list) {
-  try {
-    localStorage.setItem(PENDING_SETS_KEY, JSON.stringify(list.slice(0, 200)))
-  } catch {
-    /* ignore */
-  }
-}
+const LEGACY_PENDING_SETS_KEY = 'evoluafit-pending-workout-sets'
 
 function isHistoryMigrated(userId) {
   try {
@@ -138,6 +127,10 @@ function isValidLocalHistoryEntry(entry) {
   return hasSets
 }
 
+function setSlotKey(exerciseOrder, setNumber) {
+  return `${Number(exerciseOrder)}-${Number(setNumber)}`
+}
+
 function mapRemoteSessionToHistoryItem(session, sets = []) {
   const exercisesMap = new Map()
   sets.forEach((row) => {
@@ -163,6 +156,7 @@ function mapRemoteSessionToHistoryItem(session, sets = []) {
       done: Boolean(row.completed),
       rpe: row.rpe,
       notes: row.notes || '',
+      clientId: row.client_id || null,
     })
     if (row.weight != null) ex.load = String(row.weight)
     if (row.repetitions != null) ex.reps = String(row.repetitions)
@@ -174,8 +168,9 @@ function mapRemoteSessionToHistoryItem(session, sets = []) {
     : null
 
   return {
-    id: session.id,
-    remoteSessionId: session.id,
+    id: session.id || session.client_id,
+    remoteSessionId: session.id || null,
+    clientId: session.client_id || null,
     workoutId: session.workout_snapshot?.id || null,
     name: session.workout_name,
     completedAt: session.completed_at || session.started_at,
@@ -190,6 +185,15 @@ function mapRemoteSessionToHistoryItem(session, sets = []) {
     setCount: sets.filter((s) => s.completed).length,
     exerciseCount: exercises.length,
   }
+}
+
+async function persistActiveDraft(userId, session, sets, setClientIds) {
+  if (!userId || !session?.client_id) return
+  await saveWorkoutDraft(userId, session.client_id, {
+    session,
+    sets: sets || [],
+    setClientIds: setClientIds || {},
+  })
 }
 
 export function WorkoutSessionProvider({ children }) {
@@ -209,11 +213,32 @@ export function WorkoutSessionProvider({ children }) {
   const requestIdRef = useRef(0)
   const hydratedUserRef = useRef(null)
   const saveLockRef = useRef(false)
+  const setClientIdsRef = useRef({})
+  const activeSessionRef = useRef(null)
+  const sessionSetsRef = useRef([])
+
+  useEffect(() => {
+    activeSessionRef.current = activeSession
+  }, [activeSession])
+
+  useEffect(() => {
+    sessionSetsRef.current = sessionSets
+  }, [sessionSets])
+
+  const refreshPendingFlag = useCallback(async () => {
+    if (!user?.id) {
+      setSyncPending(false)
+      return
+    }
+    const count = await getPendingCount(user.id)
+    setSyncPending(count > 0)
+  }, [user?.id])
 
   const clearSessionState = useCallback(() => {
     requestIdRef.current += 1
     hydratedUserRef.current = null
     saveLockRef.current = false
+    setClientIdsRef.current = {}
     setActiveSession(null)
     setSessionSets([])
     setSessionHistory([])
@@ -225,26 +250,37 @@ export function WorkoutSessionProvider({ children }) {
     setConflictSession(null)
   }, [])
 
-  const flushPendingSets = useCallback(async (sessionId) => {
-    if (!sessionId) return
-    const pending = readPendingSets().filter((p) => p.sessionId === sessionId)
-    if (!pending.length) {
-      setSyncPending(readPendingSets().length > 0)
-      return
-    }
-
-    const remaining = readPendingSets().filter((p) => p.sessionId !== sessionId)
-    for (const item of pending) {
-      const { error } = await saveWorkoutSet(sessionId, item.setData)
-      if (error) {
-        remaining.push(item)
+  const migrateLegacyPendingSets = useCallback(async (userId) => {
+    if (!userId) return
+    try {
+      const raw = localStorage.getItem(LEGACY_PENDING_SETS_KEY)
+      if (!raw) return
+      const parsed = JSON.parse(raw)
+      if (!Array.isArray(parsed) || !parsed.length) {
+        localStorage.removeItem(LEGACY_PENDING_SETS_KEY)
+        return
       }
+      for (const item of parsed) {
+        if (!item?.setData || !item?.sessionId) continue
+        const clientId = item.setData.client_id || crypto.randomUUID()
+        await enqueueOperation({
+          userId,
+          entity: 'workout_set',
+          action: 'update',
+          clientId,
+          parentClientId: item.sessionClientId || null,
+          payload: {
+            ...item.setData,
+            client_id: clientId,
+            session_id: item.sessionId,
+            updated_at: item.createdAt || new Date().toISOString(),
+          },
+        })
+      }
+      localStorage.removeItem(LEGACY_PENDING_SETS_KEY)
+    } catch {
+      /* ignore legacy migration errors */
     }
-    writePendingSets(remaining)
-    setSyncPending(remaining.length > 0)
-
-    const { data } = await listSessionSets(sessionId)
-    if (data) setSessionSets(data)
   }, [])
 
   const migrateLocalHistoryIfNeeded = useCallback(async (userId) => {
@@ -276,18 +312,21 @@ export function WorkoutSessionProvider({ children }) {
     }
 
     for (const entry of valid.slice(0, 30)) {
+      const clientId = crypto.randomUUID()
       const snapshot = {
         id: entry.workoutId || entry.id,
         name: entry.name,
         exercises: entry.exercises || [],
       }
-      const { data: created, error: createError } = await startWorkoutSession(userId, {
+      const { data: created, error: createError } = await upsertWorkoutSession(userId, {
+        client_id: clientId,
         workout_plan_id: null,
         plan_day_key: entry.workoutId || entry.id,
         workout_name: entry.name,
         started_at: entry.completedAt,
         notes: entry.notes || null,
         workout_snapshot: snapshot,
+        status: 'in_progress',
       })
       if (createError || !created) continue
 
@@ -305,7 +344,8 @@ export function WorkoutSessionProvider({ children }) {
 
         for (const log of logs) {
           if (Array.isArray(ex.setsLog) && ex.setsLog.length && !log?.completed && !log?.done) continue
-          await saveWorkoutSet(created.id, {
+          await upsertWorkoutSet(created.id, {
+            client_id: crypto.randomUUID(),
             exercise_key: ex.exerciseId || ex.name || `ex-${exOrder}`,
             exercise_name: ex.name || 'Exercício',
             exercise_order: exOrder,
@@ -333,6 +373,21 @@ export function WorkoutSessionProvider({ children }) {
     setLocalOwner(userId)
   }, [])
 
+  const restoreLocalActiveDraft = useCallback(async (userId) => {
+    const drafts = await listWorkoutDrafts(userId)
+    const activeDraft = drafts
+      .filter((d) => d?.data?.session?.status === 'in_progress')
+      .sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)))[0]
+
+    if (!activeDraft?.data?.session) return null
+
+    const session = activeDraft.data.session
+    setClientIdsRef.current = activeDraft.data.setClientIds || {}
+    setActiveSession(session)
+    setSessionSets(activeDraft.data.sets || [])
+    return session
+  }, [])
+
   const refreshSession = useCallback(async () => {
     if (!user?.id) {
       clearSessionState()
@@ -342,24 +397,43 @@ export function WorkoutSessionProvider({ children }) {
     const requestId = ++requestIdRef.current
     setLoadingSession(true)
     setSessionError(null)
+    await migrateLegacyPendingSets(user.id)
 
     const { data: active, error: activeError } = await getActiveSession(user.id)
     if (requestId !== requestIdRef.current) return { data: null, error: null }
 
     if (activeError) {
+      const restored = await restoreLocalActiveDraft(user.id)
+      if (restored) {
+        setSessionError('Sincronização pendente')
+        setSyncPending(true)
+        setLoadingSession(false)
+        return { data: restored, error: null, pending: true }
+      }
       setSessionError(activeError.message || 'Não foi possível carregar a sessão.')
       setLoadingSession(false)
       return { data: null, error: activeError }
     }
 
-    setActiveSession(active)
-    if (active?.id) {
+    if (active) {
+      setActiveSession(active)
       const { data: sets } = await listSessionSets(active.id)
       if (requestId !== requestIdRef.current) return { data: null, error: null }
-      setSessionSets(sets || [])
-      await flushPendingSets(active.id)
+      const nextSets = sets || []
+      setSessionSets(nextSets)
+      const map = {}
+      nextSets.forEach((s) => {
+        if (s.client_id) map[setSlotKey(s.exercise_order, s.set_number)] = s.client_id
+      })
+      setClientIdsRef.current = map
+      await persistActiveDraft(user.id, active, nextSets, map)
     } else {
-      setSessionSets([])
+      const restored = await restoreLocalActiveDraft(user.id)
+      if (!restored) {
+        setActiveSession(null)
+        setSessionSets([])
+        setClientIdsRef.current = {}
+      }
     }
 
     const { data: sessions, error: listError } = await listWorkoutSessions(user.id, {
@@ -398,10 +472,17 @@ export function WorkoutSessionProvider({ children }) {
     }
 
     setLocalOwner(user.id)
+    await refreshPendingFlag()
     setLoadingSession(false)
-    setSyncPending(readPendingSets().length > 0)
     return { data: active, error: null }
-  }, [user?.id, clearSessionState, flushPendingSets, migrateLocalHistoryIfNeeded])
+  }, [
+    user?.id,
+    clearSessionState,
+    migrateLocalHistoryIfNeeded,
+    migrateLegacyPendingSets,
+    restoreLocalActiveDraft,
+    refreshPendingFlag,
+  ])
 
   useEffect(() => {
     if (authLoading) return undefined
@@ -424,7 +505,21 @@ export function WorkoutSessionProvider({ children }) {
         return { data: null, error: { message: 'Treino não informado.' } }
       }
 
-      const { data: existing } = await getActiveSession(user.id)
+      let existing = null
+      try {
+        const remote = await getActiveSession(user.id)
+        existing = remote.data
+        if (remote.error && remote.error.code === 'NETWORK') {
+          const restored = await restoreLocalActiveDraft(user.id)
+          if (restored && !options.force) {
+            existing = restored
+          }
+        }
+      } catch {
+        const restored = await restoreLocalActiveDraft(user.id)
+        if (restored) existing = restored
+      }
+
       if (existing && !options.force) {
         const sameWorkout =
           existing.workout_snapshot?.id === workout.id ||
@@ -434,14 +529,32 @@ export function WorkoutSessionProvider({ children }) {
           return { data: null, error: { code: 'ACTIVE_SESSION_EXISTS', session: existing } }
         }
         setActiveSession(existing)
-        const { data: sets } = await listSessionSets(existing.id)
-        setSessionSets(sets || [])
+        if (existing.id) {
+          const { data: sets } = await listSessionSets(existing.id)
+          setSessionSets(sets || [])
+        }
         setConflictSession(null)
         return { data: existing, error: null, resumed: true }
       }
 
       if (existing && options.force) {
-        await cancelWorkoutSession(user.id, existing.id)
+        if (existing.id) {
+          await cancelWorkoutSession(user.id, existing.id)
+        } else if (existing.client_id) {
+          await enqueueOperation({
+            userId: user.id,
+            entity: 'workout_session',
+            action: 'cancel',
+            clientId: existing.client_id,
+            payload: {
+              ...existing,
+              status: 'cancelled',
+              completed_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            },
+          })
+          await syncPendingOperations(user.id)
+        }
       }
 
       if (saveLockRef.current) {
@@ -451,35 +564,71 @@ export function WorkoutSessionProvider({ children }) {
       setSavingSession(true)
       setSessionError(null)
 
-      const { data, error } = await startWorkoutSession(user.id, {
+      const clientId = crypto.randomUUID()
+      const startedAt = new Date().toISOString()
+      const localSession = {
+        id: null,
+        client_id: clientId,
+        user_id: user.id,
         workout_plan_id: workoutPlan?.id || null,
         plan_day_key: buildPlanDayKey(workout),
         workout_name: workout.name || 'Treino',
-        started_at: new Date().toISOString(),
+        status: 'in_progress',
+        started_at: startedAt,
+        completed_at: null,
+        duration_seconds: null,
+        perceived_effort: null,
+        notes: null,
         workout_snapshot: buildWorkoutSnapshot(workout),
+        updated_at: startedAt,
+      }
+
+      setClientIdsRef.current = {}
+      setActiveSession(localSession)
+      setSessionSets([])
+      await persistActiveDraft(user.id, localSession, [], {})
+
+      await enqueueOperation({
+        userId: user.id,
+        entity: 'workout_session',
+        action: 'insert',
+        clientId,
+        payload: { ...localSession },
       })
+
+      const { data, error } = await upsertWorkoutSession(user.id, localSession)
 
       saveLockRef.current = false
       setSavingSession(false)
 
       if (error) {
-        setSessionError(error.message || 'Não foi possível iniciar a sessão.')
-        return { data: null, error }
+        setSessionError('Sincronização pendente')
+        setSyncPending(true)
+        setConflictSession(null)
+        setLocalOwner(user.id)
+        return { data: localSession, error: null, pending: true }
       }
 
       setActiveSession(data)
-      setSessionSets([])
+      await persistActiveDraft(user.id, data, [], {})
+      await syncPendingOperations(user.id)
+      await refreshPendingFlag()
       setConflictSession(null)
       setLocalOwner(user.id)
       return { data, error: null }
     },
-    [user?.id, workoutPlan?.id],
+    [user?.id, workoutPlan?.id, restoreLocalActiveDraft, refreshPendingFlag],
   )
 
   const resumeSession = useCallback(async () => {
     if (!user?.id) return { data: null, error: { message: 'Usuário não autenticado.' } }
     const { data, error } = await getActiveSession(user.id)
     if (error) {
+      const restored = await restoreLocalActiveDraft(user.id)
+      if (restored) {
+        setSessionError('Sincronização pendente')
+        return { data: restored, error: null, pending: true }
+      }
       setSessionError(error.message || 'Não foi possível retomar a sessão.')
       return { data: null, error }
     }
@@ -487,30 +636,37 @@ export function WorkoutSessionProvider({ children }) {
     if (data?.id) {
       const { data: sets } = await listSessionSets(data.id)
       setSessionSets(sets || [])
-      await flushPendingSets(data.id)
     }
     setConflictSession(null)
     return { data, error: null }
-  }, [user?.id, flushPendingSets])
+  }, [user?.id, restoreLocalActiveDraft])
 
   const saveSet = useCallback(
     async (setInput) => {
       if (!user?.id) {
         return { data: null, error: { message: 'Usuário não autenticado.' } }
       }
-      const sessionId = activeSession?.id
-      if (!sessionId) {
+      const session = activeSessionRef.current
+      if (!session?.client_id) {
         return { data: null, error: { message: 'Nenhuma sessão ativa.' } }
       }
 
-      const setKey = `${setInput.exercise_order ?? setInput.exerciseOrder}-${setInput.set_number ?? setInput.setNumber}`
+      const exerciseOrder = Number(setInput.exercise_order ?? setInput.exerciseOrder ?? 0)
+      const setNumber = Number(setInput.set_number ?? setInput.setNumber ?? 1)
+      const slot = setSlotKey(exerciseOrder, setNumber)
+      const clientId = setClientIdsRef.current[slot] || setInput.client_id || crypto.randomUUID()
+      setClientIdsRef.current[slot] = clientId
+
+      const setKey = slot
       setSavingSetKey(setKey)
 
+      const updatedAt = new Date().toISOString()
       const setData = {
+        client_id: clientId,
         exercise_key: setInput.exercise_key || setInput.exerciseKey || setInput.exerciseId || '',
         exercise_name: setInput.exercise_name || setInput.exerciseName || setInput.name || '',
-        exercise_order: Number(setInput.exercise_order ?? setInput.exerciseOrder ?? 0),
-        set_number: Number(setInput.set_number ?? setInput.setNumber ?? 1),
+        exercise_order: exerciseOrder,
+        set_number: setNumber,
         set_type: setInput.set_type || 'working',
         planned_reps: setInput.planned_reps ?? setInput.plannedReps ?? null,
         repetitions: parseReps(setInput.repetitions ?? setInput.reps),
@@ -518,48 +674,100 @@ export function WorkoutSessionProvider({ children }) {
         rpe: setInput.rpe ?? null,
         completed: setInput.completed !== false,
         notes: setInput.notes ?? null,
+        session_client_id: session.client_id,
+        session_id: session.id || null,
+        updated_at: updatedAt,
       }
 
-      const { data, error } = await saveWorkoutSet(sessionId, setData)
-      setSavingSetKey('')
-
-      if (error) {
-        const pending = readPendingSets()
-        pending.push({
-          id: `${sessionId}-${setKey}-${Date.now()}`,
-          sessionId,
-          setData,
-          createdAt: new Date().toISOString(),
-        })
-        writePendingSets(pending)
-        setSyncPending(true)
-        setSessionError('Sincronização pendente')
-        return { data: null, error, pending: true }
+      const optimistic = {
+        ...setData,
+        id: setData.id || `local-${clientId}`,
+        session_id: session.id || null,
       }
 
+      let nextSets = []
       setSessionSets((prev) => {
         const without = prev.filter(
           (s) =>
             !(
-              Number(s.exercise_order) === Number(setData.exercise_order) &&
-              Number(s.set_number) === Number(setData.set_number)
-            ),
+              Number(s.exercise_order) === exerciseOrder &&
+              Number(s.set_number) === setNumber
+            ) && s.client_id !== clientId,
         )
-        return [...without, data].sort(
+        nextSets = [...without, optimistic].sort(
           (a, b) =>
             Number(a.exercise_order) - Number(b.exercise_order) ||
             Number(a.set_number) - Number(b.set_number),
         )
+        return nextSets
       })
-      await flushPendingSets(sessionId)
-      return { data, error: null }
+
+      await persistActiveDraft(user.id, session, nextSets, setClientIdsRef.current)
+
+      await enqueueOperation({
+        userId: user.id,
+        entity: 'workout_set',
+        action: 'update',
+        clientId,
+        parentClientId: session.client_id,
+        payload: setData,
+      })
+
+      if (!session.id) {
+        await syncPendingOperations(user.id)
+        const { data: draft } = await getWorkoutDraft(user.id, session.client_id)
+        const remoteId = draft?.data?.session?.id
+        if (remoteId) {
+          setActiveSession((prev) => (prev ? { ...prev, id: remoteId } : prev))
+        }
+      }
+
+      const remoteSessionId = activeSessionRef.current?.id || session.id
+      if (remoteSessionId) {
+        const { data, error } = await upsertWorkoutSet(remoteSessionId, setData)
+        setSavingSetKey('')
+        if (error) {
+          setSyncPending(true)
+          setSessionError('Sincronização pendente')
+          await refreshPendingFlag()
+          return { data: optimistic, error: null, pending: true }
+        }
+
+        setSessionSets((prev) => {
+          const without = prev.filter((s) => s.client_id !== clientId)
+          return [...without, data].sort(
+            (a, b) =>
+              Number(a.exercise_order) - Number(b.exercise_order) ||
+              Number(a.set_number) - Number(b.set_number),
+          )
+        })
+        await syncPendingOperations(user.id)
+        setSessionSets((prev) => {
+          void persistActiveDraft(
+            user.id,
+            { ...session, id: remoteSessionId },
+            prev,
+            setClientIdsRef.current,
+          )
+          return prev
+        })
+        await refreshPendingFlag()
+        return { data, error: null }
+      }
+
+      setSavingSetKey('')
+      setSyncPending(true)
+      setSessionError('Sincronização pendente')
+      await refreshPendingFlag()
+      return { data: optimistic, error: null, pending: true }
     },
-    [user?.id, activeSession?.id, flushPendingSets],
+    [user?.id, refreshPendingFlag],
   )
 
   const completeSession = useCallback(
     async (completionData = {}) => {
-      if (!user?.id || !activeSession?.id) {
+      const session = activeSessionRef.current
+      if (!user?.id || !session?.client_id) {
         return { data: null, error: { message: 'Nenhuma sessão ativa.' } }
       }
       if (saveLockRef.current) {
@@ -568,37 +776,79 @@ export function WorkoutSessionProvider({ children }) {
 
       saveLockRef.current = true
       setSavingSession(true)
-      await flushPendingSets(activeSession.id)
 
-      const { data, error } = await completeWorkoutSession(user.id, activeSession.id, {
-        completed_at: completionData.completed_at || new Date().toISOString(),
+      const completedAt = completionData.completed_at || new Date().toISOString()
+      const payload = {
+        ...session,
+        status: 'completed',
+        completed_at: completedAt,
         duration_seconds: completionData.duration_seconds ?? null,
         perceived_effort: completionData.perceived_effort ?? null,
         notes: completionData.notes ?? null,
+        updated_at: completedAt,
+      }
+
+      await enqueueOperation({
+        userId: user.id,
+        entity: 'workout_session',
+        action: 'complete',
+        clientId: session.client_id,
+        payload,
       })
+
+      await persistActiveDraft(user.id, payload, sessionSetsRef.current, setClientIdsRef.current)
+
+      let data = null
+      let error = null
+      if (session.id) {
+        const result = await completeWorkoutSession(user.id, session.id, {
+          completed_at: completedAt,
+          duration_seconds: completionData.duration_seconds ?? null,
+          perceived_effort: completionData.perceived_effort ?? null,
+          notes: completionData.notes ?? null,
+        })
+        data = result.data
+        error = result.error
+      }
+
+      const syncResult = await syncPendingOperations(user.id)
 
       saveLockRef.current = false
       setSavingSession(false)
 
-      if (error) {
-        setSessionError(error.message || 'Não foi possível finalizar a sessão.')
-        return { data: null, error }
+      if (error && !syncResult?.data?.synced) {
+        const historyItem = mapRemoteSessionToHistoryItem(payload, sessionSetsRef.current)
+        setSessionHistory((prev) => [historyItem, ...prev.filter((h) => h.id !== historyItem.id)])
+        setActiveSession(null)
+        setSessionSets([])
+        setConflictSession(null)
+        setSyncPending(true)
+        setSessionError('Sincronização pendente')
+        await refreshPendingFlag()
+        return { data: payload, error: null, pending: true, historyItem }
       }
 
-      const { data: sets } = await listSessionSets(activeSession.id)
-      const historyItem = mapRemoteSessionToHistoryItem(data, sets || [])
+      const finalSession = data || payload
+      const sets = session.id
+        ? (await listSessionSets(session.id)).data || sessionSetsRef.current
+        : sessionSetsRef.current
+      const historyItem = mapRemoteSessionToHistoryItem(finalSession, sets)
       setSessionHistory((prev) => [historyItem, ...prev.filter((h) => h.id !== historyItem.id)])
       setActiveSession(null)
       setSessionSets([])
       setConflictSession(null)
-      return { data, error: null, historyItem }
+      setClientIdsRef.current = {}
+      if (!error) await deleteWorkoutDraft(user.id, session.client_id)
+      await refreshPendingFlag()
+      return { data: finalSession, error: null, historyItem }
     },
-    [user?.id, activeSession, flushPendingSets],
+    [user?.id, refreshPendingFlag],
   )
 
   const cancelSession = useCallback(
-    async (sessionId = activeSession?.id) => {
-      if (!user?.id || !sessionId) {
+    async (sessionId = activeSessionRef.current?.id) => {
+      const session = activeSessionRef.current
+      if (!user?.id || (!sessionId && !session?.client_id)) {
         return { data: null, error: { message: 'Nenhuma sessão ativa.' } }
       }
       if (!window.confirm('Cancelar o treino em andamento? Os dados já registrados serão preservados.')) {
@@ -606,23 +856,53 @@ export function WorkoutSessionProvider({ children }) {
       }
 
       setSavingSession(true)
-      const { data, error } = await cancelWorkoutSession(user.id, sessionId)
+      const clientId = session?.client_id
+      const payload = {
+        ...session,
+        status: 'cancelled',
+        completed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }
+
+      if (clientId) {
+        await enqueueOperation({
+          userId: user.id,
+          entity: 'workout_session',
+          action: 'cancel',
+          clientId,
+          payload,
+        })
+      }
+
+      let error = null
+      if (sessionId || session?.id) {
+        const result = await cancelWorkoutSession(user.id, sessionId || session.id)
+        error = result.error
+      }
+
+      await syncPendingOperations(user.id)
       setSavingSession(false)
 
       if (error) {
-        setSessionError(error.message || 'Não foi possível cancelar a sessão.')
-        return { data: null, error }
+        setActiveSession(null)
+        setSessionSets([])
+        setConflictSession(null)
+        setSyncPending(true)
+        setSessionError('Sincronização pendente')
+        await refreshPendingFlag()
+        return { data: payload, error: null, pending: true }
       }
 
-      if (activeSession?.id === sessionId) {
+      if (activeSessionRef.current?.client_id === clientId || activeSessionRef.current?.id === sessionId) {
         setActiveSession(null)
         setSessionSets([])
       }
       setConflictSession(null)
+      if (clientId) await deleteWorkoutDraft(user.id, clientId)
       await refreshSession()
-      return { data, error: null }
+      return { data: payload, error: null }
     },
-    [user?.id, activeSession?.id, refreshSession],
+    [user?.id, refreshSession, refreshPendingFlag],
   )
 
   const value = useMemo(

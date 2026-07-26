@@ -600,14 +600,16 @@ export default function ActiveWorkoutModal() {
           <div className="workout-session__sync" role="status" aria-live="polite">
             {savingSession || setSaveStatus === 'saving' || savingSetKey ? (
               <span>Salvando...</span>
-            ) : setSaveStatus === 'saved' ? (
-              <span className="workout-session__sync--ok">Série salva</span>
             ) : syncPending || setSaveStatus === 'pending' ? (
               <span className="workout-session__sync--pending">Sincronização pendente</span>
+            ) : setSaveStatus === 'saved' ? (
+              <span className="workout-session__sync--ok">Salvo</span>
             ) : sessionError ? (
               <span className="workout-session__sync--err">{sessionError}</span>
             ) : activeSession?.id ? (
-              <span className="workout-session__sync--ok">Sessão sincronizada</span>
+              <span className="workout-session__sync--ok">Salvo</span>
+            ) : activeSession?.client_id ? (
+              <span className="workout-session__sync--pending">Sincronização pendente</span>
             ) : null}
             <button
               type="button"

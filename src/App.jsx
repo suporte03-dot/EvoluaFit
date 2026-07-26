@@ -9,7 +9,10 @@ import { ProfileProvider } from './context/ProfileContext'
 import { WorkoutPlanProvider } from './context/WorkoutPlanContext'
 import { WorkoutSessionProvider } from './context/WorkoutSessionContext'
 import { ProgressProvider } from './context/ProgressContext'
+import { SyncProvider } from './context/SyncContext'
 import { FitnessProvider, useFitness } from './context/FitnessContext'
+import SyncStatusIndicator from './components/SyncStatusIndicator'
+import PwaUpdatePrompt from './components/pwa/PwaUpdatePrompt'
 import { loadExercises } from './services/exerciseService'
 import Header from './components/Header'
 import SectionDivider from './components/SectionDivider'
@@ -99,6 +102,7 @@ function AppLayout() {
         />
 
         <div className="app__content">
+          <SyncStatusIndicator />
           <Header
             activeSection={isProfileRoute ? 'perfil' : activeSection}
             onOpenDashboardMenu={() => setMobileMenuOpen(true)}
@@ -154,12 +158,14 @@ function DashboardApp() {
         <WorkoutPlanProvider>
           <WorkoutSessionProvider>
             <ProgressProvider>
-              <Routes>
-                <Route element={<AppLayout />}>
-                  <Route index element={<DashboardHome />} />
-                  <Route path="perfil" element={<ProfilePage />} />
-                </Route>
-              </Routes>
+              <SyncProvider>
+                <Routes>
+                  <Route element={<AppLayout />}>
+                    <Route index element={<DashboardHome />} />
+                    <Route path="perfil" element={<ProfilePage />} />
+                  </Route>
+                </Routes>
+              </SyncProvider>
             </ProgressProvider>
           </WorkoutSessionProvider>
         </WorkoutPlanProvider>
@@ -176,6 +182,7 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <PwaUpdatePrompt />
         <Routes>
           <Route path="/" element={<RootRedirect />} />
           <Route

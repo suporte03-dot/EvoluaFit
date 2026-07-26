@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="Treino funcional">
+  <rect width="320" height="240" fill="#0b1020"/>
+  <circle cx="160" cy="110" r="11" fill="#00E58F"/>
+  <line x1="130" y1="160" x2="190" y2="160" stroke="#E2E8F0" stroke-width="3"/>
+  <text x="160" y="228" text-anchor="middle" fill="#E2E8F0" font-family="system-ui,sans-serif" font-size="12" font-weight="600">Funcional</text>
+</svg>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="Treino de ombros">
+  <rect width="320" height="240" fill="#0b1020"/>
+  <circle cx="160" cy="175" r="12" fill="#00E58F"/>
+  <line x1="100" y1="140" x2="220" y2="140" stroke="#00E58F" stroke-width="5" stroke-linecap="round"/>
+  <text x="160" y="228" text-anchor="middle" fill="#E2E8F0" font-family="system-ui,sans-serif" font-size="12" font-weight="600">Ombros</text>
+</svg>

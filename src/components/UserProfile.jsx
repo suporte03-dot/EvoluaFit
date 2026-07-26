@@ -4,6 +4,7 @@ import { useFitness } from '../context/FitnessContext'
 import { useAuth } from '../context/AuthContext'
 import SectionTitle from './SectionTitle'
 import BackupSettings from './BackupSettings'
+import InstallPwaButton from './pwa/InstallPwaButton'
 
 const objectives = [
   { value: 'saude', label: 'Saúde geral' },
@@ -161,6 +162,14 @@ export default function UserProfile() {
             </button>
           </form>
         )}
+
+        <div className="profile-pwa-card glass-card">
+          <div className="profile-pwa-card__copy">
+            <strong>Aplicativo</strong>
+            <p>Instale o EvoluaFit na tela inicial para abrir como app.</p>
+          </div>
+          <InstallPwaButton className="profile-pwa-card__btn" />
+        </div>
 
         <div className="profile-backup-wrap">
           <button

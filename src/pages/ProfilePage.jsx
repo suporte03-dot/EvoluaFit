@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useProfile } from '../context/ProfileContext'
 import SectionTitle from '../components/SectionTitle'
+import InstallPwaButton from '../components/pwa/InstallPwaButton'
 
 const GOAL_OPTIONS = [
   'Saúde geral',
@@ -139,6 +140,14 @@ export default function ProfilePage() {
               <p className="profile-summary__meta profile-summary__email">{user.email}</p>
             ) : null}
           </div>
+        </div>
+
+        <div className="profile-pwa-card glass-card">
+          <div className="profile-pwa-card__copy">
+            <strong>Aplicativo</strong>
+            <p>Instale o EvoluaFit na tela inicial para abrir como app.</p>
+          </div>
+          <InstallPwaButton className="profile-pwa-card__btn" />
         </div>
 
         {profileError ? (

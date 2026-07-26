@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
+import { useNavigate as useRouterNavigate } from 'react-router-dom'
 import { mobileNavItems, mobileNavMoreItems } from '../data/siteData'
 import { scrollToSection } from '../utils/scrollToSection'
+import { useAuth } from '../context/AuthContext'
 import {
   IconCalendar,
   IconDumbbell,
@@ -99,7 +101,10 @@ ICONS.metas = GoalsIcon
 ICONS['coach-ia'] = IconSpark
 
 export default function MobileNav({ activeSection }) {
+  const { signOut } = useAuth()
+  const routerNavigate = useRouterNavigate()
   const [moreOpen, setMoreOpen] = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
   const coachActive = activeSection === 'coach-ia'
   const moreActive =
     moreOpen || mobileNavMoreItems.some((item) => item.id === activeSection)
@@ -121,6 +126,15 @@ export default function MobileNav({ activeSection }) {
         document.getElementById('coach-question')?.focus?.()
       }, 350)
     }
+  }
+
+  const handleLogout = async () => {
+    if (signingOut) return
+    setSigningOut(true)
+    setMoreOpen(false)
+    const { error } = await signOut()
+    setSigningOut(false)
+    if (!error) routerNavigate('/login', { replace: true })
   }
 
   return (
@@ -177,6 +191,14 @@ export default function MobileNav({ activeSection }) {
               )
             })}
           </div>
+          <button
+            type="button"
+            className="btn btn--danger btn--sm mobile-nav__logout"
+            onClick={handleLogout}
+            disabled={signingOut}
+          >
+            {signingOut ? 'Saindo...' : 'Sair da conta'}
+          </button>
         </div>
       )}
 

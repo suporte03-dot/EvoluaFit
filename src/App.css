@@ -7956,6 +7956,18 @@ main {
   margin-bottom: 1rem;
 }
 
+.profile-summary__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.profile-summary__email {
+  margin-top: 0.25rem;
+  word-break: break-all;
+}
+
 .goals-summary__label,
 .profile-summary__meta {
   display: block;
@@ -8075,7 +8087,16 @@ main {
   }
 
   .goals-summary .btn,
-  .profile-summary .btn {
+  .profile-summary .btn,
+  .profile-summary__actions {
+    width: 100%;
+  }
+
+  .profile-summary__actions {
+    flex-direction: column;
+  }
+
+  .profile-summary__actions .btn {
     width: 100%;
   }
 

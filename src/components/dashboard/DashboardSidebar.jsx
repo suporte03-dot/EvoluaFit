@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   IconCalendar,
   IconChart,
@@ -12,6 +14,7 @@ import {
 import EvoluaFitBrand from '../branding/EvoluaFitBrand'
 import { deriveXpProgress, initialsFromName } from './dashboardUtils'
 import { scrollToSection, handleSectionClick } from '../../utils/scrollToSection'
+import { useAuth } from '../../context/AuthContext'
 
 const MAIN_NAV = [
   { id: 'inicio', label: 'Dashboard', Icon: IconHome, tone: 'blue' },
@@ -47,12 +50,27 @@ export default function DashboardSidebar({
   mobileOpen,
   onCloseMobile,
 }) {
+  const { user, signOut } = useAuth()
+  const navigate = useNavigate()
+  const [signingOut, setSigningOut] = useState(false)
   const xp = deriveXpProgress({ history, workouts })
-  const name = profile?.name || 'Atleta'
+  const authName = user?.user_metadata?.full_name || user?.user_metadata?.name
+  const name = authName || profile?.name || 'Atleta'
   const levelLabel = profile?.level ? `Nível ${profile.level}` : `Nível ${xp.levelNumber}`
   const initials = initialsFromName(name)
   const xpCeiling = xp.xp - xp.intoLevel + xp.nextLevelAt
   const xpLabel = `${xp.xp.toLocaleString('pt-BR')} / ${xpCeiling.toLocaleString('pt-BR')} XP`
+
+  const handleLogout = async () => {
+    if (signingOut) return
+    setSigningOut(true)
+    onCloseMobile?.()
+    const { error } = await signOut()
+    setSigningOut(false)
+    if (!error) {
+      navigate('/login', { replace: true })
+    }
+  }
 
   const isActive = (item) => {
     if (item.label === 'Dashboard') return activeSection === 'inicio' && !item.hash
@@ -129,27 +147,60 @@ export default function DashboardSidebar({
           </ul>
         </nav>
 
-        <div className="dash-sidebar__user" title={`${name} · ${levelLabel}`}>
-          <div className="dash-sidebar__avatar" aria-hidden="true">
-            {initials}
-          </div>
-          {!collapsed && (
-            <div className="dash-sidebar__user-meta">
-              <strong>{name}</strong>
-              <span>{levelLabel}</span>
-              <div
-                className="dash-sidebar__xp"
-                role="progressbar"
-                aria-valuenow={xp.intoLevel}
-                aria-valuemin={0}
-                aria-valuemax={xp.nextLevelAt}
-                aria-label="Progresso de XP"
-              >
-                <div className="dash-sidebar__xp-fill" style={{ width: `${xp.pct}%` }} />
-              </div>
-              <small className="dash-sidebar__xp-label">{xpLabel}</small>
+        <div className="dash-sidebar__account">
+          <div className="dash-sidebar__user" title={`${name} · ${levelLabel}`}>
+            <div className="dash-sidebar__avatar" aria-hidden="true">
+              {initials}
             </div>
-          )}
+            {!collapsed && (
+              <div className="dash-sidebar__user-meta">
+                <strong>{name}</strong>
+                <span>{levelLabel}</span>
+                <div
+                  className="dash-sidebar__xp"
+                  role="progressbar"
+                  aria-valuenow={xp.intoLevel}
+                  aria-valuemin={0}
+                  aria-valuemax={xp.nextLevelAt}
+                  aria-label="Progresso de XP"
+                >
+                  <div className="dash-sidebar__xp-fill" style={{ width: `${xp.pct}%` }} />
+                </div>
+                <small className="dash-sidebar__xp-label">{xpLabel}</small>
+              </div>
+            )}
+          </div>
+          <button
+            type="button"
+            className={`btn btn--ghost btn--sm dash-sidebar__logout${collapsed ? ' dash-sidebar__logout--icon' : ''}`}
+            onClick={handleLogout}
+            disabled={signingOut}
+            title="Sair"
+            aria-label="Sair da conta"
+          >
+            {collapsed ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+                  stroke="currentColor"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M16 17l5-5-5-5M21 12H9"
+                  stroke="currentColor"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            ) : signingOut ? (
+              'Saindo...'
+            ) : (
+              'Sair'
+            )}
+          </button>
         </div>
       </aside>
     </>

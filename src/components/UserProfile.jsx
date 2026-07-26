@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useFitness } from '../context/FitnessContext'
+import { useAuth } from '../context/AuthContext'
 import SectionTitle from './SectionTitle'
 import BackupSettings from './BackupSettings'
 
@@ -15,15 +17,26 @@ const objectiveLabel = (value) => objectives.find((o) => o.value === value)?.lab
 
 export default function UserProfile() {
   const { profile, updateProfile } = useFitness()
+  const { user, signOut } = useAuth()
+  const navigate = useNavigate()
   const [form, setForm] = useState({ ...profile })
   const [open, setOpen] = useState(false)
   const [backupOpen, setBackupOpen] = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
 
   const update = (key, value) => setForm((prev) => ({ ...prev, [key]: value }))
 
   const handleSubmit = (e) => {
     e.preventDefault()
     updateProfile(form)
+  }
+
+  const handleLogout = async () => {
+    if (signingOut) return
+    setSigningOut(true)
+    const { error } = await signOut()
+    setSigningOut(false)
+    if (!error) navigate('/login', { replace: true })
   }
 
   return (
@@ -42,15 +55,28 @@ export default function UserProfile() {
               {objectiveLabel(form.objective)} · {form.level} · {form.daysPerWeek}x/semana ·{' '}
               {form.duration} min
             </p>
+            {user?.email ? (
+              <p className="profile-summary__meta profile-summary__email">{user.email}</p>
+            ) : null}
           </div>
-          <button
-            type="button"
-            className="btn btn--ghost"
-            onClick={() => setOpen((o) => !o)}
-            aria-expanded={open}
-          >
-            {open ? 'Ocultar detalhes' : 'Editar perfil'}
-          </button>
+          <div className="profile-summary__actions">
+            <button
+              type="button"
+              className="btn btn--ghost"
+              onClick={() => setOpen((o) => !o)}
+              aria-expanded={open}
+            >
+              {open ? 'Ocultar detalhes' : 'Editar perfil'}
+            </button>
+            <button
+              type="button"
+              className="btn btn--danger btn--sm"
+              onClick={handleLogout}
+              disabled={signingOut}
+            >
+              {signingOut ? 'Saindo...' : 'Sair'}
+            </button>
+          </div>
         </div>
 
         {open && (

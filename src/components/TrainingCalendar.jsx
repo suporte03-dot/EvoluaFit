@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
+import { useWorkoutSession } from '../context/WorkoutSessionContext'
 import { planToWorkouts } from '../utils/workoutGenerator'
 import SectionTitle from './SectionTitle'
 import Modal from './Modal'
@@ -86,6 +87,7 @@ export default function TrainingCalendar() {
     markWorkoutDoneWithoutSession,
     showToast,
   } = useFitness()
+  const { sessionHistory } = useWorkoutSession()
 
   const [current, setCurrent] = useState(() => new Date())
   const [filter, setFilter] = useState('all')
@@ -136,9 +138,36 @@ export default function TrainingCalendar() {
     [workouts, filter],
   )
 
+  const calendarWorkouts = useMemo(() => {
+    const completedFromSessions = (sessionHistory || [])
+      .filter((s) => s.status === 'completed' || (!s.status && s.completedAt))
+      .map((s) => ({
+        id: `session-${s.id}`,
+        name: s.name,
+        date: String(s.completedAt || '').split('T')[0],
+        status: 'Realizado',
+        completedAt: s.completedAt,
+      }))
+      .filter((s) => s.date)
+
+    const byDate = new Map()
+    ;[...(filteredWorkouts || []), ...completedFromSessions].forEach((w) => {
+      if (!w?.date) return
+      const prev = byDate.get(w.date)
+      if (!prev) {
+        byDate.set(w.date, w)
+        return
+      }
+      if (prev.status !== 'Realizado' && w.status === 'Realizado') {
+        byDate.set(w.date, { ...prev, ...w, status: 'Realizado' })
+      }
+    })
+    return [...byDate.values()]
+  }, [filteredWorkouts, sessionHistory])
+
   const monthCells = useMemo(
-    () => getCurrentMonthDays(year, month, filteredWorkouts, new Date()),
-    [year, month, filteredWorkouts],
+    () => getCurrentMonthDays(year, month, calendarWorkouts, new Date()),
+    [year, month, calendarWorkouts],
   )
 
   const weekGoal = useMemo(() => {

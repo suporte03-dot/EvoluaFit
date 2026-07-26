@@ -7,6 +7,7 @@ import { useHashRoute } from './hooks/useHashRoute'
 import { AuthProvider } from './context/AuthContext'
 import { ProfileProvider } from './context/ProfileContext'
 import { WorkoutPlanProvider } from './context/WorkoutPlanContext'
+import { WorkoutSessionProvider } from './context/WorkoutSessionContext'
 import { FitnessProvider, useFitness } from './context/FitnessContext'
 import { loadExercises } from './services/exerciseService'
 import Header from './components/Header'
@@ -150,12 +151,14 @@ function DashboardApp() {
     <ProfileProvider>
       <FitnessProvider>
         <WorkoutPlanProvider>
+          <WorkoutSessionProvider>
           <Routes>
             <Route element={<AppLayout />}>
               <Route index element={<DashboardHome />} />
               <Route path="perfil" element={<ProfilePage />} />
             </Route>
           </Routes>
+          </WorkoutSessionProvider>
         </WorkoutPlanProvider>
       </FitnessProvider>
     </ProfileProvider>

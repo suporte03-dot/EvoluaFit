@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
+import { useWorkoutSession } from '../context/WorkoutSessionContext'
 import {
   buildCompletionPayload,
   completeSetOnExercise,
@@ -52,6 +53,25 @@ export default function ActiveWorkoutModal() {
     showToast,
     profile,
   } = useFitness()
+
+  const {
+    activeSession,
+    startSession,
+    saveSet,
+    completeSession,
+    cancelSession,
+    conflictSession,
+    setConflictSession,
+    savingSetKey,
+    syncPending,
+    savingSession,
+    sessionError,
+  } = useWorkoutSession()
+
+  const [setSaveStatus, setSetSaveStatus] = useState('')
+  const [remoteReady, setRemoteReady] = useState(false)
+  const [perceivedEffort, setPerceivedEffort] = useState('')
+  const remoteStartRef = useRef(false)
 
   const [exerciseIndex, setExerciseIndex] = useState(0)
   const [expandedIndex, setExpandedIndex] = useState(-1)
@@ -184,6 +204,35 @@ export default function ActiveWorkoutModal() {
     })
   }, [activeWorkout?.id])
 
+  useEffect(() => {
+    if (!activeWorkout?.id) {
+      remoteStartRef.current = false
+      setRemoteReady(false)
+      setPerceivedEffort('')
+      return undefined
+    }
+    if (remoteStartRef.current) return undefined
+    remoteStartRef.current = true
+
+    let cancelled = false
+    ;(async () => {
+      const result = await startSession(activeWorkout)
+      if (cancelled) return
+      if (result?.error?.code === 'ACTIVE_SESSION_EXISTS') {
+        setRemoteReady(false)
+        return
+      }
+      if (result?.error) {
+        showToast(result.error.message || 'Sessão na nuvem indisponível. Continuando localmente.', 'info')
+      }
+      setRemoteReady(true)
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [activeWorkout?.id, activeWorkout, startSession, showToast])
+
   // Autosave session
   useEffect(() => {
     if (!activeWorkout || showSummary) return
@@ -285,6 +334,30 @@ export default function ActiveWorkoutModal() {
       ...d,
       [exIndex]: { weight: draft.weight, reps: '' },
     }))
+
+    const exAfter = updated[exIndex]
+    setSetSaveStatus('saving')
+    saveSet({
+      exerciseId: exAfter?.exerciseId || exAfter?.name,
+      exercise_key: exAfter?.exerciseId || exAfter?.name || ('ex-' + exIndex),
+      exercise_name: exAfter?.name || 'Exercício',
+      exercise_order: exIndex,
+      set_number: setNumber,
+      planned_reps: exAfter?.reps || null,
+      reps: draft.reps,
+      weight: draft.weight,
+      completed: true,
+    }).then((result) => {
+      if (result?.pending) {
+        setSetSaveStatus('pending')
+        showToast('Sincronização pendente', 'info')
+      } else if (result?.error) {
+        setSetSaveStatus('error')
+      } else {
+        setSetSaveStatus('saved')
+        window.setTimeout(() => setSetSaveStatus(''), 1600)
+      }
+    })
   }
 
   const openSummary = (forcePartial = false) => {
@@ -301,12 +374,101 @@ export default function ActiveWorkoutModal() {
     setShowSummary(true)
   }
 
-  const confirmFinish = () => {
+  const confirmFinish = async () => {
     if (!pendingPayload || !activeWorkout) return
-    completeWorkout(activeWorkout.id, pendingPayload)
+    const pausedExtra = pauseStartedRef.current ? Date.now() - pauseStartedRef.current : 0
+    const durationSeconds = Math.max(
+      0,
+      Math.floor((Date.now() - startTimeRef.current - pausedMsRef.current - pausedExtra) / 1000),
+    )
+
+    for (let exIndex = 0; exIndex < sessionExercises.length; exIndex += 1) {
+      const ex = sessionExercises[exIndex]
+      for (const slot of ex.setSlots || []) {
+        if (!slot?.completed) continue
+        await saveSet({
+          exercise_key: ex.exerciseId || ex.name || ('ex-' + exIndex),
+          exercise_name: ex.name || 'Exercício',
+          exercise_order: exIndex,
+          set_number: slot.setNumber,
+          planned_reps: ex.reps || null,
+          reps: slot.reps,
+          weight: slot.weight ?? slot.load,
+          completed: true,
+        })
+      }
+    }
+
+    await completeSession({
+      duration_seconds: durationSeconds,
+      perceived_effort: perceivedEffort ? Number(perceivedEffort) : null,
+      notes: pendingPayload.notes || sessionNotes || null,
+      completed_at: pendingPayload.completedAt || new Date().toISOString(),
+    })
+
+    completeWorkout(activeWorkout.id, {
+      ...pendingPayload,
+      perceivedEffort: perceivedEffort ? Number(perceivedEffort) : null,
+    })
     clearActiveSession()
     setShowSummary(false)
     setPendingPayload(null)
+    setPerceivedEffort('')
+    remoteStartRef.current = false
+  }
+
+  const handleCancelRemoteSession = async () => {
+    const result = await cancelSession()
+    if (result?.error?.code === 'ABORTED') return
+    if (result?.error) {
+      showToast(result.error.message || 'Não foi possível cancelar.', 'error')
+      return
+    }
+    clearActiveSession()
+    setActiveWorkout(null)
+    remoteStartRef.current = false
+    showToast('Treino cancelado.', 'info')
+  }
+
+  const handleConflictContinue = () => {
+    const session = conflictSession
+    setConflictSession(null)
+    const snap = session?.workout_snapshot
+    if (!snap) {
+      showToast('Não foi possível continuar a sessão anterior.', 'error')
+      setActiveWorkout(null)
+      return
+    }
+    remoteStartRef.current = true
+    setRemoteReady(true)
+    setActiveWorkout({
+      id: snap.id,
+      name: snap.name || session.workout_name || 'Treino',
+      exercises: snap.exercises || [],
+      muscleGroups: snap.muscleGroups || [],
+      planId: snap.planId,
+      dayNumber: snap.dayNumber,
+      estimatedMinutes: snap.estimatedMinutes,
+      workoutType: snap.workoutType,
+      status: 'Parcial',
+    })
+  }
+
+  const handleConflictCancelPrevious = async () => {
+    if (!conflictSession?.id) return
+    const result = await cancelSession(conflictSession.id)
+    if (result?.error?.code === 'ABORTED') return
+    setConflictSession(null)
+    if (activeWorkout) {
+      remoteStartRef.current = false
+      const retry = await startSession(activeWorkout, { force: true })
+      if (retry?.error) {
+        showToast(retry.error.message || 'Não foi possível iniciar.', 'error')
+      } else {
+        setRemoteReady(true)
+        remoteStartRef.current = true
+      }
+    }
   }
 
   const handleSummaryClose = () => {
@@ -434,6 +596,28 @@ export default function ActiveWorkoutModal() {
               Treino pausado
             </span>
           )}
+
+          <div className="workout-session__sync" role="status" aria-live="polite">
+            {savingSession || setSaveStatus === 'saving' || savingSetKey ? (
+              <span>Salvando...</span>
+            ) : setSaveStatus === 'saved' ? (
+              <span className="workout-session__sync--ok">Série salva</span>
+            ) : syncPending || setSaveStatus === 'pending' ? (
+              <span className="workout-session__sync--pending">Sincronização pendente</span>
+            ) : sessionError ? (
+              <span className="workout-session__sync--err">{sessionError}</span>
+            ) : activeSession?.id ? (
+              <span className="workout-session__sync--ok">Sessão sincronizada</span>
+            ) : null}
+            <button
+              type="button"
+              className="btn btn--ghost btn--sm"
+              onClick={handleCancelRemoteSession}
+              disabled={savingSession}
+            >
+              Cancelar treino
+            </button>
+          </div>
 
           {current && (
             <p className="workout-session__now">
@@ -575,7 +759,35 @@ export default function ActiveWorkoutModal() {
         onConfirm={confirmFinish}
         sessionData={pendingPayload}
         workoutName={activeWorkout.name}
+        perceivedEffort={perceivedEffort}
+        onPerceivedEffortChange={setPerceivedEffort}
       />
+
+      <Modal
+        isOpen={Boolean(conflictSession)}
+        onClose={() => {
+          setConflictSession(null)
+          setActiveWorkout(null)
+          remoteStartRef.current = false
+        }}
+        title="Treino em andamento"
+        size="sm"
+      >
+        <div className="session-conflict">
+          <p>
+            Já existe uma sessão ativa
+            {conflictSession?.workout_name ? `: ${conflictSession.workout_name}` : ''}.
+          </p>
+          <div className="session-conflict__actions">
+            <button type="button" className="btn btn--primary" onClick={handleConflictContinue}>
+              Continuar treino
+            </button>
+            <button type="button" className="btn btn--danger" onClick={handleConflictCancelPrevious}>
+              Cancelar treino anterior
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       <ExerciseSubstitutionModal
         isOpen={substituteIndex != null}

@@ -15,7 +15,7 @@ function formatDatePt(iso) {
   }
 }
 
-export default function WorkoutSummaryModal({ isOpen, onClose, onConfirm, sessionData, workoutName }) {
+export default function WorkoutSummaryModal({ isOpen, onClose, onConfirm, sessionData, workoutName, perceivedEffort, onPerceivedEffortChange }) {
   if (!isOpen || !sessionData) return null
 
   const stats = calculateSessionStats(sessionData)
@@ -104,6 +104,21 @@ export default function WorkoutSummaryModal({ isOpen, onClose, onConfirm, sessio
             ))}
           </ul>
         )}
+
+        <label className="form-field workout-summary__effort">
+          <span>Esforço percebido (1–10)</span>
+          <select
+            value={perceivedEffort || ''}
+            onChange={(e) => onPerceivedEffortChange?.(e.target.value)}
+          >
+            <option value="">Opcional</option>
+            {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </label>
 
         {sessionData.notes && (
           <div className="workout-summary__notes">

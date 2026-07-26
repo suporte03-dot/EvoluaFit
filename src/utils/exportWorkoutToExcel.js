@@ -26,6 +26,8 @@ const HEADERS = [
   'Cuidados',
 ]
 
+const COLUMN_WIDTHS = [18, 22, 18, 14, 16, 16, 28, 8, 12, 10, 16, 40, 40]
+
 function dayLabel(dayNumber) {
   const index = Math.max(0, (dayNumber || 1) - 1) % WEEKDAY_LABELS.length
   return WEEKDAY_LABELS[index]
@@ -100,32 +102,38 @@ export function planToExcelRows(plan) {
  * @param {object} plan
  * @param {string} [filename]
  */
-export function exportWorkoutToExcel(plan, filename = 'evoluafit-planilha-treino.xlsx') {
-  return import('xlsx').then((XLSX) => {
-    const rows = planToExcelRows(plan)
-    if (!rows.length) {
-      throw new Error('Planilha vazia')
-    }
+export async function exportWorkoutToExcel(plan, filename = 'evoluafit-planilha-treino.xlsx') {
+  const rows = planToExcelRows(plan)
+  if (!rows.length) {
+    throw new Error('Planilha vazia')
+  }
 
-    const worksheet = XLSX.utils.json_to_sheet(rows, { header: HEADERS })
-    worksheet['!cols'] = [
-      { wch: 18 },
-      { wch: 22 },
-      { wch: 18 },
-      { wch: 14 },
-      { wch: 16 },
-      { wch: 16 },
-      { wch: 28 },
-      { wch: 8 },
-      { wch: 12 },
-      { wch: 10 },
-      { wch: 16 },
-      { wch: 40 },
-      { wch: 40 },
-    ]
+  const ExcelJS = (await import('exceljs')).default
+  const workbook = new ExcelJS.Workbook()
+  workbook.creator = 'EvoluaFit'
+  const worksheet = workbook.addWorksheet('Planilha de Treino')
 
-    const workbook = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Planilha de Treino')
-    XLSX.writeFile(workbook, filename)
+  worksheet.columns = HEADERS.map((header, index) => ({
+    header,
+    key: header,
+    width: COLUMN_WIDTHS[index],
+  }))
+
+  rows.forEach((row) => {
+    worksheet.addRow(HEADERS.map((header) => row[header] ?? ''))
   })
+
+  const buffer = await workbook.xlsx.writeBuffer()
+  const blob = new Blob([buffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  })
+  const url = URL.createObjectURL(blob)
+  const anchor = document.createElement('a')
+  anchor.href = url
+  anchor.download = filename
+  anchor.rel = 'noopener'
+  document.body.appendChild(anchor)
+  anchor.click()
+  anchor.remove()
+  URL.revokeObjectURL(url)
 }

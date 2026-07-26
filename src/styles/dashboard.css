@@ -1707,3 +1707,49 @@ html:has(.app--saas) body {
   color: rgba(148, 163, 184, 0.65);
   font-weight: 600;
 }
+
+/* Workout plan cloud sync status */
+.planner-sync {
+  margin: 0 0 1rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(8, 16, 30, 0.55);
+}
+
+.planner-sync__msg {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.planner-sync__msg--muted {
+  color: rgba(148, 163, 184, 0.75);
+}
+
+.planner-sync__msg--ok {
+  color: #6eec75;
+}
+
+.planner-sync__time {
+  color: rgba(148, 163, 184, 0.7);
+  font-size: 0.8rem;
+}
+
+.planner-sync__error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.45rem;
+}
+
+.planner-sync__error > p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #fca5a5;
+}
+
+.planner-sync__detail {
+  opacity: 0.85;
+  font-size: 0.8rem !important;
+}

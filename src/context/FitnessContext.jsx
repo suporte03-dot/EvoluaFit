@@ -521,6 +521,11 @@ export function FitnessProvider({ children }) {
     showToast('Dados resetados.')
   }, [showToast])
 
+  const clearActivePlan = useCallback(() => {
+    persist((prev) => ({ ...prev, plans: [] }))
+    setGeneratedPlan(null)
+  }, [persist])
+
   const performance = useMemo(
     () => getPerformanceSummary(data.workouts, data.history),
     [data.workouts, data.history],
@@ -562,6 +567,7 @@ export function FitnessProvider({ children }) {
     importData,
     exportData,
     clearAll,
+    clearActivePlan,
   }
 
   return <FitnessContext.Provider value={value}>{children}</FitnessContext.Provider>

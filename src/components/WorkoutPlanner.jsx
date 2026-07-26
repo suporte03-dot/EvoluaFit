@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
+import { useWorkoutPlan } from '../context/WorkoutPlanContext'
 import { generateWorkoutPlan, planToWorkouts } from '../utils/workoutGenerator'
 import { exportWorkoutToExcel } from '../utils/exportWorkoutToExcel'
 import SectionTitle from './SectionTitle'
@@ -56,6 +57,15 @@ const STEPS = [
 
 export default function WorkoutPlanner() {
   const { profile, savePlan, addPlanWorkouts, showToast, generatedPlan, workouts } = useFitness()
+  const {
+    loadingWorkoutPlan,
+    workoutPlanError,
+    refreshWorkoutPlan,
+    savingWorkoutPlan,
+    saveStatus,
+    lastSavedAt,
+    saveWorkoutPlan,
+  } = useWorkoutPlan()
   const draft = readPlannerDraft()
 
   const [form, setForm] = useState(() => ({
@@ -75,6 +85,14 @@ export default function WorkoutPlanner() {
   const [generating, setGenerating] = useState(false)
   const [justGenerated, setJustGenerated] = useState(false)
 
+
+  useEffect(() => {
+    if (generatedPlan) {
+      setPlan(generatedPlan)
+    } else if (!loadingWorkoutPlan) {
+      setPlan(null)
+    }
+  }, [generatedPlan, loadingWorkoutPlan])
   useEffect(() => {
     try {
       localStorage.setItem(
@@ -286,6 +304,47 @@ export default function WorkoutPlanner() {
           title="Monte sua planilha ideal"
           subtitle="Siga as etapas e gere um plano equilibrado para a sua rotina. Seu progresso no formulário é salvo automaticamente."
         />
+
+        <div className="planner-sync" role="status" aria-live="polite">
+          {loadingWorkoutPlan ? (
+            <p className="planner-sync__msg">Carregando sua planilha...</p>
+          ) : workoutPlanError ? (
+            <div className="planner-sync__error">
+              <p>Não foi possível carregar sua planilha.</p>
+              <p className="planner-sync__detail">{workoutPlanError}</p>
+              <button type="button" className="btn btn--ghost btn--sm" onClick={() => refreshWorkoutPlan()}>
+                Tentar novamente
+              </button>
+            </div>
+          ) : !plan ? (
+            <p className="planner-sync__msg planner-sync__msg--muted">
+              Você ainda não possui uma planilha ativa.
+            </p>
+          ) : savingWorkoutPlan || saveStatus === 'saving' ? (
+            <p className="planner-sync__msg">Salvando...</p>
+          ) : saveStatus === 'error' ? (
+            <div className="planner-sync__error">
+              <p>Erro ao salvar</p>
+              <button
+                type="button"
+                className="btn btn--ghost btn--sm"
+                onClick={() => saveWorkoutPlan(plan)}
+              >
+                Tentar salvar novamente
+              </button>
+            </div>
+          ) : saveStatus === 'saved' ? (
+            <p className="planner-sync__msg planner-sync__msg--ok">
+              Alterações salvas.
+              {lastSavedAt ? (
+                <span className="planner-sync__time">
+                  {' '}
+                  ({new Date(lastSavedAt).toLocaleString('pt-BR')})
+                </span>
+              ) : null}
+            </p>
+          ) : null}
+        </div>
 
         <div className="planner-wizard-progress" aria-label={`Etapa ${step} de ${STEPS.length}`}>
           <div className="planner-wizard-progress__meta">

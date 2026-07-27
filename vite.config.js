@@ -7,14 +7,10 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: [
-        'icons/apple-touch-icon.png',
-        'icons/pwa-192x192.png',
-        'icons/pwa-512x512.png',
-        'icons/maskable-512x512.png',
-        'assets/evoluafit-icon.png',
-        'assets/evoluafit-logo.png',
-      ],
+      // Manifest icons in public/icons are precached once via includeManifestIcons.
+      // Do NOT re-list them (or public/assets brand PNGs) in includeAssets —
+      // that causes add-to-cache-list-conflicting-entries for the same URL.
+      includeManifestIcons: true,
       manifest: {
         name: 'EvoluaFit',
         short_name: 'EvoluaFit',
@@ -48,16 +44,13 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: '/index.html',
-        // Precache only app shell — not exercise media / large JPGs
-        globPatterns: [
-          '**/*.{js,css,html,ico,svg,woff,woff2}',
-          'icons/pwa-*.png',
-          'icons/maskable-*.png',
-          'icons/apple-touch-icon.png',
-          'assets/evoluafit-*.png',
-        ],
+        // App shell only — no PNGs (avoids clashing with manifest icons / public assets)
+        globPatterns: ['**/*.{js,css,html,svg,woff,woff2}'],
         globIgnores: [
           '**/media/**',
+          '**/assets/evoluafit-icon.png',
+          '**/assets/evoluafit-logo.png',
+          '**/icons/**',
           '**/icons/**/*.jpg',
           '**/icons/**/*.jpeg',
           '**/icons/**/thumbs/**',

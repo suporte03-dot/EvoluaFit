@@ -1714,12 +1714,11 @@
   .workout-session__exit {
     min-height: 44px;
   }
-}
 
   .mobile-nav__backdrop {
     position: fixed;
     inset: 0;
-    z-index: 45;
+    z-index: 110;
     border: 0;
     background: rgba(2, 8, 20, 0.55);
   }
@@ -1729,7 +1728,7 @@
     left: 0.75rem;
     right: 0.75rem;
     bottom: calc(var(--mobile-nav-h) + var(--safe-bottom) + 10px);
-    z-index: 46;
+    z-index: 111;
     padding: 0.75rem 0.85rem 1rem;
     border-radius: 18px;
     border: 1px solid rgba(148, 163, 184, 0.22);
@@ -1789,9 +1788,23 @@
   }
 
   .mobile-nav__sheet-icon {
-    display: inline-grid;
-    place-items: center;
-    color: #5eead4;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 10px;
+    background: rgba(20, 224, 181, 0.12);
+    color: #14e0b5;
+    flex-shrink: 0;
+  }
+
+  .mobile-nav__sheet-install {
+    margin: 0.5rem 0 0.75rem;
+  }
+
+  .mobile-nav__install-btn {
+    width: 100%;
   }
 
   .section-lazy-fallback {
@@ -1822,6 +1835,8 @@
   .mobile-nav--five .mobile-nav__label {
     font-size: 0.58rem;
   }
+}
+
 /* ===== Mobile clean UI (≤767px) — does not change desktop ===== */
 @media (max-width: 767px) {
   .copy-desktop {
@@ -1842,10 +1857,42 @@
     padding: 0.35rem 0.65rem;
   }
 
+  .app--saas .app__content {
+    margin-left: 0 !important;
+  }
+
+  /* Drawer lateral — escondido off-screen; abre com .dash-sidebar--open */
   .app--saas .dashboard-sidebar,
   .app--saas .app__frame > aside,
   .dash-sidebar {
-    display: none !important;
+    display: flex !important;
+    transform: translateX(-105%);
+    width: min(300px, 88vw);
+    max-width: 88vw;
+    z-index: 120;
+    box-shadow: 16px 0 40px rgba(0, 0, 0, 0.45);
+    pointer-events: none;
+  }
+
+  .dash-sidebar.dash-sidebar--open {
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .dash-sidebar__backdrop {
+    display: block !important;
+    position: fixed;
+    inset: 0;
+    z-index: 115;
+    border: none;
+    background: rgba(2, 8, 20, 0.62);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  .dash-sidebar__collapse,
+  .evoluafit-brand__collapse {
+    display: none;
   }
 
   .dash-hero--today {

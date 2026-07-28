@@ -95,28 +95,9 @@
     padding-bottom: 0;
   }
 
-  .header__trailing {
-    margin-left: auto;
-    gap: 0.35rem;
-  }
-
-  .header__brand {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .theme-toggle__track {
-    width: 34px;
-    height: 18px;
-  }
-
-  .theme-toggle__thumb {
-    width: 12px;
-    height: 12px;
-  }
-
-  .theme-toggle__thumb.is-light {
-    transform: translateX(15px);
+  .header__brand .brand-name {
+    font-size: 26px;
+    font-weight: 900;
   }
 
   .header__brand .evoluafit-logo {

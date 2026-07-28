@@ -455,8 +455,8 @@ export default function WorkoutPlanner() {
               )}
 
               {step === 3 && (
-                <>
-                  <label className="planner-field" style={{ marginBottom: '1rem' }}>
+                <div className="planner-step__body">
+                  <label className="planner-field">
                     <PremiumSelect
                       label="Local"
                       value={form.location}
@@ -477,35 +477,37 @@ export default function WorkoutPlanner() {
                       </button>
                     ))}
                   </div>
-                </>
+                </div>
               )}
 
               {step === 4 && (
-                <div className="planner-chips">
-                  {restrictionOptions.map((r) => (
+                <div className="planner-step__body">
+                  <div className="planner-chips">
+                    {restrictionOptions.map((r) => (
+                      <button
+                        key={r.id}
+                        type="button"
+                        className={`planner-chip planner-chip--care${!noRestrictions && form.restrictions.includes(r.id) ? ' is-active' : ''}`}
+                        onClick={() => toggleRestriction(r.id)}
+                      >
+                        <span aria-hidden="true">{r.icon}</span>
+                        {r.id}
+                      </button>
+                    ))}
                     <button
-                      key={r.id}
                       type="button"
-                      className={`planner-chip planner-chip--care${!noRestrictions && form.restrictions.includes(r.id) ? ' is-active' : ''}`}
-                      onClick={() => toggleRestriction(r.id)}
+                      className={`planner-chip planner-chip--safe${noRestrictions ? ' is-active' : ''}`}
+                      onClick={selectNoRestrictions}
                     >
-                      <span aria-hidden="true">{r.icon}</span>
-                      {r.id}
+                      <span aria-hidden="true">✓</span>
+                      {NONE_RESTRICTION}
                     </button>
-                  ))}
-                  <button
-                    type="button"
-                    className={`planner-chip planner-chip--safe${noRestrictions ? ' is-active' : ''}`}
-                    onClick={selectNoRestrictions}
-                  >
-                    <span aria-hidden="true">✓</span>
-                    {NONE_RESTRICTION}
-                  </button>
+                  </div>
                 </div>
               )}
 
               {step === 5 && (
-                <>
+                <div className="planner-step__body">
                   <div className="planner-summary-inline glass-card">
                     <ul className="planner-preview__list">
                       <li>
@@ -538,7 +540,7 @@ export default function WorkoutPlanner() {
                       </li>
                     </ul>
                   </div>
-                </>
+                </div>
               )}
             </div>
 

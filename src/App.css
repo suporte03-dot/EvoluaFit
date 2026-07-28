@@ -10308,6 +10308,15 @@ main {
   margin-top: 1.25rem;
 }
 
+.module-help__gate {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.module-help__shell {
+  margin-top: 0.85rem;
+}
+
 .how-it-works--help .how-it-works__intro {
   margin-bottom: 0.35rem;
 }

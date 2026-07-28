@@ -43,6 +43,7 @@ const STEPS = [
 ]
 
 export default function HowItWorks() {
+  const [helpOpen, setHelpOpen] = useState(false)
   const [flowOpen, setFlowOpen] = useState(false)
 
   return (
@@ -60,61 +61,76 @@ export default function HowItWorks() {
             subtitle={
               <>
                 <span className="copy-desktop">
-                  Entenda cada módulo do EvoluaFit e saiba o que fazer em seguida.
+                  Abra para entender cada módulo do EvoluaFit e o que fazer em seguida.
                 </span>
-                <span className="copy-mobile">Explicações rápidas dos módulos.</span>
+                <span className="copy-mobile">Abra para ver explicações dos módulos.</span>
               </>
             }
           />
         </div>
 
-        <ModuleHelpGuide />
+        <button
+          type="button"
+          className={`disclose-toggle module-help__gate${helpOpen ? ' is-open' : ''}`}
+          onClick={() => setHelpOpen((o) => !o)}
+          aria-expanded={helpOpen}
+          aria-controls="central-ajuda-conteudo"
+        >
+          <span>{helpOpen ? 'Fechar central de ajuda' : 'Abrir central de ajuda'}</span>
+          <span aria-hidden="true">{helpOpen ? '▲' : '▼'}</span>
+        </button>
 
-        <div className="module-help__flow">
-          <button
-            type="button"
-            className={`disclose-toggle${flowOpen ? ' is-open' : ''}`}
-            onClick={() => setFlowOpen((o) => !o)}
-            aria-expanded={flowOpen}
-          >
-            <span>{flowOpen ? 'Ocultar fluxo rápido' : 'Ver fluxo rápido'}</span>
-            <span aria-hidden="true">{flowOpen ? '▲' : '▼'}</span>
-          </button>
+        {helpOpen && (
+          <div id="central-ajuda-conteudo" className="module-help__shell">
+            <ModuleHelpGuide />
 
-          {flowOpen && (
-            <>
-              <div className="how-it-works__grid">
-                {STEPS.map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    className={`hiw-card hiw-card--${s.tone}`}
-                    onClick={() => scrollToSection(s.id)}
-                  >
-                    <span className="hiw-card__top">
-                      <span className="hiw-card__icon" aria-hidden="true">
-                        {s.icon}
-                      </span>
-                      <span className="hiw-card__step" aria-hidden="true">
-                        {s.step}
-                      </span>
-                    </span>
-                    <span className="hiw-card__title">{s.title}</span>
-                    <span className="hiw-card__desc">{s.desc}</span>
-                    <span className="hiw-card__cta">
-                      {s.cta}
-                      <span aria-hidden="true">→</span>
-                    </span>
-                  </button>
-                ))}
-              </div>
-              <p className="hiw-note">
-                Conteúdo informativo. Respeite seus limites. Em caso de dor, interrompa e procure
-                orientação profissional.
-              </p>
-            </>
-          )}
-        </div>
+            <div className="module-help__flow">
+              <button
+                type="button"
+                className={`disclose-toggle${flowOpen ? ' is-open' : ''}`}
+                onClick={() => setFlowOpen((o) => !o)}
+                aria-expanded={flowOpen}
+              >
+                <span>{flowOpen ? 'Ocultar fluxo rápido' : 'Ver fluxo rápido'}</span>
+                <span aria-hidden="true">{flowOpen ? '▲' : '▼'}</span>
+              </button>
+
+              {flowOpen && (
+                <>
+                  <div className="how-it-works__grid">
+                    {STEPS.map((s) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        className={`hiw-card hiw-card--${s.tone}`}
+                        onClick={() => scrollToSection(s.id)}
+                      >
+                        <span className="hiw-card__top">
+                          <span className="hiw-card__icon" aria-hidden="true">
+                            {s.icon}
+                          </span>
+                          <span className="hiw-card__step" aria-hidden="true">
+                            {s.step}
+                          </span>
+                        </span>
+                        <span className="hiw-card__title">{s.title}</span>
+                        <span className="hiw-card__desc">{s.desc}</span>
+                        <span className="hiw-card__cta">
+                          {s.cta}
+                          <span aria-hidden="true">→</span>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                  <p className="hiw-note">
+                    Conteúdo informativo. Respeite seus limites. Em caso de dor, interrompa e procure
+                    orientação profissional.
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   )

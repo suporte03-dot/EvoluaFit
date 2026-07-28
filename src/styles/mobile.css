@@ -1592,21 +1592,24 @@
   }
 
   .planner-chips {
-    flex-wrap: wrap;
-    overflow: visible;
-    justify-content: flex-start;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
     width: 100%;
-  }
-
-  .planner-chips::-webkit-scrollbar {
-    display: none;
+    overflow: visible;
   }
 
   .planner-chip {
-    flex: 1 1 calc(50% - 0.5rem);
+    width: 100%;
     min-width: 0;
     min-height: 44px;
     justify-content: flex-start;
+    border-radius: 12px;
+    box-sizing: border-box;
+  }
+
+  .planner-chip:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
   }
 
   .planner-field--slider input[type='range'] {
@@ -2132,8 +2135,8 @@
   .planner-section .container {
     width: 100%;
     max-width: 100%;
-    padding-left: 14px;
-    padding-right: 14px;
+    padding-left: 0;
+    padding-right: 0;
     box-sizing: border-box;
   }
 
@@ -2144,13 +2147,13 @@
     align-items: stretch;
     width: 100%;
     max-width: 100%;
-    margin-left: 0;
-    margin-right: 0;
+    margin: 0;
     gap: 0.85rem;
   }
 
   .planner-config,
   .planner-step,
+  .planner-step__body,
   .planner-preview,
   .planner-summary-inline,
   .planner-wizard-progress {
@@ -2162,7 +2165,20 @@
     text-align: left;
   }
 
+  .planner-config,
+  .planner-step,
+  .planner-step__body {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .planner-step__body {
+    gap: 0.85rem;
+  }
+
   .planner-step__head {
+    width: 100%;
     align-items: flex-start;
     text-align: left;
   }
@@ -2176,6 +2192,11 @@
   .planner-step__title,
   .planner-step__desc {
     text-align: left;
+  }
+
+  .planner-step__grid,
+  .planner-step__grid--steppers {
+    width: 100%;
   }
 
   .planner-field,
@@ -2193,9 +2214,9 @@
   }
 
   .planner-chips {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: stretch;
     align-items: stretch;
     width: 100%;
     max-width: 100%;
@@ -2205,11 +2226,22 @@
   }
 
   .planner-chip {
-    flex: 1 1 calc(50% - 0.5rem);
+    width: 100%;
     min-width: 0;
     max-width: 100%;
     justify-content: flex-start;
     text-align: left;
+    border-radius: 12px;
+    box-sizing: border-box;
+  }
+
+  .planner-chip:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .planner-stepper {
+    justify-content: flex-start;
+    width: 100%;
   }
 
   .planner-wizard-progress {
@@ -2220,13 +2252,16 @@
 
   .planner-wizard-progress__meta {
     width: 100%;
+    justify-content: space-between;
     text-align: left;
   }
 
   .planner-wizard-dots {
     width: 100%;
+    display: flex;
     justify-content: space-between;
     flex-wrap: nowrap;
+    gap: 0.35rem;
   }
 
   .planner-wizard-dot {

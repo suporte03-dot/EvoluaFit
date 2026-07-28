@@ -45,7 +45,14 @@ export default function MyWorkouts() {
           <SectionTitle
             tag="Treinos"
             title="Meus treinos"
-            subtitle="Gerencie sua rotina, inicie sessões e acompanhe o status de cada treino."
+            subtitle={
+              <>
+                <span className="copy-desktop">
+                  Gerencie sua rotina, inicie sessões e acompanhe o status de cada treino.
+                </span>
+                <span className="copy-mobile">Organize e acompanhe seus treinos.</span>
+              </>
+            }
           />
 
           {workouts.length === 0 ? (

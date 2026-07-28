@@ -126,7 +126,7 @@ export default function IndicatorsSection({ metrics }) {
             className="dash-section-head__link"
             onClick={() => scrollToSection('desempenho')}
           >
-            Ver todos
+            Ver minha evolução
             <IconChevron size={16} />
           </button>
         </header>

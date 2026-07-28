@@ -54,14 +54,23 @@ export default function HowItWorks() {
   const [open, setOpen] = useState(false)
 
   return (
-    <section className="how-it-works how-it-works--compact" aria-labelledby="how-it-works-title">
+    <section
+      id="ajuda"
+      className="how-it-works how-it-works--compact"
+      aria-labelledby="how-it-works-title"
+    >
       <div className="container">
         <div className="how-it-works__intro">
           <SectionTitle
             id="how-it-works-title"
-            tag="Como funciona"
-            title="Da planilha ao progresso"
-            subtitle="Fluxo simples para organizar sua rotina com equilíbrio."
+            tag="Ajuda"
+            title="Como funciona"
+            subtitle={
+              <>
+                <span className="copy-desktop">Fluxo simples para organizar sua rotina com equilíbrio.</span>
+                <span className="copy-mobile">Organize e acompanhe seus treinos.</span>
+              </>
+            }
           />
           <button
             type="button"

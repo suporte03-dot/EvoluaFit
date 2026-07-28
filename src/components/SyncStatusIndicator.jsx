@@ -12,18 +12,29 @@ export default function SyncStatusIndicator() {
     label = 'Sincronizando...'
   } else if (syncStatus === 'offline' || !isLikelyOnline) {
     tone = 'offline'
-    label = pendingCount > 0 ? `Sem conexão · ${pendingCount} pendente${pendingCount === 1 ? '' : 's'}` : 'Sem conexão'
+    label =
+      pendingCount > 0
+        ? `Sem conexão · ${pendingCount} pendente${pendingCount === 1 ? '' : 's'}`
+        : 'Sem conexão'
   } else if (syncStatus === 'error') {
     tone = 'error'
-    label = syncError || 'Não foi possível sincronizar'
+    label = 'Não foi possível sincronizar. Tente novamente.'
     showRetry = true
   } else if (syncStatus === 'pending' || pendingCount > 0) {
     tone = 'pending'
     label = `${pendingCount} altera${pendingCount === 1 ? 'ção' : 'ções'} pendente${pendingCount === 1 ? '' : 's'}`
   }
 
+  const hideOnMobileWhenIdle = tone === 'ok'
+
   return (
-    <div className={`sync-indicator sync-indicator--${tone}`} role="status" aria-live="polite">
+    <div
+      className={`sync-indicator sync-indicator--${tone}${
+        hideOnMobileWhenIdle ? ' sync-indicator--idle' : ''
+      }`}
+      role="status"
+      aria-live="polite"
+    >
       <span className="sync-indicator__dot" aria-hidden="true" />
       <span className="sync-indicator__label">{label}</span>
       {conflictWarning ? <span className="sync-indicator__warn">{conflictWarning}</span> : null}

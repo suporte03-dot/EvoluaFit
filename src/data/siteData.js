@@ -1,5 +1,6 @@
 export const sectionIds = [
   'inicio',
+  'ajuda',
   'treinos',
   'planilha',
   'coach-ia',
@@ -25,17 +26,20 @@ export const navItems = [
 export const mobileNavItems = [
   { id: 'inicio', label: 'Início' },
   { id: 'treinos', label: 'Treinos' },
-  { id: 'calendario', label: 'Calendário' },
+  { id: 'executar', label: 'Executar' },
   { id: 'desempenho', label: 'Evolução' },
   { id: 'mais', label: 'Mais' },
 ]
 
 export const mobileNavMoreItems = [
+  { id: 'perfil', label: 'Perfil' },
+  { id: 'configuracoes', label: 'Configurações' },
+  { id: 'ajuda', label: 'Ajuda' },
   { id: 'planilha', label: 'Planilha' },
   { id: 'exercicios', label: 'Biblioteca' },
   { id: 'coach-ia', label: 'Coach IA' },
   { id: 'metas', label: 'Metas' },
-  { id: 'perfil', label: 'Perfil' },
+  { id: 'calendario', label: 'Agenda' },
 ]
 
 export const BRAND = {

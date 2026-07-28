@@ -102,7 +102,12 @@ export default function ProfilePage() {
         <SectionTitle
           tag="Perfil"
           title="Seu perfil"
-          subtitle="Gerencie nome, objetivo e nível da sua conta EvoluaFit."
+          subtitle={
+            <>
+              <span className="copy-desktop">Gerencie nome, objetivo e nível da sua conta EvoluaFit.</span>
+              <span className="copy-mobile">Dados da conta e app.</span>
+            </>
+          }
         />
 
         <div className="profile-page__toolbar">
@@ -142,10 +147,11 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="profile-pwa-card glass-card">
+        <div className="profile-pwa-card glass-card profile-section-card">
           <div className="profile-pwa-card__copy">
             <strong>Aplicativo</strong>
-            <p>Instale o EvoluaFit na tela inicial para abrir como app.</p>
+            <p className="copy-desktop">Instale o EvoluaFit na tela inicial para abrir como app.</p>
+            <p className="copy-mobile">Instalar na tela inicial.</p>
           </div>
           <InstallPwaButton className="profile-pwa-card__btn" />
         </div>

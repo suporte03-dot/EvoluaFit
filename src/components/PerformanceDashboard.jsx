@@ -135,7 +135,12 @@ export default function PerformanceDashboard() {
           <SectionTitle
             tag="Evolução"
             title="Sua evolução"
-            subtitle="Métricas reais a partir dos treinos concluídos."
+            subtitle={
+              <>
+                <span className="copy-desktop">Métricas reais a partir dos treinos concluídos.</span>
+                <span className="copy-mobile">Seu progresso em resumo.</span>
+              </>
+            }
           />
           <div className="evo-state" role="status" aria-live="polite">
             <span className="section-lazy-fallback__pulse" aria-hidden="true" />
@@ -153,7 +158,12 @@ export default function PerformanceDashboard() {
           <SectionTitle
             tag="Evolução"
             title="Sua evolução"
-            subtitle="Métricas reais a partir dos treinos concluídos."
+            subtitle={
+              <>
+                <span className="copy-desktop">Métricas reais a partir dos treinos concluídos.</span>
+                <span className="copy-mobile">Seu progresso em resumo.</span>
+              </>
+            }
           />
           <EmptyState
             className="empty-state--premium"
@@ -177,7 +187,12 @@ export default function PerformanceDashboard() {
           <SectionTitle
             tag="Evolução"
             title="Sua evolução"
-            subtitle="Métricas reais a partir dos treinos concluídos."
+            subtitle={
+              <>
+                <span className="copy-desktop">Métricas reais a partir dos treinos concluídos.</span>
+                <span className="copy-mobile">Seu progresso em resumo.</span>
+              </>
+            }
           />
           <EmptyState
             className="empty-state--premium"
@@ -198,7 +213,14 @@ export default function PerformanceDashboard() {
         <SectionTitle
           tag="Evolução"
           title="Sua evolução"
-          subtitle="Resumo, frequência, volume e recordes com base nas suas sessões."
+          subtitle={
+            <>
+              <span className="copy-desktop">
+                Resumo, frequência, volume e recordes com base nas suas sessões.
+              </span>
+              <span className="copy-mobile">Resumo e gráficos do seu progresso.</span>
+            </>
+          }
         />
 
         {progressError ? (

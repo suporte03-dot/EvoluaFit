@@ -3,6 +3,9 @@ import { useNavigate as useRouterNavigate } from 'react-router-dom'
 import { mobileNavItems, mobileNavMoreItems } from '../data/siteData'
 import { scrollToSection } from '../utils/scrollToSection'
 import { useAuth } from '../context/AuthContext'
+import { useFitness } from '../context/FitnessContext'
+import { resolveTodayWorkout } from '../utils/todayWorkout'
+import InstallPwaButton from './pwa/InstallPwaButton'
 import {
   IconCalendar,
   IconDumbbell,
@@ -16,7 +19,7 @@ const ICONS = {
   treinos: IconDumbbell,
   calendario: IconCalendar,
   desempenho: IconTrend,
-  
+  executar: IconDumbbell,
 }
 
 function ProfileIcon(props) {
@@ -93,7 +96,48 @@ function GoalsIcon(props) {
   )
 }
 
+function HelpIcon(props) {
+  return (
+    <svg
+      width={props.size || 20}
+      height={props.size || 20}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1.5 1-1.5 2.2" />
+      <circle cx="12" cy="17" r="0.9" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
+function SettingsIcon(props) {
+  return (
+    <svg
+      width={props.size || 20}
+      height={props.size || 20}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 3v2M12 19v2M4.9 6.5l1.4 1.4M17.7 16.1l1.4 1.4M3 12h2M19 12h2M4.9 17.5l1.4-1.4M17.7 7.9l1.4-1.4" />
+    </svg>
+  )
+}
+
 ICONS.perfil = ProfileIcon
+ICONS.configuracoes = SettingsIcon
+ICONS.ajuda = HelpIcon
 ICONS.mais = MoreIcon
 ICONS.planilha = PlanIcon
 ICONS.exercicios = IconDumbbell
@@ -102,12 +146,16 @@ ICONS['coach-ia'] = IconSpark
 
 export default function MobileNav({ activeSection }) {
   const { signOut } = useAuth()
+  const { workouts, history, plans, generatedPlan, startWorkout, pendingSession, resumePendingSession } =
+    useFitness()
   const routerNavigate = useRouterNavigate()
   const [moreOpen, setMoreOpen] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
   const coachActive = activeSection === 'coach-ia'
   const moreActive =
-    moreOpen || mobileNavMoreItems.some((item) => item.id === activeSection)
+    moreOpen ||
+    mobileNavMoreItems.some((item) => item.id === activeSection) ||
+    activeSection === 'perfil'
 
   useEffect(() => {
     if (!moreOpen) return undefined
@@ -120,8 +168,21 @@ export default function MobileNav({ activeSection }) {
 
   const navigate = (id) => {
     setMoreOpen(false)
-    if (id === 'perfil') {
+    if (id === 'perfil' || id === 'configuracoes') {
       routerNavigate('/app/perfil')
+      return
+    }
+    if (id === 'ajuda') {
+      if (window.location.pathname.startsWith('/app/perfil')) {
+        routerNavigate('/app')
+        window.setTimeout(() => scrollToSection('ajuda'), 80)
+        return
+      }
+      scrollToSection('ajuda')
+      return
+    }
+    if (id === 'executar') {
+      handleExecute()
       return
     }
     if (window.location.pathname.startsWith('/app/perfil')) {
@@ -140,6 +201,28 @@ export default function MobileNav({ activeSection }) {
         document.getElementById('coach-question')?.focus?.()
       }, 350)
     }
+  }
+
+  const handleExecute = () => {
+    if (pendingSession?.workoutId) {
+      resumePendingSession()
+      return
+    }
+    const today = resolveTodayWorkout({
+      workouts,
+      history,
+      plans: plans?.length ? plans : generatedPlan ? [generatedPlan] : [],
+    })
+    if (today.workout?.exercises?.length && ['ready', 'partial', 'returning'].includes(today.situation)) {
+      startWorkout(today.workout)
+      return
+    }
+    if (window.location.pathname.startsWith('/app/perfil')) {
+      routerNavigate('/app')
+      window.setTimeout(() => scrollToSection('inicio'), 80)
+      return
+    }
+    scrollToSection('inicio')
   }
 
   const handleLogout = async () => {
@@ -180,7 +263,7 @@ export default function MobileNav({ activeSection }) {
           id="mobile-nav-more-sheet"
           className="mobile-nav__sheet"
           role="dialog"
-          aria-label="Mais seções"
+          aria-label="Mais opções"
           aria-modal="true"
         >
           <div className="mobile-nav__sheet-handle" aria-hidden="true" />
@@ -193,7 +276,10 @@ export default function MobileNav({ activeSection }) {
                   key={item.id}
                   type="button"
                   className={`mobile-nav__sheet-item${
-                    activeSection === item.id ? ' is-active' : ''
+                    activeSection === item.id ||
+                    (item.id === 'configuracoes' && activeSection === 'perfil')
+                      ? ' is-active'
+                      : ''
                   }`}
                   onClick={() => navigate(item.id)}
                 >
@@ -205,13 +291,16 @@ export default function MobileNav({ activeSection }) {
               )
             })}
           </div>
+          <div className="mobile-nav__sheet-install">
+            <InstallPwaButton className="mobile-nav__install-btn" />
+          </div>
           <button
             type="button"
             className="btn btn--danger btn--sm mobile-nav__logout"
             onClick={handleLogout}
             disabled={signingOut}
           >
-            {signingOut ? 'Saindo...' : 'Sair da conta'}
+            {signingOut ? 'Saindo...' : 'Sair'}
           </button>
         </div>
       )}

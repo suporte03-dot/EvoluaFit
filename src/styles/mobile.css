@@ -1592,11 +1592,10 @@
   }
 
   .planner-chips {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    padding-bottom: 0.2rem;
+    flex-wrap: wrap;
+    overflow: visible;
+    justify-content: flex-start;
+    width: 100%;
   }
 
   .planner-chips::-webkit-scrollbar {
@@ -1604,8 +1603,10 @@
   }
 
   .planner-chip {
-    flex: 0 0 auto;
+    flex: 1 1 calc(50% - 0.5rem);
+    min-width: 0;
     min-height: 44px;
+    justify-content: flex-start;
   }
 
   .planner-field--slider input[type='range'] {
@@ -2125,6 +2126,147 @@
 
   .pwa-update-prompt__text {
     font-size: 0.82rem;
+  }
+
+  /* Planilha wizard — alinhamento consistente nas etapas 3+ */
+  .planner-section .container {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 14px;
+    padding-right: 14px;
+    box-sizing: border-box;
+  }
+
+  .planner-layout,
+  .planner-layout--wizard {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    gap: 0.85rem;
+  }
+
+  .planner-config,
+  .planner-step,
+  .planner-preview,
+  .planner-summary-inline,
+  .planner-wizard-progress {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-left: 0;
+    margin-right: 0;
+    text-align: left;
+  }
+
+  .planner-step__head {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .planner-step__head > div {
+    min-width: 0;
+    flex: 1;
+    text-align: left;
+  }
+
+  .planner-step__title,
+  .planner-step__desc {
+    text-align: left;
+  }
+
+  .planner-field,
+  .planner-field label,
+  .premium-select {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+  }
+
+  .premium-select__trigger {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .planner-chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+    gap: 0.5rem;
+    padding-bottom: 0;
+  }
+
+  .planner-chip {
+    flex: 1 1 calc(50% - 0.5rem);
+    min-width: 0;
+    max-width: 100%;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .planner-wizard-progress {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .planner-wizard-progress__meta {
+    width: 100%;
+    text-align: left;
+  }
+
+  .planner-wizard-dots {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+  }
+
+  .planner-wizard-dot {
+    flex: 1 1 0;
+    justify-content: center;
+    min-width: 0;
+    padding: 0.4rem 0.35rem;
+  }
+
+  .planner-wizard-nav {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .planner-wizard-nav .btn,
+  .planner-wizard-nav .btn--primary,
+  .planner-wizard-nav .btn--ghost {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .planner-preview__list li {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .planner-preview__list strong {
+    text-align: right;
+  }
+
+  .planner-actions,
+  .planner-actions--hierarchy {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .planner-actions .btn {
+    width: 100%;
   }
 }
 

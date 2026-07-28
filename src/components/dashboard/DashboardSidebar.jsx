@@ -28,6 +28,7 @@ const MAIN_NAV = [
   { id: 'coach-ia', label: 'Coach IA', Icon: IconSpark, tone: 'cyan' },
   { id: 'metas', label: 'Metas', Icon: IconChart, tone: 'orange' },
   { id: 'perfil', label: 'Perfil', Icon: IconSettings, tone: 'blue', to: '/app/perfil' },
+  { id: 'ajuda', label: 'Ajuda', Icon: IconSpark, tone: 'cyan' },
 ]
 
 function navTarget(item) {

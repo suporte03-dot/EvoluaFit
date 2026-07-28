@@ -10188,3 +10188,143 @@ main {
     margin: 0;
   }
 }
+/* Module auto-help */
+.module-help {
+  margin-top: 0.75rem;
+}
+
+.module-help__search input {
+  width: 100%;
+  max-width: 420px;
+  padding: 0.65rem 0.85rem;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(15, 23, 42, 0.55);
+  color: inherit;
+  font: inherit;
+}
+
+.module-help__lead {
+  margin: 0.75rem 0 0.85rem;
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.92rem;
+}
+
+.module-help__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.module-help__item {
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.45);
+  overflow: hidden;
+}
+
+.module-help__trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.module-help__trigger-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.module-help__trigger-text strong {
+  font-size: 0.98rem;
+}
+
+.module-help__trigger-text span {
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.85rem;
+}
+
+.module-help__chevron {
+  flex-shrink: 0;
+  opacity: 0.7;
+  font-size: 0.7rem;
+}
+
+.module-help__panel {
+  padding: 0 1rem 1rem;
+}
+
+.module-help__steps {
+  margin: 0 0 0.85rem;
+  padding-left: 1.15rem;
+  display: grid;
+  gap: 0.35rem;
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.9rem;
+}
+
+.module-help__steps li {
+  line-height: 1.4;
+}
+
+.module-help__more {
+  margin-top: 0.75rem;
+}
+
+.module-help__empty {
+  margin: 0.75rem 0;
+  color: var(--text-muted, #94a3b8);
+}
+
+.module-help__faq {
+  margin-top: 1.35rem;
+}
+
+.module-help__faq-title {
+  margin: 0 0 0.65rem;
+  font-size: 1.05rem;
+}
+
+.module-help__faq .module-help__panel p {
+  margin: 0;
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.module-help__flow {
+  margin-top: 1.25rem;
+}
+
+.how-it-works--help .how-it-works__intro {
+  margin-bottom: 0.35rem;
+}
+
+@media (max-width: 767px) {
+  .module-help__search input {
+    max-width: 100%;
+  }
+
+  .module-help__trigger {
+    padding: 0.75rem 0.85rem;
+  }
+
+  .module-help__trigger-text span {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}

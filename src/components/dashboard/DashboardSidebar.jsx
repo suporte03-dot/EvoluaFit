@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   IconCalendar,
@@ -110,7 +111,7 @@ export default function DashboardSidebar({
     handleSectionClick(e, 'inicio', onCloseMobile)
   }
 
-  return (
+  const drawer = (
     <>
       {mobileOpen && (
         <button
@@ -122,6 +123,7 @@ export default function DashboardSidebar({
       )}
 
       <aside
+        id="dash-sidebar-drawer"
         className={`dash-sidebar${collapsed ? ' dash-sidebar--collapsed' : ''}${
           mobileOpen ? ' dash-sidebar--open' : ''
         }`}
@@ -253,4 +255,7 @@ export default function DashboardSidebar({
       </aside>
     </>
   )
+
+  if (typeof document === 'undefined') return drawer
+  return createPortal(drawer, document.body)
 }

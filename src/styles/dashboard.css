@@ -76,6 +76,11 @@ html:has(.app--saas) body {
   overflow: hidden;
 }
 
+.app--drawer-open .dash-sidebar,
+body:has(.dash-sidebar--open) .dash-sidebar {
+  visibility: visible;
+}
+
 .app--saas .app__frame {
   display: flex;
   min-height: 100vh;
@@ -1481,13 +1486,25 @@ html:has(.app--saas) body {
   }
 
   .dash-sidebar {
-    transform: translateX(-105%);
-    width: min(300px, 88vw);
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    height: 100dvh;
+    width: min(300px, 88vw) !important;
+    max-width: 88vw;
+    transform: translate3d(-105%, 0, 0);
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 220 !important;
     box-shadow: 16px 0 40px rgba(0, 0, 0, 0.45);
+    transition: transform 0.25s ease, visibility 0.25s ease;
   }
 
   .dash-sidebar--open {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
+    visibility: visible;
+    pointer-events: auto;
   }
 
   .dash-sidebar__collapse,
@@ -1496,13 +1513,20 @@ html:has(.app--saas) body {
   }
 
   .dash-sidebar__backdrop {
-    display: block;
+    display: block !important;
     position: fixed;
     inset: 0;
-    z-index: 79;
+    z-index: 210 !important;
     border: none;
     background: rgba(2, 8, 20, 0.62);
     backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  .header__dash-menu {
+    position: relative;
+    z-index: 5;
+    display: inline-flex !important;
   }
 
   .dash-home__inner {

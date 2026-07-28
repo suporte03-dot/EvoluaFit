@@ -105,7 +105,8 @@ function AppLayout() {
           <SyncStatusIndicator />
           <Header
             activeSection={isProfileRoute ? 'perfil' : activeSection}
-            onOpenDashboardMenu={() => setMobileMenuOpen(true)}
+            mobileMenuOpen={mobileMenuOpen}
+            onOpenDashboardMenu={() => setMobileMenuOpen((open) => !open)}
           />
           <main>
             <Outlet />

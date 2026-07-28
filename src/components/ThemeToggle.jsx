@@ -9,8 +9,8 @@ export default function ThemeToggle({ className = '' }) {
       type="button"
       className={`theme-toggle${className ? ` ${className}` : ''}`}
       onClick={toggleTheme}
-      aria-label={isLight ? 'Usar tema escuro' : 'Usar tema claro'}
-      title={isLight ? 'Tema escuro' : 'Tema claro'}
+      aria-label={isLight ? 'Usar tema noite' : 'Usar tema dia'}
+      title={isLight ? 'Tema noite' : 'Tema dia'}
     >
       <span className="theme-toggle__track" aria-hidden="true">
         <span className={`theme-toggle__thumb${isLight ? ' is-light' : ''}`} />

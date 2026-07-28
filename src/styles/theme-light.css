@@ -1,0 +1,286 @@
+/* Tema claro EvoluaFit — névoa azul-esverdeada (não branco puro) */
+
+[data-theme='light'] {
+  color-scheme: light;
+
+  --app-bg: #dfeaf0;
+  --surface-primary: #f3f8fa;
+  --surface-secondary: #e4eef3;
+  --surface-elevated: #f8fcfd;
+
+  --text-primary: #102536;
+  --text-secondary: #3d5566;
+  --text-muted: #5f7688;
+
+  --border-subtle: rgba(16, 55, 72, 0.12);
+  --border-accent: rgba(13, 148, 136, 0.32);
+  --shadow-card: 0 14px 36px rgba(16, 55, 72, 0.1);
+
+  --bg-main: var(--app-bg);
+  --bg-section: var(--surface-primary);
+  --bg-card: #f8fcfd;
+  --bg-card-soft: var(--surface-secondary);
+  --bg-deep: #d2e2ea;
+  --bg-glass: rgba(248, 252, 253, 0.9);
+  --bg-glass-soft: rgba(243, 248, 250, 0.78);
+
+  --primary: #0f9f8a;
+  --primary-soft: rgba(15, 159, 138, 0.14);
+  --primary-border: rgba(15, 159, 138, 0.4);
+  --secondary: #0891b2;
+  --secondary-soft: rgba(8, 145, 178, 0.12);
+  --coach: #7c3aed;
+  --coach-soft: rgba(124, 58, 237, 0.1);
+  --energy: #d97706;
+  --energy-soft: rgba(217, 119, 6, 0.12);
+  --performance: #2563eb;
+  --performance-soft: rgba(37, 99, 235, 0.1);
+
+  --text-main: var(--text-primary);
+  --border-soft: var(--border-subtle);
+  --border: var(--border-subtle);
+  --border-strong: var(--primary-border);
+
+  --snow: var(--text-primary);
+  --gray: var(--text-muted);
+  --graphite: var(--surface-secondary);
+  --blue-deep: #c5d9e4;
+  --green: var(--primary);
+  --accent: var(--primary);
+  --cyan: var(--secondary);
+
+  --glow-primary: 0 0 18px rgba(15, 159, 138, 0.14);
+  --glow-secondary: 0 0 18px rgba(8, 145, 178, 0.12);
+  --glow-coach: 0 0 18px rgba(124, 58, 237, 0.12);
+
+  --dash-bg: var(--app-bg);
+  --dash-surface: var(--surface-primary);
+  --dash-surface-2: var(--surface-secondary);
+  --dash-border: var(--border-subtle);
+  --dash-shadow: var(--shadow-card);
+}
+
+[data-theme='light'] body {
+  color: var(--text-primary);
+  background: var(--app-bg);
+}
+
+[data-theme='light'] body::before {
+  background:
+    radial-gradient(ellipse 75% 50% at 8% -5%, rgba(15, 159, 138, 0.16), transparent 52%),
+    radial-gradient(ellipse 60% 42% at 96% 4%, rgba(8, 145, 178, 0.12), transparent 50%),
+    radial-gradient(ellipse 70% 45% at 50% 110%, rgba(37, 99, 235, 0.08), transparent 55%),
+    linear-gradient(180deg, #e7f1f5 0%, #d5e4ec 100%);
+}
+
+[data-theme='light'] h1,
+[data-theme='light'] h2,
+[data-theme='light'] h3,
+[data-theme='light'] h4 {
+  color: var(--text-primary);
+}
+
+/* Chrome */
+[data-theme='light'] .header {
+  background: linear-gradient(180deg, rgba(248, 252, 253, 0.94), rgba(231, 241, 245, 0.9));
+  border-bottom-color: rgba(16, 55, 72, 0.1);
+}
+
+[data-theme='light'] .header--scrolled {
+  background: rgba(248, 252, 253, 0.97);
+  box-shadow: 0 8px 24px rgba(16, 55, 72, 0.08);
+}
+
+[data-theme='light'] .header::after {
+  background: linear-gradient(90deg, transparent, rgba(15, 159, 138, 0.35), rgba(8, 145, 178, 0.3), transparent);
+}
+
+[data-theme='light'] .mobile-nav {
+  background: rgba(248, 252, 253, 0.97);
+  border-top-color: rgba(16, 55, 72, 0.1);
+}
+
+[data-theme='light'] .mobile-nav__item {
+  color: #4a6576;
+}
+
+[data-theme='light'] .mobile-nav__item--active {
+  color: #102536;
+}
+
+[data-theme='light'] .mobile-nav__item--active::before {
+  background: rgba(15, 159, 138, 0.18);
+}
+
+[data-theme='light'] .dash-sidebar {
+  background:
+    linear-gradient(180deg, rgba(15, 159, 138, 0.08) 0%, transparent 36%),
+    linear-gradient(180deg, #f8fcfd 0%, #e7f1f5 100%);
+  border-right-color: rgba(16, 55, 72, 0.1);
+  box-shadow: 12px 0 32px rgba(16, 55, 72, 0.1);
+}
+
+[data-theme='light'] .app--saas .app__content {
+  background:
+    radial-gradient(ellipse at 70% -10%, rgba(8, 145, 178, 0.07), transparent 42%),
+    var(--dash-bg);
+}
+
+[data-theme='light'] .dash-sidebar__link {
+  color: #3d5566;
+}
+
+[data-theme='light'] .dash-sidebar__link:hover {
+  background: rgba(15, 159, 138, 0.08);
+  color: #102536;
+}
+
+[data-theme='light'] .dash-sidebar__link.is-active {
+  background: rgba(15, 159, 138, 0.14);
+  color: #0a6b5c;
+  border-color: rgba(15, 159, 138, 0.28);
+}
+
+[data-theme='light'] .dash-sidebar__group-label,
+[data-theme='light'] .dash-sidebar__user-meta > span,
+[data-theme='light'] .dash-sidebar__xp-label {
+  color: #5f7688;
+}
+
+[data-theme='light'] .dash-sidebar__user-meta strong {
+  color: #102536;
+}
+
+[data-theme='light'] .dash-sidebar__avatar {
+  background: rgba(15, 159, 138, 0.14);
+  color: #0a6b5c;
+}
+
+/* Cards / modules */
+[data-theme='light'] .glass-card,
+[data-theme='light'] .dash-module,
+[data-theme='light'] .dash-hero--today,
+[data-theme='light'] .dash-indicator,
+[data-theme='light'] .section-card,
+[data-theme='light'] .planner-config,
+[data-theme='light'] .planner-step,
+[data-theme='light'] .planner-preview__card,
+[data-theme='light'] .planner-summary-inline,
+[data-theme='light'] .mobile-nav__sheet,
+[data-theme='light'] .module-help__item {
+  background: rgba(248, 252, 253, 0.94) !important;
+  border-color: rgba(16, 55, 72, 0.12) !important;
+  box-shadow: 0 10px 28px rgba(16, 55, 72, 0.07);
+  color: var(--text-primary);
+}
+
+[data-theme='light'] .dash-hero__greeting,
+[data-theme='light'] .dash-hero__title,
+[data-theme='light'] .section-title__title,
+[data-theme='light'] .planner-step__title {
+  color: #102536;
+}
+
+[data-theme='light'] .dash-hero__eyebrow,
+[data-theme='light'] .section-title__subtitle,
+[data-theme='light'] .planner-step__desc,
+[data-theme='light'] .module-help__trigger-text span {
+  color: #5f7688;
+}
+
+/* Inputs / chips */
+[data-theme='light'] .premium-select__trigger,
+[data-theme='light'] .premium-select__menu,
+[data-theme='light'] input,
+[data-theme='light'] textarea,
+[data-theme='light'] select,
+[data-theme='light'] .module-help__search input {
+  background: #f3f8fa !important;
+  border-color: rgba(16, 55, 72, 0.14) !important;
+  color: #102536 !important;
+}
+
+[data-theme='light'] .premium-select__option:hover,
+[data-theme='light'] .premium-select__option:focus-visible,
+[data-theme='light'] .premium-select__option.is-selected {
+  background: rgba(15, 159, 138, 0.12);
+  color: #102536;
+}
+
+[data-theme='light'] .planner-chip,
+[data-theme='light'] .mobile-nav__sheet-item {
+  background: #eaf3f7 !important;
+  border-color: rgba(16, 55, 72, 0.12) !important;
+  color: #102536 !important;
+}
+
+[data-theme='light'] .planner-chip.is-active,
+[data-theme='light'] .mobile-nav__sheet-item.is-active {
+  background: rgba(15, 159, 138, 0.16) !important;
+  border-color: rgba(15, 159, 138, 0.4) !important;
+  color: #0a6b5c !important;
+}
+
+[data-theme='light'] .planner-stepper__btn {
+  background: #eaf3f7;
+  border-color: rgba(16, 55, 72, 0.14);
+  color: #102536;
+}
+
+[data-theme='light'] .disclose-toggle {
+  background: rgba(15, 159, 138, 0.08);
+  border-color: rgba(15, 159, 138, 0.22);
+  color: #0a6b5c;
+}
+
+/* Auth */
+[data-theme='light'] .auth-screen {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(15, 159, 138, 0.14), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(8, 145, 178, 0.1), transparent 50%),
+    var(--app-bg);
+}
+
+[data-theme='light'] .auth-card {
+  background: rgba(248, 252, 253, 0.96) !important;
+  border-color: rgba(16, 55, 72, 0.12) !important;
+  color: #102536;
+}
+
+[data-theme='light'] .auth-card__name-main,
+[data-theme='light'] .auth-card__heading h1 {
+  color: #102536;
+}
+
+[data-theme='light'] .auth-card__tagline,
+[data-theme='light'] .auth-card__heading p,
+[data-theme='light'] .auth-card__footer {
+  color: #5f7688;
+}
+
+[data-theme='light'] .theme-toggle__track {
+  background: linear-gradient(90deg, #163246 48%, #d7e8ef 48%);
+  border-color: rgba(16, 55, 72, 0.18);
+}
+
+[data-theme='light'] .coach-fab {
+  box-shadow: 0 10px 24px rgba(16, 55, 72, 0.18);
+}
+
+[data-theme='light'] .btn--ghost {
+  color: #3d5566;
+  border-color: rgba(16, 55, 72, 0.14);
+}
+
+[data-theme='light'] .btn--outline {
+  color: #0a6b5c;
+  border-color: rgba(15, 159, 138, 0.35);
+  background: rgba(15, 159, 138, 0.06);
+}
+
+[data-theme='light'] .pwa-update-prompt,
+[data-theme='light'] .sync-indicator {
+  background: rgba(248, 252, 253, 0.96);
+  border-color: rgba(16, 55, 72, 0.12);
+  color: #102536;
+}

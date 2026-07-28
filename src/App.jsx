@@ -37,6 +37,7 @@ import './styles/dashboard.css'
 import './styles/mobile.css'
 import './styles/evoluafit-logo.css'
 import './styles/auth.css'
+import './styles/theme-light.css'
 
 const HowItWorks = lazy(() => import('./components/HowItWorks'))
 const MyWorkouts = lazy(() => import('./components/MyWorkouts'))

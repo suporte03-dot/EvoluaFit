@@ -13,6 +13,7 @@ import {
   IconTrend,
 } from './icons'
 import EvoluaFitBrand from '../branding/EvoluaFitBrand'
+import ThemeToggle from '../ThemeToggle'
 import { deriveXpProgress, initialsFromName } from './dashboardUtils'
 import { scrollToSection, handleSectionClick } from '../../utils/scrollToSection'
 import { useAuth } from '../../context/AuthContext'
@@ -177,6 +178,9 @@ export default function DashboardSidebar({
         </nav>
 
         <div className="dash-sidebar__account">
+          <div className="dash-sidebar__theme-row">
+            <ThemeToggle className="theme-toggle--sidebar" />
+          </div>
           <button
             type="button"
             className="dash-sidebar__user dash-sidebar__user--button"

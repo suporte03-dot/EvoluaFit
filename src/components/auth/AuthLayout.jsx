@@ -1,10 +1,15 @@
 import athletesMark from '../../assets/branding/evoluafit-athletes-mark.png'
+import ThemeToggle from '../ThemeToggle'
 
 export default function AuthLayout({ title, subtitle, children, footer }) {
   return (
     <div className="auth-screen">
       <div className="auth-screen__glow" aria-hidden="true" />
       <div className="auth-screen__grid" aria-hidden="true" />
+
+      <div className="auth-screen__theme">
+        <ThemeToggle />
+      </div>
 
       <div className="auth-card glass-card">
         <header className="auth-card__brand">

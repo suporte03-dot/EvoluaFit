@@ -5,6 +5,7 @@ import { useScrollSpy } from './hooks/useScrollSpy'
 import { useSectionHash } from './hooks/useSectionHash'
 import { useHashRoute } from './hooks/useHashRoute'
 import { AuthProvider } from './context/AuthContext'
+import { ThemeProvider } from './context/ThemeContext'
 import { ProfileProvider } from './context/ProfileContext'
 import { WorkoutPlanProvider } from './context/WorkoutPlanContext'
 import { WorkoutSessionProvider } from './context/WorkoutSessionContext'
@@ -182,46 +183,48 @@ function App() {
 
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <PwaUpdatePrompt />
-        <Routes>
-          <Route path="/" element={<RootRedirect />} />
-          <Route
-            path="/login"
-            element={
-              <GuestRoute>
-                <LoginPage />
-              </GuestRoute>
-            }
-          />
-          <Route
-            path="/cadastro"
-            element={
-              <GuestRoute>
-                <RegisterPage />
-              </GuestRoute>
-            }
-          />
-          <Route
-            path="/esqueci-senha"
-            element={
-              <GuestRoute>
-                <ForgotPasswordPage />
-              </GuestRoute>
-            }
-          />
-          <Route path="/atualizar-senha" element={<UpdatePasswordPage />} />
-          <Route
-            path="/app/*"
-            element={
-              <ProtectedRoute>
-                <DashboardApp />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <PwaUpdatePrompt />
+          <Routes>
+            <Route path="/" element={<RootRedirect />} />
+            <Route
+              path="/login"
+              element={
+                <GuestRoute>
+                  <LoginPage />
+                </GuestRoute>
+              }
+            />
+            <Route
+              path="/cadastro"
+              element={
+                <GuestRoute>
+                  <RegisterPage />
+                </GuestRoute>
+              }
+            />
+            <Route
+              path="/esqueci-senha"
+              element={
+                <GuestRoute>
+                  <ForgotPasswordPage />
+                </GuestRoute>
+              }
+            />
+            <Route path="/atualizar-senha" element={<UpdatePasswordPage />} />
+            <Route
+              path="/app/*"
+              element={
+                <ProtectedRoute>
+                  <DashboardApp />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   )
 }

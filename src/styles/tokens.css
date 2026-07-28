@@ -129,3 +129,34 @@
   --dash-module-purple: var(--coach);
   --dash-module-cyan: var(--secondary);
 }
+
+/* Tema claro — override discreto dos tokens */
+[data-theme='light'] {
+  --app-bg: #f4f7fb;
+  --surface-primary: #ffffff;
+  --surface-secondary: #eef2f7;
+  --surface-elevated: #ffffff;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+
+  --border-subtle: rgba(15, 23, 42, 0.1);
+  --border-accent: rgba(13, 148, 136, 0.28);
+  --shadow-card: 0 12px 32px rgba(15, 23, 42, 0.08);
+
+  --bg-card: #ffffff;
+  --bg-deep: #e8eef5;
+  --bg-glass: rgba(255, 255, 255, 0.86);
+  --bg-glass-soft: rgba(255, 255, 255, 0.65);
+
+  --primary-soft: rgba(20, 184, 166, 0.12);
+  --secondary-soft: rgba(6, 182, 212, 0.12);
+  --coach-soft: rgba(168, 85, 247, 0.1);
+  --energy-soft: rgba(245, 158, 11, 0.12);
+  --performance-soft: rgba(59, 130, 246, 0.1);
+  --danger-soft: rgba(239, 68, 68, 0.1);
+
+  --blue-deep: #dbe7f5;
+  --graphite: var(--surface-secondary);
+}

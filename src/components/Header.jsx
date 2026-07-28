@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { scrollToSection, handleSectionClick } from '../utils/scrollToSection'
 import { IconMenu } from './dashboard/icons'
 import EvoluaFitLogo from './branding/EvoluaFitLogo'
+import ThemeToggle from './ThemeToggle'
 
 /**
  * Compact mobile top bar for SaaS shell.
@@ -45,13 +46,16 @@ export default function Header({ onOpenDashboardMenu, mobileMenuOpen = false }) 
           <EvoluaFitLogo size="medium" showWordmark />
         </a>
 
-        <button
-          type="button"
-          className="btn btn--primary header__cta-desktop btn--start-workout"
-          onClick={() => scrollToSection('planilha')}
-        >
-          Criar treino
-        </button>
+        <div className="header__trailing">
+          <ThemeToggle className="theme-toggle--header" />
+          <button
+            type="button"
+            className="btn btn--primary header__cta-desktop btn--start-workout"
+            onClick={() => scrollToSection('planilha')}
+          >
+            Criar treino
+          </button>
+        </div>
       </div>
     </header>
   )

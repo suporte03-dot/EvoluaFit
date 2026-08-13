@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { scrollToSection } from '../../utils/scrollToSection'
-import EvoluaFitMark from '../branding/EvoluaFitMark'
-
+import { scrollToSection } from "../utils/scrollToSection"
+import EvoluaFitMark from "./branding/EvoluaFitMark.jsx"
 const STORAGE_KEY = 'evoluafit-onboarded'
 const STEPS = [
   {

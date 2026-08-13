@@ -1,11 +1,11 @@
 /* EvoluaFit brand — athletes mark + HTML wordmark / sidebar identity */
 
 :root {
-  --brand-white: #f7f7f2;
-  --brand-accent: #ff5a3d;
-  --brand-muted: #a6a9b0;
-  --brand-surface: #14161a;
-  --brand-border: rgba(255, 90, 61, 0.22);
+  --brand-white: #f8fafc;
+  --brand-accent: #7657ff;
+  --brand-muted: #9da9b8;
+  --brand-surface: #121923;
+  --brand-border: rgba(53, 120, 255, 0.28);
 }
 
 /* ----- Shared logo (header / compact) ----- */
@@ -50,7 +50,7 @@
   height: var(--ef-mark, 48px);
   flex-shrink: 0;
   border-radius: 14px;
-  filter: drop-shadow(0 0 8px rgba(255, 90, 61, 0.28));
+  filter: none;
   pointer-events: none;
   user-select: none;
 }
@@ -62,9 +62,9 @@
   font-family: var(--font-brand, 'Outfit', system-ui, sans-serif);
   font-size: var(--ef-word);
   font-weight: 800;
-  font-style: italic;
-  letter-spacing: -0.04em;
-  transform: skewX(-6deg);
+  font-style: normal;
+  letter-spacing: -0.045em;
+  transform: none;
   white-space: nowrap;
   -webkit-font-smoothing: antialiased;
 }
@@ -75,7 +75,11 @@
 
 .evoluafit-logo__wordmark-accent {
   color: var(--brand-accent);
-  text-shadow: 0 0 8px rgba(255, 90, 61, 0.25);
+  text-shadow: none;
+  background: var(--gradient-brand, linear-gradient(135deg, #3578ff, #7657ff));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .evoluafit-logo--compact {
@@ -133,7 +137,7 @@
   width: 46px;
   height: 46px;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 8px rgba(255, 90, 61, 0.28));
+  filter: drop-shadow(0 0 8px rgba(53, 120, 255, 0.28));
   pointer-events: none;
   user-select: none;
 }
@@ -153,20 +157,23 @@
   font-family: var(--font-brand, 'Outfit', system-ui, sans-serif);
   font-size: 1.22rem;
   font-weight: 800;
-  font-style: italic;
+  font-style: normal;
   line-height: 1.05;
-  letter-spacing: -0.04em;
-  transform: skewX(-6deg);
+  letter-spacing: -0.045em;
+  transform: none;
   -webkit-font-smoothing: antialiased;
 }
 
 .evoluafit-brand__name-main {
-  color: #f7f7f2;
+  color: #f8fafc;
 }
 
 .evoluafit-brand__name-accent {
-  color: #ff5a3d;
-  text-shadow: 0 0 8px rgba(255, 90, 61, 0.25);
+  background: linear-gradient(135deg, #3578ff, #7657ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
 }
 
 .evoluafit-brand__tagline {
@@ -205,13 +212,13 @@
 }
 
 .evoluafit-brand__collapse:hover {
-  border-color: rgba(255, 90, 61, 0.48);
+  border-color: rgba(53, 120, 255, 0.48);
   background: rgba(20, 22, 26, 0.96);
-  color: #ff5a3d;
+  color: #3578ff;
 }
 
 .evoluafit-brand__collapse:focus-visible {
-  outline: 2px solid #ff5a3d;
+  outline: 2px solid #3578ff;
   outline-offset: 2px;
 }
 

@@ -42,7 +42,7 @@ export const BRAND = {
   name: 'EvoluaFit',
   slogan: 'Evolua além do treino.',
   sloganHighlight: 'além do treino',
-  tagline: 'Organize sua rotina, acompanhe sua evolução e saiba exatamente qual é o próximo passo.',
+  tagline: 'Treine com propósito, acompanhe seu progresso e saiba sempre qual é o próximo passo.',
   disclaimer:
     'Conteúdo informativo: não substitui orientação de um profissional de educação física ou saúde. Respeite seus limites.',
 }

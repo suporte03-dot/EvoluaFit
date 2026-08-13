@@ -1,34 +1,45 @@
-/* EvoluaFit — ENERGY SYSTEM
-   Obsidian + Coral (ação) + Lime (progresso). Uma identidade, sem seletor de tema. */
+/* EvoluaFit — PERFORMANCE ELECTRIC
+   Azul elétrico (ação) + Violeta (assinatura) + Lime (progresso).
+   Coral/vermelho NÃO é branding — só --danger. */
 
 :root {
-  /* Core palette (master) */
-  --app-bg: #0b0c0e;
-  --surface-primary: #14161a;
-  --surface-secondary: #1b1e23;
-  --surface-elevated: #22262c;
+  /* Master palette */
+  --bg-primary: #070a0f;
+  --bg-secondary: #0d1219;
+  --surface-primary: #121923;
+  --surface-elevated: #182230;
+  --border-subtle: #243142;
 
-  --accent-primary: #ff5a3d;
-  --accent-lime: #d9ff43;
-  --accent-red: #ff4d5e;
+  --text-primary: #f8fafc;
+  --text-secondary: #9da9b8;
+  --text-muted: #6b7788;
 
-  /* Aliases legados → Energy System (evita telas órfãs) */
-  --accent-blue: #a6a9b0;
-  --accent-orange: #ff5a3d;
-  --accent-green: #d9ff43;
-  --accent-purple: #ff7a5c;
-  --accent-cyan: #ff8a6a;
+  --brand-primary: #3578ff;
+  --brand-primary-hover: #4b88ff;
+  --brand-primary-active: #2868e8;
+  --brand-secondary: #7657ff;
+  --progress-positive: #b8f23a;
+  --danger: #ff4d5d;
 
-  --text-primary: #f7f7f2;
-  --text-secondary: #a6a9b0;
-  --text-muted: #7a7e86;
+  --gradient-brand: linear-gradient(135deg, #3578ff 0%, #7657ff 100%);
 
-  --border-subtle: rgba(247, 247, 242, 0.1);
-  --border-accent: rgba(255, 90, 61, 0.4);
+  /* Compat aliases (legado → Performance Electric) */
+  --app-bg: var(--bg-primary);
+  --surface-secondary: var(--surface-elevated);
+  --accent-primary: var(--brand-primary);
+  --accent-lime: var(--progress-positive);
+  --accent-red: var(--danger);
+  --accent-blue: var(--brand-primary);
+  --accent-orange: var(--brand-primary);
+  --accent-green: var(--progress-positive);
+  --accent-purple: var(--brand-secondary);
+  --accent-cyan: #5b8cff;
+
+  --border-accent: rgba(53, 120, 255, 0.45);
   --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 22px;
-  --shadow-card: 0 18px 48px rgba(0, 0, 0, 0.4);
+  --radius-md: 14px;
+  --radius-lg: 16px;
+  --shadow-card: 0 16px 40px rgba(0, 0, 0, 0.35);
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -40,49 +51,48 @@
   --motion-fast: 160ms;
   --motion-base: 220ms;
 
-  --bg-main: var(--app-bg);
-  --bg-section: var(--surface-primary);
-  --bg-card: #181b20;
-  --bg-card-soft: var(--surface-secondary);
-  --primary: var(--accent-primary);
-  --primary-soft: rgba(255, 90, 61, 0.14);
-  --primary-border: rgba(255, 90, 61, 0.5);
-  --secondary: #ff8a6a;
-  --secondary-soft: rgba(255, 138, 106, 0.14);
-  --coach: #ff7a5c;
-  --coach-soft: rgba(255, 122, 92, 0.16);
-  --energy: var(--accent-lime);
-  --energy-soft: rgba(217, 255, 67, 0.14);
-  --performance: #ffb070;
-  --performance-soft: rgba(255, 176, 112, 0.14);
-  --danger: var(--accent-red);
-  --danger-soft: rgba(255, 77, 94, 0.14);
+  --bg-main: var(--bg-primary);
+  --bg-section: var(--bg-secondary);
+  --bg-card: var(--surface-primary);
+  --bg-card-soft: var(--surface-elevated);
+  --primary: var(--brand-primary);
+  --primary-soft: rgba(53, 120, 255, 0.14);
+  --primary-border: rgba(53, 120, 255, 0.5);
+  --secondary: var(--brand-secondary);
+  --secondary-soft: rgba(118, 87, 255, 0.14);
+  --coach: var(--brand-secondary);
+  --coach-soft: rgba(118, 87, 255, 0.16);
+  --energy: var(--progress-positive);
+  --energy-soft: rgba(184, 242, 58, 0.14);
+  --performance: #5b8cff;
+  --performance-soft: rgba(91, 140, 255, 0.14);
+  --danger-soft: rgba(255, 77, 93, 0.14);
   --text-main: var(--text-primary);
   --border-soft: var(--border-subtle);
 
-  --gradient-primary: linear-gradient(135deg, #ff5a3d, #ff7a5c);
-  --gradient-coach: linear-gradient(135deg, #ff5a3d, #c2410c);
-  --glow-primary: 0 0 22px rgba(255, 90, 61, 0.28);
-  --glow-secondary: 0 0 22px rgba(255, 138, 106, 0.16);
-  --glow-coach: 0 0 22px rgba(255, 90, 61, 0.2);
-  --glow-energy: 0 0 20px rgba(217, 255, 67, 0.18);
+  --gradient-primary: var(--gradient-brand);
+  --gradient-coach: var(--gradient-brand);
+  --glow-primary: 0 0 20px rgba(53, 120, 255, 0.22);
+  --glow-secondary: 0 0 18px rgba(118, 87, 255, 0.16);
+  --glow-coach: 0 0 18px rgba(118, 87, 255, 0.18);
+  --glow-energy: 0 0 16px rgba(184, 242, 58, 0.16);
 
-  --type-push: var(--primary);
+  --type-push: var(--brand-primary);
   --type-push-soft: var(--primary-soft);
-  --type-pull: var(--performance);
-  --type-pull-soft: var(--performance-soft);
-  --type-legs: var(--energy);
+  --type-pull: var(--brand-secondary);
+  --type-pull-soft: var(--secondary-soft);
+  --type-legs: var(--progress-positive);
   --type-legs-soft: var(--energy-soft);
-  --type-full: var(--coach);
-  --type-full-soft: var(--coach-soft);
-  --type-core: #ffb070;
-  --type-core-soft: rgba(255, 176, 112, 0.16);
-  --type-cardio: var(--primary);
+  --type-full: var(--performance);
+  --type-full-soft: var(--performance-soft);
+  --type-core: #8b9cff;
+  --type-core-soft: rgba(139, 156, 255, 0.16);
+  --type-cardio: var(--brand-primary);
   --type-cardio-soft: var(--primary-soft);
-  --type-mobility: var(--secondary);
+  --type-mobility: var(--brand-secondary);
   --type-mobility-soft: var(--secondary-soft);
   --type-rest: var(--text-muted);
-  --type-rest-soft: rgba(122, 126, 134, 0.14);
+  --type-rest-soft: rgba(107, 119, 136, 0.14);
 
   --color-bg: var(--bg-main);
   --color-surface: var(--bg-section);
@@ -105,24 +115,23 @@
   --fn-volume: var(--primary);
   --fn-goals: var(--energy);
 
-  --bg-primary: var(--bg-main);
-  --bg-deep: #08090b;
+  --bg-deep: #05070b;
   --graphite: var(--bg-section);
-  --green: var(--primary);
-  --green-secondary: #ff7a5c;
+  --green: var(--progress-positive);
+  --green-secondary: #9ad628;
   --accent: var(--primary);
-  --blue: var(--performance);
-  --blue-deep: #2a2e36;
-  --cyan: var(--secondary);
-  --purple: var(--coach);
-  --orange: var(--primary);
+  --blue: var(--brand-primary);
+  --blue-deep: #1a2740;
+  --cyan: var(--performance);
+  --purple: var(--brand-secondary);
+  --orange: var(--brand-primary);
   --red: var(--danger);
   --snow: var(--text-main);
   --gray: var(--text-muted);
 
   --bg-page: var(--bg-main);
-  --bg-glass: rgba(20, 22, 26, 0.86);
-  --bg-glass-soft: rgba(27, 30, 35, 0.65);
+  --bg-glass: rgba(13, 18, 25, 0.88);
+  --bg-glass-soft: rgba(18, 25, 35, 0.72);
   --border: var(--border-soft);
   --border-strong: var(--primary-border);
 
@@ -134,7 +143,7 @@
   --header-banner-h: 0px;
   --container: 1140px;
   --shadow: var(--shadow-card);
-  --glow-green: var(--glow-primary);
+  --glow-green: var(--glow-energy);
   --glow-cyan: var(--glow-secondary);
 
   --dash-orange: var(--primary);

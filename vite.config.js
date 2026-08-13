@@ -14,13 +14,13 @@ export default defineConfig({
       manifest: {
         name: 'EvoluaFit',
         short_name: 'EvoluaFit',
-        description: 'Treinos inteligentes, evolução real.',
+        description: 'Evolua além do treino. Treine com propósito e acompanhe seu progresso.',
         start_url: '/',
         scope: '/',
         display: 'standalone',
         orientation: 'portrait-primary',
-        theme_color: '#0b0c0e',
-        background_color: '#0b0c0e',
+        theme_color: '#070a0f',
+        background_color: '#070a0f',
         lang: 'pt-BR',
         icons: [
           {

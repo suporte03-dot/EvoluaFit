@@ -30,15 +30,16 @@ export default function LoginPage() {
 
   return (
     <AuthLayout
-      title="Entrar"
-      subtitle="Acesse sua conta para continuar treinos e evolução."
+      variant="split"
+      title="Continue sua evolução."
+      subtitle="Entre para acessar seus treinos, acompanhar seu progresso e continuar de onde parou."
       footer={
         <>
           <p>
-            Não tem conta? <Link to="/cadastro">Criar conta</Link>
+            <Link to="/esqueci-senha">Esqueci minha senha</Link>
           </p>
           <p>
-            <Link to="/esqueci-senha">Esqueci minha senha</Link>
+            Ainda não possui uma conta? <Link to="/cadastro">Criar conta</Link>
           </p>
         </>
       }
@@ -52,7 +53,7 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            placeholder="seu@email.com"
+            aria-required="true"
           />
         </label>
 
@@ -66,7 +67,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={8}
-              placeholder="••••••••"
+              aria-required="true"
             />
             <button
               type="button"

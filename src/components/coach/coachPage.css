@@ -30,7 +30,7 @@
   padding: 1.75rem 1.85rem;
   border-radius: var(--radius, 16px);
   border: 1px solid rgba(0, 217, 255, 0.28);
-  background: linear-gradient(115deg, #0b0c0e 0%, #14161a 48%, #0b0c0e 100%);
+  background: linear-gradient(115deg, #070a0f 0%, #121923 48%, #070a0f 100%);
   box-shadow: inset 0 1px 0 rgba(94, 239, 255, 0.08), 0 18px 40px rgba(0, 0, 0, 0.28);
   overflow: hidden;
 }
@@ -47,7 +47,7 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #ff5a3d;
+  color: #3578ff;
 }
 
 .coach-hero__title {
@@ -80,7 +80,7 @@
   position: absolute;
   inset: 0 auto 0 -40%;
   width: 55%;
-  background: linear-gradient(90deg, #14161a 0%, transparent 100%);
+  background: linear-gradient(90deg, #121923 0%, transparent 100%);
   pointer-events: none;
   z-index: 2;
 }

@@ -50,13 +50,13 @@ const COACH_PAGE_CSS = `
 .coach-ia__empty-actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.75rem}
 .coach-ia__picker-empty{display:grid;gap:.75rem}
 .coach-ia__picker-empty p{margin:0;color:rgba(186,198,216,.95);font-size:.9rem;line-height:1.45}
-.coach-hero{position:relative;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(140px,.85fr);align-items:center;gap:1rem;min-height:200px;padding:1.75rem 1.85rem;border-radius:var(--radius,16px);border:1px solid rgba(255,90,61,.28);background:linear-gradient(115deg,#0b0c0e 0%,#14161a 48%,#0b0c0e 100%);box-shadow:inset 0 1px 0 rgba(255,138,106,.08),0 18px 40px rgba(0,0,0,.28);overflow:hidden}
+.coach-hero{position:relative;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(140px,.85fr);align-items:center;gap:1rem;min-height:200px;padding:1.75rem 1.85rem;border-radius:var(--radius,16px);border:1px solid rgba(255,90,61,.28);background:linear-gradient(115deg,#070a0f 0%,#121923 48%,#070a0f 100%);box-shadow:inset 0 1px 0 rgba(255,138,106,.08),0 18px 40px rgba(0,0,0,.28);overflow:hidden}
 .coach-hero__copy{position:relative;z-index:2;max-width:36rem}
-.coach-hero__label{margin:0 0 .45rem;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#ff5a3d}
+.coach-hero__label{margin:0 0 .45rem;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#3578ff}
 .coach-hero__title{margin:0 0 .65rem;font-size:clamp(1.85rem,3.2vw,2.55rem);font-weight:800;letter-spacing:-.02em;line-height:1.1;color:#f8fafc}
 .coach-hero__subtitle{margin:0;max-width:34ch;font-size:.95rem;line-height:1.55;color:rgba(186,198,214,.92)}
 .coach-hero__art{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;min-height:160px}
-.coach-hero__fade{position:absolute;inset:0 auto 0 -40%;width:55%;background:linear-gradient(90deg,#14161a 0%,transparent 100%);pointer-events:none;z-index:2}
+.coach-hero__fade{position:absolute;inset:0 auto 0 -40%;width:55%;background:linear-gradient(90deg,#121923 0%,transparent 100%);pointer-events:none;z-index:2}
 .coach-orb{position:relative;width:min(100%,220px);aspect-ratio:1;display:grid;place-items:center}
 .coach-orb__img{position:relative;z-index:2;width:100%;height:auto;filter:drop-shadow(0 0 22px rgba(255,90,61,.35));animation:coachOrbFloat 6.5s ease-in-out infinite}
 .coach-orb__glow{position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle,rgba(255,90,61,.35) 0%,transparent 70%);filter:blur(8px);animation:coachOrbPulse 4.5s ease-in-out infinite}

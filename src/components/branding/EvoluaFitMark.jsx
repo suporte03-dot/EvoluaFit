@@ -1,8 +1,17 @@
+import { useId } from 'react'
+
 /**
- * Monograma EvoluaFit — E + trajetória ascendente.
+ * EvoluaFit Mark — PERFORMANCE ELECTRIC
+ * E geométrico: 3 barras + espinha, superior avançando (evolução).
  */
-export default function EvoluaFitMark({ size = 40, className = '' }) {
+export default function EvoluaFitMark({
+  size = 40,
+  className = '',
+  withBackground = false,
+}) {
   const px = typeof size === 'number' ? size : 40
+  const gid = useId().replace(/:/g, '')
+
   return (
     <svg
       className={`evoluafit-mark ${className}`.trim()}
@@ -14,23 +23,19 @@ export default function EvoluaFitMark({ size = 40, className = '' }) {
       aria-hidden="true"
       focusable="false"
     >
-      <rect width="64" height="64" rx="16" fill="#14161A" />
-      <path
-        d="M16 46c10-2 16-12 17-22 2 12 9 20 21 20"
-        stroke="#F7F7F2"
-        strokeWidth="3.2"
-        strokeLinecap="round"
-        fill="none"
-        opacity="0.55"
-      />
-      <path
-        d="M14 44C24 30 32 16 50 12"
-        stroke="#FF5A3D"
-        strokeWidth="4.4"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path d="M44 8.5l11.5 2.8-5.8 10.5L44 8.5z" fill="#D9FF43" />
+      <defs>
+        <linearGradient id={gid} x1="12" y1="52" x2="54" y2="12" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#3578FF" />
+          <stop offset="1" stopColor="#7657FF" />
+        </linearGradient>
+      </defs>
+
+      {withBackground ? <rect width="64" height="64" rx="14" fill="#070A0F" /> : null}
+
+      <rect x="15" y="15" width="6.5" height="34" rx="3.25" fill={`url(#${gid})`} />
+      <rect x="21.5" y="42.5" width="17" height="6.5" rx="3.25" fill="#3578FF" />
+      <rect x="21.5" y="28.75" width="23" height="6.5" rx="3.25" fill={`url(#${gid})`} />
+      <rect x="21.5" y="15" width="27.5" height="6.5" rx="3.25" fill="#7657FF" />
     </svg>
   )
 }

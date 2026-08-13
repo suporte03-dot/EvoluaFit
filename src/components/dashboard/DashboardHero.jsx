@@ -39,14 +39,14 @@ function Sparkline({ series }) {
     >
       <defs>
         <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#e8ff47" stopOpacity="0.5" />
-          <stop offset="100%" stopColor="#e8ff47" stopOpacity="0" />
+          <stop offset="0%" stopColor="#d9ff43" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#d9ff43" stopOpacity="0" />
         </linearGradient>
       </defs>
       {hasActivity && <path d={area} fill="url(#sparkFill)" />}
       <polyline
         fill="none"
-        stroke="#e8ff47"
+        stroke="#d9ff43"
         strokeWidth="2.2"
         strokeLinejoin="round"
         strokeLinecap="round"
@@ -59,7 +59,7 @@ function Sparkline({ series }) {
           cx={x}
           cy={y}
           r={series[i] > 0 ? 2.5 : 1.4}
-          fill="#e8ff47"
+          fill="#d9ff43"
           opacity={series[i] > 0 ? 1 : 0.35}
         />
       ))}

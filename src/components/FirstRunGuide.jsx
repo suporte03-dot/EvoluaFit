@@ -1,22 +1,23 @@
 import { useState } from 'react'
-import { scrollToSection } from "../utils/scrollToSection"
-import EvoluaFitMark from "./branding/EvoluaFitMark.jsx"
+import { scrollToSection } from '../utils/scrollToSection'
+import EvoluaFitMark from './branding/EvoluaFitMark'
+
 const STORAGE_KEY = 'evoluafit-onboarded'
 const STEPS = [
   {
     kicker: '01',
-    title: 'Hoje é o único ponto de partida',
-    body: 'Abra o app e veja só o que importa agora: o treino do dia. O resto fica a um toque.',
+    title: 'Hoje',
+    body: 'Aqui você encontra exatamente o que precisa fazer agora.',
   },
   {
     kicker: '02',
     title: 'Treine em foco',
-    body: 'Na sessão, o cronômetro e o progresso ficam na frente. Sem menu, sem distração.',
+    body: 'Durante o treino, deixamos apenas o que importa na sua frente.',
   },
   {
     kicker: '03',
-    title: 'Evolua com clareza',
-    body: 'Cada treino avança sua trilha. O Coach usa seu nível, objetivo e histórico — e mostra o que sabe.',
+    title: 'Veja sua evolução',
+    body: 'Cada treino alimenta seu histórico e aproxima você das suas metas.',
   },
 ]
 
@@ -64,7 +65,7 @@ export default function FirstRunGuide({ onClose }) {
           </button>
           {last ? (
             <button type="button" className="btn btn--primary" onClick={() => finish(true)}>
-              Montar minha planilha
+              Começar
             </button>
           ) : (
             <button type="button" className="btn btn--primary" onClick={() => setStep((s) => s + 1)}>

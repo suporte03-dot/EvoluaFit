@@ -30,7 +30,7 @@
   padding: 1.75rem 1.85rem;
   border-radius: var(--radius, 16px);
   border: 1px solid rgba(0, 217, 255, 0.28);
-  background: linear-gradient(115deg, #071426 0%, #06101f 48%, #031423 100%);
+  background: linear-gradient(115deg, #0b0c0e 0%, #14161a 48%, #0b0c0e 100%);
   box-shadow: inset 0 1px 0 rgba(94, 239, 255, 0.08), 0 18px 40px rgba(0, 0, 0, 0.28);
   overflow: hidden;
 }
@@ -47,7 +47,7 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #2dd4bf;
+  color: #ff5a3d;
 }
 
 .coach-hero__title {
@@ -80,7 +80,7 @@
   position: absolute;
   inset: 0 auto 0 -40%;
   width: 55%;
-  background: linear-gradient(90deg, #06101f 0%, transparent 100%);
+  background: linear-gradient(90deg, #14161a 0%, transparent 100%);
   pointer-events: none;
   z-index: 2;
 }
@@ -124,7 +124,7 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #5eefff;
+  background: #ff8a6a;
   box-shadow: 0 0 10px rgba(94, 239, 255, 0.8);
   z-index: 3;
   animation: coachParticle 5.5s ease-in-out infinite;
@@ -231,7 +231,7 @@
   background: linear-gradient(135deg, rgba(8, 47, 73, 0.45), rgba(8, 18, 35, 0.85));
 }
 
-.coach-notice--privacy .coach-notice__icon { color: #67e8f9; }
+.coach-notice--privacy .coach-notice__icon { color: #ff8a6a; }
 .coach-notice--privacy .coach-notice__text { color: rgba(148, 183, 204, 0.95); }
 
 .coach-recs-panel { margin: 0.15rem 0 0.35rem; }
@@ -279,7 +279,7 @@
   border-radius: 10px;
   border: 1px solid rgba(0, 217, 255, 0.28);
   background: rgba(0, 217, 255, 0.08);
-  color: #5eefff;
+  color: #ff8a6a;
   flex-shrink: 0;
 }
 

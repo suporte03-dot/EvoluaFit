@@ -3,20 +3,20 @@
 :root {
   --dash-sidebar-w: 268px;
   --dash-sidebar-collapsed: 78px;
-  --dash-bg: var(--app-bg, #030b18);
-  --dash-surface: var(--surface-primary, #071426);
-  --dash-surface-2: var(--surface-secondary, #0a1930);
-  --dash-orange: var(--accent-orange, #f59e0b);
-  --dash-orange-soft: rgba(245, 158, 11, 0.12);
-  --dash-orange-border: rgba(245, 158, 11, 0.45);
-  --dash-green: var(--accent-primary, #14e0b5);
-  --dash-green-soft: rgba(20, 224, 181, 0.12);
-  --dash-blue: var(--accent-blue, #3b82f6);
-  --dash-blue-soft: rgba(59, 130, 246, 0.14);
-  --dash-purple: var(--accent-purple, #a855f7);
-  --dash-purple-soft: rgba(168, 85, 247, 0.14);
-  --dash-cyan: var(--accent-cyan, #06b6d4);
-  --dash-cyan-soft: rgba(6, 182, 212, 0.12);
+  --dash-bg: var(--app-bg, #0b0c0e);
+  --dash-surface: var(--surface-primary, #14161a);
+  --dash-surface-2: var(--surface-secondary, #1b1e23);
+  --dash-orange: var(--accent-primary, #ff5a3d);
+  --dash-orange-soft: rgba(255, 90, 61, 0.12);
+  --dash-orange-border: rgba(255, 90, 61, 0.45);
+  --dash-green: var(--accent-primary, #ff5a3d);
+  --dash-green-soft: rgba(255, 90, 61, 0.12);
+  --dash-blue: var(--performance, #ffb070);
+  --dash-blue-soft: rgba(255, 176, 112, 0.14);
+  --dash-purple: var(--coach, #ff7a5c);
+  --dash-purple-soft: rgba(255, 122, 92, 0.14);
+  --dash-cyan: var(--secondary, #ff8a6a);
+  --dash-cyan-soft: rgba(255, 138, 106, 0.12);
   --dash-radius: var(--radius-lg, 22px);
   --dash-gap: 16px;
   --dash-pad: 1.25rem;
@@ -1657,8 +1657,8 @@ body:has(.dash-sidebar--open) .dash-sidebar {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #14e0b5;
-  box-shadow: 0 0 12px rgba(20, 224, 181, 0.55);
+  background: #ff5a3d;
+  box-shadow: 0 0 12px rgba(255, 90, 61, 0.45);
   animation: lazyPulse 1.1s ease-in-out infinite;
 }
 
@@ -1677,7 +1677,7 @@ body:has(.dash-sidebar--open) .dash-sidebar {
 }
 
 .dash-sidebar__user--button:focus-visible {
-  outline: 2px solid var(--accent-primary, #14e0b5);
+  outline: 2px solid var(--accent-primary, #ff5a3d);
   outline-offset: 2px;
 }
 

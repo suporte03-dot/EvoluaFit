@@ -1236,7 +1236,7 @@ main {
   padding: 0.75rem 1rem;
   border-radius: 12px;
   border: 1px solid rgba(56, 97, 151, 0.45);
-  background: linear-gradient(180deg, #0b2238 0%, #071426 100%);
+  background: linear-gradient(180deg, #14161a 0%, #0b0c0e 100%);
   color: #f8fafc;
   font-size: 0.95rem;
   font-weight: 650;
@@ -1292,7 +1292,7 @@ main {
   list-style: none;
   border-radius: 14px;
   border: 1px solid rgba(0, 217, 255, 0.28);
-  background: #071426;
+  background: #0b0c0e;
   box-shadow:
     0 0 0 1px rgba(5, 11, 24, 0.8),
     0 18px 40px rgba(0, 0, 0, 0.55),
@@ -1369,7 +1369,7 @@ main {
   height: 1.35rem;
   border-radius: 50%;
   background: linear-gradient(135deg, #00e58f, #00d9ff);
-  border: 3px solid #071426;
+  border: 3px solid #0b0c0e;
   box-shadow: 0 0 0 1px rgba(0, 229, 143, 0.45), 0 4px 14px rgba(0, 229, 143, 0.35);
   cursor: pointer;
   transition: transform 0.15s ease;
@@ -1384,7 +1384,7 @@ main {
   height: 1.35rem;
   border-radius: 50%;
   background: linear-gradient(135deg, #00e58f, #00d9ff);
-  border: 3px solid #071426;
+  border: 3px solid #0b0c0e;
   box-shadow: 0 0 0 1px rgba(0, 229, 143, 0.45), 0 4px 14px rgba(0, 229, 143, 0.35);
   cursor: pointer;
 }
@@ -6094,12 +6094,12 @@ main {
 .muscle-group-card--triceps { --mg-accent: #a3e635; --mg-rgb: 163, 230, 53; }
 .muscle-group-card--antebraco { --mg-accent: #22c55e; --mg-rgb: 34, 197, 94; }
 .muscle-group-card--trapezio { --mg-accent: #60a5fa; --mg-rgb: 96, 165, 250; }
-.muscle-group-card--lombar { --mg-accent: #2dd4bf; --mg-rgb: 45, 212, 191; }
+.muscle-group-card--lombar { --mg-accent: #ff5a3d; --mg-rgb: 45, 212, 191; }
 .muscle-group-card--abdomen { --mg-accent: #e879f9; --mg-rgb: 232, 121, 249; }
 .muscle-group-card--panturrilha { --mg-accent: #facc15; --mg-rgb: 250, 204, 21; }
 .muscle-group-card--cardio { --mg-accent: #ff4d6d; --mg-rgb: 255, 77, 109; }
 .muscle-group-card--mobilidade { --mg-accent: #6366f1; --mg-rgb: 99, 102, 241; }
-.muscle-group-card--funcional { --mg-accent: #06b6d4; --mg-rgb: 6, 182, 212; }
+.muscle-group-card--funcional { --mg-accent: #ff8a6a; --mg-rgb: 255, 138, 106; }
 .muscle-group-card--alongamento { --mg-accent: #38bdf8; --mg-rgb: 56, 189, 248; }
 .muscle-group-card--default { --mg-accent: #22d3ee; --mg-rgb: 34, 211, 238; }
 
@@ -9466,7 +9466,7 @@ main {
   padding: 1.75rem 1.85rem;
   border-radius: var(--radius, 16px);
   border: 1px solid rgba(0, 217, 255, 0.28);
-  background: linear-gradient(115deg, #071426 0%, #06101f 48%, #031423 100%);
+  background: linear-gradient(115deg, #0b0c0e 0%, #14161a 48%, #0b0c0e 100%);
   box-shadow: inset 0 1px 0 rgba(94, 239, 255, 0.08), 0 18px 40px rgba(0, 0, 0, 0.28);
   overflow: hidden;
 }
@@ -9483,7 +9483,7 @@ main {
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #2dd4bf;
+  color: #ff5a3d;
 }
 
 .coach-hero__title {
@@ -9516,7 +9516,7 @@ main {
   position: absolute;
   inset: 0 auto 0 -40%;
   width: 55%;
-  background: linear-gradient(90deg, #06101f 0%, transparent 100%);
+  background: linear-gradient(90deg, #14161a 0%, transparent 100%);
   pointer-events: none;
   z-index: 2;
 }
@@ -9560,7 +9560,7 @@ main {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #5eefff;
+  background: #ff8a6a;
   box-shadow: 0 0 10px rgba(94, 239, 255, 0.8);
   z-index: 3;
   animation: coachParticle 5.5s ease-in-out infinite;
@@ -9667,7 +9667,7 @@ main {
   background: linear-gradient(135deg, rgba(8, 47, 73, 0.45), rgba(8, 18, 35, 0.85));
 }
 
-.coach-notice--privacy .coach-notice__icon { color: #67e8f9; }
+.coach-notice--privacy .coach-notice__icon { color: #ff8a6a; }
 .coach-notice--privacy .coach-notice__text { color: rgba(148, 183, 204, 0.95); }
 
 .coach-recs-panel { margin: 0.15rem 0 0.35rem; }
@@ -9715,7 +9715,7 @@ main {
   border-radius: 10px;
   border: 1px solid rgba(0, 217, 255, 0.28);
   background: rgba(0, 217, 255, 0.08);
-  color: #5eefff;
+  color: #ff8a6a;
   flex-shrink: 0;
 }
 

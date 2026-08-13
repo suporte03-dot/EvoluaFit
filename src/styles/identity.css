@@ -1,4 +1,4 @@
-/* EvoluaFit — Energia Solar identity layer */
+/* EvoluaFit — ENERGY SYSTEM identity layer */
 
 :root {
   --dash-bg: var(--app-bg);
@@ -14,28 +14,28 @@
 
 .dash-sidebar {
   background:
-    linear-gradient(180deg, rgba(255, 90, 47, 0.1) 0%, transparent 38%),
-    linear-gradient(180deg, #161412 0%, #0c0b0a 100%) !important;
-  border-right-color: rgba(255, 90, 47, 0.14) !important;
+    linear-gradient(180deg, rgba(255, 90, 61, 0.1) 0%, transparent 38%),
+    linear-gradient(180deg, #14161a 0%, #0b0c0e 100%) !important;
+  border-right-color: rgba(255, 90, 61, 0.14) !important;
 }
 
 .header {
-  background: linear-gradient(180deg, rgba(12, 11, 10, 0.94), rgba(22, 20, 18, 0.88));
-  border-bottom-color: rgba(246, 241, 234, 0.08);
+  background: linear-gradient(180deg, rgba(11, 12, 14, 0.94), rgba(20, 22, 26, 0.88));
+  border-bottom-color: rgba(247, 247, 242, 0.08);
 }
 
 .mobile-nav {
-  background: rgba(12, 11, 10, 0.97);
+  background: rgba(11, 12, 14, 0.97);
 }
 
 .section-lazy-fallback__pulse {
-  background: #ff5a2f;
-  box-shadow: 0 0 12px rgba(255, 90, 47, 0.55);
+  background: #ff5a3d;
+  box-shadow: 0 0 12px rgba(255, 90, 61, 0.55);
 }
 
 .btn--primary {
-  color: #0c0b0a;
-  box-shadow: 0 8px 24px rgba(255, 90, 47, 0.28);
+  color: #0b0c0e;
+  box-shadow: 0 8px 24px rgba(255, 90, 61, 0.28);
 }
 
 .btn--primary:hover {
@@ -181,6 +181,209 @@
 .dash-hoje-links button:focus-visible {
   border-color: var(--primary-border);
   color: var(--text-primary);
+}
+
+.dash-hoje-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .dash-hoje-grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.7fr);
+    align-items: stretch;
+  }
+}
+
+/* ----- Evolua Score ----- */
+.evolua-score {
+  padding: 1.1rem 1.2rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 100%;
+}
+
+.evolua-score__kicker {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--energy);
+}
+
+.evolua-score__top {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.evolua-score__value {
+  font-family: var(--font-heading);
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.evolua-score__bar {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(247, 247, 242, 0.08);
+  overflow: hidden;
+}
+
+.evolua-score__bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--energy);
+  transition: width var(--motion-base) ease;
+}
+
+.evolua-score__hint,
+.evolua-score__empty-copy {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+/* ----- Journey timeline ----- */
+.journey {
+  padding: 1.15rem 1.2rem 1.25rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-primary);
+}
+
+.journey__head {
+  margin-bottom: 1rem;
+}
+
+.journey__kicker {
+  margin: 0 0 0.25rem;
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--energy);
+}
+
+.journey__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.journey__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.journey__item {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 0.85rem;
+  min-height: 4.25rem;
+}
+
+.journey__rail {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.journey__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--surface-elevated);
+  border: 2px solid rgba(247, 247, 242, 0.28);
+  margin-top: 0.35rem;
+  z-index: 1;
+}
+
+.journey__item--progress .journey__dot {
+  background: var(--energy);
+  border-color: var(--energy);
+  box-shadow: var(--glow-energy);
+}
+
+.journey__item--action .journey__dot {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  box-shadow: var(--glow-primary);
+}
+
+.journey__line {
+  flex: 1;
+  width: 2px;
+  margin-top: 0.35rem;
+  background: rgba(247, 247, 242, 0.12);
+  min-height: 1.5rem;
+}
+
+.journey__date {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.2rem;
+}
+
+.journey__event-title {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.journey__detail {
+  margin: 0.2rem 0 0;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* ----- Empty state ----- */
+.ef-empty {
+  padding: 0.35rem 0 0.15rem;
+  display: grid;
+  gap: 0.55rem;
+  justify-items: start;
+}
+
+.ef-empty__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 750;
+  color: var(--text-primary);
+}
+
+.ef-empty__desc {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  max-width: 36ch;
 }
 
 /* ----- Onboarding ----- */
@@ -338,17 +541,52 @@
   background: linear-gradient(160deg, rgba(255, 90, 47, 0.12), rgba(22, 20, 18, 0.92)) !important;
 }
 
+.coach-context__chip {
+  border-color: rgba(255, 90, 61, 0.28) !important;
+  background: linear-gradient(160deg, rgba(27, 30, 35, 0.95), rgba(20, 22, 26, 0.98)) !important;
+  color: var(--text-primary) !important;
+}
+
+.coach-context__icon {
+  color: var(--accent-primary) !important;
+}
+
 .coach-context__k {
   color: var(--accent-primary) !important;
 }
 
-.coach-hero__label {
+.coach-rec {
+  border-color: rgba(255, 90, 61, 0.18) !important;
+  background: linear-gradient(165deg, #1b1e23 0%, #14161a 100%) !important;
+}
+
+.coach-rec__icon {
+  border-color: rgba(255, 90, 61, 0.28) !important;
+  background: rgba(255, 90, 61, 0.1) !important;
   color: var(--accent-primary) !important;
 }
 
+.coach-notice--privacy {
+  border-color: rgba(255, 90, 61, 0.35) !important;
+  background: linear-gradient(135deg, rgba(255, 90, 61, 0.12), rgba(20, 22, 26, 0.9)) !important;
+}
+
+.coach-orb__img {
+  filter: drop-shadow(0 0 18px rgba(255, 90, 61, 0.35)) !important;
+}
+
+.coach-orb__glow {
+  background: radial-gradient(circle, rgba(255, 90, 61, 0.32) 0%, transparent 70%) !important;
+}
+
+.coach-orb__particle {
+  background: #ff5a3d !important;
+  box-shadow: 0 0 10px rgba(255, 90, 61, 0.7) !important;
+}
+
 .coach-hero {
-  border-color: rgba(255, 90, 47, 0.28) !important;
-  background: linear-gradient(115deg, #161412 0%, #0c0b0a 100%) !important;
+  border-color: rgba(255, 90, 61, 0.28) !important;
+  background: linear-gradient(115deg, #14161a 0%, #0b0c0e 100%) !important;
 }
 
 /* ----- Foco treino ----- */

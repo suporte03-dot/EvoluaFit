@@ -1,11 +1,11 @@
 /* EvoluaFit brand — athletes mark + HTML wordmark / sidebar identity */
 
 :root {
-  --brand-white: #f6f1ea;
-  --brand-accent: #ff5a2f;
-  --brand-muted: #8a8076;
-  --brand-surface: #161412;
-  --brand-border: rgba(255, 90, 47, 0.22);
+  --brand-white: #f7f7f2;
+  --brand-accent: #ff5a3d;
+  --brand-muted: #a6a9b0;
+  --brand-surface: #14161a;
+  --brand-border: rgba(255, 90, 61, 0.22);
 }
 
 /* ----- Shared logo (header / compact) ----- */
@@ -50,7 +50,7 @@
   height: var(--ef-mark, 48px);
   flex-shrink: 0;
   border-radius: 14px;
-  filter: drop-shadow(0 0 8px rgba(255, 90, 47, 0.28));
+  filter: drop-shadow(0 0 8px rgba(255, 90, 61, 0.28));
   pointer-events: none;
   user-select: none;
 }
@@ -59,7 +59,7 @@
   display: inline-flex;
   align-items: baseline;
   min-width: 0;
-  font-family: var(--font-brand, 'Syne', system-ui, sans-serif);
+  font-family: var(--font-brand, 'Outfit', system-ui, sans-serif);
   font-size: var(--ef-word);
   font-weight: 800;
   font-style: italic;
@@ -75,7 +75,7 @@
 
 .evoluafit-logo__wordmark-accent {
   color: var(--brand-accent);
-  text-shadow: 0 0 8px rgba(255, 90, 47, 0.25);
+  text-shadow: 0 0 8px rgba(255, 90, 61, 0.25);
 }
 
 .evoluafit-logo--compact {
@@ -133,7 +133,7 @@
   width: 46px;
   height: 46px;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 8px rgba(255, 90, 47, 0.28));
+  filter: drop-shadow(0 0 8px rgba(255, 90, 61, 0.28));
   pointer-events: none;
   user-select: none;
 }
@@ -150,7 +150,7 @@
   display: flex;
   align-items: baseline;
   white-space: nowrap;
-  font-family: var(--font-brand, 'Syne', system-ui, sans-serif);
+  font-family: var(--font-brand, 'Outfit', system-ui, sans-serif);
   font-size: 1.22rem;
   font-weight: 800;
   font-style: italic;
@@ -161,18 +161,18 @@
 }
 
 .evoluafit-brand__name-main {
-  color: #f6f1ea;
+  color: #f7f7f2;
 }
 
 .evoluafit-brand__name-accent {
-  color: #ff5a2f;
-  text-shadow: 0 0 8px rgba(255, 90, 47, 0.25);
+  color: #ff5a3d;
+  text-shadow: 0 0 8px rgba(255, 90, 61, 0.25);
 }
 
 .evoluafit-brand__tagline {
   max-width: 130px;
   margin: 4px 0 0;
-  color: #8a8076;
+  color: #a6a9b0;
   font-size: 0.7rem;
   font-weight: 500;
   line-height: 1.4;
@@ -205,13 +205,13 @@
 }
 
 .evoluafit-brand__collapse:hover {
-  border-color: rgba(255, 90, 47, 0.48);
-  background: rgba(22, 20, 18, 0.96);
-  color: #ff5a2f;
+  border-color: rgba(255, 90, 61, 0.48);
+  background: rgba(20, 22, 26, 0.96);
+  color: #ff5a3d;
 }
 
 .evoluafit-brand__collapse:focus-visible {
-  outline: 2px solid #ff5a2f;
+  outline: 2px solid #ff5a3d;
   outline-offset: 2px;
 }
 

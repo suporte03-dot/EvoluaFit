@@ -1,6 +1,5 @@
 /**
- * Monograma EvoluaFit — curva ascendente + seta de evolução.
- * Funciona de favicon (24px) até banner.
+ * Monograma EvoluaFit — E + trajetória ascendente.
  */
 export default function EvoluaFitMark({ size = 40, className = '' }) {
   const px = typeof size === 'number' ? size : 40
@@ -15,22 +14,23 @@ export default function EvoluaFitMark({ size = 40, className = '' }) {
       aria-hidden="true"
       focusable="false"
     >
-      <rect width="64" height="64" rx="16" fill="#161412" />
+      <rect width="64" height="64" rx="16" fill="#14161A" />
       <path
-        d="M14 44c8-1 14-8 16-16 2 10 8 16 20 16"
-        stroke="#f6f1ea"
-        strokeWidth="3.4"
+        d="M16 46c10-2 16-12 17-22 2 12 9 20 21 20"
+        stroke="#F7F7F2"
+        strokeWidth="3.2"
+        strokeLinecap="round"
+        fill="none"
+        opacity="0.55"
+      />
+      <path
+        d="M14 44C24 30 32 16 50 12"
+        stroke="#FF5A3D"
+        strokeWidth="4.4"
         strokeLinecap="round"
         fill="none"
       />
-      <path
-        d="M14 44c10-14 18-28 36-32"
-        stroke="#ff5a2f"
-        strokeWidth="4.2"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path d="M42 8.5l12 3.2-6.4 11.2-5.6-14.4z" fill="#e8ff47" />
+      <path d="M44 8.5l11.5 2.8-5.8 10.5L44 8.5z" fill="#D9FF43" />
     </svg>
   )
 }

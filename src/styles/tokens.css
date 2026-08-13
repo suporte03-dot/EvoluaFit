@@ -1,59 +1,71 @@
-/* EvoluaFit — Energia Solar
-   Grafite (base) + coral (ação) + amarelo-limão (conquista).
-   Aliases antigos (green/cyan/blue) apontam para o novo sistema
-   para a paleta valer em todo o produto sem deixar telas órfãs. */
+/* EvoluaFit — ENERGY SYSTEM
+   Obsidian + Coral (ação) + Lime (progresso). Uma identidade, sem seletor de tema. */
 
 :root {
-  --app-bg: #0c0b0a;
-  --surface-primary: #161412;
-  --surface-secondary: #1e1b18;
-  --surface-elevated: #26221e;
+  /* Core palette (master) */
+  --app-bg: #0b0c0e;
+  --surface-primary: #14161a;
+  --surface-secondary: #1b1e23;
+  --surface-elevated: #22262c;
 
-  --accent-primary: #ff5a2f;
-  --accent-blue: #c4b5a5;
-  --accent-orange: #ff5a2f;
-  --accent-green: #e8ff47;
-  --accent-purple: #ff7a45;
-  --accent-cyan: #ff8a4c;
-  --accent-red: #ef4444;
+  --accent-primary: #ff5a3d;
+  --accent-lime: #d9ff43;
+  --accent-red: #ff4d5e;
 
-  --text-primary: #f6f1ea;
-  --text-secondary: #c4b8aa;
-  --text-muted: #8a8076;
+  /* Aliases legados → Energy System (evita telas órfãs) */
+  --accent-blue: #a6a9b0;
+  --accent-orange: #ff5a3d;
+  --accent-green: #d9ff43;
+  --accent-purple: #ff7a5c;
+  --accent-cyan: #ff8a6a;
 
-  --border-subtle: rgba(246, 241, 234, 0.1);
-  --border-accent: rgba(255, 90, 47, 0.38);
+  --text-primary: #f7f7f2;
+  --text-secondary: #a6a9b0;
+  --text-muted: #7a7e86;
+
+  --border-subtle: rgba(247, 247, 242, 0.1);
+  --border-accent: rgba(255, 90, 61, 0.4);
   --radius-sm: 10px;
   --radius-md: 16px;
   --radius-lg: 22px;
-  --shadow-card: 0 18px 50px rgba(0, 0, 0, 0.36);
+  --shadow-card: 0 18px 48px rgba(0, 0, 0, 0.4);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --motion-fast: 160ms;
+  --motion-base: 220ms;
 
   --bg-main: var(--app-bg);
   --bg-section: var(--surface-primary);
-  --bg-card: #1a1714;
+  --bg-card: #181b20;
   --bg-card-soft: var(--surface-secondary);
   --primary: var(--accent-primary);
-  --primary-soft: rgba(255, 90, 47, 0.14);
-  --primary-border: rgba(255, 90, 47, 0.5);
-  --secondary: #ff8a4c;
-  --secondary-soft: rgba(255, 138, 76, 0.14);
-  --coach: #ff7a45;
-  --coach-soft: rgba(255, 122, 69, 0.16);
-  --energy: #e8ff47;
-  --energy-soft: rgba(232, 255, 71, 0.16);
-  --performance: #ffb347;
-  --performance-soft: rgba(255, 179, 71, 0.16);
+  --primary-soft: rgba(255, 90, 61, 0.14);
+  --primary-border: rgba(255, 90, 61, 0.5);
+  --secondary: #ff8a6a;
+  --secondary-soft: rgba(255, 138, 106, 0.14);
+  --coach: #ff7a5c;
+  --coach-soft: rgba(255, 122, 92, 0.16);
+  --energy: var(--accent-lime);
+  --energy-soft: rgba(217, 255, 67, 0.14);
+  --performance: #ffb070;
+  --performance-soft: rgba(255, 176, 112, 0.14);
   --danger: var(--accent-red);
-  --danger-soft: rgba(239, 68, 68, 0.14);
+  --danger-soft: rgba(255, 77, 94, 0.14);
   --text-main: var(--text-primary);
   --border-soft: var(--border-subtle);
 
-  --gradient-primary: linear-gradient(135deg, #ff5a2f, #ff8a4c);
-  --gradient-coach: linear-gradient(135deg, #ff5a2f, #c2410c);
-  --glow-primary: 0 0 22px rgba(255, 90, 47, 0.28);
-  --glow-secondary: 0 0 22px rgba(255, 138, 76, 0.18);
-  --glow-coach: 0 0 22px rgba(255, 90, 47, 0.2);
-  --glow-energy: 0 0 20px rgba(232, 255, 71, 0.18);
+  --gradient-primary: linear-gradient(135deg, #ff5a3d, #ff7a5c);
+  --gradient-coach: linear-gradient(135deg, #ff5a3d, #c2410c);
+  --glow-primary: 0 0 22px rgba(255, 90, 61, 0.28);
+  --glow-secondary: 0 0 22px rgba(255, 138, 106, 0.16);
+  --glow-coach: 0 0 22px rgba(255, 90, 61, 0.2);
+  --glow-energy: 0 0 20px rgba(217, 255, 67, 0.18);
 
   --type-push: var(--primary);
   --type-push-soft: var(--primary-soft);
@@ -63,14 +75,14 @@
   --type-legs-soft: var(--energy-soft);
   --type-full: var(--coach);
   --type-full-soft: var(--coach-soft);
-  --type-core: #ffb347;
-  --type-core-soft: rgba(255, 179, 71, 0.16);
+  --type-core: #ffb070;
+  --type-core-soft: rgba(255, 176, 112, 0.16);
   --type-cardio: var(--primary);
   --type-cardio-soft: var(--primary-soft);
   --type-mobility: var(--secondary);
   --type-mobility-soft: var(--secondary-soft);
   --type-rest: var(--text-muted);
-  --type-rest-soft: rgba(138, 128, 118, 0.14);
+  --type-rest-soft: rgba(122, 126, 134, 0.14);
 
   --color-bg: var(--bg-main);
   --color-surface: var(--bg-section);
@@ -94,13 +106,13 @@
   --fn-goals: var(--energy);
 
   --bg-primary: var(--bg-main);
-  --bg-deep: #080706;
+  --bg-deep: #08090b;
   --graphite: var(--bg-section);
   --green: var(--primary);
-  --green-secondary: #ff7a45;
+  --green-secondary: #ff7a5c;
   --accent: var(--primary);
   --blue: var(--performance);
-  --blue-deep: #2a221c;
+  --blue-deep: #2a2e36;
   --cyan: var(--secondary);
   --purple: var(--coach);
   --orange: var(--primary);
@@ -109,14 +121,14 @@
   --gray: var(--text-muted);
 
   --bg-page: var(--bg-main);
-  --bg-glass: rgba(22, 20, 18, 0.82);
-  --bg-glass-soft: rgba(30, 27, 24, 0.62);
+  --bg-glass: rgba(20, 22, 26, 0.86);
+  --bg-glass-soft: rgba(27, 30, 35, 0.65);
   --border: var(--border-soft);
   --border-strong: var(--primary-border);
 
   --radius: var(--radius-md);
-  --font-heading: 'Syne', system-ui, sans-serif;
-  --font-brand: 'Syne', system-ui, sans-serif;
+  --font-heading: 'Outfit', system-ui, sans-serif;
+  --font-brand: 'Outfit', system-ui, sans-serif;
   --font: 'Figtree', system-ui, sans-serif;
   --header-h: 96px;
   --header-banner-h: 0px;

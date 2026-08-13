@@ -34,12 +34,11 @@ const NAV_GROUPS = [
     ],
   },
   {
-    id: 'evoluir',
-    label: 'Evoluir',
+    id: 'evolucao',
+    label: 'Evolução',
     items: [
-      { id: 'desempenho', label: 'Evolução', Icon: IconTrend, tone: 'orange' },
+      { id: 'desempenho', label: 'Indicadores', Icon: IconTrend, tone: 'orange' },
       { id: 'metas', label: 'Metas', Icon: IconChart, tone: 'orange' },
-      { id: 'calendario', label: 'Agenda', Icon: IconCalendar, tone: 'orange' },
     ],
   },
   {
@@ -48,10 +47,11 @@ const NAV_GROUPS = [
     items: [{ id: 'coach-ia', label: 'Coach IA', Icon: IconSpark, tone: 'orange' }],
   },
   {
-    id: 'conta',
-    label: 'Conta',
+    id: 'perfil',
+    label: 'Perfil',
     items: [
-      { id: 'perfil', label: 'Perfil', Icon: IconSettings, tone: 'orange', to: '/app/perfil' },
+      { id: 'calendario', label: 'Agenda', Icon: IconCalendar, tone: 'orange' },
+      { id: 'perfil', label: 'Conta', Icon: IconSettings, tone: 'orange', to: '/app/perfil' },
       { id: 'ajuda', label: 'Ajuda', Icon: IconSpark, tone: 'orange' },
     ],
   },

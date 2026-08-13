@@ -12,41 +12,37 @@ export const sectionIds = [
 ]
 
 export const navItems = [
-  { id: 'inicio', label: 'Início' },
-  { id: 'treinos', label: 'Treinos' },
-  { id: 'planilha', label: 'Planilha' },
-  { id: 'coach-ia', label: 'Coach IA' },
-  { id: 'exercicios', label: 'Exercícios' },
-  { id: 'calendario', label: 'Calendário' },
-  { id: 'desempenho', label: 'Desempenho' },
-  { id: 'metas', label: 'Metas' },
-  { id: 'perfil', label: 'Perfil' },
-]
-
-export const mobileNavItems = [
-  { id: 'inicio', label: 'Início' },
-  { id: 'treinos', label: 'Treinos' },
-  { id: 'executar', label: 'Executar' },
+  { id: 'inicio', label: 'Hoje' },
+  { id: 'treinos', label: 'Treinar' },
   { id: 'desempenho', label: 'Evolução' },
-  { id: 'mais', label: 'Mais' },
+  { id: 'coach-ia', label: 'Coach' },
+  { id: 'perfil', label: 'Perfil' },
 ]
 
-export const mobileNavMoreItems = [
+/** Mobile bottom nav — 5 áreas principais */
+export const mobileNavItems = [
+  { id: 'inicio', label: 'Hoje' },
+  { id: 'treinos', label: 'Treinar' },
+  { id: 'desempenho', label: 'Evolução' },
+  { id: 'coach-ia', label: 'Coach' },
   { id: 'perfil', label: 'Perfil' },
-  { id: 'configuracoes', label: 'Configurações' },
-  { id: 'ajuda', label: 'Ajuda' },
+]
+
+/** Sheet "Mais" — atalhos secundários (planilha, biblioteca, agenda, etc.) */
+export const mobileNavMoreItems = [
   { id: 'planilha', label: 'Planilha' },
   { id: 'exercicios', label: 'Biblioteca' },
-  { id: 'coach-ia', label: 'Coach IA' },
-  { id: 'metas', label: 'Metas' },
   { id: 'calendario', label: 'Agenda' },
+  { id: 'metas', label: 'Metas' },
+  { id: 'ajuda', label: 'Ajuda' },
+  { id: 'configuracoes', label: 'Configurações' },
 ]
 
 export const BRAND = {
   name: 'EvoluaFit',
-  slogan: 'Treinos inteligentes, evolução real.',
-  sloganHighlight: 'evolução real',
-  /** Single global disclaimer — footer only */
+  slogan: 'Evolua além do treino.',
+  sloganHighlight: 'além do treino',
+  tagline: 'Organize sua rotina, acompanhe sua evolução e saiba exatamente qual é o próximo passo.',
   disclaimer:
     'Conteúdo informativo: não substitui orientação de um profissional de educação física ou saúde. Respeite seus limites.',
 }

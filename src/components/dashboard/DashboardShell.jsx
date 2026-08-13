@@ -1,13 +1,12 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useFitness } from '../../context/FitnessContext'
 import { useProgress } from '../../context/ProgressContext'
 import { getDashboardMetrics } from '../../utils/dashboardMetrics'
+import { computeEvoluaScore } from '../../utils/evoluaScore'
 import DashboardHero from './DashboardHero'
 import EvolutionTrail, { emotionalProgressCopy } from './EvolutionTrail'
-import TrainingOverviewCard from './TrainingOverviewCard'
-import CalendarOverviewCard from './CalendarOverviewCard'
-import ProgressOverviewCard from './ProgressOverviewCard'
-import CoachOverviewCard from './CoachOverviewCard'
+import JourneyTimeline from './JourneyTimeline'
+import EvoluaScoreCard from '../ui/EvoluaScoreCard'
 import { scrollToSection } from '../../utils/scrollToSection'
 
 export default function DashboardShell() {
@@ -17,11 +16,8 @@ export default function DashboardShell() {
     history,
     goals,
     performance,
-    plans,
-    generatedPlan,
   } = useFitness()
-  const { homeProgressMetrics, weeklyFrequency, loadingProgress } = useProgress()
-  const [moreOpen, setMoreOpen] = useState(false)
+  const { homeProgressMetrics, loadingProgress } = useProgress()
 
   const metrics = useMemo(() => {
     const base = getDashboardMetrics({ profile, workouts, history, goals, performance })
@@ -49,10 +45,12 @@ export default function DashboardShell() {
       monthlyComparisonLabel: progressReady
         ? homeProgressMetrics?.monthlyComparisonLabel || null
         : null,
+      hasData: progressHasData || base.hasData,
     }
   }, [profile, workouts, history, goals, performance, homeProgressMetrics, loadingProgress])
 
   const insight = emotionalProgressCopy(metrics)
+  const score = useMemo(() => computeEvoluaScore(metrics), [metrics])
 
   return (
     <section id="inicio" className="dash-home dash-home--hoje" aria-label="Hoje no EvoluaFit">
@@ -64,14 +62,24 @@ export default function DashboardShell() {
           workouts={workouts}
         />
 
-        <div className="dash-hoje-panel">
-          <p className="dash-hoje-panel__insight">{insight}</p>
-          <EvolutionTrail history={history} workouts={workouts} />
+        <div className="dash-hoje-grid">
+          <div className="dash-hoje-panel">
+            <p className="dash-hoje-panel__insight">{insight}</p>
+            <EvolutionTrail history={history} workouts={workouts} />
+          </div>
+          <EvoluaScoreCard score={score} />
         </div>
 
-        <nav className="dash-hoje-links" aria-label="Atalhos">
+        <JourneyTimeline
+          history={history}
+          workouts={workouts}
+          goals={goals}
+          streak={metrics.streak}
+        />
+
+        <nav className="dash-hoje-links" aria-label="Áreas do app">
           <button type="button" onClick={() => scrollToSection('treinos')}>
-            Treinos
+            Treinar
           </button>
           <button type="button" onClick={() => scrollToSection('desempenho')}>
             Evolução
@@ -79,37 +87,10 @@ export default function DashboardShell() {
           <button type="button" onClick={() => scrollToSection('coach-ia')}>
             Coach
           </button>
+          <button type="button" onClick={() => scrollToSection('perfil')}>
+            Perfil
+          </button>
         </nav>
-
-        <button
-          type="button"
-          className={`disclose-toggle${moreOpen ? ' is-open' : ''}`}
-          onClick={() => setMoreOpen((o) => !o)}
-          aria-expanded={moreOpen}
-        >
-          <span>{moreOpen ? 'Ocultar módulos' : 'Ver planilha, agenda e indicadores'}</span>
-          <span aria-hidden="true">{moreOpen ? '▲' : '▼'}</span>
-        </button>
-
-        {moreOpen && (
-          <div className="dash-modules" aria-label="Módulos">
-            <TrainingOverviewCard
-              workouts={workouts}
-              history={history}
-              profile={profile}
-              goals={goals}
-            />
-            <CalendarOverviewCard workouts={workouts} />
-            <ProgressOverviewCard metrics={metrics} weeklyFrequency={weeklyFrequency} />
-            <CoachOverviewCard
-              workouts={workouts}
-              history={history}
-              plans={plans}
-              generatedPlan={generatedPlan}
-              profile={profile}
-            />
-          </div>
-        )}
       </div>
     </section>
   )

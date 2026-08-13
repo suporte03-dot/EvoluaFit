@@ -511,6 +511,14 @@ export function getCoachSummary(context = {}) {
   const pending = workouts.filter((w) => w.status === 'Pendente')
   const hasData = Boolean(profile?.objective || workouts.length || history.length)
 
+  const weekStart = new Date()
+  weekStart.setHours(0, 0, 0, 0)
+  weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7))
+  const weeklyWorkouts = history.filter((h) => {
+    const d = new Date(h.completedAt || h.date)
+    return !Number.isNaN(d.getTime()) && d >= weekStart
+  }).length
+
   let nextSuggestion = 'Treino equilibrado e moderado'
   let recommendedGroup = 'Corpo inteiro'
   let attention =
@@ -554,6 +562,7 @@ export function getCoachSummary(context = {}) {
     level: profile?.level || null,
     objective: profile?.objective || null,
     streak,
+    weeklyWorkouts,
   }
 }
 

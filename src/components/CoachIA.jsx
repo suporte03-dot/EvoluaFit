@@ -50,18 +50,18 @@ const COACH_PAGE_CSS = `
 .coach-ia__empty-actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.75rem}
 .coach-ia__picker-empty{display:grid;gap:.75rem}
 .coach-ia__picker-empty p{margin:0;color:rgba(186,198,216,.95);font-size:.9rem;line-height:1.45}
-.coach-hero{position:relative;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(140px,.85fr);align-items:center;gap:1rem;min-height:200px;padding:1.75rem 1.85rem;border-radius:var(--radius,16px);border:1px solid rgba(0,217,255,.28);background:linear-gradient(115deg,#071426 0%,#06101f 48%,#031423 100%);box-shadow:inset 0 1px 0 rgba(94,239,255,.08),0 18px 40px rgba(0,0,0,.28);overflow:hidden}
+.coach-hero{position:relative;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(140px,.85fr);align-items:center;gap:1rem;min-height:200px;padding:1.75rem 1.85rem;border-radius:var(--radius,16px);border:1px solid rgba(255,90,61,.28);background:linear-gradient(115deg,#0b0c0e 0%,#14161a 48%,#0b0c0e 100%);box-shadow:inset 0 1px 0 rgba(255,138,106,.08),0 18px 40px rgba(0,0,0,.28);overflow:hidden}
 .coach-hero__copy{position:relative;z-index:2;max-width:36rem}
-.coach-hero__label{margin:0 0 .45rem;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#2dd4bf}
+.coach-hero__label{margin:0 0 .45rem;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#ff5a3d}
 .coach-hero__title{margin:0 0 .65rem;font-size:clamp(1.85rem,3.2vw,2.55rem);font-weight:800;letter-spacing:-.02em;line-height:1.1;color:#f8fafc}
 .coach-hero__subtitle{margin:0;max-width:34ch;font-size:.95rem;line-height:1.55;color:rgba(186,198,214,.92)}
 .coach-hero__art{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;min-height:160px}
-.coach-hero__fade{position:absolute;inset:0 auto 0 -40%;width:55%;background:linear-gradient(90deg,#06101f 0%,transparent 100%);pointer-events:none;z-index:2}
+.coach-hero__fade{position:absolute;inset:0 auto 0 -40%;width:55%;background:linear-gradient(90deg,#14161a 0%,transparent 100%);pointer-events:none;z-index:2}
 .coach-orb{position:relative;width:min(100%,220px);aspect-ratio:1;display:grid;place-items:center}
-.coach-orb__img{position:relative;z-index:2;width:100%;height:auto;filter:drop-shadow(0 0 22px rgba(0,217,255,.35));animation:coachOrbFloat 6.5s ease-in-out infinite}
-.coach-orb__glow{position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle,rgba(0,217,255,.35) 0%,transparent 70%);filter:blur(8px);animation:coachOrbPulse 4.5s ease-in-out infinite}
-.coach-orb__pulse{position:absolute;inset:8%;border-radius:50%;border:1px solid rgba(94,239,255,.22);animation:coachOrbRing 5s ease-out infinite}
-.coach-orb__particle{position:absolute;width:5px;height:5px;border-radius:50%;background:#5eefff;box-shadow:0 0 10px rgba(94,239,255,.8);z-index:3;animation:coachParticle 5.5s ease-in-out infinite}
+.coach-orb__img{position:relative;z-index:2;width:100%;height:auto;filter:drop-shadow(0 0 22px rgba(255,90,61,.35));animation:coachOrbFloat 6.5s ease-in-out infinite}
+.coach-orb__glow{position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle,rgba(255,90,61,.35) 0%,transparent 70%);filter:blur(8px);animation:coachOrbPulse 4.5s ease-in-out infinite}
+.coach-orb__pulse{position:absolute;inset:8%;border-radius:50%;border:1px solid rgba(255,138,106,.22);animation:coachOrbRing 5s ease-out infinite}
+.coach-orb__particle{position:absolute;width:5px;height:5px;border-radius:50%;background:#ff8a6a;box-shadow:0 0 10px rgba(255,138,106,.8);z-index:3;animation:coachParticle 5.5s ease-in-out infinite}
 .coach-orb__particle--1{top:18%;right:22%}
 .coach-orb__particle--2{bottom:24%;left:18%;width:3px;height:3px;animation-delay:1.2s}
 .coach-orb__particle--3{top:42%;right:8%;width:4px;height:4px;animation-delay:2.4s}
@@ -81,26 +81,26 @@ const COACH_PAGE_CSS = `
 .coach-notice__text{margin:0;font-size:.86rem;line-height:1.45;color:rgba(226,232,240,.92)}
 .coach-notice--safety{border:1px solid rgba(249,115,22,.55);background:linear-gradient(135deg,rgba(124,45,18,.28),rgba(15,23,42,.75))}
 .coach-notice--safety .coach-notice__icon{color:#fb923c}
-.coach-notice--privacy{border:1px solid rgba(0,217,255,.4);background:linear-gradient(135deg,rgba(8,47,73,.45),rgba(8,18,35,.85))}
-.coach-notice--privacy .coach-notice__icon{color:#67e8f9}
+.coach-notice--privacy{border:1px solid rgba(255,90,61,.4);background:linear-gradient(135deg,rgba(8,47,73,.45),rgba(8,18,35,.85))}
+.coach-notice--privacy .coach-notice__icon{color:#ff8a6a}
 .coach-notice--privacy .coach-notice__text{color:rgba(148,183,204,.95)}
 .coach-recs-panel{margin:.15rem 0 .35rem}
 .coach-recs-panel__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem;align-items:stretch}
-.coach-rec{display:flex;flex-direction:column;gap:.7rem;height:100%;padding:1.15rem 1.2rem;border-radius:14px;border:1px solid rgba(0,217,255,.18);background:linear-gradient(165deg,rgba(12,28,48,.95) 0%,rgba(6,14,28,.98) 100%);box-shadow:0 0 0 1px rgba(0,217,255,.04),0 12px 28px rgba(0,0,0,.22);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
-.coach-rec:hover{transform:translateY(-2px);border-color:rgba(0,217,255,.35);box-shadow:0 0 24px rgba(0,217,255,.08),0 14px 32px rgba(0,0,0,.28)}
+.coach-rec{display:flex;flex-direction:column;gap:.7rem;height:100%;padding:1.15rem 1.2rem;border-radius:14px;border:1px solid rgba(255,90,61,.18);background:linear-gradient(165deg,rgba(12,28,48,.95) 0%,rgba(6,14,28,.98) 100%);box-shadow:0 0 0 1px rgba(255,90,61,.04),0 12px 28px rgba(0,0,0,.22);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.coach-rec:hover{transform:translateY(-2px);border-color:rgba(255,90,61,.35);box-shadow:0 0 24px rgba(255,90,61,.08),0 14px 32px rgba(0,0,0,.28)}
 .coach-rec.is-applied{opacity:.72}
 .coach-rec__head{display:flex;align-items:flex-start;gap:.65rem}
-.coach-rec__icon{display:inline-flex;align-items:center;justify-content:center;width:2.15rem;height:2.15rem;border-radius:10px;border:1px solid rgba(0,217,255,.28);background:rgba(0,217,255,.08);color:#5eefff;flex-shrink:0}
+.coach-rec__icon{display:inline-flex;align-items:center;justify-content:center;width:2.15rem;height:2.15rem;border-radius:10px;border:1px solid rgba(255,90,61,.28);background:rgba(255,90,61,.08);color:#ff8a6a;flex-shrink:0}
 .coach-rec__title{margin:.15rem 0 0;font-size:1.05rem;font-weight:750;line-height:1.3;color:#f1f5f9}
 .coach-rec__block{display:grid;gap:.2rem}
 .coach-rec__k{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(148,163,184,.95)}
 .coach-rec__body{margin:0;font-size:.88rem;line-height:1.45;color:rgba(203,213,225,.95)}
 .coach-rec__actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:auto;padding-top:.25rem}
 .coach-rec__btn{min-height:2.5rem;padding:.5rem 1rem;border-radius:10px;font:inherit;font-size:.86rem;font-weight:750;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,background .15s ease,border-color .15s ease}
-.coach-rec__btn:focus-visible{outline:2px solid rgba(0,217,255,.7);outline-offset:2px}
+.coach-rec__btn:focus-visible{outline:2px solid rgba(255,90,61,.7);outline-offset:2px}
 .coach-rec__btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
 .coach-rec__btn--apply{border:none;background:linear-gradient(135deg,#00e58f 0%,#00d9ff 100%);color:#04101f;box-shadow:0 6px 18px rgba(0,229,143,.2)}
-.coach-rec__btn--apply:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,217,255,.28)}
+.coach-rec__btn--apply:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,90,61,.28)}
 .coach-rec__btn--ignore{border:1px solid rgba(148,163,184,.35);background:rgba(8,18,35,.75);color:#f8fafc}
 .coach-rec__btn--ignore:hover:not(:disabled){border-color:rgba(148,163,184,.55);background:rgba(30,41,59,.85)}
 .coach-recs-empty{padding:1.1rem 1.15rem;border-radius:14px;border:1px dashed rgba(148,163,184,.35);background:rgba(8,18,35,.45)}
@@ -210,6 +210,15 @@ function CoachContextChips({ summary, profile }) {
       value: formatLastWorkout(summary?.lastWorkout),
     },
     {
+      id: 'week',
+      Icon: IconDumbbell,
+      label: 'Treinos recentes',
+      value:
+        summary?.weeklyWorkouts > 0
+          ? `${summary.weeklyWorkouts} esta semana`
+          : 'Nenhum treino nesta semana ainda',
+    },
+    {
       id: 'streak',
       Icon: IconFlame,
       label: 'Sequência',
@@ -227,8 +236,8 @@ function CoachContextChips({ summary, profile }) {
   ]
 
   return (
-    <section className="coach-context" aria-label="O que o Coach sabe sobre você">
-      <h3 className="coach-page__section-title">O que o Coach já sabe sobre você</h3>
+    <section className="coach-context" aria-label="O que seu Coach sabe sobre você">
+      <h3 className="coach-page__section-title">O que seu Coach sabe sobre você</h3>
       <p className="coach-context__lead">
         Essas informações entram em cada resposta. Nada fica escondido.
       </p>

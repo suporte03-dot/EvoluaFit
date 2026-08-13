@@ -36,9 +36,7 @@ export default function EvoluaFitBrand({
             </div>
 
             <p className="evoluafit-brand__tagline">
-              Treine com foco.
-              <br />
-              Evolua com constância.
+              Evolua além do treino.
             </p>
           </div>
         )}

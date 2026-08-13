@@ -1,8 +1,9 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import AuthLoading from './AuthLoading'
+import LandingPage from '../../pages/LandingPage'
 
-/** Direciona `/` conforme a sessão. */
+/** `/` — app se autenticado; landing pública se visitante. */
 export default function RootRedirect() {
   const { user, loading } = useAuth()
 
@@ -10,5 +11,9 @@ export default function RootRedirect() {
     return <AuthLoading label="Carregando" />
   }
 
-  return <Navigate to={user ? '/app' : '/login'} replace />
+  if (user) {
+    return <Navigate to="/app" replace />
+  }
+
+  return <LandingPage />
 }

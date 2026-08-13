@@ -19,8 +19,8 @@ export default defineConfig({
         scope: '/',
         display: 'standalone',
         orientation: 'portrait-primary',
-        theme_color: '#0c0b0a',
-        background_color: '#0c0b0a',
+        theme_color: '#0b0c0e',
+        background_color: '#0b0c0e',
         lang: 'pt-BR',
         icons: [
           {

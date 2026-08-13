@@ -219,7 +219,7 @@
     height: 3px;
     border-radius: 0 0 3px 3px;
     background: var(--primary);
-    box-shadow: 0 0 10px rgba(0, 229, 143, 0.4);
+    box-shadow: 0 0 10px rgba(255, 90, 61, 0.4);
   }
 
   .mobile-nav__item--active .mobile-nav__icon {

@@ -2,10 +2,70 @@ import EvoluaFitLogo from '../branding/EvoluaFitLogo'
 import EvoluaFitMark from '../branding/EvoluaFitMark'
 import { BRAND } from '../../data/siteData'
 
+function IconDumbbell({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M6.5 8.5v7M17.5 8.5v7M4 10.5v3M20 10.5v3M6.5 12h11"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
+function IconChart({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M5 19V11M12 19V5M19 19v-7"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
+function IconFlag({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M6 21V4M6 4h9l-1.5 3.5L15 11H6"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function IconShield({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M12 3l7 3v5c0 4.5-2.8 7.8-7 9-4.2-1.2-7-4.5-7-9V6l7-3z"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinejoin="round"
+      />
+      <path d="M9.5 12l1.8 1.8L15 10" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+const JOURNEY = [
+  { id: 'treine', label: 'Treine', Icon: IconDumbbell, tone: 'muted' },
+  { id: 'acompanhe', label: 'Acompanhe', Icon: IconChart, tone: 'muted' },
+  { id: 'evolua', label: 'Evolua', Icon: IconFlag, tone: 'progress' },
+]
+
 /**
  * Auth shell.
- * variant="split" — desktop visual + form (login priority)
- * variant="card" — centered card (cadastro / recovery)
+ * variant="split" — capa visual + formulário (login)
+ * variant="card" — card central (cadastro / recovery)
  */
 export default function AuthLayout({
   title,
@@ -17,44 +77,62 @@ export default function AuthLayout({
   visualSubtitle = BRAND.tagline,
 }) {
   if (variant === 'split') {
+    const titleParts = String(visualTitle).split(/treino/i)
+    const hasTreino = /treino/i.test(visualTitle)
+
     return (
       <div className="auth-split">
         <aside className="auth-split__visual" aria-label="Identidade EvoluaFit">
+          <div className="auth-split__glow" aria-hidden="true" />
           <div className="auth-split__visual-inner">
-            <EvoluaFitLogo size="large" showWordmark />
-            <h2 className="auth-split__headline">{visualTitle}</h2>
+            <div className="auth-split__brand">
+              <EvoluaFitMark size={44} />
+              <span className="auth-split__brand-name">
+                Evolua<span>Fit</span>
+              </span>
+            </div>
+
+            <h2 className="auth-split__headline">
+              {hasTreino ? (
+                <>
+                  {titleParts[0]}
+                  <span className="auth-split__headline-accent">treino</span>
+                  {titleParts[1] || '.'}
+                </>
+              ) : (
+                visualTitle
+              )}
+            </h2>
             <p className="auth-split__tagline">{visualSubtitle}</p>
-            <div className="auth-split__art" aria-hidden="true">
-              <EvoluaFitMark size={120} withBackground={false} />
-              <svg className="auth-split__trajectory" viewBox="0 0 320 160" fill="none">
-                <path
-                  d="M8 132C72 120 96 88 140 64C184 40 220 28 312 18"
-                  stroke="url(#auth-traj)"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  opacity="0.85"
-                />
-                <path
-                  d="M8 148C88 138 120 110 168 86C216 62 248 52 312 44"
-                  stroke="url(#auth-traj)"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  opacity="0.35"
-                />
-                <circle cx="312" cy="18" r="4" fill="#7657FF" />
-                <defs>
-                  <linearGradient id="auth-traj" x1="8" y1="140" x2="312" y2="18">
-                    <stop stopColor="#3578FF" />
-                    <stop offset="1" stopColor="#7657FF" />
-                  </linearGradient>
-                </defs>
-              </svg>
+
+            <ol className="auth-journey" aria-label="Jornada EvoluaFit">
+              {JOURNEY.map((step, index) => (
+                <li
+                  key={step.id}
+                  className={`auth-journey__item auth-journey__item--${step.tone}`}
+                >
+                  {index > 0 ? <span className="auth-journey__line" aria-hidden="true" /> : null}
+                  <span className="auth-journey__node" aria-hidden="true">
+                    <step.Icon size={16} />
+                  </span>
+                  <span className="auth-journey__label">{step.label}</span>
+                </li>
+              ))}
+            </ol>
+
+            <div className="auth-security" role="note">
+              <span className="auth-security__icon" aria-hidden="true">
+                <IconShield size={18} />
+              </span>
+              <p>
+                Seus dados estão protegidos. Privacidade e segurança em primeiro lugar.
+              </p>
             </div>
           </div>
         </aside>
 
         <div className="auth-split__panel">
-          <div className="auth-split__panel-inner">
+          <div className="auth-split__panel-inner auth-login-card">
             <div className="auth-split__mobile-brand">
               <EvoluaFitLogo size="medium" showWordmark />
             </div>

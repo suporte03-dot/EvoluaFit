@@ -151,7 +151,7 @@ export function metricHint(key, metrics) {
     case 'nextWorkout':
       return metrics.nextWorkout?.date
         ? formatDateShort(metrics.nextWorkout.date)
-        : 'Nada agendado ainda'
+        : 'Abra a agenda e marque o próximo'
     case 'weeklyWorkouts':
       return metrics.weeklyGoal
         ? `Meta semanal: ${metrics.weeklyGoal} treinos`
@@ -179,23 +179,23 @@ export function metricEmptyCopy(key) {
   switch (key) {
     case 'nextWorkout':
       return {
-        value: 'Nada agendado',
-        hint: 'Agende no calendário ou gere uma planilha',
+        value: 'Marcar próximo',
+        hint: 'Abra a agenda ou gere uma planilha',
       }
     case 'weeklyWorkouts':
       return {
-        value: 'Sem treinos',
-        hint: 'Conclua um treino para começar a semana',
+        value: 'Começar a semana',
+        hint: 'Conclua um treino para acender a trilha',
       }
     case 'monthlyPerformancePct':
       return {
-        value: 'Sem dados',
-        hint: 'Ainda não há dados suficientes para comparar este período.',
+        value: 'Ainda no começo',
+        hint: 'Treine neste mês e no anterior para ver a comparação.',
       }
     case 'streak':
       return {
-        value: 'Sem sequência',
-        hint: 'Complete treinos em dias seguidos',
+        value: 'Comece hoje',
+        hint: 'Um treino hoje já inicia a sequência',
       }
     case 'totalVolume':
       return {
@@ -224,8 +224,8 @@ export function metricEmptyCopy(key) {
       }
     default:
       return {
-        value: 'Sem dados',
-        hint: 'Ainda não há informações suficientes',
+        value: 'Em construção',
+        hint: 'Conclua um treino para preencher este indicador',
       }
   }
 }

@@ -61,7 +61,7 @@ export default function ProgressOverviewCard({
             </>
           ) : (
             <div className="dash-module__empty-visual">
-              <p>Sem dados suficientes ainda. Conclua treinos para ver a curva.</p>
+              <p>Conclua alguns treinos para ver a curva de evolução. O primeiro já abre o gráfico.</p>
             </div>
           )}
         </div>

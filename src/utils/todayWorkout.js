@@ -161,7 +161,7 @@ export function weeklyProgressSentence(progress) {
   if (completedCount > 0) {
     return `Você concluiu ${completedCount} ${completedCount === 1 ? 'treino' : 'treinos'} nesta semana.`
   }
-  return 'Nenhum treino concluído nesta semana ainda.'
+  return 'Sua semana ainda está em branco — o primeiro treino acende a trilha.'
 }
 
 export function situationCopy(situation, { daysSinceLast, nextWorkout } = {}) {
@@ -179,10 +179,10 @@ export function situationCopy(situation, { daysSinceLast, nextWorkout } = {}) {
     case 'no_workout_today':
       return {
         label: 'Hoje',
-        title: nextWorkout ? 'Nada agendado para hoje' : 'Sem treino para hoje',
+        title: nextWorkout ? 'Hoje é dia de recuperar' : 'Escolha o próximo passo',
         description: nextWorkout
-          ? `Próximo na planilha: ${nextWorkout.name}. Você pode adiantar ou seguir o calendário.`
-          : 'Use o calendário ou a planilha para agendar a próxima sessão.',
+          ? `Próximo na planilha: ${nextWorkout.name}. Adiante agora ou siga o calendário.`
+          : 'Abra a planilha e defina o próximo treino — leva menos de um minuto.',
         primaryLabel: nextWorkout ? 'Ver próximo treino' : 'Abrir calendário',
         primarySection: nextWorkout ? 'treinos' : 'calendario',
         secondaryLabel: 'Criar planilha',

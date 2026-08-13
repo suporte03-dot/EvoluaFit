@@ -20,6 +20,7 @@ import Footer from './components/Footer'
 import Toast from './components/Toast'
 import StartWorkoutModal from './components/StartWorkoutModal'
 import SessionResumeBanner from './components/SessionResumeBanner'
+import FirstRunGuide, { hasCompletedOnboarding } from './components/FirstRunGuide'
 import MobileNav from './components/MobileNav'
 import DashboardShell from './components/dashboard/DashboardShell'
 import DashboardSidebar from './components/dashboard/DashboardSidebar'
@@ -36,6 +37,7 @@ import './styles/dashboard.css'
 import './styles/mobile.css'
 import './styles/evoluafit-logo.css'
 import './styles/auth.css'
+import './styles/identity.css'
 
 const HowItWorks = lazy(() => import('./components/HowItWorks'))
 const MyWorkouts = lazy(() => import('./components/MyWorkouts'))
@@ -127,8 +129,11 @@ function AppLayout() {
 }
 
 function DashboardHome() {
+  const [showOnboard, setShowOnboard] = useState(() => !hasCompletedOnboarding())
+
   return (
     <>
+      {showOnboard && <FirstRunGuide onClose={() => setShowOnboard(false)} />}
       <SessionResumeBanner />
       <DashboardShell />
       <Suspense fallback={<SectionFallback label="Carregando conteúdo" />}>

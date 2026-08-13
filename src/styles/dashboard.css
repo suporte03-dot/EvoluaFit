@@ -596,7 +596,7 @@ body:has(.dash-sidebar--open) .dash-sidebar {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--accent-primary), var(--accent-cyan));
+  background: linear-gradient(90deg, var(--accent-primary), var(--energy));
 }
 
 .dash-hero__actions {

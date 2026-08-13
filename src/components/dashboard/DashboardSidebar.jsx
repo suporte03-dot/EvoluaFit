@@ -18,18 +18,43 @@ import { scrollToSection, handleSectionClick } from '../../utils/scrollToSection
 import { useAuth } from '../../context/AuthContext'
 import { useProfile } from '../../context/ProfileContext'
 
-const MAIN_NAV = [
-  { id: 'inicio', label: 'Dashboard', Icon: IconHome, tone: 'blue' },
-  { id: 'inicio', label: 'Indicadores', Icon: IconChart, hash: 'dash-indicadores', tone: 'orange' },
-  { id: 'treinos', label: 'Meus Treinos', Icon: IconDumbbell, tone: 'green' },
-  { id: 'planilha', label: 'Planilha', Icon: IconPanel, tone: 'green' },
-  { id: 'exercicios', label: 'Biblioteca', Icon: IconLibrary, tone: 'cyan' },
-  { id: 'calendario', label: 'Calendário', Icon: IconCalendar, tone: 'blue' },
-  { id: 'desempenho', label: 'Evolução', Icon: IconTrend, tone: 'purple' },
-  { id: 'coach-ia', label: 'Coach IA', Icon: IconSpark, tone: 'cyan' },
-  { id: 'metas', label: 'Metas', Icon: IconChart, tone: 'orange' },
-  { id: 'perfil', label: 'Perfil', Icon: IconSettings, tone: 'blue', to: '/app/perfil' },
-  { id: 'ajuda', label: 'Ajuda', Icon: IconSpark, tone: 'cyan' },
+const NAV_GROUPS = [
+  {
+    id: 'hoje',
+    label: 'Hoje',
+    items: [{ id: 'inicio', label: 'Agora', Icon: IconHome, tone: 'orange' }],
+  },
+  {
+    id: 'treinar',
+    label: 'Treinar',
+    items: [
+      { id: 'treinos', label: 'Meus treinos', Icon: IconDumbbell, tone: 'orange' },
+      { id: 'planilha', label: 'Planilha', Icon: IconPanel, tone: 'orange' },
+      { id: 'exercicios', label: 'Biblioteca', Icon: IconLibrary, tone: 'orange' },
+    ],
+  },
+  {
+    id: 'evoluir',
+    label: 'Evoluir',
+    items: [
+      { id: 'desempenho', label: 'Evolução', Icon: IconTrend, tone: 'orange' },
+      { id: 'metas', label: 'Metas', Icon: IconChart, tone: 'orange' },
+      { id: 'calendario', label: 'Agenda', Icon: IconCalendar, tone: 'orange' },
+    ],
+  },
+  {
+    id: 'coach',
+    label: 'Coach',
+    items: [{ id: 'coach-ia', label: 'Coach IA', Icon: IconSpark, tone: 'orange' }],
+  },
+  {
+    id: 'conta',
+    label: 'Conta',
+    items: [
+      { id: 'perfil', label: 'Perfil', Icon: IconSettings, tone: 'orange', to: '/app/perfil' },
+      { id: 'ajuda', label: 'Ajuda', Icon: IconSpark, tone: 'orange' },
+    ],
+  },
 ]
 
 function navTarget(item) {
@@ -79,7 +104,7 @@ export default function DashboardSidebar({
   const isActive = (item) => {
     if (item.to === '/app/perfil') return onProfilePage
     if (onProfilePage) return false
-    if (item.label === 'Dashboard') return activeSection === 'inicio' && !item.hash
+    if (item.label === 'Agora') return activeSection === 'inicio' && !item.hash
     if (item.hash) return false
     return activeSection === item.id
   }
@@ -147,33 +172,34 @@ export default function DashboardSidebar({
           />
         </div>
 
-        <nav className="dash-sidebar__nav" aria-label="Módulos">
-          <p className="dash-sidebar__group-label">{collapsed ? '···' : 'Módulos'}</p>
-          <ul className="dash-sidebar__list">
-            {MAIN_NAV.map((item) => {
-              const Icon = item.Icon
-              const active = isActive(item)
-              return (
-                <li key={`${item.label}-${item.id}-${item.hash || ''}`}>
-                  <button
-                    type="button"
-                    className={`dash-sidebar__link dash-sidebar__link--${item.tone || 'blue'}${
-                      active ? ' is-active' : ''
-                    }`}
-                    onClick={() => go(item)}
-                    aria-current={active ? 'page' : undefined}
-                    title={item.label}
-                  >
-                    <Icon size={18} className="dash-sidebar__icon" />
-                    {!collapsed && <span>{item.label}</span>}
-                    {!collapsed && item.badge ? (
-                      <span className="dash-sidebar__badge">{item.badge}</span>
-                    ) : null}
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
+        <nav className="dash-sidebar__nav" aria-label="Navegação">
+          {NAV_GROUPS.map((group) => (
+            <div key={group.id} className="dash-sidebar__group">
+              <p className="dash-sidebar__group-label">{collapsed ? '·' : group.label}</p>
+              <ul className="dash-sidebar__list">
+                {group.items.map((item) => {
+                  const Icon = item.Icon
+                  const active = isActive(item)
+                  return (
+                    <li key={`${item.label}-${item.id}`}>
+                      <button
+                        type="button"
+                        className={`dash-sidebar__link dash-sidebar__link--${item.tone || 'orange'}${
+                          active ? ' is-active' : ''
+                        }`}
+                        onClick={() => go(item)}
+                        aria-current={active ? 'page' : undefined}
+                        title={item.label}
+                      >
+                        <Icon size={18} className="dash-sidebar__icon" />
+                        {!collapsed && <span>{item.label}</span>}
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          ))}
         </nav>
 
         <div className="dash-sidebar__account">

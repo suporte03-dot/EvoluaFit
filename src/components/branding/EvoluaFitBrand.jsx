@@ -1,9 +1,7 @@
-import athletesMark from '../../assets/branding/evoluafit-athletes-mark.png'
+import EvoluaFitMark from './EvoluaFitMark'
 
 /**
  * EvoluaFit sidebar brand block.
- * Layout: [ mark ] [ EvoluaFit + tagline ] [ collapse ]
- * Name and slogan remain real HTML text — not baked into the mark image.
  */
 export default function EvoluaFitBrand({
   collapsed = false,
@@ -28,14 +26,7 @@ export default function EvoluaFitBrand({
         aria-label="EvoluaFit — Treine com foco. Evolua com constância."
         title={collapsed ? 'EvoluaFit' : undefined}
       >
-        <img
-          src={athletesMark}
-          alt=""
-          aria-hidden="true"
-          className="evoluafit-brand__mark"
-          draggable={false}
-          decoding="async"
-        />
+        <EvoluaFitMark size={collapsed ? 40 : 48} className="evoluafit-brand__mark" />
 
         {!collapsed && (
           <div className="evoluafit-brand__content" aria-hidden="true">

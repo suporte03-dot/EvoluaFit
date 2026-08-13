@@ -187,8 +187,22 @@ function formatLastWorkout(lastWorkout) {
   return date ? `${name} · ${date}` : name
 }
 
-function CoachContextChips({ summary }) {
+function CoachContextChips({ summary, profile }) {
+  const objective = profile?.objective || summary?.objective
+  const level = profile?.level || summary?.level
   const chips = [
+    {
+      id: 'level',
+      Icon: IconTrend,
+      label: 'Nível',
+      value: level || 'Ainda não definido — complete o perfil',
+    },
+    {
+      id: 'goal',
+      Icon: IconTarget,
+      label: 'Objetivo',
+      value: objective || 'Defina um objetivo para personalizar as sugestões',
+    },
     {
       id: 'last',
       Icon: IconCalendar,
@@ -196,22 +210,28 @@ function CoachContextChips({ summary }) {
       value: formatLastWorkout(summary?.lastWorkout),
     },
     {
-      id: 'suggestion',
-      Icon: IconBolt,
-      label: 'Sugestão',
-      value: summary?.nextSuggestion || 'Sem sugestão ainda',
+      id: 'streak',
+      Icon: IconFlame,
+      label: 'Sequência',
+      value:
+        summary?.streak > 0
+          ? `${summary.streak} ${summary.streak === 1 ? 'dia' : 'dias'} seguidos`
+          : 'Comece hoje para acender a sequência',
     },
     {
-      id: 'group',
-      Icon: IconTarget,
-      label: 'Grupo',
-      value: summary?.recommendedGroup || '—',
+      id: 'suggestion',
+      Icon: IconBolt,
+      label: 'Sugestão agora',
+      value: summary?.nextSuggestion || 'Monte uma planilha para receber uma sugestão',
     },
   ]
 
   return (
-    <section className="coach-context" aria-label="O que o Coach considera">
-      <h3 className="coach-page__section-title">O Coach considera agora</h3>
+    <section className="coach-context" aria-label="O que o Coach sabe sobre você">
+      <h3 className="coach-page__section-title">O que o Coach já sabe sobre você</h3>
+      <p className="coach-context__lead">
+        Essas informações entram em cada resposta. Nada fica escondido.
+      </p>
       <ul className="coach-context__chips">
         {chips.map(({ id, Icon, label, value }) => (
           <li key={id} className="coach-context__chip">
@@ -1114,7 +1134,7 @@ export default function CoachIA() {
           <CoachPrivacyNotice voiceSupported={voiceSupported} />
         </details>
 
-        <CoachContextChips summary={summary} />
+        <CoachContextChips summary={summary} profile={profile} />
         <CoachRecommendations
           recommendations={recommendations.slice(0, 2)}
           applyingId={applyingId}

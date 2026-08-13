@@ -1,0 +1,439 @@
+/* EvoluaFit — Energia Solar identity layer */
+
+:root {
+  --dash-bg: var(--app-bg);
+  --dash-surface: var(--surface-primary);
+  --dash-surface-2: var(--surface-secondary);
+  --dash-green: var(--accent-primary);
+  --dash-green-soft: var(--primary-soft);
+  --dash-cyan: var(--secondary);
+  --dash-cyan-soft: var(--secondary-soft);
+  --dash-blue: var(--performance);
+  --dash-purple: var(--coach);
+}
+
+.dash-sidebar {
+  background:
+    linear-gradient(180deg, rgba(255, 90, 47, 0.1) 0%, transparent 38%),
+    linear-gradient(180deg, #161412 0%, #0c0b0a 100%) !important;
+  border-right-color: rgba(255, 90, 47, 0.14) !important;
+}
+
+.header {
+  background: linear-gradient(180deg, rgba(12, 11, 10, 0.94), rgba(22, 20, 18, 0.88));
+  border-bottom-color: rgba(246, 241, 234, 0.08);
+}
+
+.mobile-nav {
+  background: rgba(12, 11, 10, 0.97);
+}
+
+.section-lazy-fallback__pulse {
+  background: #ff5a2f;
+  box-shadow: 0 0 12px rgba(255, 90, 47, 0.55);
+}
+
+.btn--primary {
+  color: #0c0b0a;
+  box-shadow: 0 8px 24px rgba(255, 90, 47, 0.28);
+}
+
+.btn--primary:hover {
+  box-shadow: 0 10px 28px rgba(255, 90, 47, 0.38), var(--glow-primary);
+}
+
+.btn:focus-visible,
+.header__dash-menu:focus-visible,
+.dash-sidebar__link:focus-visible,
+.mobile-nav__item:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* ----- Hoje ----- */
+.dash-home--hoje .dash-home__inner {
+  gap: 1.35rem;
+}
+
+.dash-hoje-panel {
+  padding: 1.1rem 1.2rem 1.2rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-primary);
+}
+
+.dash-hoje-panel__insight {
+  margin: 0 0 1rem;
+  font-family: var(--font-heading);
+  font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.3;
+  color: var(--text-primary);
+}
+
+.evo-trail__kicker {
+  margin: 0 0 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--energy);
+}
+
+.evo-trail__title {
+  margin: 0 0 0.85rem;
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+}
+
+.evo-trail__path {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.15rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.evo-trail__node {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.evo-trail__line {
+  position: absolute;
+  top: 11px;
+  right: 50%;
+  width: 100%;
+  height: 2px;
+  background: rgba(246, 241, 234, 0.12);
+  z-index: 0;
+}
+
+.evo-trail__node.is-done .evo-trail__line,
+.evo-trail__node.is-today .evo-trail__line {
+  background: rgba(255, 90, 47, 0.55);
+}
+
+.evo-trail__dot {
+  position: relative;
+  z-index: 1;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #0c0b0a;
+  background: var(--surface-elevated);
+  border: 2px solid rgba(246, 241, 234, 0.16);
+}
+
+.evo-trail__node.is-done .evo-trail__dot {
+  background: var(--energy);
+  border-color: var(--energy);
+}
+
+.evo-trail__node.is-today:not(.is-done) .evo-trail__dot {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #fff;
+}
+
+.evo-trail__label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.evo-trail__node.is-today .evo-trail__label,
+.evo-trail__node.is-done .evo-trail__label {
+  color: var(--text-primary);
+}
+
+.dash-hoje-links {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dash-hoje-links button {
+  flex: 1;
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.dash-hoje-links button:hover,
+.dash-hoje-links button:focus-visible {
+  border-color: var(--primary-border);
+  color: var(--text-primary);
+}
+
+/* ----- Onboarding ----- */
+.onboard {
+  position: fixed;
+  inset: 0;
+  z-index: 240;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.onboard__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(8, 7, 6, 0.72);
+  cursor: pointer;
+}
+
+.onboard__card {
+  position: relative;
+  z-index: 1;
+  width: min(420px, 100%);
+  padding: 1.5rem 1.4rem 1.25rem;
+  border-radius: 22px;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-primary);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+.onboard__kicker {
+  margin: 0.85rem 0 0.35rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  font-weight: 750;
+}
+
+.onboard__title {
+  margin: 0 0 0.55rem;
+  font-size: 1.45rem;
+}
+
+.onboard__body {
+  margin: 0 0 1.1rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.onboard__dots {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.onboard__dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(246, 241, 234, 0.18);
+}
+
+.onboard__dots span.is-on {
+  background: var(--accent-primary);
+}
+
+.onboard__actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.onboard__actions .btn {
+  min-height: 44px;
+}
+
+/* ----- Sidebar groups ----- */
+.dash-sidebar__nav {
+  overflow-y: auto;
+}
+
+.dash-sidebar__group {
+  margin-bottom: 0.75rem;
+}
+
+.dash-sidebar__group-label {
+  color: var(--text-muted);
+}
+
+.dash-sidebar__link.is-active {
+  background: var(--primary-soft);
+  color: var(--text-primary);
+  border-color: var(--primary-border);
+}
+
+.dash-sidebar__link--orange .dash-sidebar__icon {
+  color: var(--accent-primary);
+}
+
+.dash-sidebar__xp-fill {
+  background: var(--gradient-primary);
+}
+
+/* ----- Hero solar ----- */
+.dash-hero--today {
+  border-color: rgba(255, 90, 47, 0.28);
+}
+
+.dash-hero__fade {
+  background:
+    linear-gradient(90deg, rgba(12, 11, 10, 0.96) 0%, rgba(12, 11, 10, 0.78) 40%, rgba(12, 11, 10, 0.28) 72%, rgba(12, 11, 10, 0.12) 100%),
+    linear-gradient(180deg, rgba(12, 11, 10, 0.2) 0%, transparent 48%, rgba(12, 11, 10, 0.55) 100%);
+}
+
+.dash-hero__cta {
+  background: var(--gradient-primary);
+  color: #0c0b0a;
+  box-shadow: 0 8px 24px rgba(255, 90, 47, 0.28);
+  min-height: 48px;
+  padding: 0.75rem 1.35rem;
+  font-size: 1rem;
+}
+
+.dash-hero__more {
+  color: var(--text-secondary);
+}
+
+.dash-hero__more:hover {
+  color: var(--text-primary);
+}
+
+.dash-hero__streak {
+  border-color: rgba(232, 255, 71, 0.28);
+  background:
+    linear-gradient(160deg, rgba(232, 255, 71, 0.1), rgba(22, 20, 18, 0.92)),
+    rgba(22, 20, 18, 0.82);
+  box-shadow: none;
+}
+
+.dash-hero__week-bar span {
+  background: var(--gradient-primary);
+}
+
+/* ----- Coach ----- */
+.coach-context__lead {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.coach-context__chip {
+  border-color: rgba(255, 90, 47, 0.28) !important;
+  background: linear-gradient(160deg, rgba(255, 90, 47, 0.12), rgba(22, 20, 18, 0.92)) !important;
+}
+
+.coach-context__k {
+  color: var(--accent-primary) !important;
+}
+
+.coach-hero__label {
+  color: var(--accent-primary) !important;
+}
+
+.coach-hero {
+  border-color: rgba(255, 90, 47, 0.28) !important;
+  background: linear-gradient(115deg, #161412 0%, #0c0b0a 100%) !important;
+}
+
+/* ----- Foco treino ----- */
+.app:has(.workout-session--focus) .mobile-nav,
+.app:has(.workout-session--focus) .header,
+.app:has(.workout-session--focus) .dash-sidebar,
+.app:has(.workout-session--focus) .dash-sidebar__backdrop,
+.app:has(.workout-session--focus) .coach-fab {
+  display: none !important;
+}
+
+.active-workout-modal--focus.modal--lg {
+  width: min(100%, 920px);
+  max-height: 100dvh;
+}
+
+.workout-session--focus .workout-session__elapsed {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--energy);
+}
+
+.workout-progress-bar {
+  background: rgba(22, 20, 18, 0.7);
+  border-color: rgba(255, 90, 47, 0.22);
+}
+
+/* ----- Microcelebração ----- */
+.workout-summary__cheer {
+  margin: 0.35rem 0 0.15rem;
+  font-family: var(--font-heading);
+  font-weight: 750;
+  color: var(--energy);
+}
+
+.workout-summary__celebrate span {
+  animation: celebratePop 0.55s ease both;
+}
+
+@keyframes celebratePop {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.12); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workout-summary__celebrate span {
+    animation: none;
+  }
+}
+
+/* ----- Auth ----- */
+.auth-card__brand .evoluafit-logo {
+  max-width: 100%;
+}
+
+/* ----- Mobile ----- */
+@media (max-width: 480px) {
+  .dash-hoje-links {
+    flex-direction: column;
+  }
+
+  .dash-hero__cta {
+    width: 100%;
+  }
+
+  .onboard__actions {
+    flex-direction: column-reverse;
+  }
+
+  .onboard__actions .btn {
+    width: 100%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .dash-home__inner {
+    width: min(100% - 1.5rem, 960px);
+  }
+}
+
+@media (min-width: 1280px) {
+  .dash-home__inner {
+    width: min(100% - 2rem, 1120px);
+  }
+}

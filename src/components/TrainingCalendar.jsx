@@ -635,7 +635,7 @@ export default function TrainingCalendar() {
             )}
             <p className="cal-side-panel__next">
               <span>Próximo</span>
-              <strong>{summary.nextWorkout ? summary.nextWorkout.name : 'Nada agendado'}</strong>
+              <strong>{summary.nextWorkout ? summary.nextWorkout.name : 'Marque o próximo treino'}</strong>
             </p>
             <h4 className="cal-side-panel__filters-title">Filtros</h4>
             <div className="cal-filters cal-filters--stack" role="tablist" aria-label="Filtros do calendário">
@@ -671,7 +671,7 @@ export default function TrainingCalendar() {
           </div>
           <p className="cal-side-panel__next" style={{ margin: '1rem 0' }}>
             <span>Próximo</span>
-            <strong>{summary.nextWorkout ? summary.nextWorkout.name : 'Nada agendado'}</strong>
+            <strong>{summary.nextWorkout ? summary.nextWorkout.name : 'Marque o próximo treino'}</strong>
           </p>
           <div className="cal-filters" role="tablist" aria-label="Filtros do calendário">
             {FILTERS.map((f) => (

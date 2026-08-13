@@ -537,12 +537,12 @@ export default function ActiveWorkoutModal() {
         onClose={handleClose}
         title=""
         size="lg"
-        className="active-workout-modal"
+        className="active-workout-modal active-workout-modal--focus"
       >
-        <div className={`workout-session workout-session--active ${isPaused ? 'workout-session--paused' : ''}`}>
+        <div className={`workout-session workout-session--active workout-session--focus ${isPaused ? 'workout-session--paused' : ''}`}>
           <header className="workout-session__session-header">
             <div className="workout-session__session-titles">
-              <p className="workout-session__eyebrow">Sessão em andamento</p>
+              <p className="workout-session__eyebrow">Modo foco</p>
               <h3 className="workout-session__name">{activeWorkout.name}</h3>
               <div className="workout-session__session-meta">
                 <span className="workout-session__elapsed" aria-label={`Tempo decorrido ${elapsedLabel}`}>

@@ -1,4 +1,4 @@
-import athletesMark from '../../assets/branding/evoluafit-athletes-mark.png'
+import EvoluaFitLogo from '../branding/EvoluaFitLogo'
 
 export default function AuthLayout({ title, subtitle, children, footer }) {
   return (
@@ -8,21 +8,7 @@ export default function AuthLayout({ title, subtitle, children, footer }) {
 
       <div className="auth-card glass-card">
         <header className="auth-card__brand">
-          <img
-            src={athletesMark}
-            alt=""
-            aria-hidden="true"
-            className="auth-card__mark"
-            draggable={false}
-            decoding="async"
-          />
-          <div className="auth-card__brand-text">
-            <p className="auth-card__name">
-              <span className="auth-card__name-main">Evolua</span>
-              <span className="auth-card__name-accent">Fit</span>
-            </p>
-            <p className="auth-card__tagline">Treine com foco. Evolua com constância.</p>
-          </div>
+          <EvoluaFitLogo size="medium" showWordmark />
         </header>
 
         <div className="auth-card__heading">

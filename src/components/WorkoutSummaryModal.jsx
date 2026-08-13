@@ -57,6 +57,7 @@ export default function WorkoutSummaryModal({ isOpen, onClose, onConfirm, sessio
         <div className="workout-summary__celebrate" aria-hidden="true">
           <span>✓</span>
         </div>
+        <p className="workout-summary__cheer">Sessão fechada. Isso conta.</p>
         <h3 className="workout-summary__name">{workoutName}</h3>
         <p className="workout-summary__done-label">Treino {statusLabel.toLowerCase()}</p>
         <p className="workout-summary__date">{formatDatePt(sessionData.completedAt || sessionData.date)}</p>

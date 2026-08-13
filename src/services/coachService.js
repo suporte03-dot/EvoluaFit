@@ -551,6 +551,9 @@ export function getCoachSummary(context = {}) {
     recommendedGroup,
     attention,
     hasData,
+    level: profile?.level || null,
+    objective: profile?.objective || null,
+    streak,
   }
 }
 

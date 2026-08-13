@@ -1,14 +1,13 @@
-import athletesMark from '../../assets/branding/evoluafit-athletes-mark.png'
+import EvoluaFitMark from './EvoluaFitMark'
 
 const SIZE_MAP = {
-  small: 'small',
-  medium: 'medium',
-  large: 'large',
+  small: 40,
+  medium: 56,
+  large: 76,
 }
 
 /**
- * EvoluaFit brand mark — hexagonal athletes symbol + wordmark.
- * Used in the mobile header. Sidebar uses EvoluaFitBrand.
+ * EvoluaFit brand mark + wordmark.
  */
 export default function EvoluaFitLogo({
   size = 'medium',
@@ -16,14 +15,14 @@ export default function EvoluaFitLogo({
   showWordmark = true,
   className = '',
 }) {
-  const sizeKey = SIZE_MAP[size] || 'medium'
+  const markPx = SIZE_MAP[size] || SIZE_MAP.medium
   const showText = Boolean(showWordmark) && !compact
 
   return (
     <span
       className={[
         'evoluafit-logo',
-        `evoluafit-logo--${sizeKey}`,
+        `evoluafit-logo--${SIZE_MAP[size] ? size : 'medium'}`,
         compact ? 'evoluafit-logo--compact' : '',
         className,
       ]
@@ -32,14 +31,7 @@ export default function EvoluaFitLogo({
       aria-label="EvoluaFit"
       title={compact || !showText ? 'EvoluaFit' : undefined}
     >
-      <img
-        src={athletesMark}
-        alt=""
-        aria-hidden="true"
-        className="evoluafit-logo__mark"
-        draggable={false}
-        decoding="async"
-      />
+      <EvoluaFitMark size={markPx} className="evoluafit-logo__mark" />
       {showText ? (
         <span className="evoluafit-logo__wordmark" aria-hidden="true">
           <span className="evoluafit-logo__wordmark-main">Evolua</span>

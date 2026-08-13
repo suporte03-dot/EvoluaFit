@@ -4,10 +4,7 @@ import { useFitness } from '../../context/FitnessContext'
 import { greetingParts, weeklyActivitySeries } from './dashboardUtils'
 import { IconChevron, IconFlame } from './icons'
 import { scrollToSection } from '../../utils/scrollToSection'
-import {
-  metricAvailability,
-  metricEmptyCopy,
-} from '../../utils/dashboardMetrics'
+import { metricAvailability } from '../../utils/dashboardMetrics'
 import {
   getWeeklyProgress,
   resolveTodayWorkout,
@@ -42,14 +39,14 @@ function Sparkline({ series }) {
     >
       <defs>
         <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#14e0b5" stopOpacity="0.45" />
-          <stop offset="100%" stopColor="#14e0b5" stopOpacity="0" />
+          <stop offset="0%" stopColor="#e8ff47" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#e8ff47" stopOpacity="0" />
         </linearGradient>
       </defs>
       {hasActivity && <path d={area} fill="url(#sparkFill)" />}
       <polyline
         fill="none"
-        stroke="#5eead4"
+        stroke="#e8ff47"
         strokeWidth="2.2"
         strokeLinejoin="round"
         strokeLinecap="round"
@@ -62,7 +59,7 @@ function Sparkline({ series }) {
           cx={x}
           cy={y}
           r={series[i] > 0 ? 2.5 : 1.4}
-          fill="#99f6e4"
+          fill="#e8ff47"
           opacity={series[i] > 0 ? 1 : 0.35}
         />
       ))}
@@ -221,10 +218,10 @@ export default function DashboardHero({ profile, metrics, history, workouts }) {
               <p className="dash-hero__streak-value">
                 {streakReady
                   ? `${streakDays} ${streakDays === 1 ? 'DIA' : 'DIAS'} EM SEQUÊNCIA`
-                  : 'SEM SEQUÊNCIA'}
+                  : 'COMECE SUA SEQUÊNCIA'}
               </p>
               <p className="dash-hero__streak-hint">
-                {streakReady ? 'Você está no ritmo!' : metricEmptyCopy('streak').hint}
+                {streakReady ? 'Você está no ritmo!' : 'Complete um treino hoje para acender o primeiro dia.'}
               </p>
             </div>
           </div>

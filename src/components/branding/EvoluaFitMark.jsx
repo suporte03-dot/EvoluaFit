@@ -1,9 +1,9 @@
-import { useId } from 'react'
-
 /**
  * EvoluaFit Mark — PERFORMANCE ELECTRIC
- * E geométrico: 3 barras + espinha, superior avançando (evolução).
+ * Três barras inclinadas formando E (conforme capa de login).
  */
+import { useId } from 'react'
+
 export default function EvoluaFitMark({
   size = 40,
   className = '',
@@ -24,7 +24,7 @@ export default function EvoluaFitMark({
       focusable="false"
     >
       <defs>
-        <linearGradient id={gid} x1="12" y1="52" x2="54" y2="12" gradientUnits="userSpaceOnUse">
+        <linearGradient id={gid} x1="8" y1="56" x2="56" y2="8" gradientUnits="userSpaceOnUse">
           <stop stopColor="#3578FF" />
           <stop offset="1" stopColor="#7657FF" />
         </linearGradient>
@@ -32,10 +32,12 @@ export default function EvoluaFitMark({
 
       {withBackground ? <rect width="64" height="64" rx="14" fill="#070A0F" /> : null}
 
-      <rect x="15" y="15" width="6.5" height="34" rx="3.25" fill={`url(#${gid})`} />
-      <rect x="21.5" y="42.5" width="17" height="6.5" rx="3.25" fill="#3578FF" />
-      <rect x="21.5" y="28.75" width="23" height="6.5" rx="3.25" fill={`url(#${gid})`} />
-      <rect x="21.5" y="15" width="27.5" height="6.5" rx="3.25" fill="#7657FF" />
+      {/* Três barras inclinadas (E em movimento) */}
+      <g transform="translate(32 32) rotate(-18) translate(-32 -32)">
+        <rect x="14" y="14" width="34" height="8" rx="4" fill={`url(#${gid})`} />
+        <rect x="14" y="28" width="28" height="8" rx="4" fill={`url(#${gid})`} />
+        <rect x="14" y="42" width="22" height="8" rx="4" fill={`url(#${gid})`} />
+      </g>
     </svg>
   )
 }

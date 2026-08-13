@@ -98,8 +98,7 @@ export default function LoginPage() {
   return (
     <AuthLayout
       variant="split"
-      title="Continue sua evolução."
-      subtitle="Entre para acessar seus treinos, acompanhar seu progresso e continuar de onde parou."
+      hideHeading
       footer={
         <p className="auth-legal">
           Ao continuar, você concorda com os{' '}
@@ -114,6 +113,11 @@ export default function LoginPage() {
           Seu melhor começa com <strong>consistência</strong>.
         </span>
       </p>
+
+      <header className="auth-card__heading auth-card__heading--center">
+        <h1>Continue sua evolução.</h1>
+        <p>Entre para acessar seus treinos, acompanhar seu progresso e continuar de onde parou.</p>
+      </header>
 
       <form className="auth-form auth-form--login" onSubmit={handleSubmit} noValidate>
         <label className="form-field">
@@ -148,7 +152,7 @@ export default function LoginPage() {
               required
               minLength={8}
               aria-required="true"
-              placeholder="••••••••"
+              placeholder="Sua senha"
             />
             <button
               type="button"
@@ -196,7 +200,7 @@ export default function LoginPage() {
         <span>ou</span>
       </div>
 
-      <Link to="/cadastro" className="btn auth-btn-secondary">
+      <Link to="/cadastro" className="auth-btn-secondary">
         <IconUserPlus />
         <span>Criar uma conta</span>
       </Link>

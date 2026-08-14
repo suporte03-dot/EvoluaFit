@@ -21,6 +21,15 @@ export default function AuthLayout({
               decoding="async"
               fetchPriority="high"
             />
+            <div className="auth-split__copy">
+              <h2>
+                Evolua além do <span className="auth-gradient-text">treino.</span>
+              </h2>
+              <p>
+                Treine com propósito, acompanhe seu progresso e saiba sempre qual é o
+                próximo passo.
+              </p>
+            </div>
           </aside>
 
           <div className="auth-split__panel">

@@ -280,23 +280,26 @@
   }
 }
 
-/* ===== Split login — hero cover + form (layout das regras Tailwind) ===== */
+/* ===== Split login — capa visual + formulário real ===== */
 .auth-split {
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
-  padding: 1.5rem;
-  background: #0b0e14;
+  padding: 0;
+  overflow: auto;
+  background: #0a0d12;
   color: var(--text-primary, #f8fafc);
 }
 
 .auth-split__shell {
-  width: min(100%, 1180px);
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
+  gap: 0;
   align-items: stretch;
 }
 
@@ -304,104 +307,30 @@
   display: none;
   position: relative;
   overflow: hidden;
-  isolation: isolate;
   min-height: 0;
-  border-radius: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: #0a0c12;
+  background-color: #0a0d12;
 }
 
-.auth-split__scene {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
-}
-
-.auth-split__veil {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    rgba(11, 14, 20, 0.88) 0%,
-    rgba(11, 14, 20, 0.55) 38%,
-    rgba(11, 14, 20, 0.18) 68%,
-    rgba(11, 14, 20, 0.08) 100%
-  );
-}
-
-.auth-split__visual-inner {
-  position: relative;
-  z-index: 10;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1.15rem;
-  padding: 1.5rem 1.5rem 5rem;
-  max-width: 28rem;
-}
-
-.auth-split__logo {
-  --ef-mark: 52px;
-  --ef-word: 1.85rem;
-  --ef-gap: 12px;
-}
-
-.auth-split__copy {
-  max-width: 18ch;
-}
-
-.auth-split__headline {
-  margin: 0;
-  font-family: var(--font-heading, 'Outfit', sans-serif);
-  font-size: clamp(2.05rem, 3.5vw, 3.05rem);
-  font-weight: 800;
-  letter-spacing: -0.045em;
-  line-height: 1.06;
-  color: #f4f6fb;
-}
-
-.auth-split__tagline {
-  margin: 0.8rem 0 0;
-  max-width: 32ch;
-  font-size: 0.95rem;
-  line-height: 1.55;
-  color: #b7c0cc;
-}
-
-.auth-split__secure {
-  position: absolute;
-  z-index: 10;
-  bottom: 1.5rem;
-  left: 1.5rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0;
-  font-size: 0.82rem;
-  color: #9da9b8;
-}
-
-.auth-split__secure-icon {
-  display: inline-flex;
-  color: #9aa6ff;
+.login-cover {
+  background-image: url('/branding/evoluafit-login-cover.jpg');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
 }
 
 .auth-split__panel {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 1.5rem 1.25rem;
+  background: #0a0d12;
 }
 
 .auth-split__panel-inner,
 .auth-login-card {
-  width: min(100%, 420px);
+  width: min(100%, 460px);
   display: flex;
   flex-direction: column;
   gap: 1.05rem;
@@ -409,12 +338,11 @@
 }
 
 .auth-login-card {
-  padding: 1.7rem 1.55rem 1.4rem;
+  padding: 1.85rem 1.6rem 1.45rem;
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(16, 18, 26, 0.92);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.45);
+  background: #121821;
+  box-shadow: none;
 }
 
 .auth-split__mobile-brand {
@@ -481,15 +409,16 @@
 
 .auth-input input {
   width: 100%;
-  min-height: 50px;
+  min-height: 56px;
+  height: 56px;
   padding: 0.7rem 1rem 0.7rem 2.75rem;
   border-radius: 12px;
-  border: 1px solid #243142;
-  background: #0d1219;
+  border: 1px solid #293444;
+  background: #0d131b;
   color: var(--text-primary, #f8fafc);
   font: inherit;
   font-size: 1rem;
-  transition: border-color 160ms ease, box-shadow 160ms ease;
+  transition: border-color 160ms ease;
 }
 
 .auth-input--password input {
@@ -503,8 +432,27 @@
 .auth-input input:focus,
 .auth-input input:focus-visible {
   outline: none;
-  border-color: #3578ff;
-  box-shadow: 0 0 0 3px rgba(53, 120, 255, 0.22);
+  border-color: #5277ff;
+  box-shadow: none;
+}
+
+.auth-form--login .auth-input input {
+  min-height: 56px;
+  height: 56px;
+  padding: 0.7rem 1rem 0.7rem 2.75rem;
+  border: 1px solid #293444;
+  background: #0d131b;
+  border-radius: 12px;
+}
+
+.auth-form--login .auth-input--password input {
+  padding-right: 6.5rem;
+}
+
+.auth-form--login .auth-input input:focus,
+.auth-form--login .auth-input input:focus-visible {
+  border-color: #5277ff;
+  box-shadow: none;
 }
 
 .auth-input .auth-password-field__toggle {
@@ -560,7 +508,7 @@
 
 .auth-form__submit--gradient {
   width: 100%;
-  min-height: 52px;
+  min-height: 56px;
   margin-top: 0.15rem;
   display: inline-flex;
   align-items: center;
@@ -568,12 +516,12 @@
   gap: 0.55rem;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(90deg, #3578ff 0%, #7657ff 100%) !important;
+  background: linear-gradient(90deg, #3578ff, #7657ff) !important;
   color: #f8fafc !important;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  box-shadow: 0 10px 28px rgba(53, 120, 255, 0.32) !important;
+  box-shadow: none !important;
   cursor: pointer;
 }
 
@@ -676,13 +624,25 @@
 }
 
 @media (min-width: 768px) {
+  .auth-split {
+    overflow: hidden;
+  }
+
   .auth-split__shell {
-    grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.9fr);
-    min-height: min(720px, calc(100dvh - 3rem));
+    grid-template-columns: 1fr 1fr;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 
   .auth-split__visual {
     display: block;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .auth-split__panel {
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 
   .auth-split__mobile-brand {
@@ -692,7 +652,13 @@
 
 @media (min-width: 1024px) {
   .auth-split__shell {
-    grid-template-columns: minmax(0, 1.5fr) minmax(380px, 0.85fr);
+    grid-template-columns: minmax(0, 1.5fr) minmax(380px, 1fr);
+  }
+}
+
+@media (min-width: 1440px) {
+  .auth-split__shell {
+    grid-template-columns: minmax(0, 1.55fr) minmax(420px, 1fr);
   }
 }
 

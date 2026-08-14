@@ -1,6 +1,5 @@
 import EvoluaFitLogo from '../branding/EvoluaFitLogo'
-import { BRAND } from '../../data/siteData'
-import loginHeroUrl from '../../assets/branding/login-hero.jpg'
+import loginArtUrl from '../../assets/branding/logonovaajustada.png'
 
 function IconChart({ size = 20 }) {
   return (
@@ -44,8 +43,8 @@ const FOOTER_ITEMS = [
 ]
 
 /**
- * Auth shell aligned to logonovaajustada.png
- * Texto em HTML (nítido). Foto só na área de imagem. Um único formulário.
+ * Login split: arte original logonovaajustada.png à esquerda.
+ * Formulário real à direita. Sem recorte de arquivo e sem desfoque.
  */
 export default function AuthLayout({
   title,
@@ -59,28 +58,13 @@ export default function AuthLayout({
     return (
       <div className="auth-split">
         <aside className="auth-split__visual">
-          <div className="auth-split__visual-inner">
-            <EvoluaFitLogo size="medium" showWordmark />
-
-            <h2 className="auth-split__headline">
-              Evolua além do <span>treino.</span>
-            </h2>
-            <p className="auth-split__tagline">{BRAND.tagline}</p>
-
-            <div className="auth-split__hero">
-              <img src={loginHeroUrl} alt="" decoding="async" />
-            </div>
-
-            <div className="auth-security" role="note">
-              <span className="auth-security__icon" aria-hidden="true">
-                <IconShield size={18} />
-              </span>
-              <p>
-                <strong>Seus dados estão protegidos.</strong>
-                Privacidade e segurança em primeiro lugar.
-              </p>
-            </div>
-          </div>
+          <img
+            className="auth-split__art"
+            src={loginArtUrl}
+            alt="EvoluaFit — Evolua além do treino"
+            decoding="async"
+            fetchPriority="high"
+          />
         </aside>
 
         <div className="auth-split__panel">

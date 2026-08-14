@@ -279,13 +279,14 @@
   }
 }
 
-/* ===== Split login — capa do arquivo ===== */
+/* ===== Split login — arte de logonovaajustada.png ===== */
 .auth-split {
   min-height: 100vh;
   min-height: 100dvh;
   display: grid;
   grid-template-columns: 1fr;
-  background: #070a0f;
+  grid-template-rows: 1fr auto;
+  background: #05070a;
   color: var(--text-primary, #f8fafc);
 }
 
@@ -293,8 +294,8 @@
   display: none;
   position: relative;
   overflow: hidden;
-  background: #070a0f;
-  min-height: 100dvh;
+  background: #05070a;
+  min-height: 0;
 }
 
 .auth-split__cover {
@@ -303,8 +304,26 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: left center;
+  object-position: left top;
   display: block;
+}
+
+.evoluafit-logo__file {
+  display: block;
+  height: 42px;
+  width: auto;
+  max-width: min(220px, 100%);
+  object-fit: contain;
+  object-position: left center;
+}
+
+.auth-values {
+  display: none;
+  list-style: none;
+  margin: 0;
+  padding: 1.15rem 1.5rem 1.35rem;
+  border-top: 1px solid #243142;
+  background: #080b10;
 }
 
 .auth-split__panel {
@@ -558,21 +577,62 @@
   padding-top: 0;
 }
 
+.auth-values__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.auth-values__icon {
+  color: #2d68ff;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.auth-values__item strong {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f8fafc;
+}
+
+.auth-values__item p {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: #9da9b8;
+}
+
 @media (min-width: 960px) {
   .auth-split {
-    grid-template-columns: minmax(0, 1.2fr) minmax(420px, 0.85fr);
+    grid-template-columns: minmax(0, 1.25fr) minmax(400px, 0.8fr);
+    grid-template-rows: 1fr auto;
   }
 
   .auth-split__visual {
     display: block;
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  .auth-split__panel {
+    grid-row: 1;
+    grid-column: 2;
+    padding: 1.5rem 2rem;
+  }
+
+  .auth-values {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+    grid-column: 1 / -1;
   }
 
   .auth-split__mobile-brand {
     display: none;
-  }
-
-  .auth-split__panel {
-    padding: 2.5rem 2.25rem;
   }
 }
 

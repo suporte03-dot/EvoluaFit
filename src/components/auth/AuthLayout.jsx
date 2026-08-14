@@ -72,7 +72,7 @@ export default function AuthLayout({
           <aside className="auth-split__visual" aria-label="EvoluaFit">
             <img
               className="auth-split__cover"
-              src="/branding/login-characters-hq.jpg"
+              src="/branding/login-characters.jpg"
               alt=""
               decoding="async"
               fetchPriority="high"

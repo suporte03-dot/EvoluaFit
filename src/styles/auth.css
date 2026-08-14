@@ -300,12 +300,26 @@
 
 .auth-split__cover {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  inset: -6%;
+  width: 112%;
+  height: 112%;
   object-fit: cover;
   object-position: left top;
   display: block;
+  image-rendering: auto;
+  filter: blur(2.2px) saturate(0.82) contrast(0.86) brightness(0.84);
+  transform: scale(1.04);
+  transform-origin: left center;
+}
+
+.auth-split__visual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(5, 7, 10, 0.18) 0%, rgba(5, 7, 10, 0.08) 55%, rgba(5, 7, 10, 0.55) 100%),
+    linear-gradient(180deg, rgba(5, 7, 10, 0.2) 0%, transparent 28%, rgba(5, 7, 10, 0.45) 100%);
 }
 
 .evoluafit-logo__file {
@@ -608,7 +622,7 @@
 
 @media (min-width: 960px) {
   .auth-split {
-    grid-template-columns: minmax(0, 1.25fr) minmax(400px, 0.8fr);
+    grid-template-columns: minmax(0, 1.05fr) minmax(420px, 0.72fr);
     grid-template-rows: 1fr auto;
   }
 

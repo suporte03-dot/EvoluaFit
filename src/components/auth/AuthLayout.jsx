@@ -1,5 +1,5 @@
 import EvoluaFitLogo from '../branding/EvoluaFitLogo'
-import loginCoverUrl from '../../assets/branding/logonovaajustada.png'
+import loginCoverUrl from '../../assets/branding/login-cover-left.jpg'
 
 function IconChart({ size = 20 }) {
   return (

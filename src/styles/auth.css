@@ -337,15 +337,15 @@
 .auth-split__cover {
   position: absolute;
   left: 50%;
-  top: 54%;
-  width: min(104%, 980px);
+  top: 56%;
+  width: min(108%, 1100px);
   height: auto;
-  max-height: 68%;
+  max-height: 62%;
   display: block;
   transform: translate(-50%, -50%);
   object-fit: contain;
   object-position: center center;
-  filter: brightness(1.05) contrast(1.02) saturate(1.04);
+  filter: brightness(1.08) contrast(1.04) saturate(1.06);
   pointer-events: none;
   user-select: none;
 }
@@ -421,7 +421,7 @@
   z-index: 3;
   left: 5.25%;
   right: auto;
-  bottom: 11%;
+  bottom: 12.5%;
   width: min(540px, 78%);
   list-style: none;
   margin: 0;
@@ -495,7 +495,7 @@
   position: absolute;
   z-index: 3;
   left: 5.25%;
-  bottom: 3.5%;
+  bottom: 4.25%;
   max-width: min(320px, 62%);
   align-items: center;
   gap: 0.65rem;
@@ -889,9 +889,9 @@
   }
 
   .auth-split__cover {
-    width: min(102%, 1040px);
-    max-height: 66%;
-    top: 53%;
+    width: min(106%, 1140px);
+    max-height: 60%;
+    top: 55%;
   }
 
   .auth-split__panel {
@@ -917,9 +917,9 @@
   }
 
   .auth-split__cover {
-    width: min(100%, 1080px);
-    max-height: 64%;
-    top: 52.5%;
+    width: min(104%, 1180px);
+    max-height: 58%;
+    top: 54.5%;
   }
 
   .auth-split__top {
@@ -953,8 +953,8 @@
 
 @media (min-width: 1440px) {
   .auth-split__cover {
-    width: min(98%, 1120px);
-    max-height: 62%;
+    width: min(102%, 1220px);
+    max-height: 56%;
   }
 
   .auth-split__top {

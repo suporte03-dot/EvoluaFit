@@ -96,6 +96,24 @@
 .landing-hero__visual {
   display: flex;
   justify-content: center;
+  min-width: 0;
+}
+
+.landing-hero__art,
+.landing-final__art {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.landing-hero__art {
+  max-width: 560px;
+}
+
+.landing-final__art {
+  width: min(100%, 420px);
 }
 
 .landing-mock {

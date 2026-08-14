@@ -71,6 +71,7 @@
 .auth-card__brand {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.85rem;
 }
 
@@ -279,7 +280,7 @@
   }
 }
 
-/* ===== Split login — capa cinematográfica ===== */
+/* ===== Split login — arte oficial novalogopersonalizada.jpg ===== */
 .auth-split {
   min-height: 100vh;
   min-height: 100dvh;
@@ -295,76 +296,57 @@
   position: relative;
   overflow: hidden;
   min-height: 0;
-  background: #05070a;
-}
-
-.auth-split__photo {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 78% 22%;
-  display: block;
-  filter: saturate(1.08) contrast(1.1) brightness(0.9);
-}
-
-.auth-split__veil {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
   background:
-    linear-gradient(
-      180deg,
-      rgba(5, 7, 10, 0.92) 0%,
-      rgba(5, 7, 10, 0.58) 16%,
-      rgba(5, 7, 10, 0.12) 42%,
-      rgba(5, 7, 10, 0.22) 64%,
-      rgba(5, 7, 10, 0.9) 100%
-    ),
-    linear-gradient(90deg, rgba(5, 7, 10, 0.42) 0%, transparent 42%),
-    radial-gradient(ellipse 70% 48% at 8% 0%, rgba(53, 120, 255, 0.28), transparent 58%);
-}
-
-.auth-split__rise {
-  position: absolute;
-  left: 2%;
-  right: 4%;
-  bottom: 14%;
-  width: 94%;
-  height: auto;
-  z-index: 1;
-  pointer-events: none;
+    radial-gradient(ellipse 70% 50% at 12% 0%, rgba(53, 120, 255, 0.16), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 90% 80%, rgba(118, 87, 255, 0.1), transparent 50%),
+    #05070a;
 }
 
 .auth-split__visual-inner {
   position: relative;
-  z-index: 2;
+  z-index: 1;
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 1.5rem;
-  padding: clamp(1.75rem, 4vw, 3.25rem) clamp(1.5rem, 3.5vw, 3rem);
-  max-width: 560px;
+  justify-content: center;
+  gap: 1.15rem;
+  padding: clamp(1.5rem, 3.5vw, 2.75rem) clamp(1.35rem, 3.2vw, 2.75rem);
 }
 
-.auth-split__copy {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.9rem;
+.auth-split__brand-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  max-height: min(52vh, 520px);
+  object-fit: contain;
+  object-position: center;
+  filter: none;
+}
+
+.auth-split__brand-art--compact {
+  width: min(100%, 280px);
+  max-height: 96px;
+  margin: 0 auto;
+}
+
+.auth-card__brand-art {
+  display: block;
+  width: min(100%, 260px);
+  height: auto;
+  max-height: 88px;
+  object-fit: contain;
+  margin: 0 auto;
 }
 
 .auth-split__headline {
   margin: 0;
   font-family: var(--font-heading, 'Outfit', sans-serif);
-  font-size: clamp(2.15rem, 3.8vw, 3.15rem);
+  font-size: clamp(1.85rem, 3.2vw, 2.75rem);
   font-weight: 800;
   letter-spacing: -0.045em;
-  line-height: 1.06;
+  line-height: 1.08;
   color: #f8fafc;
-  text-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
 }
 
 .auth-split__headline span {
@@ -703,9 +685,9 @@
   color: #9da9b8;
 }
 
-@media (min-width: 960px) {
+@media (min-width: 768px) {
   .auth-split {
-    grid-template-columns: minmax(0, 1.15fr) minmax(400px, 0.85fr);
+    grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
     grid-template-rows: 1fr auto;
   }
 
@@ -714,24 +696,37 @@
     grid-row: 1;
     grid-column: 1;
     height: 100%;
-    isolation: isolate;
   }
 
   .auth-split__panel {
     grid-row: 1;
     grid-column: 2;
-    padding: 1.5rem 2rem;
+    padding: 1.35rem 1.5rem;
   }
 
   .auth-values {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1.25rem;
+    gap: 1rem;
     grid-column: 1 / -1;
   }
 
   .auth-split__mobile-brand {
     display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .auth-split {
+    grid-template-columns: minmax(0, 1.1fr) minmax(400px, 0.9fr);
+  }
+
+  .auth-split__panel {
+    padding: 1.5rem 2rem;
+  }
+
+  .auth-values {
+    gap: 1.25rem;
   }
 }
 

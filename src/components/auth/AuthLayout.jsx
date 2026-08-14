@@ -1,6 +1,5 @@
-import EvoluaFitLogo from '../branding/EvoluaFitLogo'
 import { BRAND } from '../../data/siteData'
-import heroAthleteUrl from '../../assets/dashboard/hero-athlete-back.webp'
+import brandArtUrl from '../../assets/branding/novalogopersonalizada.jpg'
 
 function IconChart({ size = 20 }) {
   return (
@@ -43,42 +42,15 @@ const FOOTER_ITEMS = [
   { title: 'Confiança e segurança', text: 'Seus dados protegidos neste aparelho.', Icon: IconShield },
 ]
 
-function RiseGraphic() {
+function BrandArt({ className = '', fetchPriority }) {
   return (
-    <svg className="auth-split__rise" viewBox="0 0 640 320" fill="none" aria-hidden="true">
-      <defs>
-        <linearGradient id="auth-rise-stroke" x1="40" y1="280" x2="600" y2="40">
-          <stop stopColor="#3578FF" />
-          <stop offset="1" stopColor="#7657FF" />
-        </linearGradient>
-        <linearGradient id="auth-rise-bar" x1="0" y1="1" x2="0" y2="0">
-          <stop stopColor="#3578FF" stopOpacity="0.15" />
-          <stop offset="1" stopColor="#7657FF" stopOpacity="0.85" />
-        </linearGradient>
-        <filter id="auth-rise-glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="4" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-      <g opacity="0.55">
-        <rect x="368" y="236" width="28" height="52" rx="4" fill="url(#auth-rise-bar)" />
-        <rect x="408" y="204" width="28" height="84" rx="4" fill="url(#auth-rise-bar)" />
-        <rect x="448" y="168" width="28" height="120" rx="4" fill="url(#auth-rise-bar)" />
-        <rect x="488" y="124" width="28" height="164" rx="4" fill="url(#auth-rise-bar)" />
-        <rect x="528" y="72" width="28" height="216" rx="4" fill="url(#auth-rise-bar)" />
-      </g>
-      <path
-        d="M36 268C120 252 188 210 268 156C348 102 430 68 596 44"
-        stroke="url(#auth-rise-stroke)"
-        strokeWidth="4"
-        strokeLinecap="round"
-        filter="url(#auth-rise-glow)"
-      />
-      <path d="M574 22l28 18-32 8 4-26z" fill="#7657FF" filter="url(#auth-rise-glow)" />
-    </svg>
+    <img
+      className={className}
+      src={brandArtUrl}
+      alt="EvoluaFit"
+      decoding="async"
+      fetchPriority={fetchPriority}
+    />
   )
 }
 
@@ -94,24 +66,13 @@ export default function AuthLayout({
     return (
       <div className="auth-split">
         <aside className="auth-split__visual">
-          <img
-            className="auth-split__photo"
-            src={heroAthleteUrl}
-            alt=""
-            decoding="async"
-            fetchPriority="high"
-          />
-          <div className="auth-split__veil" aria-hidden="true" />
-          <RiseGraphic />
-
           <div className="auth-split__visual-inner">
-            <div className="auth-split__copy">
-              <EvoluaFitLogo size="medium" showWordmark />
-              <h2 className="auth-split__headline">
-                Evolua além do <span>treino.</span>
-              </h2>
-              <p className="auth-split__tagline">{BRAND.tagline}</p>
-            </div>
+            <BrandArt className="auth-split__brand-art" fetchPriority="high" />
+
+            <h2 className="auth-split__headline">
+              Evolua além do <span>treino.</span>
+            </h2>
+            <p className="auth-split__tagline">{BRAND.tagline}</p>
 
             <div className="auth-security" role="note">
               <span className="auth-security__icon" aria-hidden="true">
@@ -128,7 +89,7 @@ export default function AuthLayout({
         <div className="auth-split__panel">
           <div className="auth-split__panel-inner auth-login-card">
             <div className="auth-split__mobile-brand">
-              <EvoluaFitLogo size="medium" showWordmark />
+              <BrandArt className="auth-split__brand-art auth-split__brand-art--compact" />
             </div>
             {!hideHeading ? (
               <header className="auth-card__heading auth-card__heading--center">
@@ -165,7 +126,7 @@ export default function AuthLayout({
 
       <div className="auth-card glass-card">
         <header className="auth-card__brand">
-          <EvoluaFitLogo size="medium" showWordmark />
+          <BrandArt className="auth-card__brand-art" />
         </header>
 
         <div className="auth-card__heading">

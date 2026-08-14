@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import EvoluaFitLogo from '../components/branding/EvoluaFitLogo'
-import EvoluaFitMark from '../components/branding/EvoluaFitMark'
 import { BRAND } from '../data/siteData'
+import brandArtUrl from '../assets/branding/novalogopersonalizada.jpg'
 import './landing.css'
 
 const SECTIONS = [
@@ -64,21 +64,13 @@ export default function LandingPage() {
             </Link>
           </div>
         </div>
-        <div className="landing-hero__visual" aria-hidden="true">
-          <div className="landing-mock">
-            <div className="landing-mock__bar">
-              <EvoluaFitMark size={28} />
-              <span>Hoje</span>
-            </div>
-            <p className="landing-mock__hello">Boa tarde.</p>
-            <h2 className="landing-mock__headline">Seu treino de hoje está pronto.</h2>
-            <p className="landing-mock__meta">Peito + Tríceps · 52 min</p>
-            <span className="landing-mock__cta">Começar treino</span>
-            <div className="landing-mock__row">
-              <span>Sequência</span>
-              <strong>8 dias</strong>
-            </div>
-          </div>
+        <div className="landing-hero__visual">
+          <img
+            className="landing-hero__art"
+            src={brandArtUrl}
+            alt="EvoluaFit"
+            decoding="async"
+          />
         </div>
       </section>
 
@@ -91,7 +83,12 @@ export default function LandingPage() {
       ))}
 
       <section className="landing-final">
-        <EvoluaFitMark size={56} />
+        <img
+          className="landing-final__art"
+          src={brandArtUrl}
+          alt="EvoluaFit"
+          decoding="async"
+        />
         <h2 className="landing-final__title">
           Seu próximo treino pode ser o começo da sua melhor fase.
         </h2>

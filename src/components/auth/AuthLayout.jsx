@@ -72,7 +72,7 @@ export default function AuthLayout({
           <aside className="auth-split__visual" aria-label="EvoluaFit">
             <img
               className="auth-split__cover"
-              src="/branding/evoluafit-login-hero.png?v=4"
+              src="/branding/login-characters-hq.jpg"
               alt=""
               decoding="async"
               fetchPriority="high"
@@ -80,21 +80,22 @@ export default function AuthLayout({
 
             <div className="auth-split__scrim" aria-hidden="true" />
 
-            <div className="auth-split__brand">
-              <EvoluaFitLogo size="medium" showWordmark />
+            <div className="auth-split__top">
+              <div className="auth-split__brand">
+                <EvoluaFitLogo size="medium" showWordmark />
+              </div>
+              <div className="auth-split__hero">
+                <h2>
+                  Evolua além do <span className="auth-gradient-text">treino.</span>
+                </h2>
+                <p>
+                  Treine com propósito, acompanhe seu progresso e saiba sempre qual é o
+                  próximo passo.
+                </p>
+              </div>
             </div>
 
-            <div className="auth-split__hero">
-              <h2>
-                Evolua além do <span className="auth-gradient-text">treino.</span>
-              </h2>
-              <p>
-                Treine com propósito, acompanhe seu progresso e saiba sempre qual é o
-                próximo passo.
-              </p>
-            </div>
-
-            <ul className="auth-split__journey">
+            <ul className="auth-split__journey" aria-label="Jornada EvoluaFit">
               <li>
                 <span className="auth-split__journey-icon" aria-hidden="true">
                   <IconDumbbell />

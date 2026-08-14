@@ -309,11 +309,14 @@
 
 .auth-split__scene {
   position: absolute;
-  inset: 0;
-  width: 100%;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 30%;
+  width: 70%;
   height: 100%;
   object-fit: cover;
-  object-position: 72% 42%;
+  object-position: 55% 28%;
   display: block;
   filter: none;
 }
@@ -325,17 +328,18 @@
   background:
     linear-gradient(
       90deg,
-      rgba(8, 10, 16, 0.88) 0%,
-      rgba(8, 10, 16, 0.55) 28%,
-      rgba(8, 10, 16, 0.12) 58%,
-      rgba(8, 10, 16, 0.08) 100%
+      rgba(10, 12, 18, 0.97) 0%,
+      rgba(10, 12, 18, 0.82) 22%,
+      rgba(10, 12, 18, 0.28) 48%,
+      rgba(10, 12, 18, 0.08) 72%,
+      transparent 100%
     ),
     linear-gradient(
       180deg,
-      rgba(8, 10, 16, 0.55) 0%,
-      transparent 26%,
-      transparent 72%,
-      rgba(8, 10, 16, 0.78) 100%
+      rgba(10, 12, 18, 0.35) 0%,
+      transparent 22%,
+      transparent 78%,
+      rgba(10, 12, 18, 0.72) 100%
     );
 }
 
@@ -345,37 +349,45 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 1.25rem;
-  padding: clamp(1.4rem, 3.2vw, 2.4rem) clamp(1.3rem, 3vw, 2.2rem);
+  align-items: flex-start;
+  gap: 1.15rem;
+  padding: clamp(1.5rem, 3.4vw, 2.6rem) clamp(1.4rem, 3.2vw, 2.4rem);
+}
+
+.auth-split__logo {
+  --ef-mark: 52px;
+  --ef-word: 1.85rem;
+  --ef-gap: 12px;
 }
 
 .auth-split__copy {
-  max-width: 22ch;
+  max-width: 16ch;
+  margin-top: 0.35rem;
 }
 
 .auth-split__headline {
   margin: 0;
   font-family: var(--font-heading, 'Outfit', sans-serif);
-  font-size: clamp(2rem, 3.6vw, 3rem);
+  font-size: clamp(2.05rem, 3.5vw, 3.05rem);
   font-weight: 800;
   letter-spacing: -0.045em;
-  line-height: 1.08;
-  color: #f8fafc;
+  line-height: 1.06;
+  color: #f4f6fb;
 }
 
 .auth-split__tagline {
-  margin: 0.75rem 0 0;
-  font-size: 0.98rem;
+  margin: 0.8rem 0 0;
+  max-width: 28ch;
+  font-size: 0.95rem;
   line-height: 1.55;
-  color: #c5ced8;
+  color: #b7c0cc;
 }
 
 .auth-split__secure {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  margin: 0;
+  margin: auto 0 0;
   font-size: 0.82rem;
   color: #9da9b8;
 }
@@ -565,7 +577,7 @@
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  box-shadow: none !important;
+  box-shadow: 0 10px 28px rgba(53, 120, 255, 0.32) !important;
   cursor: pointer;
 }
 

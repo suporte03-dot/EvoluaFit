@@ -38,7 +38,7 @@ export default function AuthLayout({
           <div className="auth-split__veil" aria-hidden="true" />
 
           <div className="auth-split__visual-inner">
-            <EvoluaFitLogo size="medium" showWordmark />
+            <EvoluaFitLogo size="large" showWordmark className="auth-split__logo" />
 
             <div className="auth-split__copy">
               <h2 className="auth-split__headline">Evolua além do treino</h2>

@@ -70,70 +70,72 @@ export default function AuthLayout({
       <div className="auth-split">
         <div className="auth-split__main">
           <aside className="auth-split__visual" aria-label="EvoluaFit">
-            <img
-              className="auth-split__cover"
-              src="/branding/login-characters.jpg"
-              alt=""
-              decoding="async"
-              fetchPriority="high"
-            />
+            <div className="auth-split__stage">
+              <img
+                className="auth-split__cover"
+                src="/branding/login-cover-premium.jpg"
+                alt=""
+                decoding="async"
+                fetchPriority="high"
+              />
 
-            <div className="auth-split__scrim" aria-hidden="true" />
+              <div className="auth-split__scrim" aria-hidden="true" />
 
-            <div className="auth-split__top">
-              <div className="auth-split__brand">
-                <EvoluaFitLogo size="medium" showWordmark />
+              <div className="auth-split__top">
+                <div className="auth-split__brand">
+                  <EvoluaFitLogo size="medium" showWordmark className="auth-split__logo" />
+                </div>
+                <div className="auth-split__hero">
+                  <h2>
+                    Evolua além do <span className="auth-gradient-text">treino.</span>
+                  </h2>
+                  <p>
+                    Treine com propósito, acompanhe seu progresso e saiba sempre qual é o
+                    próximo passo.
+                  </p>
+                </div>
               </div>
-              <div className="auth-split__hero">
-                <h2>
-                  Evolua além do <span className="auth-gradient-text">treino.</span>
-                </h2>
-                <p>
-                  Treine com propósito, acompanhe seu progresso e saiba sempre qual é o
-                  próximo passo.
-                </p>
-              </div>
-            </div>
 
-            <ul className="auth-split__journey" aria-label="Jornada EvoluaFit">
-              <li>
-                <span className="auth-split__journey-icon" aria-hidden="true">
-                  <IconDumbbell />
-                </span>
-                <div>
-                  <strong>TREINE</strong>
-                  <span>Planos inteligentes e personalizados</span>
-                </div>
-              </li>
-              <li className="auth-split__journey-sep" aria-hidden="true" />
-              <li>
-                <span className="auth-split__journey-icon" aria-hidden="true">
-                  <IconTrend />
-                </span>
-                <div>
-                  <strong>ACOMPANHE</strong>
-                  <span>Monitore sua evolução em tempo real</span>
-                </div>
-              </li>
-              <li className="auth-split__journey-sep" aria-hidden="true" />
-              <li>
-                <span className="auth-split__journey-icon" aria-hidden="true">
-                  <IconStar />
-                </span>
-                <div>
-                  <strong>EVOLUA</strong>
-                  <span>Supere limites todos os dias</span>
-                </div>
-              </li>
-            </ul>
+              <ul className="auth-split__journey" aria-label="Jornada EvoluaFit">
+                <li>
+                  <span className="auth-split__journey-icon" aria-hidden="true">
+                    <IconDumbbell />
+                  </span>
+                  <div>
+                    <strong>TREINE</strong>
+                    <span>Planos inteligentes e personalizados</span>
+                  </div>
+                </li>
+                <li className="auth-split__journey-sep" aria-hidden="true" />
+                <li>
+                  <span className="auth-split__journey-icon" aria-hidden="true">
+                    <IconTrend />
+                  </span>
+                  <div>
+                    <strong>ACOMPANHE</strong>
+                    <span>Monitore sua evolução em tempo real</span>
+                  </div>
+                </li>
+                <li className="auth-split__journey-sep" aria-hidden="true" />
+                <li>
+                  <span className="auth-split__journey-icon" aria-hidden="true">
+                    <IconStar />
+                  </span>
+                  <div>
+                    <strong>EVOLUA</strong>
+                    <span>Supere limites todos os dias</span>
+                  </div>
+                </li>
+              </ul>
 
-            <div className="auth-split__privacy">
-              <span className="auth-split__privacy-icon" aria-hidden="true">
-                <IconShieldCheck />
-              </span>
-              <div>
-                <strong>Seus dados estão protegidos</strong>
-                <p>Privacidade e segurança em primeiro lugar.</p>
+              <div className="auth-split__privacy">
+                <span className="auth-split__privacy-icon" aria-hidden="true">
+                  <IconShieldCheck />
+                </span>
+                <div>
+                  <strong>Seus dados estão protegidos</strong>
+                  <p>Privacidade e segurança em primeiro lugar.</p>
+                </div>
               </div>
             </div>
           </aside>

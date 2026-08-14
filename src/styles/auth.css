@@ -280,13 +280,13 @@
   }
 }
 
-/* ===== Split login â€” capa contÃ­nua + formulÃ¡rio real ===== */
+/* ===== Split login — capa premium (novalogopersonalizada) + formulário ===== */
 .auth-split {
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: #050810;
+  background: #05070c;
   color: #f8fafc;
   overflow-x: hidden;
 }
@@ -304,24 +304,50 @@
   position: relative;
   overflow: hidden;
   min-height: 0;
+  padding: 1.15rem 0.85rem 1.15rem 1.15rem;
   background:
-    radial-gradient(ellipse 50% 45% at 45% 38%, rgba(53, 120, 255, 0.12), transparent 60%),
-    radial-gradient(ellipse 36% 40% at 68% 52%, rgba(118, 87, 255, 0.1), transparent 58%),
-    #050810;
+    radial-gradient(ellipse 48% 42% at 38% 34%, rgba(53, 120, 255, 0.14), transparent 62%),
+    radial-gradient(ellipse 34% 38% at 72% 58%, rgba(118, 87, 255, 0.12), transparent 60%),
+    repeating-linear-gradient(
+      -32deg,
+      rgba(255, 255, 255, 0.015) 0 1px,
+      transparent 1px 10px
+    ),
+    #05070c;
+}
+
+.auth-split__stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(ellipse 55% 48% at 48% 52%, rgba(53, 120, 255, 0.1), transparent 68%),
+    rgba(8, 12, 20, 0.55);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .auth-split__cover {
   position: absolute;
-  left: 5%;
-  right: auto;
-  top: 50%;
-  width: 90%;
+  left: 50%;
+  top: 54%;
+  width: min(104%, 980px);
   height: auto;
+  max-height: 68%;
   display: block;
-  /* Largura controlada: 2 personagens visíveis, gráfico secundário */
-  transform: translateY(-48%);
-  filter: brightness(1.06) contrast(1.03) saturate(1.05);
-  border-radius: 0;
+  transform: translate(-50%, -50%);
+  object-fit: contain;
+  object-position: center center;
+  filter: brightness(1.05) contrast(1.02) saturate(1.04);
+  pointer-events: none;
+  user-select: none;
 }
 
 .auth-split__scrim {
@@ -330,21 +356,21 @@
   z-index: 1;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(5, 8, 16, 0.5) 0%, rgba(5, 8, 16, 0.18) 30%, transparent 54%),
-    linear-gradient(180deg, rgba(5, 8, 16, 0.78) 0%, rgba(5, 8, 16, 0.32) 18%, transparent 36%),
-    linear-gradient(0deg, rgba(5, 8, 16, 0.86) 0%, rgba(5, 8, 16, 0.42) 16%, transparent 34%);
+    linear-gradient(180deg, rgba(5, 8, 16, 0.88) 0%, rgba(5, 8, 16, 0.42) 16%, transparent 34%),
+    linear-gradient(0deg, rgba(5, 8, 16, 0.92) 0%, rgba(5, 8, 16, 0.48) 14%, transparent 32%),
+    linear-gradient(90deg, rgba(5, 8, 16, 0.42) 0%, rgba(5, 8, 16, 0.12) 28%, transparent 52%);
 }
 
 .auth-split__top {
   display: none;
   position: absolute;
   z-index: 3;
-  top: 5.5%;
-  left: 5.5%;
-  width: min(460px, 54%);
+  top: 5.25%;
+  left: 5.25%;
+  width: min(480px, 58%);
   flex-direction: column;
   align-items: flex-start;
-  gap: 1.5rem;
+  gap: 1.35rem;
   padding: 0;
   background: none;
   border-radius: 0;
@@ -355,18 +381,25 @@
   display: flex;
 }
 
+.auth-split__logo.evoluafit-logo,
+.auth-split__logo {
+  --ef-mark: 44px;
+  --ef-word: clamp(1.2rem, 1.55vw, 1.45rem);
+  --ef-gap: 10px;
+}
+
 .auth-split__hero {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.95rem;
-  max-width: 440px;
+  gap: 0.85rem;
+  max-width: 460px;
 }
 
 .auth-split__hero h2 {
   margin: 0;
   font-family: var(--font-heading, 'Outfit', sans-serif);
-  font-size: clamp(2rem, 3.1vw, 2.85rem);
+  font-size: clamp(1.85rem, 2.85vw, 2.7rem);
   font-weight: 750;
   letter-spacing: -0.035em;
   line-height: 1.12;
@@ -377,8 +410,8 @@
 .auth-split__hero p {
   margin: 0;
   max-width: 420px;
-  font-size: 0.98rem;
-  line-height: 1.6;
+  font-size: 0.95rem;
+  line-height: 1.58;
   color: #c2ccd8;
 }
 
@@ -386,17 +419,20 @@
   display: none;
   position: absolute;
   z-index: 3;
-  left: 5.5%;
+  left: 5.25%;
   right: auto;
-  bottom: 11.5%;
-  width: min(500px, 74%);
+  bottom: 11%;
+  width: min(540px, 78%);
   list-style: none;
   margin: 0;
-  padding: 0.35rem 0;
+  padding: 0.55rem 0.7rem;
   align-items: flex-start;
-  gap: 0.5rem;
-  border-radius: 0;
-  background: transparent;
+  gap: 0.55rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(8, 12, 20, 0.42);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .auth-split__journey > li {
@@ -408,15 +444,15 @@
 }
 
 .auth-split__journey-sep {
-  flex: 0 0 12px !important;
+  flex: 0 0 14px !important;
   align-self: center;
   height: 1px;
-  margin-top: 0.55rem;
+  margin-top: 0.45rem;
   background: linear-gradient(
     90deg,
-    rgba(53, 120, 255, 0.1),
+    rgba(53, 120, 255, 0.08),
     rgba(118, 87, 255, 0.55),
-    rgba(53, 120, 255, 0.1)
+    rgba(53, 120, 255, 0.08)
   );
 }
 
@@ -458,19 +494,19 @@
   display: none;
   position: absolute;
   z-index: 3;
-  left: 5.5%;
-  bottom: 3.75%;
-  max-width: min(300px, 58%);
+  left: 5.25%;
+  bottom: 3.5%;
+  max-width: min(320px, 62%);
   align-items: center;
   gap: 0.65rem;
-  padding: 0.7rem 0.9rem;
+  padding: 0.65rem 0.85rem;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  background: rgba(8, 12, 20, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(8, 12, 20, 0.62);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.28),
+    0 8px 24px rgba(0, 0, 0, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 

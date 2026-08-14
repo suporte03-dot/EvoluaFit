@@ -336,16 +336,16 @@
 
 .auth-split__cover {
   position: absolute;
-  left: 50%;
-  top: 56%;
-  width: min(108%, 1100px);
-  height: auto;
-  max-height: 62%;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   display: block;
-  transform: translate(-50%, -50%);
-  object-fit: contain;
-  object-position: center center;
-  filter: brightness(1.08) contrast(1.04) saturate(1.06);
+  /* Capa contínua no stage: personagens + gráfico secundário, sem faixa flutuante */
+  object-fit: cover;
+  object-position: center 46%;
+  max-height: none;
+  transform: none;
+  filter: brightness(1.05) contrast(1.03) saturate(1.04);
   pointer-events: none;
   user-select: none;
 }
@@ -356,9 +356,9 @@
   z-index: 1;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(5, 8, 16, 0.88) 0%, rgba(5, 8, 16, 0.42) 16%, transparent 34%),
-    linear-gradient(0deg, rgba(5, 8, 16, 0.92) 0%, rgba(5, 8, 16, 0.48) 14%, transparent 32%),
-    linear-gradient(90deg, rgba(5, 8, 16, 0.42) 0%, rgba(5, 8, 16, 0.12) 28%, transparent 52%);
+    linear-gradient(180deg, rgba(5, 8, 16, 0.86) 0%, rgba(5, 8, 16, 0.38) 15%, transparent 32%),
+    linear-gradient(0deg, rgba(5, 8, 16, 0.9) 0%, rgba(5, 8, 16, 0.42) 16%, transparent 34%),
+    linear-gradient(90deg, rgba(5, 8, 16, 0.4) 0%, rgba(5, 8, 16, 0.12) 26%, transparent 50%);
 }
 
 .auth-split__top {
@@ -421,18 +421,18 @@
   z-index: 3;
   left: 5.25%;
   right: auto;
-  bottom: 12.5%;
-  width: min(540px, 78%);
+  bottom: 13%;
+  width: min(520px, 76%);
   list-style: none;
   margin: 0;
-  padding: 0.55rem 0.7rem;
+  padding: 0.35rem 0;
   align-items: flex-start;
-  gap: 0.55rem;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(8, 12, 20, 0.42);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  gap: 0.5rem;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .auth-split__journey > li {
@@ -931,9 +931,7 @@
   }
 
   .auth-split__cover {
-    width: min(106%, 1140px);
-    max-height: 60%;
-    top: 55%;
+    object-position: center 45%;
   }
 
   .auth-split__panel {
@@ -959,9 +957,7 @@
   }
 
   .auth-split__cover {
-    width: min(104%, 1180px);
-    max-height: 58%;
-    top: 54.5%;
+    object-position: center 46%;
   }
 
   .auth-split__top {
@@ -976,8 +972,8 @@
   }
 
   .auth-split__journey {
-    bottom: 10.75%;
-    width: min(560px, 74%);
+    bottom: 11.5%;
+    width: min(540px, 72%);
   }
 
   .auth-split__privacy {
@@ -995,8 +991,7 @@
 
 @media (min-width: 1440px) {
   .auth-split__cover {
-    width: min(102%, 1220px);
-    max-height: 56%;
+    object-position: center 48%;
   }
 
   .auth-split__top {
@@ -1027,13 +1022,12 @@
   }
 
   .auth-split__cover {
-    max-height: 58%;
-    top: 52%;
+    object-position: center 42%;
   }
 
   .auth-split__journey {
     bottom: 10%;
-    padding: 0.4rem 0.55rem;
+    padding: 0.25rem 0;
   }
 
   .auth-split__journey span {

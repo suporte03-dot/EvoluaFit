@@ -73,7 +73,7 @@ export default function AuthLayout({
             <div className="auth-split__stage">
               <img
                 className="auth-split__cover"
-                src="/branding/login-cover-premium.jpg"
+                src="/branding/login-cover-balanced.jpg"
                 alt=""
                 decoding="async"
                 fetchPriority="high"

@@ -55,7 +55,7 @@ export default function MobileNav({ activeSection }) {
       routerNavigate('/app/perfil')
       return
     }
-    if (window.location.pathname.startsWith('/app/perfil')) {
+    if (window.location.pathname.startsWith('/app/perfil') || window.location.pathname.startsWith('/app/evolucao')) {
       routerNavigate('/app')
       window.setTimeout(() => {
         scrollToSection(id)

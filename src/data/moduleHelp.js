@@ -80,6 +80,18 @@ export const MODULE_HELP = [
     ],
   },
   {
+    id: 'espelho',
+    sectionId: 'desempenho',
+    to: '/app/evolucao/espelho',
+    label: 'Espelho Evolutivo',
+    summary: 'Fotos, medidas e manequim da sua evolução corporal.',
+    steps: [
+      'Registre uma foto frontal e as medidas que tiver.',
+      'Compare o antes e o agora quando houver mais de um check-in.',
+      'Defina metas opcionais como simulação visual, nunca como previsão.',
+    ],
+  },
+  {
     id: 'coach',
     sectionId: 'coach-ia',
     label: 'Coach IA',
@@ -132,6 +144,6 @@ export const MODULE_HELP_FAQ = [
     id: 'faq-evolucao',
     question: 'Onde vejo se estou evoluindo?',
     answer:
-      'No módulo Evolução: resumo do período, frequência, volume e recordes. Os indicadores da Home mostram só o essencial da semana.',
+      'No módulo Evolução: indicadores dos treinos e o Espelho Evolutivo para fotos e medidas. Os indicadores da Home mostram só o essencial da semana.',
   },
 ]

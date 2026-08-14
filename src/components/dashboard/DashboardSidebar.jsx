@@ -7,6 +7,7 @@ import {
   IconDumbbell,
   IconHome,
   IconLibrary,
+  IconMirror,
   IconPanel,
   IconSettings,
   IconSpark,
@@ -39,6 +40,7 @@ const NAV_GROUPS = [
     items: [
       { id: 'desempenho', label: 'Indicadores', Icon: IconTrend, tone: 'orange' },
       { id: 'metas', label: 'Metas', Icon: IconChart, tone: 'orange' },
+      { id: 'espelho', label: 'Espelho Evolutivo', Icon: IconMirror, tone: 'orange', to: '/app/evolucao/espelho' },
     ],
   },
   {
@@ -88,7 +90,8 @@ export default function DashboardSidebar({
   const initials = loadingProfile ? '··' : initialsFromName(name)
   const xpCeiling = xp.xp - xp.intoLevel + xp.nextLevelAt
   const xpLabel = `${xp.xp.toLocaleString('pt-BR')} / ${xpCeiling.toLocaleString('pt-BR')} XP`
-  const onProfilePage = location.pathname.startsWith('/app/perfil')
+  const onDedicatedRoute =
+    location.pathname.startsWith('/app/perfil') || location.pathname.startsWith('/app/evolucao')
 
   const handleLogout = async () => {
     if (signingOut) return
@@ -102,8 +105,8 @@ export default function DashboardSidebar({
   }
 
   const isActive = (item) => {
-    if (item.to === '/app/perfil') return onProfilePage
-    if (onProfilePage) return false
+    if (item.to) return location.pathname.startsWith(item.to)
+    if (onDedicatedRoute) return false
     if (item.label === 'Agora') return activeSection === 'inicio' && !item.hash
     if (item.hash) return false
     return activeSection === item.id
@@ -117,7 +120,7 @@ export default function DashboardSidebar({
       return
     }
 
-    if (onProfilePage) {
+    if (onDedicatedRoute) {
       navigate('/app')
       window.setTimeout(() => navTarget(item), 80)
       return
@@ -128,7 +131,7 @@ export default function DashboardSidebar({
 
   const goHome = (e) => {
     onCloseMobile?.()
-    if (onProfilePage) {
+    if (onDedicatedRoute) {
       e?.preventDefault?.()
       navigate('/app')
       return

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
+import { useAuth } from '../context/AuthContext'
 import { getExerciseCache } from '../data/exerciseCache'
 import { scrollToSection } from '../utils/scrollToSection'
 import { formatDateShort } from '../utils/dateFormat'
@@ -36,6 +37,7 @@ import {
   saveCoachExchange,
   saveCoachSuggestionToPlan,
 } from '../services/coachService'
+import { getBodyCoachSummary } from '../services/bodyEvolutionService'
 
 const COACH_STYLE_ID = 'evoluafit-coach-page-css'
 const COACH_PAGE_CSS = `
@@ -445,6 +447,8 @@ export default function CoachIA() {
     addExerciseToPlan,
     startWorkout,
   } = useFitness()
+  const { user } = useAuth()
+  const [bodyEvolution, setBodyEvolution] = useState(null)
 
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -459,9 +463,23 @@ export default function CoachIA() {
   const inputRef = useRef(null)
   const loadingRef = useRef(false)
 
+  useEffect(() => {
+    if (!user?.id) {
+      setBodyEvolution(null)
+      return undefined
+    }
+    let active = true
+    getBodyCoachSummary(user.id).then(({ data }) => {
+      if (active) setBodyEvolution(data)
+    })
+    return () => {
+      active = false
+    }
+  }, [user?.id])
+
   const context = useMemo(
-    () => ({ profile, workouts, history, performance, goals }),
-    [profile, workouts, history, performance, goals],
+    () => ({ profile, workouts, history, performance, goals, bodyEvolution }),
+    [profile, workouts, history, performance, goals, bodyEvolution],
   )
 
   const summary = useMemo(() => getCoachSummary(context), [context])

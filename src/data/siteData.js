@@ -34,6 +34,7 @@ export const mobileNavMoreItems = [
   { id: 'exercicios', label: 'Biblioteca' },
   { id: 'calendario', label: 'Agenda' },
   { id: 'metas', label: 'Metas' },
+  { id: 'espelho', label: 'Espelho', to: '/app/evolucao/espelho' },
   { id: 'ajuda', label: 'Ajuda' },
   { id: 'configuracoes', label: 'Configurações' },
 ]

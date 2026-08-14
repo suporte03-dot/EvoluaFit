@@ -16,6 +16,7 @@
 import { exercises, getExerciseById } from '../data/exercisesData'
 import { objectiveLabels } from '../data/workoutTemplates'
 import { generateWorkoutPlan as buildPlan, planToWorkouts } from '../utils/workoutGenerator'
+import { formatSignedDelta } from '../utils/bodyEvolutionMetrics'
 
 // Futuro: import { supabase } from '../lib/supabaseClient'
 
@@ -50,6 +51,11 @@ export const QUICK_CHIPS = [
   { id: 'rapido30', label: 'Treino rápido de 30 min', prompt: QUICK_PROMPTS.rapido30 },
   { id: 'casa', label: 'Treino em casa', prompt: QUICK_PROMPTS.casa },
   { id: 'descanso', label: 'Sugestão de descanso/mobilidade', prompt: QUICK_PROMPTS.descanso },
+  {
+    id: 'espelho',
+    label: 'Meu Espelho Evolutivo',
+    prompt: 'Como minhas medidas evoluíram nos últimos 90 dias?',
+  },
 ]
 
 export const EMPTY_EXAMPLES = [
@@ -1080,9 +1086,66 @@ export function saveCoachSuggestionToPlan(suggestion) {
   return null
 }
 
+function answerBodyEvolution(context = {}) {
+  const body = context.bodyEvolution
+  if (!body?.count) {
+    return makeResult({
+      title: 'Espelho Evolutivo',
+      reason:
+        'Ainda não há registros no Espelho Evolutivo. Abra Evolução → Espelho e crie o primeiro check-in para eu comentar apenas as medidas que você informar.',
+      careNotes: [
+        'Eu descrevo somente números registrados por você.',
+        'Não faço julgamento de aparência.',
+      ],
+    })
+  }
+
+  const lines = []
+  if (body.count === 1) {
+    lines.push(
+      `Há 1 registro no Espelho Evolutivo (${body.latestDate || 'data não informada'}). Continue registrando para visualizar comparações.`,
+    )
+  } else {
+    lines.push(`Há ${body.count} registros, do primeiro (${body.firstDate || '—'}) ao mais recente (${body.latestDate || '—'}).`)
+    const keys = [
+      ['waist', 'cintura', 'cm'],
+      ['arm', 'braço', 'cm'],
+      ['chest', 'peito', 'cm'],
+      ['hips', 'quadril', 'cm'],
+      ['thigh', 'coxa', 'cm'],
+      ['weight', 'peso', 'kg'],
+    ]
+    keys.forEach(([key, label, unit]) => {
+      const a = body.first?.[key]
+      const b = body.latest?.[key]
+      if (a == null || b == null) return
+      const delta = formatSignedDelta(b - a, unit)
+      if (delta) lines.push(`Sua ${label} foi de ${a} ${unit} para ${b} ${unit} (${delta}).`)
+    })
+    if (lines.length === 1) {
+      lines.push('Os registros ainda não têm medidas comparáveis nos mesmos campos.')
+    }
+  }
+
+  return makeResult({
+    title: 'Meu Espelho Evolutivo',
+    reason: lines.join(' '),
+    careNotes: [
+      'Estes números vêm só dos check-ins que você salvou.',
+      'Não são diagnóstico, previsão ou julgamento de aparência.',
+    ],
+  })
+}
+
 function matchIntent(question) {
   const q = question.toLowerCase()
 
+  if (/gordo|gord[oa]|feio|corpo ruim|precisa emagrecer|corpo perfeito|defeito/.test(q)) {
+    return { type: 'body_guard' }
+  }
+  if (/espelho evolutivo|minhas medidas|medida(s)? evolu|como minha cintura|percentual de gordura/.test(q)) {
+    return { type: 'body' }
+  }
   if (/descans|mobilidade|recupera|cansad|fadig|sem energia/.test(q)) return { type: 'recovery' }
   if (/30\s*min|pouco tempo|treino curto|r[aá]pid/.test(q)) return { type: 'short' }
   if (/casa|halter|home|el[aá]stico/.test(q)) return { type: 'home' }
@@ -1112,6 +1175,15 @@ export async function askCoach(question, context = {}) {
   const intent = matchIntent(question)
 
   switch (intent.type) {
+    case 'body_guard':
+      return makeResult({
+        title: 'Espelho Evolutivo',
+        reason:
+          'Eu não avalio aparência. Se quiser, pergunte como suas medidas evoluíram no Espelho Evolutivo — eu respondo só com os números registrados.',
+        careNotes: ['Nenhuma frase daqui é diagnóstico ou recomendação para mudar o corpo.'],
+      })
+    case 'body':
+      return answerBodyEvolution(context)
     case 'today':
       return getTodaySuggestion(context)
     case 'plan':

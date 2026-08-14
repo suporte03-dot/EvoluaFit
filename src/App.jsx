@@ -49,6 +49,14 @@ const TrainingCalendar = lazy(() => import('./components/TrainingCalendar'))
 const PerformanceDashboard = lazy(() => import('./components/PerformanceDashboard'))
 const Goals = lazy(() => import('./components/Goals'))
 const UserProfile = lazy(() => import('./components/UserProfile'))
+const BodyEvolutionPage = lazy(() => import('./pages/body-evolution/BodyEvolutionPage'))
+const BodyMirrorEntry = lazy(() => import('./components/body-evolution/BodyMirrorEntry'))
+
+function BodyEvolutionRedirect() {
+  const location = useLocation()
+  const suffix = location.pathname.replace(/^\/evolucao\/espelho/, '')
+  return <Navigate to={`/app/evolucao/espelho${suffix}${location.search}`} replace />
+}
 
 function SectionFallback({ label = 'Carregando' }) {
   return (
@@ -68,6 +76,8 @@ function AppLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const isProfileRoute = location.pathname.startsWith('/app/perfil')
+  const isMirrorRoute = location.pathname.startsWith('/app/evolucao')
+  const shellSection = isProfileRoute ? 'perfil' : isMirrorRoute ? 'desempenho' : activeSection
 
   useEffect(() => {
     const onResize = () => {
@@ -94,7 +104,7 @@ function AppLayout() {
     >
       <div className="app__frame">
         <DashboardSidebar
-          activeSection={isProfileRoute ? 'perfil' : activeSection}
+          activeSection={shellSection}
           history={history}
           workouts={workouts}
           collapsed={sidebarCollapsed}
@@ -106,7 +116,7 @@ function AppLayout() {
         <div className="app__content">
           <SyncStatusIndicator />
           <Header
-            activeSection={isProfileRoute ? 'perfil' : activeSection}
+            activeSection={shellSection}
             mobileMenuOpen={mobileMenuOpen}
             onOpenDashboardMenu={() => setMobileMenuOpen((open) => !open)}
           />
@@ -118,7 +128,7 @@ function AppLayout() {
 
       <Toast toasts={toasts} />
       <StartWorkoutModal />
-      <MobileNav activeSection={isProfileRoute ? 'perfil' : activeSection} />
+      <MobileNav activeSection={shellSection} />
       {page === 'exercise' && exerciseId && (
         <Suspense fallback={<SectionFallback label="Carregando exercício" />}>
           <ExerciseDetailPage exerciseId={exerciseId} />
@@ -148,6 +158,7 @@ function DashboardHome() {
         <TrainingCalendar />
         <SectionDivider variant="progress" label="EVOLUÇÃO" />
         <PerformanceDashboard />
+        <BodyMirrorEntry />
         <Goals />
         <SectionDivider variant="profile" label="PERFIL" />
         <UserProfile />
@@ -169,6 +180,14 @@ function DashboardApp() {
                   <Route element={<AppLayout />}>
                     <Route index element={<DashboardHome />} />
                     <Route path="perfil" element={<ProfilePage />} />
+                    <Route
+                      path="evolucao/espelho/*"
+                      element={
+                        <Suspense fallback={<SectionFallback label="Carregando Espelho Evolutivo" />}>
+                          <BodyEvolutionPage />
+                        </Suspense>
+                      }
+                    />
                   </Route>
                 </Routes>
               </SyncProvider>
@@ -224,6 +243,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/evolucao/espelho/*" element={<BodyEvolutionRedirect />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>

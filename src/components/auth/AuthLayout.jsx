@@ -1,5 +1,61 @@
 import EvoluaFitLogo from '../branding/EvoluaFitLogo'
 
+function IconDumbbell({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M6 8v8M18 8v8M4 10v4M20 10v4M6 12h12M8 8h2v8H8V8zm6 0h2v8h-2V8z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function IconTrend({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M4 16l5.5-5.5 3.5 3.5L20 7"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M14 7h6v6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function IconStar({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M12 3.5l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 16.8 7.2 18.4l.9-5.4L4.2 9.2l5.4-.8L12 3.5z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function IconShieldCheck({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M12 3l7 3v5c0 4.5-2.8 7.8-7 9-4.2-1.2-7-4.5-7-9V6l7-3z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+      <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 export default function AuthLayout({
   title,
   subtitle,
@@ -16,12 +72,19 @@ export default function AuthLayout({
           <aside className="auth-split__visual" aria-label="EvoluaFit">
             <img
               className="auth-split__cover"
-              src="/branding/evoluafit-login-cover.png"
+              src="/branding/evoluafit-login-hero.png?v=4"
               alt=""
               decoding="async"
               fetchPriority="high"
             />
-            <div className="auth-split__copy">
+
+            <div className="auth-split__scrim" aria-hidden="true" />
+
+            <div className="auth-split__brand">
+              <EvoluaFitLogo size="medium" showWordmark />
+            </div>
+
+            <div className="auth-split__hero">
               <h2>
                 Evolua além do <span className="auth-gradient-text">treino.</span>
               </h2>
@@ -29,6 +92,48 @@ export default function AuthLayout({
                 Treine com propósito, acompanhe seu progresso e saiba sempre qual é o
                 próximo passo.
               </p>
+            </div>
+
+            <ul className="auth-split__journey">
+              <li>
+                <span className="auth-split__journey-icon" aria-hidden="true">
+                  <IconDumbbell />
+                </span>
+                <div>
+                  <strong>TREINE</strong>
+                  <span>Planos inteligentes e personalizados</span>
+                </div>
+              </li>
+              <li className="auth-split__journey-sep" aria-hidden="true" />
+              <li>
+                <span className="auth-split__journey-icon" aria-hidden="true">
+                  <IconTrend />
+                </span>
+                <div>
+                  <strong>ACOMPANHE</strong>
+                  <span>Monitore sua evolução em tempo real</span>
+                </div>
+              </li>
+              <li className="auth-split__journey-sep" aria-hidden="true" />
+              <li>
+                <span className="auth-split__journey-icon" aria-hidden="true">
+                  <IconStar />
+                </span>
+                <div>
+                  <strong>EVOLUA</strong>
+                  <span>Supere limites todos os dias</span>
+                </div>
+              </li>
+            </ul>
+
+            <div className="auth-split__privacy">
+              <span className="auth-split__privacy-icon" aria-hidden="true">
+                <IconShieldCheck />
+              </span>
+              <div>
+                <strong>Seus dados estão protegidos</strong>
+                <p>Privacidade e segurança em primeiro lugar.</p>
+              </div>
             </div>
           </aside>
 

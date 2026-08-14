@@ -70,32 +70,6 @@ function IconLockMini({ size = 14 }) {
   )
 }
 
-function IconShieldMini({ size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 3l7 3v5c0 4.5-2.8 7.8-7 9-4.2-1.2-7-4.5-7-9V6l7-3z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function IconCloudMini({ size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M7.5 18h9.2A4.3 4.3 0 0021 13.9a4.2 4.2 0 00-3.7-4.1A6 6 0 007.2 8.2 4.5 4.5 0 007.5 18z"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
 export default function LoginPage() {
   const { signIn } = useAuth()
   const navigate = useNavigate()
@@ -140,37 +114,6 @@ export default function LoginPage() {
           <a href="#termos">Termos de Uso</a> e a{' '}
           <a href="#privacidade">Política de Privacidade</a>.
         </p>
-      }
-      below={
-        <ul className="auth-trust">
-          <li>
-            <span className="auth-trust__icon" aria-hidden="true">
-              <IconShieldMini />
-            </span>
-            <div>
-              <strong>Privacidade total</strong>
-              <p>Seus dados nunca serão compartilhados.</p>
-            </div>
-          </li>
-          <li>
-            <span className="auth-trust__icon" aria-hidden="true">
-              <IconLockMini size={18} />
-            </span>
-            <div>
-              <strong>Segurança avançada</strong>
-              <p>Criptografia e proteção de ponta a ponta.</p>
-            </div>
-          </li>
-          <li>
-            <span className="auth-trust__icon" aria-hidden="true">
-              <IconCloudMini />
-            </span>
-            <div>
-              <strong>Acesso em qualquer lugar</strong>
-              <p>Web, Android e iOS totalmente sincronizados.</p>
-            </div>
-          </li>
-        </ul>
       }
     >
       <p className="auth-pill" role="note">

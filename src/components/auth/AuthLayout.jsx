@@ -5,14 +5,23 @@ export default function AuthLayout({
   subtitle,
   children,
   footer,
+  below,
   variant = 'card',
   hideHeading = false,
 }) {
   if (variant === 'split') {
     return (
       <div className="auth-split">
-        <div className="auth-split__shell">
-          <aside className="auth-split__visual login-cover" aria-label="EvoluaFit" />
+        <div className="auth-split__main">
+          <aside className="auth-split__visual" aria-label="EvoluaFit">
+            <img
+              className="auth-split__cover"
+              src="/branding/evoluafit-login-cover.png"
+              alt=""
+              decoding="async"
+              fetchPriority="high"
+            />
+          </aside>
 
           <div className="auth-split__panel">
             <div className="auth-split__panel-inner auth-login-card">
@@ -30,6 +39,7 @@ export default function AuthLayout({
             </div>
           </div>
         </div>
+        {below || null}
       </div>
     )
   }

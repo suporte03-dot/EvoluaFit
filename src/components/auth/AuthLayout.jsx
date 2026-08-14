@@ -27,22 +27,23 @@ export default function AuthLayout({
   if (variant === 'split') {
     return (
       <div className="auth-split">
-        <aside className="auth-split__visual">
-          <img
-            className="auth-split__scene"
-            src={loginSceneUrl}
-            alt=""
-            decoding="async"
-            fetchPriority="high"
-          />
-          <div className="auth-split__veil" aria-hidden="true" />
+        <div className="auth-split__shell">
+          <aside className="auth-split__visual">
+            <img
+              className="auth-split__scene"
+              src={loginSceneUrl}
+              alt=""
+              decoding="async"
+              fetchPriority="high"
+            />
+            <div className="auth-split__veil" aria-hidden="true" />
 
-          <div className="auth-split__visual-inner">
-            <EvoluaFitLogo size="large" showWordmark className="auth-split__logo" />
-
-            <div className="auth-split__copy">
-              <h2 className="auth-split__headline">Evolua além do treino</h2>
-              <p className="auth-split__tagline">{BRAND.tagline}</p>
+            <div className="auth-split__visual-inner">
+              <EvoluaFitLogo size="large" showWordmark className="auth-split__logo" />
+              <div className="auth-split__copy">
+                <h2 className="auth-split__headline">Evolua além do treino</h2>
+                <p className="auth-split__tagline">{BRAND.tagline}</p>
+              </div>
             </div>
 
             <p className="auth-split__secure">
@@ -51,22 +52,22 @@ export default function AuthLayout({
               </span>
               Seus dados estão protegidos.
             </p>
-          </div>
-        </aside>
+          </aside>
 
-        <div className="auth-split__panel">
-          <div className="auth-split__panel-inner auth-login-card">
-            <div className="auth-split__mobile-brand">
-              <EvoluaFitLogo size="medium" showWordmark />
+          <div className="auth-split__panel">
+            <div className="auth-split__panel-inner auth-login-card">
+              <div className="auth-split__mobile-brand">
+                <EvoluaFitLogo size="medium" showWordmark />
+              </div>
+              {!hideHeading ? (
+                <header className="auth-card__heading">
+                  <h1>{title}</h1>
+                  {subtitle ? <p>{subtitle}</p> : null}
+                </header>
+              ) : null}
+              {children}
+              {footer ? <footer className="auth-card__footer">{footer}</footer> : null}
             </div>
-            {!hideHeading ? (
-              <header className="auth-card__heading">
-                <h1>{title}</h1>
-                {subtitle ? <p>{subtitle}</p> : null}
-              </header>
-            ) : null}
-            {children}
-            {footer ? <footer className="auth-card__footer">{footer}</footer> : null}
           </div>
         </div>
       </div>

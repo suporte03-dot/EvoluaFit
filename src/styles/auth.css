@@ -280,20 +280,24 @@
   }
 }
 
-/* ===== Split login — padrão do mockup: cena + HTML à esquerda, form real à direita ===== */
+/* ===== Split login — hero cover + form (layout das regras Tailwind) ===== */
 .auth-split {
   min-height: 100vh;
   min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: #0b0e14;
+  color: var(--text-primary, #f8fafc);
+}
+
+.auth-split__shell {
+  width: min(100%, 1180px);
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.15rem;
-  padding: clamp(0.85rem, 2.2vw, 1.75rem);
-  background-color: #07080c;
-  background-image:
-    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 7px),
-    radial-gradient(ellipse 55% 45% at 18% 12%, rgba(92, 42, 110, 0.28), transparent 58%),
-    radial-gradient(ellipse 45% 40% at 88% 88%, rgba(40, 70, 120, 0.22), transparent 55%);
-  color: var(--text-primary, #f8fafc);
+  gap: 1.5rem;
+  align-items: stretch;
 }
 
 .auth-split__visual {
@@ -309,49 +313,37 @@
 
 .auth-split__scene {
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 30%;
-  width: 70%;
+  inset: 0;
+  width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 55% 28%;
+  object-position: center;
   display: block;
-  filter: none;
 }
 
 .auth-split__veil {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background:
-    linear-gradient(
-      90deg,
-      rgba(10, 12, 18, 0.97) 0%,
-      rgba(10, 12, 18, 0.82) 22%,
-      rgba(10, 12, 18, 0.28) 48%,
-      rgba(10, 12, 18, 0.08) 72%,
-      transparent 100%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(10, 12, 18, 0.35) 0%,
-      transparent 22%,
-      transparent 78%,
-      rgba(10, 12, 18, 0.72) 100%
-    );
+  background: linear-gradient(
+    90deg,
+    rgba(11, 14, 20, 0.88) 0%,
+    rgba(11, 14, 20, 0.55) 38%,
+    rgba(11, 14, 20, 0.18) 68%,
+    rgba(11, 14, 20, 0.08) 100%
+  );
 }
 
 .auth-split__visual-inner {
   position: relative;
-  z-index: 1;
+  z-index: 10;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 1.15rem;
-  padding: clamp(1.5rem, 3.4vw, 2.6rem) clamp(1.4rem, 3.2vw, 2.4rem);
+  padding: 1.5rem 1.5rem 5rem;
+  max-width: 28rem;
 }
 
 .auth-split__logo {
@@ -361,8 +353,7 @@
 }
 
 .auth-split__copy {
-  max-width: 16ch;
-  margin-top: 0.35rem;
+  max-width: 18ch;
 }
 
 .auth-split__headline {
@@ -377,17 +368,21 @@
 
 .auth-split__tagline {
   margin: 0.8rem 0 0;
-  max-width: 28ch;
+  max-width: 32ch;
   font-size: 0.95rem;
   line-height: 1.55;
   color: #b7c0cc;
 }
 
 .auth-split__secure {
+  position: absolute;
+  z-index: 10;
+  bottom: 1.5rem;
+  left: 1.5rem;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  margin: auto 0 0;
+  margin: 0;
   font-size: 0.82rem;
   color: #9da9b8;
 }
@@ -471,22 +466,23 @@
 
 .auth-input {
   position: relative;
-  display: flex;
-  align-items: center;
 }
 
 .auth-input__icon {
   position: absolute;
-  left: 0.85rem;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
   display: inline-flex;
   color: var(--text-muted, #6b7788);
   pointer-events: none;
+  z-index: 1;
 }
 
 .auth-input input {
   width: 100%;
   min-height: 50px;
-  padding: 0.7rem 0.9rem 0.7rem 2.75rem;
+  padding: 0.7rem 1rem 0.7rem 2.75rem;
   border-radius: 12px;
   border: 1px solid #243142;
   background: #0d1219;
@@ -680,15 +676,13 @@
 }
 
 @media (min-width: 768px) {
-  .auth-split {
-    grid-template-columns: minmax(0, 1.5fr) minmax(340px, 1fr);
-    grid-template-rows: minmax(0, 1fr);
-    align-items: stretch;
+  .auth-split__shell {
+    grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.9fr);
+    min-height: min(720px, calc(100dvh - 3rem));
   }
 
   .auth-split__visual {
     display: block;
-    min-height: calc(100dvh - 3rem);
   }
 
   .auth-split__mobile-brand {
@@ -697,8 +691,8 @@
 }
 
 @media (min-width: 1024px) {
-  .auth-split {
-    grid-template-columns: minmax(0, 1.5fr) minmax(380px, 1fr);
+  .auth-split__shell {
+    grid-template-columns: minmax(0, 1.5fr) minmax(380px, 0.85fr);
   }
 }
 

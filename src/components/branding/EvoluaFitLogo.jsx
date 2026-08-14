@@ -1,14 +1,13 @@
 import EvoluaFitMark from './EvoluaFitMark'
-import wordmarkUrl from '../../assets/branding/evoluafit-wordmark.png'
 
 const SIZE_MAP = {
-  small: 40,
-  medium: 56,
-  large: 76,
+  small: 36,
+  medium: 44,
+  large: 52,
 }
 
 /**
- * Logo oficial extraído de logonovaajustada.png
+ * Logo EvoluaFit — E itálico + wordmark (nítido, igual à capa).
  */
 export default function EvoluaFitLogo({
   size = 'medium',
@@ -17,7 +16,7 @@ export default function EvoluaFitLogo({
   className = '',
 }) {
   const markPx = SIZE_MAP[size] || SIZE_MAP.medium
-  const showFile = Boolean(showWordmark) && !compact
+  const showText = Boolean(showWordmark) && !compact
 
   return (
     <span
@@ -32,17 +31,13 @@ export default function EvoluaFitLogo({
       aria-label="EvoluaFit"
       title="EvoluaFit"
     >
-      {showFile ? (
-        <img
-          src={wordmarkUrl}
-          alt=""
-          className="evoluafit-logo__file"
-          width={220}
-          height={60}
-        />
-      ) : (
-        <EvoluaFitMark size={markPx} className="evoluafit-logo__mark" />
-      )}
+      <EvoluaFitMark size={markPx} className="evoluafit-logo__mark" />
+      {showText ? (
+        <span className="evoluafit-logo__wordmark" aria-hidden="true">
+          <span className="evoluafit-logo__wordmark-main">Evolua</span>
+          <span className="evoluafit-logo__wordmark-accent">Fit</span>
+        </span>
+      ) : null}
     </span>
   )
 }

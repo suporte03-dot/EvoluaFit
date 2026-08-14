@@ -9,14 +9,17 @@ const outAssets = path.resolve('src/assets/branding/login-cover-balanced.jpg')
 
 const meta = await sharp(src).metadata()
 const outW = 1400
-const imgW = outW
-const imgH = Math.round(meta.height * (outW / meta.width))
-const padTop = Math.round(imgH * 0.28)
-const padBottom = Math.round(imgH * 0.22)
+const imgW = Math.round(outW * 0.96)
+const imgH = Math.round(meta.height * (imgW / meta.width))
+const padTop = Math.round(imgH * 0.32)
+const padBottom = Math.round(imgH * 0.26)
 const outH = imgH + padTop + padBottom
+const left = Math.round((outW - imgW) / 2)
 
 const resized = await sharp(src)
   .resize(imgW, imgH, { kernel: sharp.kernel.lanczos3 })
+  .modulate({ brightness: 1.04, saturation: 1.05 })
+  .jpeg({ quality: 93, mozjpeg: true })
   .toBuffer()
 
 const outBuffer = await sharp({
@@ -27,11 +30,11 @@ const outBuffer = await sharp({
     background: { r: 5, g: 8, b: 16 },
   },
 })
-  .composite([{ input: resized, left: 0, top: padTop }])
+  .composite([{ input: resized, left, top: padTop }])
   .jpeg({ quality: 93, mozjpeg: true })
   .toBuffer()
 
 fs.mkdirSync(path.dirname(outAssets), { recursive: true })
 fs.writeFileSync(outPublic, outBuffer)
 fs.writeFileSync(outAssets, outBuffer)
-console.log({ imgW, imgH, padTop, padBottom, outW, outH })
+console.log({ imgW, imgH, padTop, padBottom, left, outW, outH, fill: +(imgH / outH).toFixed(3) })

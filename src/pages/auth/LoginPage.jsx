@@ -114,7 +114,7 @@ export default function LoginPage() {
         </span>
       </p>
 
-      <header className="auth-card__heading auth-card__heading--center">
+      <header className="auth-card__heading">
         <h1>Continue sua evolução.</h1>
         <p>Entre para acessar seus treinos, acompanhar seu progresso e continuar de onde parou.</p>
       </header>
@@ -133,7 +133,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               aria-required="true"
-              placeholder="seu@email.com"
+              placeholder="@email.com"
             />
           </div>
         </label>
@@ -152,7 +152,7 @@ export default function LoginPage() {
               required
               minLength={8}
               aria-required="true"
-              placeholder="Sua senha"
+              placeholder="senha"
             />
             <button
               type="button"
@@ -175,7 +175,7 @@ export default function LoginPage() {
             />
             <span>Lembrar de mim</span>
           </label>
-          <Link to="/esqueci-senha" className="auth-link">
+          <Link to="/esqueci-senha" className="auth-link auth-link--forgot">
             Esqueci minha senha
           </Link>
         </div>

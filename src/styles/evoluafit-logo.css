@@ -81,8 +81,21 @@
   background-clip: unset;
 }
 
-.evoluafit-logo--compact {
-  gap: 0;
+.evoluafit-logo__file {
+  display: block;
+  height: 36px;
+  width: auto;
+  max-width: min(240px, 100%);
+  object-fit: contain;
+  object-position: left center;
+}
+
+.evoluafit-logo--medium .evoluafit-logo__file {
+  height: 42px;
+}
+
+.evoluafit-logo--large .evoluafit-logo__file {
+  height: 52px;
 }
 
 .header__brand.evoluafit-logo,

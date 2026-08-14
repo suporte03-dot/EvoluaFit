@@ -1,71 +1,5 @@
 import EvoluaFitLogo from '../branding/EvoluaFitLogo'
-import { BRAND } from '../../data/siteData'
-import loginCharactersUrl from '../../assets/branding/login-characters.jpg'
-
-function IconChart({ size = 20 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M5 19V11M12 19V7M19 19V4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function IconTarget({ size = 20 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.8" />
-      <circle cx="12" cy="12" r="3.5" stroke="currentColor" strokeWidth="1.8" />
-    </svg>
-  )
-}
-
-function IconDumbbell({ size = 20 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M6.5 8.5v7M17.5 8.5v7M4 10.5v3M20 10.5v3M6.5 12h11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function IconShield({ size = 20 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 3l7 3v5c0 4.5-2.8 7.8-7 9-4.2-1.2-7-4.5-7-9V6l7-3z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-      <path d="M9.5 12.2l1.8 1.8L15 10.2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-const FOOTER_ITEMS = [
-  { title: 'Evolução constante', text: 'Acompanhe cada passo da sua jornada.', Icon: IconChart },
-  { title: 'Foco no objetivo', text: 'Saiba sempre o que fazer agora.', Icon: IconTarget },
-  { title: 'Performance e disciplina', text: 'Treine com clareza e consistência.', Icon: IconDumbbell },
-  { title: 'Confiança e segurança', text: 'Seus dados protegidos neste aparelho.', Icon: IconShield },
-]
-
-function JourneyLine() {
-  return (
-    <ol className="auth-journey" aria-label="Jornada EvoluaFit">
-      <li>Treine</li>
-      <li>Acompanhe</li>
-      <li>Evolua</li>
-    </ol>
-  )
-}
-
-function SecurityNote() {
-  return (
-    <div className="auth-security" role="note">
-      <span className="auth-security__icon" aria-hidden="true">
-        <IconShield size={18} />
-      </span>
-      <p>
-        <strong>Seus dados estão protegidos.</strong>
-        Privacidade e segurança em primeiro lugar.
-      </p>
-    </div>
-  )
-}
+import loginBrandPanelUrl from '../../assets/branding/login-brand-panel.jpg'
 
 export default function AuthLayout({
   title,
@@ -79,44 +13,22 @@ export default function AuthLayout({
     return (
       <div className="auth-split">
         <aside className="auth-split__visual">
-          <div className="auth-split__visual-inner">
-            <EvoluaFitLogo size="medium" showWordmark />
-
-            <div className="auth-split__copy">
-              <h2 className="auth-split__headline">
-                Evolua além do <span>treino.</span>
-              </h2>
-              <p className="auth-split__tagline">{BRAND.tagline}</p>
-            </div>
-
-            <div className="auth-split__cast">
-              <img
-                src={loginCharactersUrl}
-                alt=""
-                decoding="async"
-                fetchPriority="high"
-              />
-            </div>
-
-            <JourneyLine />
-            <SecurityNote />
-          </div>
+          <img
+            className="auth-split__panel-art"
+            src={loginBrandPanelUrl}
+            alt=""
+            decoding="async"
+            fetchPriority="high"
+          />
         </aside>
 
         <div className="auth-split__panel">
           <div className="auth-split__panel-inner auth-login-card">
             <div className="auth-split__mobile-brand">
               <EvoluaFitLogo size="medium" showWordmark />
-              <p className="auth-split__mobile-title">Evolua além do treino.</p>
-              <img
-                className="auth-split__cast-img--compact"
-                src={loginCharactersUrl}
-                alt=""
-                decoding="async"
-              />
             </div>
             {!hideHeading ? (
-              <header className="auth-card__heading auth-card__heading--center">
+              <header className="auth-card__heading">
                 <h1>{title}</h1>
                 {subtitle ? <p>{subtitle}</p> : null}
               </header>
@@ -125,20 +37,6 @@ export default function AuthLayout({
             {footer ? <footer className="auth-card__footer">{footer}</footer> : null}
           </div>
         </div>
-
-        <ul className="auth-values" aria-label="Valores EvoluaFit">
-          {FOOTER_ITEMS.map((item) => (
-            <li key={item.title} className="auth-values__item">
-              <span className="auth-values__icon" aria-hidden="true">
-                <item.Icon />
-              </span>
-              <div>
-                <strong>{item.title}</strong>
-                <p>{item.text}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
       </div>
     )
   }

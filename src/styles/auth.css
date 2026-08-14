@@ -322,6 +322,10 @@
   height: 100%;
   min-height: 0;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.35rem 1.25rem 1.15rem;
   border-radius: 28px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background:
@@ -334,18 +338,32 @@
   -webkit-backdrop-filter: blur(10px);
 }
 
+/* Quadrado dedicado dos personagens (cena completa, sem crop) */
+.auth-split__cast {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 240px;
+  width: 100%;
+  max-width: 580px;
+  margin: 0.15rem auto;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #050810;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.35);
+}
+
 .auth-split__cover {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   display: block;
-  /* Quadrado com personagens recolhidos: corpo completo no stage */
-  object-fit: cover;
-  object-position: center 52%;
+  object-fit: contain;
+  object-position: center center;
   max-height: none;
   transform: none;
-  filter: brightness(1.05) contrast(1.03) saturate(1.04);
+  filter: brightness(1.06) contrast(1.03) saturate(1.05);
   pointer-events: none;
   user-select: none;
 }
@@ -356,21 +374,21 @@
   z-index: 1;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(5, 8, 16, 0.86) 0%, rgba(5, 8, 16, 0.38) 15%, transparent 32%),
-    linear-gradient(0deg, rgba(5, 8, 16, 0.9) 0%, rgba(5, 8, 16, 0.42) 16%, transparent 34%),
-    linear-gradient(90deg, rgba(5, 8, 16, 0.4) 0%, rgba(5, 8, 16, 0.12) 26%, transparent 50%);
+    linear-gradient(180deg, rgba(5, 8, 16, 0.28) 0%, transparent 18%),
+    linear-gradient(0deg, rgba(5, 8, 16, 0.35) 0%, transparent 22%);
 }
 
 .auth-split__top {
   display: none;
-  position: absolute;
+  position: relative;
   z-index: 3;
-  top: 5.25%;
-  left: 5.25%;
-  width: min(480px, 58%);
+  top: auto;
+  left: auto;
+  width: min(480px, 92%);
   flex-direction: column;
   align-items: flex-start;
-  gap: 1.35rem;
+  flex: 0 0 auto;
+  gap: 1rem;
   padding: 0;
   background: none;
   border-radius: 0;
@@ -417,16 +435,18 @@
 
 .auth-split__journey {
   display: none;
-  position: absolute;
+  position: relative;
   z-index: 3;
-  left: 5.25%;
+  left: auto;
   right: auto;
-  bottom: 13%;
-  width: min(520px, 76%);
+  bottom: auto;
+  width: 100%;
+  max-width: 560px;
   list-style: none;
-  margin: 0;
-  padding: 0.35rem 0;
+  margin: 0 auto;
+  padding: 0.25rem 0 0;
   align-items: flex-start;
+  flex: 0 0 auto;
   gap: 0.5rem;
   border-radius: 0;
   border: none;
@@ -492,13 +512,15 @@
 
 .auth-split__privacy {
   display: none;
-  position: absolute;
+  position: relative;
   z-index: 3;
-  left: 5.25%;
-  bottom: 4.25%;
-  max-width: min(320px, 62%);
+  left: auto;
+  bottom: auto;
+  max-width: min(320px, 92%);
   align-items: center;
+  flex: 0 0 auto;
   gap: 0.65rem;
+  margin-top: auto;
   padding: 0.65rem 0.85rem;
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -930,8 +952,9 @@
     padding: 1.35rem 1rem 1.35rem 1.35rem;
   }
 
-  .auth-split__cover {
-    object-position: center 50%;
+  .auth-split__cast {
+    max-width: 520px;
+    min-height: 280px;
   }
 
   .auth-split__panel {
@@ -954,17 +977,19 @@
 
   .auth-split__stage {
     border-radius: 32px;
+    gap: 1rem;
+    padding: 1.5rem 1.4rem 1.25rem;
   }
 
-  .auth-split__cover {
-    object-position: center 52%;
+  .auth-split__cast {
+    max-width: 560px;
+    min-height: 300px;
+    border-radius: 22px;
   }
 
   .auth-split__top {
-    top: 5.5%;
-    left: 5.5%;
-    width: min(500px, 52%);
-    gap: 1.45rem;
+    width: min(500px, 92%);
+    gap: 1.2rem;
   }
 
   .auth-split__hero {
@@ -972,12 +997,7 @@
   }
 
   .auth-split__journey {
-    bottom: 11.5%;
-    width: min(540px, 72%);
-  }
-
-  .auth-split__privacy {
-    bottom: 3.35%;
+    max-width: 560px;
   }
 
   .auth-split__panel {
@@ -990,12 +1010,13 @@
 }
 
 @media (min-width: 1440px) {
-  .auth-split__cover {
-    object-position: center 54%;
+  .auth-split__cast {
+    max-width: 600px;
+    min-height: 320px;
   }
 
   .auth-split__top {
-    width: min(520px, 48%);
+    width: min(520px, 90%);
   }
 
   .auth-login-card {
@@ -1008,9 +1029,13 @@
     padding: 0.85rem 0.65rem 0.85rem 0.85rem;
   }
 
+  .auth-split__stage {
+    gap: 0.55rem;
+    padding: 1rem 0.95rem 0.85rem;
+  }
+
   .auth-split__top {
-    top: 4%;
-    gap: 0.85rem;
+    gap: 0.7rem;
   }
 
   .auth-split__hero h2 {
@@ -1021,13 +1046,12 @@
     font-size: 0.84rem;
   }
 
-  .auth-split__cover {
-    object-position: center 48%;
+  .auth-split__cast {
+    min-height: 180px;
   }
 
   .auth-split__journey {
-    bottom: 10%;
-    padding: 0.25rem 0;
+    padding: 0.15rem 0;
   }
 
   .auth-split__journey span {
@@ -1035,7 +1059,6 @@
   }
 
   .auth-split__privacy {
-    bottom: 2.4%;
     padding: 0.55rem 0.75rem;
   }
 

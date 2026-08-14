@@ -74,7 +74,7 @@
 }
 
 .evoluafit-logo__wordmark-accent {
-  color: #2d68ff;
+  color: #9aa6ff;
   text-shadow: none;
   background: none;
   -webkit-background-clip: unset;
@@ -181,10 +181,10 @@
 }
 
 .evoluafit-brand__name-accent {
-  background: linear-gradient(135deg, #3578ff, #7657ff);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: #9aa6ff;
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
   text-shadow: none;
 }
 

@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
 import EvoluaFitLogo from '../components/branding/EvoluaFitLogo'
+import EvoluaFitMark from '../components/branding/EvoluaFitMark'
 import { BRAND } from '../data/siteData'
-import brandArtUrl from '../assets/branding/novalogopersonalizada.jpg'
+import loginCharactersUrl from '../assets/branding/login-characters.jpg'
 import './landing.css'
 
 const SECTIONS = [
@@ -67,8 +68,8 @@ export default function LandingPage() {
         <div className="landing-hero__visual">
           <img
             className="landing-hero__art"
-            src={brandArtUrl}
-            alt="EvoluaFit"
+            src={loginCharactersUrl}
+            alt=""
             decoding="async"
           />
         </div>
@@ -83,12 +84,7 @@ export default function LandingPage() {
       ))}
 
       <section className="landing-final">
-        <img
-          className="landing-final__art"
-          src={brandArtUrl}
-          alt="EvoluaFit"
-          decoding="async"
-        />
+        <EvoluaFitMark size={56} />
         <h2 className="landing-final__title">
           Seu próximo treino pode ser o começo da sua melhor fase.
         </h2>

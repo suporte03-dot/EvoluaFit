@@ -1,5 +1,6 @@
+import EvoluaFitLogo from '../branding/EvoluaFitLogo'
 import { BRAND } from '../../data/siteData'
-import brandArtUrl from '../../assets/branding/novalogopersonalizada.jpg'
+import loginCharactersUrl from '../../assets/branding/login-characters.jpg'
 
 function IconChart({ size = 20 }) {
   return (
@@ -42,15 +43,27 @@ const FOOTER_ITEMS = [
   { title: 'Confiança e segurança', text: 'Seus dados protegidos neste aparelho.', Icon: IconShield },
 ]
 
-function BrandArt({ className = '', fetchPriority }) {
+function JourneyLine() {
   return (
-    <img
-      className={className}
-      src={brandArtUrl}
-      alt="EvoluaFit"
-      decoding="async"
-      fetchPriority={fetchPriority}
-    />
+    <ol className="auth-journey" aria-label="Jornada EvoluaFit">
+      <li>Treine</li>
+      <li>Acompanhe</li>
+      <li>Evolua</li>
+    </ol>
+  )
+}
+
+function SecurityNote() {
+  return (
+    <div className="auth-security" role="note">
+      <span className="auth-security__icon" aria-hidden="true">
+        <IconShield size={18} />
+      </span>
+      <p>
+        <strong>Seus dados estão protegidos.</strong>
+        Privacidade e segurança em primeiro lugar.
+      </p>
+    </div>
   )
 }
 
@@ -67,29 +80,40 @@ export default function AuthLayout({
       <div className="auth-split">
         <aside className="auth-split__visual">
           <div className="auth-split__visual-inner">
-            <BrandArt className="auth-split__brand-art" fetchPriority="high" />
+            <EvoluaFitLogo size="medium" showWordmark />
 
-            <h2 className="auth-split__headline">
-              Evolua além do <span>treino.</span>
-            </h2>
-            <p className="auth-split__tagline">{BRAND.tagline}</p>
-
-            <div className="auth-security" role="note">
-              <span className="auth-security__icon" aria-hidden="true">
-                <IconShield size={18} />
-              </span>
-              <p>
-                <strong>Seus dados estão protegidos.</strong>
-                Privacidade e segurança em primeiro lugar.
-              </p>
+            <div className="auth-split__copy">
+              <h2 className="auth-split__headline">
+                Evolua além do <span>treino.</span>
+              </h2>
+              <p className="auth-split__tagline">{BRAND.tagline}</p>
             </div>
+
+            <div className="auth-split__cast">
+              <img
+                src={loginCharactersUrl}
+                alt=""
+                decoding="async"
+                fetchPriority="high"
+              />
+            </div>
+
+            <JourneyLine />
+            <SecurityNote />
           </div>
         </aside>
 
         <div className="auth-split__panel">
           <div className="auth-split__panel-inner auth-login-card">
             <div className="auth-split__mobile-brand">
-              <BrandArt className="auth-split__brand-art auth-split__brand-art--compact" />
+              <EvoluaFitLogo size="medium" showWordmark />
+              <p className="auth-split__mobile-title">Evolua além do treino.</p>
+              <img
+                className="auth-split__cast-img--compact"
+                src={loginCharactersUrl}
+                alt=""
+                decoding="async"
+              />
             </div>
             {!hideHeading ? (
               <header className="auth-card__heading auth-card__heading--center">
@@ -126,7 +150,7 @@ export default function AuthLayout({
 
       <div className="auth-card glass-card">
         <header className="auth-card__brand">
-          <BrandArt className="auth-card__brand-art" />
+          <EvoluaFitLogo size="medium" showWordmark />
         </header>
 
         <div className="auth-card__heading">

@@ -1,6 +1,6 @@
 import EvoluaFitLogo from '../branding/EvoluaFitLogo'
 
-function IconDumbbell({ size = 16 }) {
+function IconDumbbell({ size = 14 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
@@ -14,7 +14,7 @@ function IconDumbbell({ size = 16 }) {
   )
 }
 
-function IconTrend({ size = 16 }) {
+function IconTrend({ size = 14 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
@@ -29,7 +29,7 @@ function IconTrend({ size = 16 }) {
   )
 }
 
-function IconStar({ size = 16 }) {
+function IconStar({ size = 14 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
@@ -42,7 +42,7 @@ function IconStar({ size = 16 }) {
   )
 }
 
-function IconShieldCheck({ size = 18 }) {
+function IconShieldCheck({ size = 16 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
@@ -71,6 +71,18 @@ export default function AuthLayout({
         <div className="auth-split__main">
           <aside className="auth-split__visual" aria-label="EvoluaFit">
             <div className="auth-split__stage">
+              <div className="auth-split__cast" aria-hidden="true">
+                <img
+                  className="auth-split__cover"
+                  src="/branding/login-characters.jpg"
+                  alt=""
+                  decoding="async"
+                  fetchPriority="high"
+                />
+                <div className="auth-split__scrim" />
+                <div className="auth-split__vignette" />
+              </div>
+
               <div className="auth-split__top">
                 <div className="auth-split__brand">
                   <EvoluaFitLogo size="medium" showWordmark className="auth-split__logo" />
@@ -84,17 +96,6 @@ export default function AuthLayout({
                     próximo passo.
                   </p>
                 </div>
-              </div>
-
-              <div className="auth-split__cast" aria-hidden="true">
-                <img
-                  className="auth-split__cover"
-                  src="/branding/login-characters.jpg"
-                  alt=""
-                  decoding="async"
-                  fetchPriority="high"
-                />
-                <div className="auth-split__scrim" />
               </div>
 
               <ul className="auth-split__journey" aria-label="Jornada EvoluaFit">

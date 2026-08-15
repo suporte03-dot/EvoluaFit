@@ -101,9 +101,9 @@ export default function LoginPage() {
       hideHeading
       footer={
         <p className="auth-legal">
-          Ao continuar, você concorda com as{' '}
-          <a href="#termos">Termos de Uso</a> e{' '}
-          <a href="#privacidade">Política da Privacidade</a>.
+          Ao continuar, você concorda com os{' '}
+          <a href="#termos">Termos de Uso</a> e a{' '}
+          <a href="#privacidade">Política de Privacidade</a>.
         </p>
       }
     >
@@ -121,7 +121,7 @@ export default function LoginPage() {
 
       <form className="auth-form auth-form--login" onSubmit={handleSubmit} noValidate>
         <label className="form-field">
-          <span>Email</span>
+          <span>E-mail</span>
           <div className="auth-input auth-input--accent">
             <span className="auth-input__icon" aria-hidden="true">
               <IconMail />

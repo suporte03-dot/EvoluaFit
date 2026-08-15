@@ -15,7 +15,9 @@
   --auth-radius-lg: 18px;
   --auth-border: rgba(255, 255, 255, 0.12);
   --auth-hero-inset: clamp(0.55rem, 1.2vw, 1rem);
-  --auth-hero-pad: clamp(4.5%, 4vw, 5.25%);
+  /* Bloco de texto compacto e alinhado à arte */
+  --auth-hero-pad: clamp(2.6%, 2.8vw, 3.5%);
+  --auth-hero-pad-x: clamp(3%, 3.1vw, 3.8%);
 }
 
 .visually-hidden {
@@ -105,11 +107,11 @@
 @keyframes auth-cover-in {
   from {
     opacity: 0.55;
-    transform: scale(calc(var(--auth-cover-scale, 0.94) + 0.04));
+    transform: scale(calc(var(--auth-cover-scale, 1.14) + 0.03));
   }
   to {
     opacity: 1;
-    transform: scale(var(--auth-cover-scale, 0.94));
+    transform: scale(var(--auth-cover-scale, 1.14));
   }
 }
 
@@ -410,14 +412,13 @@
   height: 100%;
   display: block;
   object-fit: cover;
-  /* Homem centro-esquerda, mulher à direita; ar no topo para o título */
-  object-position: 46% 52%;
+  /* Duo centrado; origem baixa + scale sobe a arte sob o título */
+  object-position: 48% 40%;
   max-height: none;
-  --auth-cover-scale: 0.96;
-  /* Escala com origem baixa → gráfico menor embaixo, corpos longe do headline */
+  --auth-cover-scale: 1.14;
   transform: scale(var(--auth-cover-scale));
   transform-origin: 48% 88%;
-  filter: brightness(1.05) contrast(1.04) saturate(1.06);
+  filter: brightness(1.04) contrast(1.03) saturate(1.04);
   pointer-events: none;
   user-select: none;
   animation: auth-cover-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -429,9 +430,9 @@
   z-index: 1;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(5, 7, 12, 0.72) 0%, rgba(5, 7, 12, 0.28) 14%, transparent 30%),
-    linear-gradient(0deg, rgba(5, 7, 12, 0.62) 0%, rgba(5, 7, 12, 0.18) 12%, transparent 26%),
-    linear-gradient(90deg, rgba(5, 7, 12, 0.38) 0%, rgba(5, 7, 12, 0.1) 24%, transparent 48%);
+    linear-gradient(180deg, rgba(5, 7, 12, 0.5) 0%, rgba(5, 7, 12, 0.16) 10%, transparent 20%),
+    linear-gradient(0deg, rgba(5, 7, 12, 0.4) 0%, rgba(5, 7, 12, 0.1) 8%, transparent 18%),
+    linear-gradient(90deg, rgba(5, 7, 12, 0.28) 0%, rgba(5, 7, 12, 0.06) 20%, transparent 44%);
 }
 
 .auth-split__vignette {
@@ -439,8 +440,8 @@
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: radial-gradient(ellipse 78% 72% at 48% 44%, transparent 42%, rgba(5, 7, 12, 0.28) 100%);
-  opacity: 0.8;
+  background: radial-gradient(ellipse 82% 74% at 50% 48%, transparent 46%, rgba(5, 7, 12, 0.24) 100%);
+  opacity: 0.75;
 }
 
 .auth-split__top {
@@ -448,12 +449,12 @@
   position: absolute;
   z-index: 3;
   top: var(--auth-hero-pad);
-  left: var(--auth-hero-pad);
-  width: min(460px, 54%);
+  left: var(--auth-hero-pad-x);
+  width: min(420px, 50%);
   flex-direction: column;
   align-items: flex-start;
   flex: none;
-  gap: 1rem;
+  gap: 0.55rem;
   padding: 0;
   background: none;
   border-radius: 0;
@@ -476,43 +477,43 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.72rem;
-  max-width: 460px;
+  gap: 0.5rem;
+  max-width: 440px;
 }
 
 .auth-split__hero h2 {
   margin: 0;
   font-family: var(--font-heading, 'Outfit', sans-serif);
-  font-size: clamp(1.7rem, 2.65vw, 2.55rem);
+  font-size: clamp(1.6rem, 2.45vw, 2.35rem);
   font-weight: 750;
   letter-spacing: -0.038em;
-  line-height: 1.1;
+  line-height: 1.08;
   color: var(--auth-text, #f8fafc);
   text-wrap: balance;
 }
 
 .auth-split__hero p {
   margin: 0;
-  max-width: 40ch;
-  font-size: 0.94rem;
-  line-height: 1.58;
+  max-width: 38ch;
+  font-size: 0.9rem;
+  line-height: 1.5;
   color: #c2ccd8;
 }
 
-/* Labels finos sob o gráfico 3D (bottom-center / levemente à direita) */
+/* Labels sob o gráfico 3D (bottom-right, integrado à arte) */
 .auth-split__labels {
   display: none;
   position: absolute;
   z-index: 3;
-  left: 42%;
-  right: 14%;
-  bottom: 6.2%;
+  left: 58%;
+  right: 5%;
+  bottom: 3.8%;
   list-style: none;
   margin: 0;
   padding: 0;
   align-items: center;
   justify-content: space-between;
-  gap: 0.3rem;
+  gap: 0.2rem;
   pointer-events: none;
   animation: auth-hero-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.16s both;
 }
@@ -531,14 +532,14 @@
   display: none;
   position: absolute;
   z-index: 3;
-  left: var(--auth-hero-pad);
-  bottom: 3.75%;
-  max-width: min(300px, 58%);
+  left: var(--auth-hero-pad-x);
+  bottom: 3.4%;
+  max-width: min(280px, 42%);
   align-items: center;
   flex: none;
   gap: 0.55rem;
   margin-top: 0;
-  padding: 0.48rem 0.72rem;
+  padding: 0.44rem 0.68rem;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(8, 12, 20, 0.52);
@@ -939,6 +940,8 @@
     height: 100%;
     overflow: auto;
     padding: 1.75rem 1.85rem;
+    align-items: center;
+    justify-content: center;
     -webkit-overflow-scrolling: touch;
   }
 
@@ -967,13 +970,15 @@
   }
 
   .auth-split__cover {
-    object-position: 44% 50%;
-    --auth-cover-scale: 0.95;
+    object-position: 46% 38%;
+    --auth-cover-scale: 1.15;
     transform-origin: 48% 90%;
   }
 
   .auth-split__panel {
     padding: 2rem 2.4rem;
+    align-items: center;
+    justify-content: center;
   }
 
   .auth-login-card {
@@ -981,9 +986,9 @@
   }
 
   .auth-split__labels {
-    left: 42%;
-    right: 14%;
-    bottom: 5.8%;
+    left: 58%;
+    right: 4.5%;
+    bottom: 3.6%;
   }
 }
 
@@ -998,32 +1003,33 @@
   }
 
   .auth-split__cover {
-    object-position: 42% 48%;
-    --auth-cover-scale: 0.94;
+    object-position: 46% 36%;
+    --auth-cover-scale: 1.16;
     transform-origin: 46% 90%;
   }
 
   .auth-split__top {
-    width: min(500px, 52%);
-    gap: 1.15rem;
+    width: min(460px, 48%);
+    gap: 0.6rem;
   }
 
   .auth-split__hero {
-    gap: 0.78rem;
+    gap: 0.45rem;
   }
 
   .auth-split__labels {
-    left: 40%;
-    right: 12%;
-    bottom: 5%;
+    left: 58%;
+    right: 4%;
+    bottom: 3.4%;
   }
 
   .auth-split__privacy {
-    bottom: 3.5%;
+    bottom: 3.1%;
   }
 
   .auth-split__panel {
     padding: 2.15rem 2.75rem;
+    align-items: center;
   }
 
   .auth-login-card {
@@ -1034,13 +1040,13 @@
 
 @media (min-width: 1440px) {
   .auth-split__cover {
-    object-position: 40% 46%;
-    --auth-cover-scale: 0.93;
-    transform-origin: 45% 92%;
+    object-position: 44% 34%;
+    --auth-cover-scale: 1.16;
+    transform-origin: 46% 92%;
   }
 
   .auth-split__top {
-    width: min(520px, 48%);
+    width: min(500px, 48%);
   }
 
   .auth-login-card {
@@ -1048,9 +1054,9 @@
   }
 
   .auth-split__labels {
-    left: 40%;
-    right: 12%;
-    bottom: 4.8%;
+    left: 58%;
+    right: 3.5%;
+    bottom: 3.2%;
   }
 }
 
@@ -1061,33 +1067,38 @@
   }
 
   .auth-split__top {
-    top: 3.8%;
-    gap: 0.65rem;
+    top: 2.8%;
+    gap: 0.5rem;
   }
 
   .auth-split__hero h2 {
-    font-size: clamp(1.5rem, 2.3vw, 2.05rem);
+    font-size: clamp(1.4rem, 2.15vw, 1.95rem);
   }
 
   .auth-split__hero p {
-    font-size: 0.82rem;
+    font-size: 0.8rem;
+    line-height: 1.4;
   }
 
   .auth-split__cover {
-    object-position: 46% 54%;
-    --auth-cover-scale: 0.94;
-    transform-origin: 48% 92%;
+    object-position: 48% 42%;
+    --auth-cover-scale: 1.12;
+    transform-origin: 48% 88%;
   }
 
   .auth-split__labels {
-    bottom: 4.6%;
-    left: 38%;
-    right: 14%;
+    bottom: 2.8%;
+    left: 56%;
+    right: 5%;
   }
 
   .auth-split__privacy {
-    bottom: 2.4%;
+    bottom: 2.2%;
     padding: 0.36rem 0.55rem;
+  }
+
+  .auth-split__panel {
+    align-items: center;
   }
 
   .auth-login-card {
@@ -1167,7 +1178,7 @@
   }
 
   .auth-split__cover {
-    transform: scale(var(--auth-cover-scale, 0.94));
+    transform: scale(var(--auth-cover-scale, 1.14));
     transition: none;
   }
 }

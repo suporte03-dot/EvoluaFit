@@ -4,9 +4,10 @@ import path from 'path'
 
 /**
  * Capa limpa (personagens + gráfico) a partir de loginnovo.png.
- * - Crop único (sem inventar personagens / sem separar camadas)
- * - Arte reduzida e ancorada embaixo → headroom para o título + gráfico menor
- * - Wipe no topo remove tipografia residual do mockup
+ * - Crop único (sem inventar personagens)
+ * - Arte preenche o canvas (sem faixas vazias)
+ * - Patch topo-esquerdo remove tipografia baked
+ * - Barras ficam no bottom-right da composição
  */
 const candidates = [
   path.resolve('public/branding/loginnovo.png'),
@@ -20,53 +21,57 @@ if (!srcPath) {
 
 const meta = await sharp(srcPath).metadata()
 
-// Personagens + barras (abaixo do headline, acima do privacy)
-const left = Math.round(meta.width * 0.025)
-const top = Math.round(meta.height * 0.28)
-const width = Math.round(meta.width * 0.585)
-const height = Math.round(meta.height * 0.52)
+const left = Math.round(meta.width * 0.045)
+const top = Math.round(meta.height * 0.168)
+const width = Math.round(meta.width * 0.56)
+const height = Math.round(meta.height * 0.655)
 
 const extracted = await sharp(srcPath)
   .extract({ left, top, width, height })
-  .resize(1800, null, { kernel: sharp.kernel.lanczos3 })
-  .modulate({ brightness: 1.04, saturation: 1.05 })
+  .modulate({ brightness: 1.02, saturation: 1.03 })
   .toBuffer()
-
-const em = await sharp(extracted).metadata()
 
 const canvasW = 1800
-const canvasH = 1360
-// Arte reduzida + ancorada embaixo → headroom para título e gráfico menor
-const artScale = 0.78
-const artW = Math.round(em.width * artScale)
-const artH = Math.round(em.height * artScale)
-const artBuf = await sharp(extracted)
-  .resize(artW, artH, { kernel: sharp.kernel.lanczos3 })
+const canvasH = 1200
+
+// Cover-fill: arte cobre todo o canvas (sem letterbox)
+const filled = await sharp(extracted)
+  .resize(canvasW, canvasH, {
+    fit: 'cover',
+    position: 'centre',
+    kernel: sharp.kernel.lanczos3,
+  })
   .toBuffer()
 
-// Homem centro-esquerda / mulher à direita; gráfico bottom-center/right
-const leftPad = Math.round((canvasW - artW) * 0.42)
-const topPad = canvasH - artH - Math.round(canvasH * 0.015)
+// Patch topo-esquerdo: tipografia residual do mockup
+const patchW = Math.round(canvasW * 0.48)
+const patchH = Math.round(canvasH * 0.24)
+const patch = Buffer.from(
+  `<svg width="${patchW}" height="${patchH}" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="v" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#050810" stop-opacity="1"/>
+      <stop offset="40%" stop-color="#050810" stop-opacity="1"/>
+      <stop offset="75%" stop-color="#050810" stop-opacity="0.65"/>
+      <stop offset="100%" stop-color="#050810" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="h" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="55%" stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <mask id="m"><rect width="100%" height="100%" fill="url(#h)"/></mask>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#v)" mask="url(#m)"/>
+</svg>`,
+)
 
-const bg = await sharp({
-  create: {
-    width: canvasW,
-    height: canvasH,
-    channels: 3,
-    background: { r: 5, g: 8, b: 16 },
-  },
-})
-  .png()
-  .toBuffer()
-
-const wipeH = Math.round(canvasH * 0.26)
-const wipe = Buffer.from(
-  `<svg width="${canvasW}" height="${wipeH}" xmlns="http://www.w3.org/2000/svg">
+const stripH = Math.round(canvasH * 0.06)
+const strip = Buffer.from(
+  `<svg width="${canvasW}" height="${stripH}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#050810" stop-opacity="1"/>
-      <stop offset="42%" stop-color="#050810" stop-opacity="0.88"/>
-      <stop offset="72%" stop-color="#050810" stop-opacity="0.35"/>
+      <stop offset="0%" stop-color="#050810" stop-opacity="0.9"/>
       <stop offset="100%" stop-color="#050810" stop-opacity="0"/>
     </linearGradient>
   </defs>
@@ -74,26 +79,28 @@ const wipe = Buffer.from(
 </svg>`,
 )
 
-const stage = await sharp(bg)
+const stage = await sharp(filled)
   .composite([
-    { input: artBuf, left: leftPad, top: topPad },
-    { input: wipe, left: 0, top: 0 },
+    { input: patch, left: 0, top: 0 },
+    { input: strip, left: 0, top: 0 },
   ])
   .png({ compressionLevel: 8 })
   .toBuffer()
 
 const outPublic = path.resolve('public/branding/login-cover-loginnovo.png')
 const outAssets = path.resolve('src/assets/branding/login-cover-loginnovo.png')
+const outDist = path.resolve('dist/branding/login-cover-loginnovo.png')
 fs.mkdirSync(path.dirname(outAssets), { recursive: true })
 fs.writeFileSync(outPublic, stage)
 fs.writeFileSync(outAssets, stage)
+if (fs.existsSync(path.dirname(outDist))) {
+  fs.writeFileSync(outDist, stage)
+}
 
 const m = await sharp(stage).metadata()
 console.log({
   src: `${meta.width}x${meta.height}`,
   crop: { left, top, width, height },
-  art: `${artW}x${artH}`,
-  place: { leftPad, topPad },
   out: `${m.width}x${m.height}`,
   bytes: stage.length,
 })

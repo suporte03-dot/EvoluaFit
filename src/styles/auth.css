@@ -14,10 +14,8 @@
   --auth-radius: 14px;
   --auth-radius-lg: 18px;
   --auth-border: rgba(255, 255, 255, 0.12);
-  --auth-hero-inset: clamp(0.55rem, 1.2vw, 1rem);
-  /* Bloco de texto compacto e alinhado à arte */
-  --auth-hero-pad: clamp(2.6%, 2.8vw, 3.5%);
-  --auth-hero-pad-x: clamp(3%, 3.1vw, 3.8%);
+  --auth-hero-pad: clamp(1.1rem, 2.4vw, 1.75rem);
+  --auth-hero-pad-x: clamp(1.15rem, 2.6vw, 1.85rem);
 }
 
 .visually-hidden {
@@ -104,14 +102,12 @@
   }
 }
 
-@keyframes auth-cover-in {
+@keyframes auth-art-in {
   from {
-    opacity: 0.55;
-    transform: scale(calc(var(--auth-cover-scale, 1.14) + 0.03));
+    opacity: 0.4;
   }
   to {
     opacity: 1;
-    transform: scale(var(--auth-cover-scale, 1.14));
   }
 }
 
@@ -119,9 +115,8 @@
   .auth-card,
   .auth-split__panel-inner,
   .auth-split__top,
-  .auth-split__labels,
   .auth-split__privacy,
-  .auth-split__cover {
+  .login-hero-art {
     animation: none;
   }
 }
@@ -341,7 +336,7 @@
   }
 }
 
-/* ===== Split login — hero full-bleed + card mockup ===== */
+/* ===== Split login — hero approved + card ===== */
 .auth-split {
   min-height: 100vh;
   min-height: 100dvh;
@@ -364,84 +359,53 @@
   display: none;
   position: relative;
   overflow: hidden;
-  min-height: 0;
-  padding: var(--auth-hero-inset);
-  padding-right: calc(var(--auth-hero-inset) * 0.45);
-  background:
-    radial-gradient(ellipse 42% 38% at 32% 28%, rgba(77, 93, 251, 0.1), transparent 65%),
-    radial-gradient(ellipse 30% 34% at 78% 62%, rgba(142, 45, 226, 0.08), transparent 60%),
-    var(--auth-bg, #05070c);
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 0;
+  background: #05070c;
 }
 
 .auth-split__stage {
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 0;
+  min-height: 100%;
   overflow: hidden;
   display: block;
   padding: 0;
-  border-radius: var(--auth-radius-lg, 18px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: #050810;
-  box-shadow:
-    0 28px 72px rgba(0, 0, 0, 0.42),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  background: #05070c;
 }
 
 .auth-split__cast {
   position: absolute;
   inset: 0;
-  width: auto;
-  max-width: none;
-  min-height: 0;
-  margin: 0;
-  border-radius: inherit;
   overflow: hidden;
-  background:
-    radial-gradient(ellipse 58% 52% at 46% 42%, rgba(77, 93, 251, 0.12), transparent 68%),
-    #050810;
-  border: none;
-  box-shadow: none;
+  background: #05070c;
 }
 
-.auth-split__cover {
+/* Prioridade: não cortar personagens → contain + fundo escuro */
+.login-hero-art {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: cover;
-  /* Duo centrado; origem baixa + scale sobe a arte sob o título */
-  object-position: 48% 40%;
-  max-height: none;
-  --auth-cover-scale: 1.14;
-  transform: scale(var(--auth-cover-scale));
-  transform-origin: 48% 88%;
-  filter: brightness(1.04) contrast(1.03) saturate(1.04);
+  object-fit: contain;
+  object-position: center center;
   pointer-events: none;
   user-select: none;
-  animation: auth-cover-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: auth-art-in 0.7s ease both;
 }
 
+/* Scrim leve e localizado só atrás do texto (topo-esquerdo + privacy) */
 .auth-split__scrim {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(5, 7, 12, 0.5) 0%, rgba(5, 7, 12, 0.16) 10%, transparent 20%),
-    linear-gradient(0deg, rgba(5, 7, 12, 0.4) 0%, rgba(5, 7, 12, 0.1) 8%, transparent 18%),
-    linear-gradient(90deg, rgba(5, 7, 12, 0.28) 0%, rgba(5, 7, 12, 0.06) 20%, transparent 44%);
-}
-
-.auth-split__vignette {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background: radial-gradient(ellipse 82% 74% at 50% 48%, transparent 46%, rgba(5, 7, 12, 0.24) 100%);
-  opacity: 0.75;
+    radial-gradient(ellipse 48% 36% at 14% 12%, rgba(5, 7, 12, 0.55), transparent 72%),
+    radial-gradient(ellipse 36% 22% at 16% 90%, rgba(5, 7, 12, 0.45), transparent 70%);
 }
 
 .auth-split__top {
@@ -450,15 +414,11 @@
   z-index: 3;
   top: var(--auth-hero-pad);
   left: var(--auth-hero-pad-x);
-  width: min(420px, 50%);
+  width: min(440px, 52%);
   flex-direction: column;
   align-items: flex-start;
-  flex: none;
   gap: 0.55rem;
-  padding: 0;
-  background: none;
-  border-radius: 0;
-  text-shadow: 0 2px 18px rgba(5, 7, 12, 0.5);
+  text-shadow: 0 2px 16px rgba(5, 7, 12, 0.45);
   animation: auth-hero-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
 }
 
@@ -484,7 +444,7 @@
 .auth-split__hero h2 {
   margin: 0;
   font-family: var(--font-heading, 'Outfit', sans-serif);
-  font-size: clamp(1.6rem, 2.45vw, 2.35rem);
+  font-size: clamp(1.55rem, 2.35vw, 2.25rem);
   font-weight: 750;
   letter-spacing: -0.038em;
   line-height: 1.08;
@@ -500,45 +460,15 @@
   color: #c2ccd8;
 }
 
-/* Labels sob o gráfico 3D (bottom-right, integrado à arte) */
-.auth-split__labels {
-  display: none;
-  position: absolute;
-  z-index: 3;
-  left: 58%;
-  right: 5%;
-  bottom: 3.8%;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.2rem;
-  pointer-events: none;
-  animation: auth-hero-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.16s both;
-}
-
-.auth-split__labels li {
-  flex: 1 1 0;
-  text-align: center;
-  font-size: clamp(0.48rem, 0.62vw, 0.6rem);
-  font-weight: 750;
-  letter-spacing: 0.14em;
-  color: rgba(248, 250, 252, 0.94);
-  text-shadow: 0 1px 10px rgba(5, 7, 12, 0.7);
-}
-
 .auth-split__privacy {
   display: none;
   position: absolute;
   z-index: 3;
   left: var(--auth-hero-pad-x);
-  bottom: 3.4%;
+  bottom: var(--auth-hero-pad);
   max-width: min(280px, 42%);
   align-items: center;
-  flex: none;
   gap: 0.55rem;
-  margin-top: 0;
   padding: 0.44rem 0.68rem;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -548,7 +478,7 @@
   box-shadow:
     0 4px 16px rgba(0, 0, 0, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  animation: auth-hero-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.22s both;
+  animation: auth-hero-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both;
 }
 
 .auth-split__privacy-icon {
@@ -603,7 +533,6 @@
   animation: auth-card-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
 }
 
-/* Card glass — mockup */
 .auth-login-card {
   position: relative;
   padding: 2.1rem 1.85rem 1.75rem;
@@ -913,6 +842,7 @@
   border-radius: 2px;
 }
 
+/* Tablet+: split ~62% / 38% */
 @media (min-width: 768px) {
   .auth-split {
     height: 100vh;
@@ -926,11 +856,11 @@
     flex: 1 1 0;
     min-height: 0;
     overflow: hidden;
-    grid-template-columns: minmax(0, 1.55fr) minmax(340px, 1fr);
+    grid-template-columns: minmax(0, 1.63fr) minmax(320px, 0.37fr);
   }
 
   .auth-split__visual {
-    display: flex;
+    display: block;
     height: 100%;
     min-height: 0;
   }
@@ -939,7 +869,7 @@
     min-height: 0;
     height: 100%;
     overflow: auto;
-    padding: 1.75rem 1.85rem;
+    padding: 1.5rem 1.5rem;
     align-items: center;
     justify-content: center;
     -webkit-overflow-scrolling: touch;
@@ -949,130 +879,74 @@
     display: none;
   }
 
-  .auth-split__top {
+  .auth-split__top,
+  .auth-split__privacy {
     display: flex;
   }
 
-  .auth-split__labels,
-  .auth-split__privacy {
-    display: flex;
+  .login-hero-art {
+    object-fit: contain;
+    object-position: center center;
   }
 }
 
 @media (min-width: 1024px) {
   .auth-split__main {
-    grid-template-columns: minmax(0, 1.62fr) minmax(380px, 1fr);
-  }
-
-  .auth-split__visual {
-    padding: clamp(0.75rem, 1.35vw, 1.1rem);
-    padding-right: clamp(0.4rem, 0.8vw, 0.65rem);
-  }
-
-  .auth-split__cover {
-    object-position: 46% 38%;
-    --auth-cover-scale: 1.15;
-    transform-origin: 48% 90%;
+    grid-template-columns: minmax(0, 1.63fr) minmax(360px, 0.37fr);
   }
 
   .auth-split__panel {
-    padding: 2rem 2.4rem;
-    align-items: center;
-    justify-content: center;
+    padding: 2rem 2.2rem;
   }
 
   .auth-login-card {
     width: min(100%, 390px);
   }
-
-  .auth-split__labels {
-    left: 58%;
-    right: 4.5%;
-    bottom: 3.6%;
-  }
 }
 
 @media (min-width: 1280px) {
   .auth-split__main {
-    grid-template-columns: minmax(0, 1.68fr) minmax(400px, 1fr);
-  }
-
-  .auth-split__visual {
-    padding: 1rem;
-    padding-right: 0.6rem;
-  }
-
-  .auth-split__cover {
-    object-position: 46% 36%;
-    --auth-cover-scale: 1.16;
-    transform-origin: 46% 90%;
+    grid-template-columns: minmax(0, 62fr) minmax(380px, 38fr);
   }
 
   .auth-split__top {
     width: min(460px, 48%);
-    gap: 0.6rem;
-  }
-
-  .auth-split__hero {
-    gap: 0.45rem;
-  }
-
-  .auth-split__labels {
-    left: 58%;
-    right: 4%;
-    bottom: 3.4%;
-  }
-
-  .auth-split__privacy {
-    bottom: 3.1%;
   }
 
   .auth-split__panel {
-    padding: 2.15rem 2.75rem;
-    align-items: center;
+    padding: 2.15rem 2.6rem;
   }
 
   .auth-login-card {
     width: min(100%, 400px);
     padding: 2.25rem 2rem 1.9rem;
   }
+
+  /* Em viewports largos a arte ~3:2 encaixa melhor; contain ainda prioriza rostos */
+  .login-hero-art {
+    object-fit: contain;
+    object-position: center center;
+  }
 }
 
 @media (min-width: 1440px) {
-  .auth-split__cover {
-    object-position: 44% 34%;
-    --auth-cover-scale: 1.16;
-    transform-origin: 46% 92%;
-  }
-
   .auth-split__top {
-    width: min(500px, 48%);
+    width: min(500px, 46%);
   }
 
   .auth-login-card {
     width: min(100%, 410px);
   }
-
-  .auth-split__labels {
-    left: 58%;
-    right: 3.5%;
-    bottom: 3.2%;
-  }
 }
 
 @media (min-width: 768px) and (max-height: 820px) {
-  .auth-split__visual {
-    padding: 0.55rem;
-    padding-right: 0.35rem;
-  }
-
   .auth-split__top {
-    top: 2.8%;
-    gap: 0.5rem;
+    top: 1rem;
+    gap: 0.4rem;
   }
 
   .auth-split__hero h2 {
-    font-size: clamp(1.4rem, 2.15vw, 1.95rem);
+    font-size: clamp(1.35rem, 2vw, 1.85rem);
   }
 
   .auth-split__hero p {
@@ -1080,25 +954,9 @@
     line-height: 1.4;
   }
 
-  .auth-split__cover {
-    object-position: 48% 42%;
-    --auth-cover-scale: 1.12;
-    transform-origin: 48% 88%;
-  }
-
-  .auth-split__labels {
-    bottom: 2.8%;
-    left: 56%;
-    right: 5%;
-  }
-
   .auth-split__privacy {
-    bottom: 2.2%;
+    bottom: 0.85rem;
     padding: 0.36rem 0.55rem;
-  }
-
-  .auth-split__panel {
-    align-items: center;
   }
 
   .auth-login-card {
@@ -1122,6 +980,7 @@
   }
 }
 
+/* Mobile: form primeiro — sem personagens gigantes */
 @media (max-width: 767px) {
   .auth-split__visual {
     display: none;
@@ -1176,9 +1035,5 @@
   .auth-form__submit--gradient:hover:not(:disabled) {
     transform: none;
   }
-
-  .auth-split__cover {
-    transform: scale(var(--auth-cover-scale, 1.14));
-    transition: none;
-  }
 }
+

@@ -30,15 +30,24 @@ export default function AuthLayout({
           <aside className="auth-split__visual" aria-label="EvoluaFit">
             <div className="auth-split__stage">
               <div className="auth-split__cast" aria-hidden="true">
-                <img
-                  className="auth-split__cover"
-                  src="/branding/login-cover-loginnovo.png"
-                  alt=""
-                  decoding="async"
-                  fetchPriority="high"
-                />
+                <picture>
+                  <source
+                    media="(max-width: 1023px)"
+                    srcSet="/branding/evoluafit-login-hero-tablet.png"
+                  />
+                  <source
+                    media="(min-width: 1440px)"
+                    srcSet="/branding/evoluafit-login-hero-desktop.png"
+                  />
+                  <img
+                    className="login-hero-art"
+                    src="/branding/evoluafit-login-hero-approved.png"
+                    alt=""
+                    decoding="async"
+                    fetchPriority="high"
+                  />
+                </picture>
                 <div className="auth-split__scrim" />
-                <div className="auth-split__vignette" />
               </div>
 
               <div className="auth-split__top">
@@ -56,11 +65,7 @@ export default function AuthLayout({
                 </div>
               </div>
 
-              <ul className="auth-split__labels" aria-label="Jornada EvoluaFit">
-                <li>TREINE</li>
-                <li>ACOMPANHE</li>
-                <li>EVOLUA</li>
-              </ul>
+              {/* Labels TREINE/ACOMPANHE/EVOLUA já legíveis na arte — sem duplicar */}
 
               <div className="auth-split__privacy">
                 <span className="auth-split__privacy-icon" aria-hidden="true">

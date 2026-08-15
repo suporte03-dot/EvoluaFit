@@ -133,7 +133,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               aria-required="true"
-              placeholder="@email.com"
+              placeholder="seu@email.com"
             />
           </div>
         </label>
@@ -152,7 +152,7 @@ export default function LoginPage() {
               required
               minLength={8}
               aria-required="true"
-              placeholder="senha"
+              placeholder="Sua senha"
             />
             <button
               type="button"

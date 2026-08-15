@@ -397,12 +397,12 @@
   height: 100%;
   display: block;
   object-fit: cover;
-  /* Homem + mulher + gráfico — enquadramento editorial */
-  object-position: 46% 36%;
+  /* Capa loginnovo: homem + mulher + barras — sem tipografia */
+  object-position: 42% 42%;
   max-height: none;
-  transform: scale(1.03);
-  transform-origin: 48% 40%;
-  filter: brightness(1.05) contrast(1.05) saturate(1.04);
+  transform: scale(1.02);
+  transform-origin: 44% 40%;
+  filter: brightness(1.06) contrast(1.04) saturate(1.05);
   pointer-events: none;
   user-select: none;
   animation: auth-cover-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -414,9 +414,9 @@
   z-index: 1;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(5, 7, 12, 0.58) 0%, rgba(5, 7, 12, 0.16) 16%, transparent 32%),
-    linear-gradient(0deg, rgba(5, 7, 12, 0.68) 0%, rgba(5, 7, 12, 0.22) 14%, transparent 30%),
-    linear-gradient(90deg, rgba(5, 7, 12, 0.42) 0%, rgba(5, 7, 12, 0.12) 24%, transparent 48%);
+    linear-gradient(180deg, rgba(5, 7, 12, 0.62) 0%, rgba(5, 7, 12, 0.18) 18%, transparent 34%),
+    linear-gradient(0deg, rgba(5, 7, 12, 0.72) 0%, rgba(5, 7, 12, 0.24) 16%, transparent 32%),
+    linear-gradient(90deg, rgba(5, 7, 12, 0.48) 0%, rgba(5, 7, 12, 0.14) 28%, transparent 52%);
 }
 
 .auth-split__vignette {
@@ -424,8 +424,8 @@
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: radial-gradient(ellipse 78% 72% at 48% 44%, transparent 42%, rgba(5, 7, 12, 0.28) 100%);
-  opacity: 0.85;
+  background: radial-gradient(ellipse 76% 70% at 46% 42%, transparent 40%, rgba(5, 7, 12, 0.3) 100%);
+  opacity: 0.82;
 }
 
 .auth-split__top {
@@ -766,8 +766,8 @@
 .auth-input input:focus,
 .auth-input input:focus-visible {
   outline: none;
-  border-color: var(--auth-copper, #c27863);
-  box-shadow: 0 0 0 3px rgba(194, 120, 99, 0.22);
+  border-color: var(--auth-accent-a, #3578ff);
+  box-shadow: 0 0 0 3px rgba(53, 120, 255, 0.22);
 }
 
 .auth-form--login .auth-input input {
@@ -780,7 +780,7 @@
 }
 
 .auth-form--login .auth-input--accent input {
-  border-color: var(--auth-copper, #c27863);
+  border-color: rgba(53, 120, 255, 0.45);
 }
 
 .auth-form--login .auth-input--password input {
@@ -789,8 +789,8 @@
 
 .auth-form--login .auth-input input:focus,
 .auth-form--login .auth-input input:focus-visible {
-  border-color: var(--auth-copper, #c27863);
-  box-shadow: 0 0 0 3px rgba(194, 120, 99, 0.22);
+  border-color: var(--auth-accent-a, #3578ff);
+  box-shadow: 0 0 0 3px rgba(53, 120, 255, 0.22);
 }
 
 .auth-input .auth-password-field__toggle {
@@ -798,13 +798,13 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  color: var(--auth-copper, #c27863);
+  color: #9aa6ff;
   font-size: 0.78rem;
   min-height: 44px;
 }
 
 .auth-input .auth-password-field__toggle:focus-visible {
-  outline: 2px solid rgba(194, 120, 99, 0.55);
+  outline: 2px solid rgba(118, 87, 255, 0.55);
   outline-offset: 2px;
 }
 
@@ -833,7 +833,7 @@
 }
 
 .auth-link {
-  color: var(--auth-copper, #c27863);
+  color: #9aa6ff;
   font-size: 0.88rem;
   font-weight: 650;
   text-decoration: none;
@@ -847,13 +847,13 @@
 }
 
 .auth-link:focus-visible {
-  outline: 2px solid rgba(194, 120, 99, 0.55);
+  outline: 2px solid rgba(118, 87, 255, 0.55);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 .auth-link--forgot {
-  color: var(--auth-copper, #c27863);
+  color: #9aa6ff;
 }
 
 .auth-form__submit--gradient {
@@ -958,7 +958,7 @@
 }
 
 .auth-signup-link:focus-visible {
-  outline: 2px solid rgba(194, 120, 99, 0.45);
+  outline: 2px solid rgba(118, 87, 255, 0.45);
   outline-offset: 3px;
   border-radius: 4px;
 }
@@ -986,7 +986,7 @@
 }
 
 .auth-legal a:focus-visible {
-  outline: 2px solid rgba(194, 120, 99, 0.45);
+  outline: 2px solid rgba(118, 87, 255, 0.45);
   outline-offset: 2px;
   border-radius: 2px;
 }
@@ -1052,7 +1052,7 @@
   }
 
   .auth-split__cover {
-    object-position: 46% 36%;
+    object-position: 40% 40%;
   }
 
   .auth-split__panel {
@@ -1079,7 +1079,7 @@
   }
 
   .auth-split__cover {
-    object-position: 46% 36%;
+    object-position: 38% 40%;
   }
 
   .auth-split__top {
@@ -1110,7 +1110,7 @@
 
 @media (min-width: 1440px) {
   .auth-split__cover {
-    object-position: 46% 36%;
+    object-position: 36% 38%;
   }
 
   .auth-split__top {
@@ -1142,7 +1142,7 @@
   }
 
   .auth-split__cover {
-    object-position: 46% 36%;
+    object-position: 40% 44%;
   }
 
   .auth-split__journey {
@@ -1242,7 +1242,7 @@
   }
 
   .auth-split__cover {
-    transform: scale(1.03);
+    transform: scale(1.02);
     transition: none;
   }
 }

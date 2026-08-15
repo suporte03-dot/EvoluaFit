@@ -383,14 +383,14 @@
   background: #05070c;
 }
 
-/* Prioridade: não cortar personagens → contain + fundo escuro */
+/* Asset no AR do painel (~0.99 @ 1440×900) com margem na arte → cover sem letterbox no layout */
 .login-hero-art {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center center;
   pointer-events: none;
   user-select: none;
@@ -883,11 +883,6 @@
   .auth-split__privacy {
     display: flex;
   }
-
-  .login-hero-art {
-    object-fit: contain;
-    object-position: center center;
-  }
 }
 
 @media (min-width: 1024px) {
@@ -920,12 +915,6 @@
   .auth-login-card {
     width: min(100%, 400px);
     padding: 2.25rem 2rem 1.9rem;
-  }
-
-  /* Em viewports largos a arte ~3:2 encaixa melhor; contain ainda prioriza rostos */
-  .login-hero-art {
-    object-fit: contain;
-    object-position: center center;
   }
 }
 

@@ -4,8 +4,12 @@ import path from 'path'
 
 /**
  * Hero permanente do login EvoluaFit a partir de loginnovo.png.
- * Peça única: personagens + ondas + gráfico + iluminação.
- * Remove tipografia baked (logo/headline/sub/privacy). Mantém TREINE/ACOMPANHE/EVOLUA.
+ *
+ * Estratégia: limpa tipografia baked do painel esquerdo, depois embute a
+ * composição com contain num canvas no aspect ratio típico do hero (~62% de
+ * viewport desktop ≈ 1.05). Letterbox fica NA ARTE (#05070c + extensão das
+ * ondas), para o CSS usar object-fit: cover sem cortar rostos nem mostrar
+ * barras pretas no layout.
  */
 const candidates = [
   path.resolve('public/branding/loginnovo.png'),
@@ -17,13 +21,16 @@ if (!srcPath) {
   process.exit(1)
 }
 
+fs.mkdirSync(path.resolve('tmp-hero-trials'), { recursive: true })
+
 const meta = await sharp(srcPath).metadata()
 
+// Painel esquerdo do mockup (~62%), altura quase total para preservar cabeças
 const crop = {
-  left: Math.round(meta.width * 0.018),
-  top: Math.round(meta.height * 0.018),
-  width: Math.round(meta.width * 0.615),
-  height: Math.round(meta.height * 0.955),
+  left: Math.round(meta.width * 0.012),
+  top: Math.round(meta.height * 0.008),
+  width: Math.round(meta.width * 0.618),
+  height: Math.round(meta.height * 0.984),
 }
 
 const extracted = await sharp(srcPath).extract(crop).toBuffer()
@@ -54,30 +61,35 @@ function fadePatch({ width, height, solidX = 0.7, solidY = 0.7, fromBottom = fal
   )
 }
 
+// Limpeza do canto do texto (logo/headline/sub) — só esquerda; não invade cabeças
 const topPatchW = Math.round(W * 0.58)
-const topPatchH = Math.round(H * 0.36)
-const topPatch = fadePatch({ width: topPatchW, height: topPatchH, solidX: 0.78, solidY: 0.78 })
+const topPatchH = Math.round(H * 0.34)
+const topPatch = fadePatch({ width: topPatchW, height: topPatchH, solidX: 0.78, solidY: 0.8 })
 
-// Camada extra opaca só na caixa de texto (logo + headline + sub)
 const topSolidW = Math.round(W * 0.5)
 const topSolidH = Math.round(H * 0.26)
 const topSolid = Buffer.from(
   `<svg width="${topSolidW}" height="${topSolidH}" xmlns="http://www.w3.org/2000/svg">
-  <rect width="100%" height="100%" rx="0" fill="#05070c"/>
+  <rect width="100%" height="100%" fill="#05070c"/>
 </svg>`,
 )
 
-const privacyW = Math.round(W * 0.42)
-const privacyH = Math.round(H * 0.2)
+// Segunda passada mais baixa só na faixa da subheadline (esquerda)
+const subPatchW = Math.round(W * 0.55)
+const subPatchH = Math.round(H * 0.1)
+const subPatch = fadePatch({ width: subPatchW, height: subPatchH, solidX: 0.88, solidY: 0.55 })
+
+const privacyW = Math.round(W * 0.4)
+const privacyH = Math.round(H * 0.16)
 const privacyPatch = fadePatch({
   width: privacyW,
   height: privacyH,
-  solidX: 0.85,
-  solidY: 0.78,
+  solidX: 0.82,
+  solidY: 0.75,
   fromBottom: true,
 })
-const privacySolidW = Math.round(W * 0.36)
-const privacySolidH = Math.round(H * 0.13)
+const privacySolidW = Math.round(W * 0.34)
+const privacySolidH = Math.round(H * 0.11)
 const privacySolid = Buffer.from(
   `<svg width="${privacySolidW}" height="${privacySolidH}" xmlns="http://www.w3.org/2000/svg">
   <rect width="100%" height="100%" fill="#05070c"/>
@@ -87,32 +99,65 @@ const privacySolid = Buffer.from(
 const cleaned = await sharp(extracted)
   .composite([
     { input: topPatch, left: 0, top: 0 },
-    { input: topSolid, left: Math.round(W * 0.01), top: Math.round(H * 0.01) },
-    {
-      input: privacyPatch,
-      left: 0,
-      top: H - privacyH,
-    },
+    { input: topSolid, left: Math.round(W * 0.008), top: Math.round(H * 0.006) },
+    { input: subPatch, left: 0, top: Math.round(H * 0.22) },
+    { input: privacyPatch, left: 0, top: H - privacyH },
     {
       input: privacySolid,
       left: Math.round(W * 0.008),
-      top: Math.round(H * 0.82),
+      top: Math.round(H * 0.84),
     },
   ])
   .toBuffer()
 
-// Asset permanente = crop limpo nativo (sem letterbox prévio).
-// Letterbox fica só no CSS (object-fit: contain) conforme o painel real.
-const approved = await sharp(cleaned).png({ compressionLevel: 8 }).toBuffer()
-const outMetaNative = await sharp(approved).metadata()
+await sharp(cleaned).png().toFile(path.resolve('tmp-hero-trials/cleaned-v2.png'))
+
+// Canvas no AR do painel hero em 1440×900 (62% → 893×900 ≈ 0.992)
+// Assim cover no desktop típico não gera letterbox no layout.
+const outW = 1786
+const outH = 1800
+
+// Quase preenche a altura (97%) — personagens grandes; margem mínima p/ cover em 16:9
+const fitScale = (outH / H) * 0.97
+const dw = Math.round(W * fitScale)
+const dh = Math.round(H * fitScale)
+const left = Math.round((outW - dw) / 2)
+const top = Math.round((outH - dh) / 2) + Math.round(outH * 0.012)
+
+const resized = await sharp(cleaned)
+  .resize(dw, dh, { kernel: sharp.kernel.lanczos3 })
+  .png()
+  .toBuffer()
+
+// Atmosfera contínua (ondas blur + escurecidas) em vez de faixas laterais “mortas”
+const atmosphere = await sharp(cleaned)
+  .resize(outW, outH, { fit: 'cover', position: 'centre' })
+  .blur(48)
+  .modulate({ brightness: 0.32, saturation: 0.85 })
+  .toBuffer()
+
+const approved = await sharp({
+  create: {
+    width: outW,
+    height: outH,
+    channels: 3,
+    background: { r: 5, g: 7, b: 12 },
+  },
+})
+  .composite([
+    { input: atmosphere, left: 0, top: 0 },
+    { input: resized, left, top },
+  ])
+  .png({ compressionLevel: 8 })
+  .toBuffer()
 
 const outPublic = path.resolve('public/branding/evoluafit-login-hero-approved.png')
 const outAssets = path.resolve('src/assets/branding/evoluafit-login-hero-approved.png')
 fs.mkdirSync(path.dirname(outAssets), { recursive: true })
 fs.writeFileSync(outPublic, approved)
 fs.writeFileSync(outAssets, approved)
+await sharp(approved).png().toFile(path.resolve('tmp-hero-trials/approved-panel-ar.png'))
 
-// Variantes: mesma arte; desktop upscale suave p/ telas densas (sem re-crop)
 const variants = [
   { name: 'desktop', width: 1600 },
   { name: 'tablet', width: 1100 },
@@ -132,13 +177,14 @@ for (const v of variants) {
   console.log(v.name, `${m.width}x${m.height}`, `${(buf.length / 1024).toFixed(0)}KB`)
 }
 
-await sharp(cleaned).resize(720, null).png().toFile('tmp-hero-trials/cleaned-check.png')
-
+const outMeta = await sharp(approved).metadata()
 console.log({
   src: path.relative(process.cwd(), srcPath),
   srcSize: `${meta.width}x${meta.height}`,
   crop,
   extracted: `${W}x${H}`,
-  approved: `${outMetaNative.width}x${outMetaNative.height}`,
+  placed: `${dw}x${dh} @ ${left},${top}`,
+  approved: `${outMeta.width}x${outMeta.height}`,
+  ar: Number((outMeta.width / outMeta.height).toFixed(4)),
   bytes: approved.length,
 })

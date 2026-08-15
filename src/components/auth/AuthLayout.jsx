@@ -1,47 +1,5 @@
 import EvoluaFitLogo from '../branding/EvoluaFitLogo'
 
-function IconDumbbell({ size = 14 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M6 8v8M18 8v8M4 10v4M20 10v4M6 12h12M8 8h2v8H8V8zm6 0h2v8h-2V8z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function IconTrend({ size = 14 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M4 16l5.5-5.5 3.5 3.5L20 7"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path d="M14 7h6v6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function IconStar({ size = 14 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 3.5l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 16.8 7.2 18.4l.9-5.4L4.2 9.2l5.4-.8L12 3.5z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
 function IconShieldCheck({ size = 16 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -98,36 +56,10 @@ export default function AuthLayout({
                 </div>
               </div>
 
-              <ul className="auth-split__journey" aria-label="Jornada EvoluaFit">
-                <li>
-                  <span className="auth-split__journey-icon" aria-hidden="true">
-                    <IconDumbbell />
-                  </span>
-                  <div>
-                    <strong>TREINE</strong>
-                    <span>Planos inteligentes e personalizados</span>
-                  </div>
-                </li>
-                <li className="auth-split__journey-sep" aria-hidden="true" />
-                <li>
-                  <span className="auth-split__journey-icon" aria-hidden="true">
-                    <IconTrend />
-                  </span>
-                  <div>
-                    <strong>ACOMPANHE</strong>
-                    <span>Monitore sua evolução em tempo real</span>
-                  </div>
-                </li>
-                <li className="auth-split__journey-sep" aria-hidden="true" />
-                <li>
-                  <span className="auth-split__journey-icon" aria-hidden="true">
-                    <IconStar />
-                  </span>
-                  <div>
-                    <strong>EVOLUA</strong>
-                    <span>Supere limites todos os dias</span>
-                  </div>
-                </li>
+              <ul className="auth-split__labels" aria-label="Jornada EvoluaFit">
+                <li>TREINE</li>
+                <li>ACOMPANHE</li>
+                <li>EVOLUA</li>
               </ul>
 
               <div className="auth-split__privacy">

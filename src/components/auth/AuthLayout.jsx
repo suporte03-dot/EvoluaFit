@@ -89,7 +89,7 @@ export default function AuthLayout({
               <div className="auth-split__cast" aria-hidden="true">
                 <img
                   className="auth-split__cover"
-                  src="/branding/login-cover-balanced.jpg"
+                  src="/branding/login-characters.jpg"
                   alt=""
                   decoding="async"
                   fetchPriority="high"

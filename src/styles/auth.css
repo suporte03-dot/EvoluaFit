@@ -383,7 +383,7 @@
   background: #05070c;
 }
 
-/* Asset no AR do painel (~0.99 @ 1440×900) com margem na arte → cover sem letterbox no layout */
+/* Asset cobre o painel; object-position à esquerda para o texto HTML */
 .login-hero-art {
   position: absolute;
   inset: 0;
@@ -391,7 +391,7 @@
   height: 100%;
   display: block;
   object-fit: cover;
-  object-position: center center;
+  object-position: left center;
   pointer-events: none;
   user-select: none;
   animation: auth-art-in 0.7s ease both;
@@ -873,6 +873,15 @@
     align-items: center;
     justify-content: center;
     -webkit-overflow-scrolling: touch;
+    background:
+      linear-gradient(
+        90deg,
+        rgba(5, 7, 12, 0.2) 0%,
+        rgba(7, 10, 18, 0.88) 14%,
+        rgba(7, 10, 18, 1) 28%
+      ),
+      radial-gradient(ellipse 55% 38% at 70% 20%, rgba(142, 45, 226, 0.08), transparent 55%),
+      #070a12;
   }
 
   .auth-login-card {

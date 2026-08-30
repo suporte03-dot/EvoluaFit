@@ -11,12 +11,28 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let mounted = true
 
-    supabase.auth.getSession().then(({ data: { session: current } }) => {
+    const finish = (current = null) => {
       if (!mounted) return
       setSession(current)
       setUser(current?.user ?? null)
       setLoading(false)
-    })
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      if (mounted) setLoading(false)
+    }, 6000)
+
+    supabase.auth
+      .getSession()
+      .then(({ data: { session: current } }) => {
+        window.clearTimeout(timeoutId)
+        finish(current)
+      })
+      .catch((error) => {
+        console.error('Falha ao ler sessão', error)
+        window.clearTimeout(timeoutId)
+        finish(null)
+      })
 
     const {
       data: { subscription },
@@ -28,6 +44,7 @@ export function AuthProvider({ children }) {
 
     return () => {
       mounted = false
+      window.clearTimeout(timeoutId)
       subscription.unsubscribe()
     }
   }, [])

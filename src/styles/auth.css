@@ -350,6 +350,8 @@
 .auth-split__main {
   flex: 1 1 auto;
   width: 100%;
+  max-width: 1600px;
+  margin-inline: auto;
   display: grid;
   grid-template-columns: 1fr;
   min-height: 0;
@@ -383,26 +385,17 @@
   background: #05070c;
 }
 
-/* Personagens enquadrados no painel; cover preenche sem faixa preta embaixo */
+/* Arte do mockup em tela cheia no painel esquerdo (copy já vem na imagem). */
 .login-hero-art {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  inset: -3.5% -1.5% -3.5% -2%;
+  width: auto;
+  height: auto;
   display: block;
   object-fit: cover;
-  object-position: 42% 28%;
+  object-position: 10% 16%;
   pointer-events: none;
   user-select: none;
-  animation: auth-art-in 0.7s ease both;
-}
-
-.auth-split__cast picture {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
 }
 
 /* Scrim leve e localizado só atrás do texto (topo-esquerdo + privacy) */
@@ -530,8 +523,8 @@
   justify-content: center;
   padding: 1.5rem 1.25rem 1.25rem;
   background:
-    radial-gradient(ellipse 55% 38% at 70% 20%, rgba(142, 45, 226, 0.08), transparent 55%),
-    radial-gradient(ellipse 40% 30% at 30% 80%, rgba(77, 93, 251, 0.06), transparent 50%),
+    radial-gradient(ellipse 70% 50% at 50% 42%, rgba(90, 70, 200, 0.16), transparent 58%),
+    radial-gradient(ellipse 40% 30% at 30% 80%, rgba(77, 93, 251, 0.08), transparent 50%),
     var(--auth-bg-panel, #070a12);
 }
 
@@ -541,24 +534,24 @@
   display: flex;
   flex-direction: column;
   gap: 1.35rem;
-  animation: auth-card-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
 }
 
 .auth-login-card {
   position: relative;
   padding: 2.35rem 2.1rem 2rem;
   border-radius: var(--auth-radius-lg, 18px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.055) 0%, transparent 28%),
-    rgba(14, 16, 26, 0.88);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 28%),
+    rgba(20, 24, 38, 0.96);
   backdrop-filter: blur(22px) saturate(1.15);
   -webkit-backdrop-filter: blur(22px) saturate(1.15);
   box-shadow:
-    0 0 0 1px rgba(77, 93, 251, 0.1),
-    0 0 56px rgba(90, 60, 200, 0.22),
+    0 0 0 1px rgba(77, 93, 251, 0.16),
+    0 0 56px rgba(90, 60, 200, 0.28),
     0 28px 64px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  animation: none;
 }
 
 .auth-card__heading--login {
@@ -887,11 +880,11 @@
     background:
       linear-gradient(
         90deg,
-        rgba(5, 7, 12, 0.2) 0%,
-        rgba(7, 10, 18, 0.88) 14%,
-        rgba(7, 10, 18, 1) 28%
+        rgba(5, 7, 12, 0.18) 0%,
+        rgba(7, 10, 18, 0.82) 12%,
+        rgba(7, 10, 18, 1) 26%
       ),
-      radial-gradient(ellipse 55% 38% at 70% 20%, rgba(142, 45, 226, 0.08), transparent 55%),
+      radial-gradient(ellipse 70% 48% at 50% 42%, rgba(90, 70, 200, 0.18), transparent 58%),
       #070a12;
   }
 
@@ -905,7 +898,7 @@
 
   .auth-split__top,
   .auth-split__privacy {
-    display: flex;
+    display: none;
   }
 }
 

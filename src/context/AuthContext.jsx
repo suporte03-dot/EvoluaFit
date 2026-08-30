@@ -20,7 +20,7 @@ export function AuthProvider({ children }) {
 
     const timeoutId = window.setTimeout(() => {
       if (mounted) setLoading(false)
-    }, 6000)
+    }, 1500)
 
     supabase.auth
       .getSession()

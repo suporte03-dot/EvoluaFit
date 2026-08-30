@@ -1,14 +1,9 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import AuthLoading from './AuthLoading'
 
-/** Redireciona usuário autenticado para o dashboard. */
+/** Mostra login/cadastro na hora. Só redireciona se já houver sessão. */
 export default function GuestRoute({ children }) {
-  const { user, loading } = useAuth()
-
-  if (loading) {
-    return <AuthLoading label="Carregando" />
-  }
+  const { user } = useAuth()
 
   if (user) {
     return <Navigate to="/app" replace />

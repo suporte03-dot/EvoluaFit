@@ -383,7 +383,7 @@
   background: #05070c;
 }
 
-/* Asset cobre o painel; object-position à esquerda para o texto HTML */
+/* Personagens enquadrados no painel; cover preenche sem faixa preta embaixo */
 .login-hero-art {
   position: absolute;
   inset: 0;
@@ -391,10 +391,18 @@
   height: 100%;
   display: block;
   object-fit: cover;
-  object-position: left center;
+  object-position: 42% 28%;
   pointer-events: none;
   user-select: none;
   animation: auth-art-in 0.7s ease both;
+}
+
+.auth-split__cast picture {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 /* Scrim leve e localizado só atrás do texto (topo-esquerdo + privacy) */
@@ -404,8 +412,9 @@
   z-index: 1;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 48% 36% at 14% 12%, rgba(5, 7, 12, 0.55), transparent 72%),
-    radial-gradient(ellipse 36% 22% at 16% 90%, rgba(5, 7, 12, 0.45), transparent 70%);
+    linear-gradient(180deg, rgba(5, 7, 12, 0.55) 0%, rgba(5, 7, 12, 0.12) 16%, transparent 32%),
+    radial-gradient(ellipse 42% 32% at 12% 10%, rgba(5, 7, 12, 0.5), transparent 70%),
+    radial-gradient(ellipse 36% 22% at 16% 90%, rgba(5, 7, 12, 0.4), transparent 70%);
 }
 
 .auth-split__top {
@@ -418,6 +427,8 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 0.55rem;
+  padding: 0.15rem 1.1rem 0.85rem 0;
+  background: linear-gradient(90deg, rgba(5, 7, 12, 0.5) 0%, rgba(5, 7, 12, 0.18) 62%, transparent 100%);
   text-shadow: 0 2px 16px rgba(5, 7, 12, 0.45);
   animation: auth-hero-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
 }

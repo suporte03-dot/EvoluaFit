@@ -1,39 +1,28 @@
+import { useEffect } from 'react'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 
+/** Aplica a nova versão na hora — evita login preso em cache antigo. */
 export default function PwaUpdatePrompt() {
   const {
-    needRefresh: [needRefresh, setNeedRefresh],
+    needRefresh: [needRefresh],
     updateServiceWorker,
   } = useRegisterSW({
-    onRegisteredSW() {
-      /* registration handled by plugin */
+    onRegisteredSW(_url, registration) {
+      if (!registration) return
+      window.setInterval(() => {
+        registration.update()
+      }, 15 * 60 * 1000)
     },
     onRegisterError() {
-      /* ignore — app keeps working without SW */
+      /* app segue sem SW */
     },
   })
 
-  if (!needRefresh) return null
+  useEffect(() => {
+    if (needRefresh) {
+      updateServiceWorker(true)
+    }
+  }, [needRefresh, updateServiceWorker])
 
-  const handleUpdate = () => {
-    updateServiceWorker(true)
-  }
-
-  const handleDismiss = () => {
-    setNeedRefresh(false)
-  }
-
-  return (
-    <div className="pwa-update-prompt" role="status" aria-live="polite">
-      <p className="pwa-update-prompt__text">Uma nova versão do EvoluaFit está disponível.</p>
-      <div className="pwa-update-prompt__actions">
-        <button type="button" className="btn btn--primary btn--sm" onClick={handleUpdate}>
-          Atualizar agora
-        </button>
-        <button type="button" className="btn btn--ghost btn--sm" onClick={handleDismiss}>
-          Depois
-        </button>
-      </div>
-    </div>
-  )
+  return null
 }

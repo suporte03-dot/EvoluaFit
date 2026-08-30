@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'prompt',
+      registerType: 'autoUpdate',
       // Manifest icons in public/icons are precached once via includeManifestIcons.
       // Do NOT re-list them (or public/assets brand PNGs) in includeAssets —
       // that causes add-to-cache-list-conflicting-entries for the same URL.
@@ -43,6 +43,7 @@ export default defineConfig({
         ],
       },
       workbox: {
+        cleanupOutdatedCaches: true,
         navigateFallback: '/index.html',
         // App shell only — no PNGs (avoids clashing with manifest icons / public assets)
         globPatterns: ['**/*.{js,css,html,svg,woff,woff2}'],
@@ -105,16 +106,14 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: ({ request }) =>
-              request.destination === 'style' ||
-              request.destination === 'script' ||
-              request.destination === 'document',
-            handler: 'StaleWhileRevalidate',
+            urlPattern: ({ request }) => request.mode === 'navigate',
+            handler: 'NetworkFirst',
             options: {
-              cacheName: 'evoluafit-assets',
+              cacheName: 'evoluafit-navigations',
+              networkTimeoutSeconds: 3,
               expiration: {
-                maxEntries: 80,
-                maxAgeSeconds: 60 * 60 * 24 * 30,
+                maxEntries: 16,
+                maxAgeSeconds: 60 * 60 * 6,
               },
             },
           },

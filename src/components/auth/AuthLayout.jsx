@@ -33,15 +33,15 @@ export default function AuthLayout({
                 <picture>
                   <source
                     media="(max-width: 1023px)"
-                    srcSet="/branding/evoluafit-login-hero-tablet.png?v=align-1"
+                    srcSet="/branding/evoluafit-login-hero-tablet.jpg?v=boot-1"
                   />
                   <source
                     media="(min-width: 1440px)"
-                    srcSet="/branding/evoluafit-login-hero-desktop.png?v=align-1"
+                    srcSet="/branding/evoluafit-login-hero-desktop.jpg?v=boot-1"
                   />
                   <img
                     className="login-hero-art"
-                    src="/branding/evoluafit-login-hero-approved.png?v=align-1"
+                    src="/branding/evoluafit-login-hero-approved.jpg?v=boot-1"
                     alt=""
                     decoding="async"
                     fetchPriority="high"

@@ -24,26 +24,26 @@ const crop = {
   height: meta.height,
 }
 
-const cleaned = await sharp(srcPath).extract(crop).png({ compressionLevel: 8 }).toBuffer()
+const cleaned = await sharp(srcPath).extract(crop).jpeg({ quality: 76, mozjpeg: true }).toBuffer()
 
-const outPublic = path.resolve('public/branding/evoluafit-login-hero-approved.png')
-const outAssets = path.resolve('src/assets/branding/evoluafit-login-hero-approved.png')
+const outPublic = path.resolve('public/branding/evoluafit-login-hero-approved.jpg')
+const outAssets = path.resolve('src/assets/branding/evoluafit-login-hero-approved.jpg')
 fs.mkdirSync(path.dirname(outAssets), { recursive: true })
 fs.writeFileSync(outPublic, cleaned)
 fs.writeFileSync(outAssets, cleaned)
 
 const variants = [
-  { name: 'desktop', width: 1600 },
-  { name: 'tablet', width: 1100 },
+  { name: 'desktop', width: 1400 },
+  { name: 'tablet', width: 1000 },
   { name: 'mobile', width: 720 },
 ]
 
 for (const v of variants) {
   const buf = await sharp(cleaned)
     .resize({ width: v.width, kernel: sharp.kernel.lanczos3 })
-    .png({ compressionLevel: 8 })
+    .jpeg({ quality: 76, mozjpeg: true })
     .toBuffer()
-  fs.writeFileSync(path.resolve(`public/branding/evoluafit-login-hero-${v.name}.png`), buf)
+  fs.writeFileSync(path.resolve(`public/branding/evoluafit-login-hero-${v.name}.jpg`), buf)
   const m = await sharp(buf).metadata()
   console.log(v.name, `${m.width}x${m.height}`, `${(buf.length / 1024).toFixed(0)}KB`)
 }

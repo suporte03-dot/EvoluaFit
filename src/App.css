@@ -156,14 +156,14 @@ main {
 }
 
 .btn--primary {
-  background: var(--brand-primary, #3578ff);
+  background: var(--brand-primary, #7657ff);
   color: #f8fafc;
   font-weight: 750;
   box-shadow: none;
 }
 
 .btn--primary:hover {
-  background: var(--brand-primary-hover, #4b88ff);
+  background: var(--brand-primary-hover, #8b74ff);
   box-shadow: none;
 }
 
@@ -9488,7 +9488,7 @@ main {
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #3578ff;
+  color: #7657ff;
 }
 
 .coach-hero__title {

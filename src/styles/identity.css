@@ -14,7 +14,7 @@
 
 .dash-sidebar {
   background:
-    linear-gradient(180deg, rgba(53, 120, 255, 0.08) 0%, transparent 38%),
+    linear-gradient(180deg, rgba(118, 87, 255, 0.1) 0%, transparent 38%),
     linear-gradient(180deg, #0d1219 0%, #070a0f 100%) !important;
   border-right-color: var(--border-subtle, #243142) !important;
 }
@@ -29,18 +29,18 @@
 }
 
 .section-lazy-fallback__pulse {
-  background: #3578ff;
+  background: var(--brand-primary, #7657ff);
   box-shadow: none;
 }
 
 .btn--primary {
   color: #f8fafc;
-  background: var(--brand-primary, #3578ff);
+  background: var(--brand-primary, #7657ff);
   box-shadow: none;
 }
 
 .btn--primary:hover {
-  background: var(--brand-primary-hover, #4b88ff);
+  background: var(--brand-primary-hover, #8b74ff);
   box-shadow: none;
 }
 
@@ -245,7 +245,7 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: var(--brand-primary, #3578ff);
+  background: var(--brand-primary, #7657ff);
   transition: width var(--motion-base) ease;
 }
 
@@ -582,7 +582,7 @@
 }
 
 .coach-orb__particle {
-  background: #3578ff !important;
+  background: #7657ff !important;
   box-shadow: 0 0 10px rgba(53, 120, 255, 0.7) !important;
 }
 

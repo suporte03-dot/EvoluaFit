@@ -1,5 +1,4 @@
-/* EvoluaFit — PERFORMANCE ELECTRIC
-   Azul elétrico (ação) + Violeta (assinatura) + Lime (progresso).
+/* EvoluaFit — marca violeta (ação) + lime só para progresso real.
    Coral/vermelho NÃO é branding — só --danger. */
 
 :root {
@@ -14,14 +13,14 @@
   --text-secondary: #9da9b8;
   --text-muted: #6b7788;
 
-  --brand-primary: #3578ff;
-  --brand-primary-hover: #4b88ff;
-  --brand-primary-active: #2868e8;
-  --brand-secondary: #7657ff;
+  --brand-primary: #7657ff;
+  --brand-primary-hover: #8b74ff;
+  --brand-primary-active: #5e42e0;
+  --brand-secondary: #9aa6ff;
   --progress-positive: #b8f23a;
   --danger: #ff4d5d;
 
-  --gradient-brand: linear-gradient(135deg, #3578ff 0%, #7657ff 100%);
+  --gradient-brand: linear-gradient(135deg, #9aa6ff 0%, #7657ff 100%);
 
   /* Compat aliases (legado → Performance Electric) */
   --app-bg: var(--bg-primary);
@@ -33,9 +32,9 @@
   --accent-orange: var(--brand-primary);
   --accent-green: var(--progress-positive);
   --accent-purple: var(--brand-secondary);
-  --accent-cyan: #5b8cff;
+  --accent-cyan: #8b74ff;
 
-  --border-accent: rgba(53, 120, 255, 0.45);
+  --border-accent: rgba(118, 87, 255, 0.45);
   --radius-sm: 10px;
   --radius-md: 14px;
   --radius-lg: 16px;
@@ -56,23 +55,23 @@
   --bg-card: var(--surface-primary);
   --bg-card-soft: var(--surface-elevated);
   --primary: var(--brand-primary);
-  --primary-soft: rgba(53, 120, 255, 0.14);
-  --primary-border: rgba(53, 120, 255, 0.5);
+  --primary-soft: rgba(118, 87, 255, 0.14);
+  --primary-border: rgba(118, 87, 255, 0.5);
   --secondary: var(--brand-secondary);
-  --secondary-soft: rgba(118, 87, 255, 0.14);
-  --coach: var(--brand-secondary);
+  --secondary-soft: rgba(154, 166, 255, 0.14);
+  --coach: var(--brand-primary);
   --coach-soft: rgba(118, 87, 255, 0.16);
   --energy: var(--progress-positive);
   --energy-soft: rgba(184, 242, 58, 0.14);
-  --performance: #5b8cff;
-  --performance-soft: rgba(91, 140, 255, 0.14);
+  --performance: #8b74ff;
+  --performance-soft: rgba(139, 116, 255, 0.14);
   --danger-soft: rgba(255, 77, 93, 0.14);
   --text-main: var(--text-primary);
   --border-soft: var(--border-subtle);
 
   --gradient-primary: var(--gradient-brand);
   --gradient-coach: var(--gradient-brand);
-  --glow-primary: 0 0 20px rgba(53, 120, 255, 0.22);
+  --glow-primary: 0 0 20px rgba(118, 87, 255, 0.22);
   --glow-secondary: 0 0 18px rgba(118, 87, 255, 0.16);
   --glow-coach: 0 0 18px rgba(118, 87, 255, 0.18);
   --glow-energy: 0 0 16px rgba(184, 242, 58, 0.16);

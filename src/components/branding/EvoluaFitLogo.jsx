@@ -7,7 +7,7 @@ const SIZE_MAP = {
 }
 
 /**
- * Logo EvoluaFit — E itálico + wordmark nítido (padrão do mockup).
+ * Logo EvoluaFit — marca + wordmark (Fit chapado, degradê só no E).
  */
 export default function EvoluaFitLogo({
   size = 'medium',
@@ -32,7 +32,7 @@ export default function EvoluaFitLogo({
       aria-label="EvoluaFit"
       title="EvoluaFit"
     >
-      <EvoluaFitMark size={markPx} className="evoluafit-logo__mark" />
+      <EvoluaFitMark size={markPx} compact={markPx <= 40} className="evoluafit-logo__mark" />
       {showText ? (
         <span className="evoluafit-logo__wordmark" aria-hidden="true">
           <span className="evoluafit-logo__wordmark-main">Evolua</span>

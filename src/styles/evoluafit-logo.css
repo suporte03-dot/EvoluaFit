@@ -6,7 +6,7 @@
   --brand-accent-soft: #9aa6ff;
   --brand-muted: #9da9b8;
   --brand-surface: #121923;
-  --brand-border: rgba(53, 120, 255, 0.28);
+  --brand-border: rgba(118, 87, 255, 0.28);
 }
 
 /* ----- Shared logo (header / compact) ----- */
@@ -51,7 +51,7 @@
   height: var(--ef-mark, 48px);
   flex-shrink: 0;
   border-radius: 14px;
-  filter: drop-shadow(0 4px 14px rgba(53, 120, 255, 0.22));
+  filter: drop-shadow(0 4px 14px rgba(118, 87, 255, 0.22));
   pointer-events: none;
   user-select: none;
 }
@@ -75,12 +75,7 @@
 }
 
 .evoluafit-logo__wordmark-accent {
-  color: var(--brand-accent-soft, #9aa6ff);
-  background: linear-gradient(90deg, #9aa6ff 0%, #7657ff 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: none;
+  color: var(--brand-accent, #7657ff);
 }
 
 .evoluafit-logo__file {
@@ -129,7 +124,7 @@
 .evoluafit-brand {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 34px;
-  align-items: start;
+  align-items: center;
   column-gap: 8px;
   width: 100%;
   padding: 16px;
@@ -140,7 +135,7 @@
 .evoluafit-brand__identity {
   display: grid;
   grid-template-columns: 46px minmax(0, 1fr);
-  align-items: start;
+  align-items: center;
   column-gap: 11px;
   min-width: 0;
   text-decoration: none;
@@ -151,14 +146,13 @@
   width: 46px;
   height: 46px;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 8px rgba(53, 120, 255, 0.28));
+  filter: drop-shadow(0 0 8px rgba(118, 87, 255, 0.28));
   pointer-events: none;
   user-select: none;
 }
 
 .evoluafit-brand__content {
   min-width: 0;
-  padding-top: 1px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -183,11 +177,7 @@
 }
 
 .evoluafit-brand__name-accent {
-  background: linear-gradient(90deg, #9aa6ff 0%, #7657ff 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: none;
+  color: #7657ff;
 }
 
 .evoluafit-brand__tagline {
@@ -226,13 +216,13 @@
 }
 
 .evoluafit-brand__collapse:hover {
-  border-color: rgba(53, 120, 255, 0.48);
+  border-color: rgba(118, 87, 255, 0.48);
   background: rgba(20, 22, 26, 0.96);
-  color: #3578ff;
+  color: #9aa6ff;
 }
 
 .evoluafit-brand__collapse:focus-visible {
-  outline: 2px solid #3578ff;
+  outline: 2px solid #7657ff;
   outline-offset: 2px;
 }
 

@@ -1,18 +1,34 @@
 import { useId } from 'react'
 
 /**
- * EvoluaFit Mark — E geométrico com barras de progressão
- * (evolução + performance). Funciona como ícone / favicon / assinatura.
+ * EvoluaFit Mark — E geométrico com barras de progressão.
+ * compact: barras mais grossas para favicon / sidebar recolhida / header mobile.
  */
 export default function EvoluaFitMark({
   size = 40,
   className = '',
   withBackground = false,
+  compact = false,
 }) {
   const px = typeof size === 'number' ? size : 40
+  const dense = compact || px <= 40
   const uid = useId().replace(/:/g, '')
   const gMain = `ef-g-${uid}`
   const gGlow = `ef-glow-${uid}`
+
+  const bars = dense
+    ? [
+        { x: 15, y: 14, w: 10, h: 36 },
+        { x: 24, y: 14, w: 20, h: 9 },
+        { x: 24, y: 27.5, w: 24, h: 9 },
+        { x: 24, y: 41, w: 28, h: 9 },
+      ]
+    : [
+        { x: 16, y: 16, w: 8, h: 32 },
+        { x: 24, y: 16, w: 18, h: 7 },
+        { x: 24, y: 28.5, w: 22, h: 7 },
+        { x: 24, y: 41, w: 26, h: 7 },
+      ]
 
   return (
     <svg
@@ -32,7 +48,7 @@ export default function EvoluaFitMark({
           <stop offset="1" stopColor="#7657FF" />
         </linearGradient>
         <linearGradient id={gGlow} x1="32" y1="10" x2="32" y2="54" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#3578FF" stopOpacity="0.35" />
+          <stop stopColor="#7657FF" stopOpacity="0.35" />
           <stop offset="1" stopColor="#7657FF" stopOpacity="0" />
         </linearGradient>
       </defs>
@@ -41,7 +57,6 @@ export default function EvoluaFitMark({
         <rect width="64" height="64" rx="14" fill="#05070A" />
       ) : null}
 
-      {/* Soft plate */}
       <rect x="6" y="6" width="52" height="52" rx="14" fill={`url(#${gGlow})`} opacity="0.55" />
       <rect
         x="6.75"
@@ -53,19 +68,10 @@ export default function EvoluaFitMark({
         strokeWidth="1.5"
       />
 
-      {/*
-        E como três barras horizontais crescentes à direita + haste vertical —
-        leitura de progresso / evolução em movimento.
-      */}
       <g fill={`url(#${gMain})`}>
-        {/* Haste esquerda */}
-        <rect x="16" y="16" width="8" height="32" rx="2.5" />
-        {/* Barra superior (curta) */}
-        <rect x="24" y="16" width="18" height="7" rx="2.5" />
-        {/* Barra média */}
-        <rect x="24" y="28.5" width="22" height="7" rx="2.5" />
-        {/* Barra inferior (mais longa = progresso) */}
-        <rect x="24" y="41" width="26" height="7" rx="2.5" />
+        {bars.map((bar) => (
+          <rect key={`${bar.x}-${bar.y}`} x={bar.x} y={bar.y} width={bar.w} height={bar.h} rx={dense ? 3 : 2.5} />
+        ))}
       </g>
     </svg>
   )

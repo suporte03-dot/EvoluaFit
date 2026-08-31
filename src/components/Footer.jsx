@@ -7,7 +7,7 @@ export default function Footer() {
         <div className="footer__brand">
           <a href="#inicio" className="brand">
             <img
-              src={`${import.meta.env.BASE_URL}branding/evoluafit-lockup.png`}
+              src={`${import.meta.env.BASE_URL}branding/evoluafit-lockup.png?v=nobg`}
               alt="EvoluaFit"
               className="brand-logo brand-logo--footer"
             />

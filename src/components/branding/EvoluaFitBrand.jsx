@@ -1,4 +1,4 @@
-const LOCKUP_SRC = `${import.meta.env.BASE_URL}branding/evoluafit-lockup.png`
+const LOCKUP_SRC = `${import.meta.env.BASE_URL}branding/evoluafit-lockup.png?v=nobg`
 const MARK_SRC = `${import.meta.env.BASE_URL}branding/evoluafit-mark.png`
 
 /**

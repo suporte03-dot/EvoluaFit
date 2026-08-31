@@ -244,7 +244,7 @@ export function FitnessProvider({ children }) {
   )
 
   const addPlanWorkouts = useCallback(
-    (incoming, { replaceAll = false } = {}) => {
+    (incoming, { replaceAll = false, silent = false } = {}) => {
       const workouts = (incoming || []).map((w) => ({
         ...w,
         exercises: (w.exercises || []).map((ex) => ({ ...ex })),
@@ -314,7 +314,9 @@ export function FitnessProvider({ children }) {
         return { ...prev, workouts: [...merged, ...preservedOrphans, ...others] }
       })
 
-      showToast(`${workouts.length} treinos salvos na sua planilha!`)
+      if (!silent) {
+        showToast(`${workouts.length} treinos salvos na sua planilha!`)
+      }
     },
     [persist, showToast],
   )

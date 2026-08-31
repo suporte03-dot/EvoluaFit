@@ -97,7 +97,11 @@ function withSafety(body) {
 }
 
 function getLastSession(history = []) {
-  return history[0] || null
+  return (history || []).find((entry) => {
+    const status = String(entry?.status || '').toLowerCase()
+    if (status === 'cancelled' || status === 'canceled' || status === 'cancelado') return false
+    return Boolean(entry)
+  }) || null
 }
 
 function getLastSessionMuscles(history = []) {
@@ -521,18 +525,20 @@ export function getCoachSummary(context = {}) {
   weekStart.setHours(0, 0, 0, 0)
   weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7))
   const weeklyWorkouts = history.filter((h) => {
+    const status = String(h.status || '').toLowerCase()
+    if (status === 'cancelled' || status === 'canceled' || status === 'cancelado') return false
     const d = new Date(h.completedAt || h.date)
     return !Number.isNaN(d.getTime()) && d >= weekStart
   }).length
 
-  let nextSuggestion = 'Treino equilibrado e moderado'
-  let recommendedGroup = 'Corpo inteiro'
+  let nextSuggestion = pending[0]?.name || ''
+  let recommendedGroup = (pending[0]?.muscleGroups || [])[0] || ''
   let attention =
     'Respeite limites, aqueça bem e pare se sentir dor. Progresso consistente vale mais que intensidade excessiva.'
 
   if (!hasData) {
-    nextSuggestion = 'Comece com um treino completo leve'
-    recommendedGroup = 'Corpo inteiro'
+    nextSuggestion = ''
+    recommendedGroup = ''
     attention = 'Sem histórico ainda — comece com volume moderado e foque na técnica.'
   } else if (streak >= 4 || days < 1) {
     nextSuggestion = 'Descanso ativo ou mobilidade'

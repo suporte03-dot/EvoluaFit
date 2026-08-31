@@ -15,6 +15,7 @@ import {
   isValidPlanData,
   saveActiveWorkoutPlan,
 } from '../services/workoutPlanService'
+import { planToWorkouts } from '../utils/workoutGenerator'
 
 const WorkoutPlanContext = createContext(null)
 
@@ -118,7 +119,7 @@ function getMigratableLocalPlan(userId) {
 
 export function WorkoutPlanProvider({ children }) {
   const { user, loading: authLoading } = useAuth()
-  const { generatedPlan, savePlan, clearActivePlan } = useFitness()
+  const { generatedPlan, savePlan, clearActivePlan, addPlanWorkouts } = useFitness()
 
   const [workoutPlan, setWorkoutPlan] = useState(null)
   const [loadingWorkoutPlan, setLoadingWorkoutPlan] = useState(true)
@@ -153,13 +154,19 @@ export function WorkoutPlanProvider({ children }) {
   }, [])
 
   const applyRemotePlanLocally = useCallback(
-    (planData) => {
+    (planData, remoteRow = null) => {
       if (!isValidPlanData(planData)) return
-      lastSyncedSnapshotRef.current = planSnapshot(planData)
-      savePlan(planData)
+      const withId = {
+        ...planData,
+        id: planData.id || remoteRow?.id,
+        name: planData.name || planData.title || remoteRow?.name,
+      }
+      lastSyncedSnapshotRef.current = planSnapshot(withId)
+      savePlan(withId)
+      addPlanWorkouts(planToWorkouts(withId), { silent: true })
       if (user?.id) setLocalOwner(user.id)
     },
-    [savePlan, user?.id],
+    [savePlan, addPlanWorkouts, user?.id],
   )
 
   const persistRemote = useCallback(
@@ -279,7 +286,7 @@ export function WorkoutPlanProvider({ children }) {
     if (data && isValidPlanData(data.plan_data)) {
       setWorkoutPlan(data)
       setLastSavedAt(data.updated_at || null)
-      applyRemotePlanLocally(data.plan_data)
+      applyRemotePlanLocally(data.plan_data, data)
       setSaveStatus('saved')
       setLoadingWorkoutPlan(false)
       markMigrationDone(user.id)
@@ -328,7 +335,7 @@ export function WorkoutPlanProvider({ children }) {
 
         setWorkoutPlan(confirmed)
         setLastSavedAt(confirmed.updated_at || null)
-        applyRemotePlanLocally(confirmed.plan_data)
+        applyRemotePlanLocally(confirmed.plan_data, confirmed)
         markMigrationDone(user.id)
         setSaveStatus('saved')
         setLoadingWorkoutPlan(false)

@@ -1233,18 +1233,27 @@ export function generateWorkoutPlan(input = {}) {
   }
 }
 
+function startOfMonday(ref = new Date()) {
+  const d = new Date(ref)
+  d.setHours(12, 0, 0, 0)
+  const weekday = d.getDay()
+  d.setDate(d.getDate() + (weekday === 0 ? -6 : 1 - weekday))
+  return d
+}
+
 /**
- * Converte o plano gerado em treinos salvos (TODOS os dias).
+ * Converte o plano gerado em treinos da semana corrente (dia 1 = segunda).
  */
-export function planToWorkouts(plan) {
+export function planToWorkouts(plan, referenceDate = new Date()) {
   const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
   const days = plan.weeklyPlan || plan.schedule || []
-  const today = new Date()
+  const monday = startOfMonday(referenceDate)
   const stamp = Date.now()
 
   return days.map((day, index) => {
-    const workoutDate = new Date(today)
-    workoutDate.setDate(today.getDate() + index)
+    const dayNum = Number(day.day ?? day.dayNumber ?? index + 1)
+    const workoutDate = new Date(monday)
+    workoutDate.setDate(monday.getDate() + Math.max(0, dayNum - 1))
 
     const muscleGroups = day.muscleGroups || day.focus || []
     const exercises = (day.exercises || []).map((ex) => ({

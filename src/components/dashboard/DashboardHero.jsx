@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
-import heroAthlete from '../../assets/dashboard/hero-athlete-back.webp'
 import { useFitness } from '../../context/FitnessContext'
+import { useAuth } from '../../context/AuthContext'
+import { useProfile } from '../../context/ProfileContext'
 import { greetingParts, weeklyActivitySeries } from './dashboardUtils'
+import { greetingLine, resolveDisplayName } from '../../utils/displayName'
 import { IconChevron, IconFlame } from './icons'
 import { scrollToSection } from '../../utils/scrollToSection'
 import { metricAvailability } from '../../utils/dashboardMetrics'
@@ -69,9 +71,15 @@ function Sparkline({ series }) {
 
 export default function DashboardHero({ profile, metrics, history, workouts }) {
   const { plans, generatedPlan, startWorkout, pendingSession, resumePendingSession } = useFitness()
+  const { user } = useAuth()
+  const { profile: cloudProfile } = useProfile()
   const [detailWorkout, setDetailWorkout] = useState(null)
   const { hello } = greetingParts()
-  const name = profile?.name || metrics?.profileName || 'Atleta'
+  const name = resolveDisplayName({
+    cloudName: cloudProfile?.full_name,
+    localName: profile?.name || metrics?.profileName,
+    metaName: user?.user_metadata?.full_name,
+  })
   const streakReady = metricAvailability('streak', metrics)
   const streakDays = streakReady ? metrics.streak : null
   const series = weeklyActivitySeries(history, workouts, 7)
@@ -141,21 +149,11 @@ export default function DashboardHero({ profile, metrics, history, workouts }) {
     <>
       <header className="dash-hero dash-hero--today">
         <div className="dash-hero__media" aria-hidden="true">
-          <img
-            src={heroAthlete}
-            alt=""
-            className="dash-hero__photo"
-            width={960}
-            height={540}
-            decoding="async"
-          />
           <div className="dash-hero__fade" />
         </div>
 
         <div className="dash-hero__copy">
-          <p className="dash-hero__greeting">
-            {hello}, {name}
-          </p>
+          <p className="dash-hero__greeting">{greetingLine(hello, name)}</p>
           <p className="dash-hero__eyebrow">{copy.label}</p>
           <h1 className="dash-hero__title">{title}</h1>
 
@@ -221,7 +219,7 @@ export default function DashboardHero({ profile, metrics, history, workouts }) {
                   : 'COMECE SUA SEQUÊNCIA'}
               </p>
               <p className="dash-hero__streak-hint">
-                {streakReady ? 'Você está no ritmo!' : 'Complete um treino hoje para acender o primeiro dia.'}
+                {streakReady ? 'Dias seguidos com treino concluído.' : 'Complete um treino hoje para registrar o primeiro dia.'}
               </p>
             </div>
           </div>

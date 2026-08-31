@@ -77,7 +77,7 @@ export function getDashboardMetrics({ profile, workouts, history, goals, perform
     restDays: hasData ? perf.restDays : null,
     monthlyPerformancePct,
     activeGoals: countActiveGoals(goals),
-    profileName: profile?.name || 'Atleta',
+    profileName: profile?.name || '',
   }
 }
 

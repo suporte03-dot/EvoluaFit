@@ -1,7 +1,4 @@
-/**
- * Resolve "treino de hoje" and weekly progress from real FitnessContext data.
- * Never invents metrics — situational empty states only.
- */
+import { isCompletedSession } from './completedSession'
 
 function toDateKey(value) {
   if (!value) return null
@@ -79,7 +76,7 @@ export function resolveTodayWorkout({ workouts = [], history = [], plans = [] } 
     .filter((w) => isPendingStatus(w.status))
     .sort((a, b) => String(a.date || '').localeCompare(String(b.date || '')))[0]
 
-  const lastHistory = history?.[0]
+  const lastHistory = (history || []).find((h) => isCompletedSession(h))
   const daysSinceLast = lastHistory?.completedAt
     ? Math.floor((Date.now() - new Date(lastHistory.completedAt).getTime()) / (1000 * 60 * 60 * 24))
     : null
@@ -118,6 +115,7 @@ export function getWeeklyProgress({ workouts = [], history = [], profile = {}, g
   const end = endOfWeek()
 
   const completedFromHistory = (history || []).filter((h) => {
+    if (!isCompletedSession(h)) return false
     const d = new Date(h.completedAt || h.date)
     return d >= start && d < end
   })
@@ -170,19 +168,19 @@ export function situationCopy(situation, { daysSinceLast, nextWorkout } = {}) {
       return {
         label: 'Comece por aqui',
         title: 'Ainda sem planilha',
-        description: 'Monte uma rotina sob medida e o treino de hoje aparece aqui.',
+        description: 'Monte uma rotina e o treino de hoje aparece aqui.',
         primaryLabel: 'Criar planilha',
         primarySection: 'planilha',
-        secondaryLabel: 'Falar com Coach',
+        secondaryLabel: 'Falar com o Coach',
         secondarySection: 'coach-ia',
       }
     case 'no_workout_today':
       return {
         label: 'Hoje',
-        title: nextWorkout ? 'Hoje é dia de recuperar' : 'Escolha o próximo passo',
+        title: nextWorkout ? 'Nada agendado para hoje' : 'Escolha o próximo passo',
         description: nextWorkout
-          ? `Próximo na planilha: ${nextWorkout.name}. Adiante agora ou siga o calendário.`
-          : 'Abra a planilha e defina o próximo treino — leva menos de um minuto.',
+          ? `Próximo na planilha: ${nextWorkout.name}.`
+          : 'Abra a planilha e defina o próximo treino.',
         primaryLabel: nextWorkout ? 'Ver próximo treino' : 'Abrir calendário',
         primarySection: nextWorkout ? 'treinos' : 'calendario',
         secondaryLabel: 'Criar planilha',

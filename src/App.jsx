@@ -16,7 +16,6 @@ import PwaUpdatePrompt from './components/pwa/PwaUpdatePrompt'
 import { loadExercises } from './services/exerciseService'
 import Header from './components/Header'
 import SectionDivider from './components/SectionDivider'
-import Footer from './components/Footer'
 import Toast from './components/Toast'
 import StartWorkoutModal from './components/StartWorkoutModal'
 import SessionResumeBanner from './components/SessionResumeBanner'
@@ -39,7 +38,6 @@ import './styles/evoluafit-logo.css'
 import './styles/auth.css'
 import './styles/identity.css'
 
-const HowItWorks = lazy(() => import('./components/HowItWorks'))
 const MyWorkouts = lazy(() => import('./components/MyWorkouts'))
 const WorkoutPlanner = lazy(() => import('./components/WorkoutPlanner'))
 const CoachIA = lazy(() => import('./components/CoachIA'))
@@ -147,11 +145,9 @@ function DashboardHome() {
       <SessionResumeBanner />
       <DashboardShell />
       <Suspense fallback={<SectionFallback label="Carregando conteúdo" />}>
-        <HowItWorks />
-        <SectionDivider variant="workouts" label="TREINOS" />
         <MyWorkouts />
         <WorkoutPlanner />
-        <SectionDivider variant="coach" label="COACH IA" />
+        <SectionDivider variant="coach" label="COACH" />
         <CoachIA />
         <ExerciseLibrary />
         <SectionDivider variant="calendar" label="CALENDÁRIO" />
@@ -162,7 +158,6 @@ function DashboardHome() {
         <Goals />
         <SectionDivider variant="profile" label="PERFIL" />
         <UserProfile />
-        <Footer />
       </Suspense>
     </>
   )

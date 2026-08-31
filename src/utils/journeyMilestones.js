@@ -1,6 +1,8 @@
 /**
  * Builds milestone journey events from real history/workouts/goals only.
  */
+import { isCompletedSession } from './completedSession'
+
 function toDate(value) {
   if (!value) return null
   const d = new Date(value)
@@ -19,6 +21,7 @@ export function buildJourneyMilestones({ history = [], workouts = [], goals = []
   const completed = []
 
   history.forEach((h) => {
+    if (!isCompletedSession(h)) return
     const d = toDate(h.completedAt || h.date)
     if (d) completed.push({ date: d, name: h.name || 'Treino', source: 'history' })
   })

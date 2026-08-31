@@ -15,6 +15,7 @@ import {
 } from './icons'
 import EvoluaFitBrand from '../branding/EvoluaFitBrand'
 import { deriveXpProgress, initialsFromName } from './dashboardUtils'
+import { resolveDisplayName } from '../../utils/displayName'
 import { scrollToSection, handleSectionClick } from '../../utils/scrollToSection'
 import { useAuth } from '../../context/AuthContext'
 import { useProfile } from '../../context/ProfileContext'
@@ -46,7 +47,7 @@ const NAV_GROUPS = [
   {
     id: 'coach',
     label: 'Coach',
-    items: [{ id: 'coach-ia', label: 'Coach IA', Icon: IconSpark, tone: 'orange' }],
+    items: [{ id: 'coach-ia', label: 'Coach', Icon: IconSpark, tone: 'orange' }],
   },
   {
     id: 'perfil',
@@ -85,9 +86,10 @@ export default function DashboardSidebar({
   const location = useLocation()
   const [signingOut, setSigningOut] = useState(false)
   const xp = deriveXpProgress({ history, workouts })
-  const name = profile?.full_name?.trim() || 'Atleta'
+  const name = resolveDisplayName({ cloudName: profile?.full_name })
+  const accountLabel = name || 'Conta'
   const levelLabel = profile?.level ? `Nível ${profile.level}` : 'Nível —'
-  const initials = loadingProfile ? '··' : initialsFromName(name)
+  const initials = loadingProfile ? '··' : initialsFromName(accountLabel)
   const xpCeiling = xp.xp - xp.intoLevel + xp.nextLevelAt
   const xpLabel = `${xp.xp.toLocaleString('pt-BR')} / ${xpCeiling.toLocaleString('pt-BR')} XP`
   const onDedicatedRoute =
@@ -209,7 +211,7 @@ export default function DashboardSidebar({
           <button
             type="button"
             className="dash-sidebar__user dash-sidebar__user--button"
-            title={loadingProfile ? 'Carregando perfil' : `${name} · ${levelLabel}`}
+            title={loadingProfile ? 'Carregando perfil' : `${accountLabel} · ${levelLabel}`}
             onClick={() => {
               onCloseMobile?.()
               navigate('/app/perfil')
@@ -231,7 +233,7 @@ export default function DashboardSidebar({
                   </>
                 ) : (
                   <>
-                    <strong>{name}</strong>
+                    <strong>{accountLabel}</strong>
                     <span>{levelLabel}</span>
                   </>
                 )}

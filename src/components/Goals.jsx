@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
 import SectionTitle from './SectionTitle'
+import EmptyState from './EmptyState'
 
 export default function Goals() {
   const { goals, updateGoals, performance } = useFitness()
@@ -33,6 +34,15 @@ export default function Goals() {
           subtitle="Objetivos realistas de consistência e bem-estar."
         />
 
+        {syncedGoals.length === 0 ? (
+          <EmptyState
+            title="Nenhuma meta criada"
+            description="As metas só aparecem quando você as define. Nada é preenchido automaticamente."
+            ctaLabel="Montar planilha"
+            ctaSection="planilha"
+          />
+        ) : (
+          <>
         <div className="goals-summary glass-card">
           <div>
             <span className="goals-summary__label">Resumo</span>
@@ -103,10 +113,8 @@ export default function Goals() {
             )
           })}
         </div>
-
-        <p className="safety-note safety-note--link">
-          Conteúdo informativo — detalhes no rodapé.
-        </p>
+          </>
+        )}
       </div>
     </section>
   )

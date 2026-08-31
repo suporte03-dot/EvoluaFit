@@ -37,7 +37,7 @@ export default function TodaySuggestion() {
               Calendário
             </button>
             <button type="button" className="btn btn--ghost btn--sm" onClick={() => scrollToSection('coach-ia')}>
-              Coach IA
+              Coach
             </button>
           </div>
         </div>

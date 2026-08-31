@@ -58,18 +58,18 @@ export default function CoachOverviewCard({ workouts, history, plans, generatedP
     <article className="dash-module dash-module--cyan dash-module--coach">
       <div className="dash-module__body dash-module__body--coach">
         <div className="dash-module__copy">
-          <h3 className="dash-module__title">Coach IA</h3>
+          <h3 className="dash-module__title">Coach</h3>
           <p className="dash-module__desc">
             {profile?.level
-              ? `Orientação personalizada para nível ${profile.level}.`
-              : 'Dicas contextuais com base no seu próximo treino e rotina.'}
+              ? `Sugestões com base no seu nível (${profile.level}) e na planilha.`
+              : 'Sugestões com base no próximo treino da planilha.'}
           </p>
           <button
             type="button"
             className="dash-module__btn dash-module__btn--outline"
             onClick={() => scrollToSection('coach-ia')}
           >
-            Conversar com IA
+            Abrir Coach
             <IconChevron size={16} />
           </button>
         </div>

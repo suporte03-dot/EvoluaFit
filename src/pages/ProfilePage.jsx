@@ -134,7 +134,7 @@ export default function ProfilePage() {
             ) : (
               <>
                 <strong className="profile-summary__name">
-                  {profile?.full_name?.trim() || 'Atleta'}
+                  {profile?.full_name?.trim() || user?.user_metadata?.full_name || 'Sem nome'}
                 </strong>
                 <p className="profile-summary__meta">
                   {profile?.goal || 'Objetivo não definido'} · {profile?.level || 'Nível não definido'}

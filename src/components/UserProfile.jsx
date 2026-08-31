@@ -57,7 +57,9 @@ export default function UserProfile() {
 
         <div className="profile-summary glass-card">
           <div className="profile-summary__main">
-            <strong className="profile-summary__name">{form.name || 'Atleta'}</strong>
+            <strong className="profile-summary__name">
+              {form.name || user?.user_metadata?.full_name || 'Sem nome'}
+            </strong>
             <p className="profile-summary__meta">
               {objectiveLabel(form.objective)} · {form.level} · {form.daysPerWeek}x/semana ·{' '}
               {form.duration} min

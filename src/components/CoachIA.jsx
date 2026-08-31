@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
 import { useAuth } from '../context/AuthContext'
+import { useProfile } from '../context/ProfileContext'
 import { getExerciseCache } from '../data/exerciseCache'
 import { scrollToSection } from '../utils/scrollToSection'
 import { formatDateShort } from '../utils/dateFormat'
@@ -167,11 +168,10 @@ function CoachHero() {
   return (
     <header className="coach-hero">
       <div className="coach-hero__copy">
-        <p className="coach-hero__label">Assistente de treino</p>
-        <h2 className="coach-hero__title">Coach IA</h2>
+        <p className="coach-hero__label">Assistente da planilha</p>
+        <h2 className="coach-hero__title">Coach</h2>
         <p className="coach-hero__subtitle">
-          Suas perguntas e rotina ficam neste aparelho — privacidade primeiro, sugestões
-          responsáveis.
+          Sugestões com base no que está neste aparelho e na sua planilha — sem modelo externo.
         </p>
       </div>
       <div className="coach-hero__art">
@@ -448,6 +448,7 @@ export default function CoachIA() {
     startWorkout,
   } = useFitness()
   const { user } = useAuth()
+  const { profile: cloudProfile } = useProfile()
   const [bodyEvolution, setBodyEvolution] = useState(null)
 
   const [input, setInput] = useState('')
@@ -477,9 +478,19 @@ export default function CoachIA() {
     }
   }, [user?.id])
 
+  const coachProfile = useMemo(
+    () => ({
+      ...profile,
+      name: cloudProfile?.full_name || profile?.name,
+      objective: cloudProfile?.goal || profile?.objective,
+      level: cloudProfile?.level || profile?.level,
+    }),
+    [profile, cloudProfile],
+  )
+
   const context = useMemo(
-    () => ({ profile, workouts, history, performance, goals, bodyEvolution }),
-    [profile, workouts, history, performance, goals, bodyEvolution],
+    () => ({ profile: coachProfile, workouts, history, performance, goals, bodyEvolution }),
+    [coachProfile, workouts, history, performance, goals, bodyEvolution],
   )
 
   const summary = useMemo(() => getCoachSummary(context), [context])
@@ -838,7 +849,7 @@ export default function CoachIA() {
         <div className="coach-ia__main glass-card">
           <form className="coach-ia__form" onSubmit={handleSubmit}>
             <label htmlFor="coach-question" className="sr-only">
-              Pergunte ao Coach IA sobre seu treino
+              Pergunte ao Coach sobre seu treino
             </label>
             <div className="coach-ia__input-row">
               <textarea
@@ -870,7 +881,7 @@ export default function CoachIA() {
                   voiceState === 'listening'
                     ? 'Parar de ouvir'
                     : voiceSupported
-                      ? 'Falar com o Coach IA'
+                      ? 'Falar com o Coach'
                       : 'Reconhecimento de voz indisponível'
                 }
                 aria-pressed={voiceState === 'listening'}
@@ -1146,7 +1157,7 @@ export default function CoachIA() {
                   ✦
                 </span>
                 <div className="coach-ia__bubble">
-                  <span className="coach-ia__typing">Coach IA está analisando sua rotina</span>
+                  <span className="coach-ia__typing">Consultando sua planilha…</span>
                 </div>
               </div>
             )}
@@ -1161,7 +1172,7 @@ export default function CoachIA() {
           <CoachPrivacyNotice voiceSupported={voiceSupported} />
         </details>
 
-        <CoachContextChips summary={summary} profile={profile} />
+        <CoachContextChips summary={summary} profile={coachProfile} />
         <CoachRecommendations
           recommendations={recommendations.slice(0, 2)}
           applyingId={applyingId}

@@ -1,4 +1,5 @@
-import EvoluaFitMark from './EvoluaFitMark'
+const LOCKUP_SRC = `${import.meta.env.BASE_URL}branding/evoluafit-lockup.png`
+const MARK_SRC = `${import.meta.env.BASE_URL}branding/evoluafit-mark.png`
 
 /**
  * EvoluaFit sidebar brand block.
@@ -26,15 +27,10 @@ export default function EvoluaFitBrand({
         aria-label="EvoluaFit"
         title={collapsed ? 'EvoluaFit' : undefined}
       >
-        <EvoluaFitMark size={collapsed ? 40 : 48} compact={collapsed} className="evoluafit-brand__mark" />
-
-        {!collapsed && (
-          <div className="evoluafit-brand__content" aria-hidden="true">
-            <div className="evoluafit-brand__name">
-              <span className="evoluafit-brand__name-main">Evolua</span>
-              <span className="evoluafit-brand__name-accent">Fit</span>
-            </div>
-          </div>
+        {collapsed ? (
+          <img src={MARK_SRC} alt="" className="evoluafit-brand__mark" width={40} height={40} />
+        ) : (
+          <img src={LOCKUP_SRC} alt="" className="evoluafit-brand__lockup" />
         )}
       </a>
 

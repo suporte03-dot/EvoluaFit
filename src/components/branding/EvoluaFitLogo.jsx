@@ -7,7 +7,7 @@ const SIZE_MAP = {
 }
 
 /**
- * Logo EvoluaFit — marca + wordmark (Fit chapado, degradê só no E).
+ * Logo EvoluaFit — E geométrico + wordmark (Evolua branco, Fit em degradê).
  */
 export default function EvoluaFitLogo({
   size = 'medium',

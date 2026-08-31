@@ -2,8 +2,9 @@
 
 :root {
   --brand-white: #f8fafc;
-  --brand-accent: #7657ff;
-  --brand-accent-soft: #9aa6ff;
+  --brand-accent: #6b68ff;
+  --brand-accent-soft: #8ec4ff;
+  --brand-fit-gradient: linear-gradient(105deg, #6bb0ff 0%, #6b68ff 48%, #8a52f5 100%);
   --brand-muted: #9da9b8;
   --brand-surface: #121923;
   --brand-border: rgba(118, 87, 255, 0.28);
@@ -50,8 +51,8 @@
   width: var(--ef-mark, 48px);
   height: var(--ef-mark, 48px);
   flex-shrink: 0;
-  border-radius: 14px;
-  filter: drop-shadow(0 4px 14px rgba(118, 87, 255, 0.22));
+  border-radius: 0;
+  filter: none;
   pointer-events: none;
   user-select: none;
 }
@@ -65,7 +66,8 @@
   font-weight: 800;
   font-style: normal;
   letter-spacing: -0.045em;
-  transform: none;
+  transform: skewX(-4deg);
+  transform-origin: left center;
   white-space: nowrap;
   -webkit-font-smoothing: antialiased;
 }
@@ -75,7 +77,10 @@
 }
 
 .evoluafit-logo__wordmark-accent {
-  color: var(--brand-accent, #7657ff);
+  background: var(--brand-fit-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .evoluafit-logo__file {
@@ -146,7 +151,7 @@
   width: 46px;
   height: 46px;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 8px rgba(118, 87, 255, 0.28));
+  filter: none;
   pointer-events: none;
   user-select: none;
 }
@@ -168,7 +173,8 @@
   font-style: normal;
   line-height: 1.05;
   letter-spacing: -0.045em;
-  transform: none;
+  transform: skewX(-4deg);
+  transform-origin: left center;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -177,7 +183,10 @@
 }
 
 .evoluafit-brand__name-accent {
-  color: #7657ff;
+  background: var(--brand-fit-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .evoluafit-brand__tagline {

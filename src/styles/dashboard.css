@@ -6,10 +6,10 @@
   --dash-bg: var(--app-bg, #070a0f);
   --dash-surface: var(--surface-primary, #121923);
   --dash-surface-2: var(--surface-secondary, #182230);
-  --dash-orange: var(--accent-primary, #3578ff);
+  --dash-orange: var(--accent-primary, #7657ff);
   --dash-orange-soft: rgba(53, 120, 255, 0.12);
   --dash-orange-border: rgba(53, 120, 255, 0.45);
-  --dash-green: var(--accent-primary, #3578ff);
+  --dash-green: var(--accent-primary, #7657ff);
   --dash-green-soft: rgba(53, 120, 255, 0.12);
   --dash-blue: var(--performance, #ffb070);
   --dash-blue-soft: rgba(255, 176, 112, 0.14);
@@ -1657,7 +1657,7 @@ body:has(.dash-sidebar--open) .dash-sidebar {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #3578ff;
+  background: #7657ff;
   box-shadow: 0 0 12px rgba(53, 120, 255, 0.45);
   animation: lazyPulse 1.1s ease-in-out infinite;
 }
@@ -1677,7 +1677,7 @@ body:has(.dash-sidebar--open) .dash-sidebar {
 }
 
 .dash-sidebar__user--button:focus-visible {
-  outline: 2px solid var(--accent-primary, #3578ff);
+  outline: 2px solid var(--accent-primary, #7657ff);
   outline-offset: 2px;
 }
 

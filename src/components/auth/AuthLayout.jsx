@@ -1,4 +1,5 @@
 import EvoluaFitLogo from '../branding/EvoluaFitLogo'
+import LoginHero from './LoginHero'
 
 export default function AuthLayout({
   title,
@@ -13,19 +14,7 @@ export default function AuthLayout({
     return (
       <div className="auth-split">
         <div className="auth-split__main">
-          <aside className="auth-split__visual" aria-label="EvoluaFit">
-            <div className="auth-split__stage">
-              <div className="auth-split__cast" aria-hidden="true">
-                <img
-                  className="login-hero-art"
-                  src="/branding/evoluafit-login-hero-approved.jpg?v=login-fix-1"
-                  alt=""
-                  decoding="async"
-                  fetchPriority="high"
-                />
-              </div>
-            </div>
-          </aside>
+          <LoginHero />
 
           <div className="auth-split__panel">
             <div className="auth-split__panel-inner auth-login-card">

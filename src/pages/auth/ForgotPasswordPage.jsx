@@ -31,6 +31,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <AuthLayout
+      variant="split"
       title="Esqueci a senha"
       subtitle="Informe seu e-mail para receber o link de redefinição."
       footer={
@@ -66,8 +67,9 @@ export default function ForgotPasswordPage() {
 
         <button
           type="submit"
-          className="btn btn--primary auth-form__submit"
+          className={`btn auth-form__submit auth-form__submit--gradient${submitting ? ' is-loading' : ''}`}
           disabled={submitting}
+          aria-busy={submitting}
         >
           {submitting ? 'Enviando...' : 'Enviar link'}
         </button>

@@ -131,8 +131,9 @@ export default function LoginPage() {
 
         <button
           type="submit"
-          className="btn auth-form__submit auth-form__submit--gradient"
+          className={`btn auth-form__submit auth-form__submit--gradient${submitting ? ' is-loading' : ''}`}
           disabled={submitting}
+          aria-busy={submitting}
         >
           {submitting ? 'Entrando...' : 'Entrar'}
         </button>

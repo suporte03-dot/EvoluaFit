@@ -67,6 +67,7 @@ export default function RegisterPage() {
 
   return (
     <AuthLayout
+      variant="split"
       title="Criar conta"
       subtitle="Cadastre-se para organizar treinos e acompanhar sua evolução."
       footer={
@@ -140,8 +141,9 @@ export default function RegisterPage() {
 
         <button
           type="submit"
-          className="btn btn--primary auth-form__submit"
+          className={`btn auth-form__submit auth-form__submit--gradient${submitting ? ' is-loading' : ''}`}
           disabled={submitting}
+          aria-busy={submitting}
         >
           {submitting ? 'Criando conta...' : 'Criar conta'}
         </button>

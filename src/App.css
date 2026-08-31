@@ -168,7 +168,7 @@ main {
 }
 
 .btn--primary:active {
-  background: var(--brand-primary-active, #2868e8);
+  background: var(--brand-primary-active, #5e42e0);
 }
 
 .btn--secondary,

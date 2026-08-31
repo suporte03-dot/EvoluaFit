@@ -30,6 +30,10 @@
   align-items: center;
 }
 
+.landing__logo-link .evoluafit-logo__file {
+  height: 40px;
+}
+
 .landing__top-actions {
   display: flex;
   gap: 0.5rem;

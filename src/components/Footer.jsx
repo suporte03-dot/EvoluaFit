@@ -1,7 +1,5 @@
 import { BRAND } from '../data/siteData'
 
-const logoUrl = (file) => `${import.meta.env.BASE_URL}assets/${file}`
-
 export default function Footer() {
   return (
     <footer className="footer">
@@ -9,8 +7,8 @@ export default function Footer() {
         <div className="footer__brand">
           <a href="#inicio" className="brand">
             <img
-              src={logoUrl('evoluafit-logo.png')}
-              alt="EvoluaFit - Treinos inteligentes, evolução real"
+              src={`${import.meta.env.BASE_URL}branding/evoluafit-lockup.png`}
+              alt="EvoluaFit"
               className="brand-logo brand-logo--footer"
             />
           </a>

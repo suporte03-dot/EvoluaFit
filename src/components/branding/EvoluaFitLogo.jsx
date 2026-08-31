@@ -1,4 +1,5 @@
-import EvoluaFitMark from './EvoluaFitMark'
+const LOCKUP_SRC = `${import.meta.env.BASE_URL}branding/evoluafit-lockup.png`
+const MARK_SRC = `${import.meta.env.BASE_URL}branding/evoluafit-mark.png`
 
 const SIZE_MAP = {
   small: 36,
@@ -7,7 +8,7 @@ const SIZE_MAP = {
 }
 
 /**
- * Logo EvoluaFit — E geométrico + wordmark (Evolua branco, Fit em degradê).
+ * Logo EvoluaFit — lockup aprovada (ícone + EvoluaFit).
  */
 export default function EvoluaFitLogo({
   size = 'medium',
@@ -32,13 +33,17 @@ export default function EvoluaFitLogo({
       aria-label="EvoluaFit"
       title="EvoluaFit"
     >
-      <EvoluaFitMark size={markPx} compact={markPx <= 40} className="evoluafit-logo__mark" />
       {showText ? (
-        <span className="evoluafit-logo__wordmark" aria-hidden="true">
-          <span className="evoluafit-logo__wordmark-main">Evolua</span>
-          <span className="evoluafit-logo__wordmark-accent">Fit</span>
-        </span>
-      ) : null}
+        <img src={LOCKUP_SRC} alt="" className="evoluafit-logo__file" />
+      ) : (
+        <img
+          src={MARK_SRC}
+          alt=""
+          width={markPx}
+          height={markPx}
+          className="evoluafit-logo__mark"
+        />
+      )}
     </span>
   )
 }

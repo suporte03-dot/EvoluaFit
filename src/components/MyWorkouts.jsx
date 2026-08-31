@@ -58,12 +58,11 @@ export default function MyWorkouts() {
           {workouts.length === 0 ? (
             <EmptyState
               className="empty-state--premium"
-              icon="🏋️"
-              title="Nenhum treino cadastrado"
-              description="Monte sua planilha personalizada ou peça uma sugestão ao Coach IA para começar."
+              title="Nenhum treino na planilha"
+              description="Monte sua planilha para ver os treinos da semana aqui."
               ctaLabel="Criar planilha"
               ctaSection="planilha"
-              secondaryCtaLabel="Falar com Coach IA"
+              secondaryCtaLabel="Falar com o Coach"
               secondaryCtaSection="coach-ia"
             />
           ) : (

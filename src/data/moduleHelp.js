@@ -94,8 +94,8 @@ export const MODULE_HELP = [
   {
     id: 'coach',
     sectionId: 'coach-ia',
-    label: 'Coach IA',
-    summary: 'Sugestões para ajustar sua rotina.',
+    label: 'Coach',
+    summary: 'Sugestões com base na sua planilha, neste aparelho.',
     steps: [
       'Descreva o que precisa (ex.: treino em casa).',
       'Receba sugestões com base no seu perfil.',

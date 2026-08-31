@@ -1,5 +1,5 @@
 const STORAGE_KEY = 'evoluafit-data'
-const VERSION = 2
+const VERSION = 3
 
 /** Legacy satellite keys — migrated into evoluafit-data on load */
 const LEGACY_KEYS = {
@@ -11,148 +11,89 @@ const LEGACY_KEYS = {
   coachTts: 'evoluafit-coach-tts-enabled',
 }
 
+const DEMO_WORKOUT_IDS = new Set(['default-1', 'default-2', 'default-3'])
+const DEMO_HISTORY_IDS = new Set(['hist-1', 'hist-2', 'hist-w1', 'hist-w2'])
+const DEMO_GOAL_IDS = new Set(['goal-1', 'goal-2', 'goal-3', 'goal-4'])
+
 const defaultProfile = {
-  name: 'Atleta',
-  objective: 'saude',
-  level: 'Iniciante',
-  daysPerWeek: 3,
+  name: '',
+  objective: '',
+  level: '',
+  daysPerWeek: 0,
   duration: 45,
-  location: 'Academia',
-  equipment: ['Academia completa'],
+  location: '',
+  equipment: [],
   restrictions: [],
   weight: '',
   height: '',
   age: '',
 }
 
-const defaultGoals = [
-  {
-    id: 'goal-1',
-    title: 'Treinar 3x por semana',
-    target: 3,
-    current: 0,
-    unit: 'treinos/semana',
-    type: 'weekly_workouts',
-    healthy: true,
-  },
-  {
-    id: 'goal-2',
-    title: 'Beber 2L de água por dia',
-    target: 2,
-    current: 1.5,
-    unit: 'litros',
-    type: 'hydration',
-    healthy: true,
-  },
-  {
-    id: 'goal-3',
-    title: 'Dormir 7h por noite',
-    target: 7,
-    current: 6,
-    unit: 'horas',
-    type: 'sleep',
-    healthy: true,
-  },
-  {
-    id: 'goal-4',
-    title: 'Caminhar 8.000 passos/dia',
-    target: 8000,
-    current: 5200,
-    unit: 'passos',
-    type: 'steps',
-    healthy: true,
-  },
-]
-
-function createDefaultWorkouts() {
-  const today = new Date()
-  const format = (offset) => {
-    const d = new Date(today)
-    d.setDate(d.getDate() + offset)
-    return d.toISOString().split('T')[0]
+function getDefaultData() {
+  return {
+    version: VERSION,
+    profile: { ...defaultProfile },
+    workouts: [],
+    plans: [],
+    history: [],
+    goals: [],
+    progressHistory: [],
+    activeSession: null,
+    calendarMirror: [],
+    coachMessages: [],
+    preferences: {
+      coachTtsEnabled: true,
+    },
   }
-
-  return [
-    {
-      id: 'default-1',
-      name: 'Push — Peito e Tríceps',
-      date: format(0),
-      dayLabel: 'Hoje',
-      muscleGroups: ['Peito', 'Ombros', 'Tríceps'],
-      status: 'Pendente',
-      estimatedMinutes: 45,
-      exercises: [
-        { exerciseId: 'supino-reto', name: 'Supino reto', muscleGroup: 'Peito', sets: 4, reps: '8-12', restSeconds: 90, load: '40kg' },
-        { exerciseId: 'supino-inclinado', name: 'Supino inclinado', muscleGroup: 'Peito', sets: 3, reps: '10-12', restSeconds: 75, load: '14kg' },
-        { exerciseId: 'desenvolvimento', name: 'Desenvolvimento com halteres', muscleGroup: 'Ombros', sets: 3, reps: '8-12', restSeconds: 75, load: '12kg' },
-        { exerciseId: 'triceps-pulley', name: 'Tríceps na polia', muscleGroup: 'Tríceps', sets: 3, reps: '12-15', restSeconds: 60, load: '25kg' },
-      ],
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: 'default-2',
-      name: 'Pull — Costas e Bíceps',
-      date: format(2),
-      muscleGroups: ['Costas', 'Bíceps'],
-      status: 'Pendente',
-      estimatedMinutes: 50,
-      exercises: [
-        { exerciseId: 'puxada-frontal', name: 'Puxada frontal', muscleGroup: 'Costas', sets: 4, reps: '10-12', restSeconds: 75, load: '45kg' },
-        { exerciseId: 'remada-unilateral', name: 'Remada unilateral', muscleGroup: 'Costas', sets: 3, reps: '10-12', restSeconds: 60, load: '16kg' },
-        { exerciseId: 'rosca-direta', name: 'Rosca direta', muscleGroup: 'Bíceps', sets: 3, reps: '10-12', restSeconds: 60, load: '10kg' },
-      ],
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: 'default-3',
-      name: 'Legs — Pernas completas',
-      date: format(4),
-      muscleGroups: ['Quadríceps', 'Posterior', 'Glúteos'],
-      status: 'Pendente',
-      estimatedMinutes: 55,
-      exercises: [
-        { exerciseId: 'agachamento-goblet', name: 'Agachamento goblet', muscleGroup: 'Quadríceps', sets: 4, reps: '12-15', restSeconds: 75, load: '16kg' },
-        { exerciseId: 'cadeira-flexora', name: 'Cadeira flexora', muscleGroup: 'Posterior', sets: 3, reps: '12-15', restSeconds: 60, load: '35kg' },
-        { exerciseId: 'hip-thrust', name: 'Hip thrust', muscleGroup: 'Glúteos', sets: 4, reps: '10-12', restSeconds: 90, load: '60kg' },
-      ],
-      createdAt: new Date().toISOString(),
-    },
-  ]
 }
 
-function createDefaultHistory() {
-  const today = new Date()
-  const daysAgo = (n) => {
-    const d = new Date(today)
-    d.setDate(d.getDate() - n)
-    return d.toISOString()
+function stripDemoSeed(data) {
+  const next = { ...data }
+  let changed = false
+
+  if (Array.isArray(next.workouts)) {
+    const workouts = next.workouts.filter((w) => !DEMO_WORKOUT_IDS.has(w?.id))
+    if (workouts.length !== next.workouts.length) {
+      next.workouts = workouts
+      changed = true
+    }
+  } else {
+    next.workouts = []
+    changed = true
   }
 
-  return [
-    {
-      id: 'hist-1',
-      workoutId: 'hist-w1',
-      name: 'Full Body leve',
-      completedAt: daysAgo(3),
-      durationMinutes: 42,
-      exercises: [
-        { exerciseId: 'flexao', name: 'Flexão de braço', completedSets: 3, reps: '12', load: 'corporal' },
-        { exerciseId: 'agachamento-goblet', name: 'Agachamento goblet', completedSets: 3, reps: '15', load: '14kg' },
-        { exerciseId: 'prancha', name: 'Prancha abdominal', completedSets: 3, reps: '40s', load: '' },
-      ],
-    },
-    {
-      id: 'hist-2',
-      workoutId: 'hist-w2',
-      name: 'Superior A',
-      completedAt: daysAgo(6),
-      durationMinutes: 48,
-      exercises: [
-        { exerciseId: 'supino-reto', name: 'Supino reto', completedSets: 4, reps: '10', load: '38kg' },
-        { exerciseId: 'puxada-frontal', name: 'Puxada frontal', completedSets: 4, reps: '10', load: '42kg' },
-      ],
-    },
-  ]
+  if (Array.isArray(next.history)) {
+    const history = next.history.filter(
+      (h) => !DEMO_HISTORY_IDS.has(h?.id) && !DEMO_HISTORY_IDS.has(h?.workoutId),
+    )
+    if (history.length !== next.history.length) {
+      next.history = history
+      changed = true
+    }
+  } else {
+    next.history = []
+    changed = true
+  }
+
+  if (Array.isArray(next.goals)) {
+    const goals = next.goals.filter((g) => !DEMO_GOAL_IDS.has(g?.id))
+    if (goals.length !== next.goals.length) {
+      next.goals = goals
+      changed = true
+    }
+  } else {
+    next.goals = []
+    changed = true
+  }
+
+  const name = String(next.profile?.name || '').trim()
+  if (!name || name.toLowerCase() === 'atleta') {
+    next.profile = { ...defaultProfile, ...(next.profile || {}), name: name.toLowerCase() === 'atleta' ? '' : name }
+    if (name.toLowerCase() === 'atleta') changed = true
+  }
+
+  next.version = VERSION
+  return { data: next, changed }
 }
 
 function readLegacyJson(key, fallback) {
@@ -162,24 +103,6 @@ function readLegacyJson(key, fallback) {
     return JSON.parse(raw)
   } catch {
     return fallback
-  }
-}
-
-function getDefaultData() {
-  return {
-    version: VERSION,
-    profile: { ...defaultProfile },
-    workouts: createDefaultWorkouts(),
-    plans: [],
-    history: createDefaultHistory(),
-    goals: defaultGoals.map((g) => ({ ...g })),
-    progressHistory: [],
-    activeSession: null,
-    calendarMirror: [],
-    coachMessages: [],
-    preferences: {
-      coachTtsEnabled: true,
-    },
   }
 }
 
@@ -236,10 +159,10 @@ function migrateToV2(data) {
     ...getDefaultData(),
     ...data,
     profile: { ...defaultProfile, ...(data.profile || {}) },
-    workouts: Array.isArray(data.workouts) ? data.workouts : getDefaultData().workouts,
+    workouts: Array.isArray(data.workouts) ? data.workouts : [],
     plans: Array.isArray(data.plans) ? data.plans : [],
     history: Array.isArray(data.history) ? data.history : [],
-    goals: Array.isArray(data.goals) ? data.goals : getDefaultData().goals,
+    goals: Array.isArray(data.goals) ? data.goals : [],
     version: VERSION,
   }
 
@@ -307,20 +230,21 @@ export const storageService = {
     const raw = loadRaw()
     if (!raw) {
       const defaults = getDefaultData()
-      // First visit: still migrate any orphan legacy keys
-      const migrated = migrateToV2(defaults)
+      const migrated = stripDemoSeed(migrateToV2(defaults)).data
       saveRaw(migrated)
       syncLegacyMirrors(migrated)
       return migrated
     }
 
     const version = Number(raw.version) || 1
-    const migrated = version < 2 ? migrateToV2(raw) : migrateToV2(raw)
-    if (version < 2 || !Array.isArray(raw.progressHistory)) {
-      saveRaw(migrated)
-      syncLegacyMirrors(migrated)
+    const migrated = migrateToV2(raw)
+    const stripped = stripDemoSeed(migrated)
+    const next = stripped.data
+    if (version < 3 || stripped.changed || !Array.isArray(raw.progressHistory)) {
+      saveRaw(next)
+      syncLegacyMirrors(next)
     }
-    return migrated
+    return next
   },
 
   save(data) {
@@ -426,7 +350,7 @@ export const storageService = {
       reader.onload = (e) => {
         try {
           const parsed = JSON.parse(e.target.result)
-          const migrated = migrateToV2({ ...getDefaultData(), ...parsed })
+          const migrated = stripDemoSeed(migrateToV2({ ...getDefaultData(), ...parsed })).data
           this.save(migrated)
           resolve(migrated)
         } catch (err) {

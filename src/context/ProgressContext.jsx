@@ -125,7 +125,7 @@ export function ProgressProvider({ children }) {
   }, [authLoading, user?.id, refreshProgress, clearProgress])
 
   const historySig = useMemo(() => {
-    const completed = (sessionHistory || []).filter((s) => s.status === 'completed' || s.completedAt)
+    const completed = (sessionHistory || []).filter((s) => s.status === 'completed')
     return completed
       .slice(0, 12)
       .map((s) => s.id || s.completedAt || '')

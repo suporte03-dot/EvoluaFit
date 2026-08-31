@@ -1,4 +1,5 @@
-/** Small helpers for the SaaS home dashboard — real data only. */
+import { isCompletedSession } from '../../utils/completedSession'
+import { initialsFromDisplayName } from '../../utils/displayName'
 
 export function greetingParts(date = new Date()) {
   const hour = date.getHours()
@@ -7,13 +8,16 @@ export function greetingParts(date = new Date()) {
   return { hello: 'Boa noite', emoji: '🌙' }
 }
 
+export { initialsFromDisplayName as initialsFromName }
+
 /** Derive XP from completed sessions when no XP system exists. */
 export function deriveXpProgress({ history = [], workouts = [] } = {}) {
   const completedFromWorkouts = (workouts || []).filter((w) => {
     const s = String(w.status || '').toLowerCase()
     return s === 'realizado' || s === 'completed' || s === 'done'
   }).length
-  const sessions = Math.max(history?.length || 0, completedFromWorkouts)
+  const completedFromHistory = (history || []).filter((h) => isCompletedSession(h)).length
+  const sessions = Math.max(completedFromHistory, completedFromWorkouts)
   const xp = sessions * 40
   const levelFloor = Math.floor(xp / 200) + 1
   const intoLevel = xp % 200
@@ -40,6 +44,7 @@ export function weeklyActivitySeries(history = [], workouts = [], days = 7) {
 
   const done = new Set()
   ;(history || []).forEach((h) => {
+    if (!isCompletedSession(h)) return
     const k = String(h.completedAt || h.date || '').slice(0, 10)
     if (k) done.add(k)
   })
@@ -51,11 +56,4 @@ export function weeklyActivitySeries(history = [], workouts = [], days = 7) {
   })
 
   return keys.map((k) => (done.has(k) ? 1 : 0))
-}
-
-export function initialsFromName(name = 'Atleta') {
-  const parts = String(name).trim().split(/\s+/).filter(Boolean)
-  if (!parts.length) return 'A'
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
-  return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
 }

@@ -23,8 +23,8 @@ const SECTIONS = [
   },
   {
     kicker: 'Coach',
-    title: 'Um Coach que entende seu contexto.',
-    body: 'Antes de responder, ele mostra o que já sabe sobre seu treino.',
+    title: 'Um assistente da sua planilha.',
+    body: 'Antes de responder, ele mostra o que já sabe: plano, último treino e objetivo.',
   },
   {
     kicker: 'Privacidade',

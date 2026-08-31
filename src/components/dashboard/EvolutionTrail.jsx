@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { isCompletedSession } from '../../utils/completedSession'
 
 function toDateKey(value) {
   if (!value) return null
@@ -27,6 +28,7 @@ function lastNDays(n = 7) {
 function completedKeys(history = [], workouts = []) {
   const keys = new Set()
   history.forEach((h) => {
+    if (!isCompletedSession(h)) return
     const k = toDateKey(h.completedAt || h.date)
     if (k) keys.add(k)
   })
@@ -46,19 +48,20 @@ export function emotionalProgressCopy(metrics = {}) {
   const streak = metrics.streak
   const pct = metrics.monthlyPerformancePct
 
-  if (pct != null && pct > 0) {
-    return `Você está mais forte que no mês passado — volume ${pct > 0 ? '+' : ''}${pct}%.`
+  if (pct != null && metrics.progressHasData) {
+    const sign = pct > 0 ? '+' : ''
+    return `Volume deste mês: ${sign}${pct}% em relação ao mês anterior.`
   }
-  if (streak >= 3) {
-    return `Você manteve o ritmo por ${streak} dias. Isso é consistência de verdade.`
+  if (streak >= 1) {
+    return `Sequência atual: ${streak} ${streak === 1 ? 'dia' : 'dias'} com treino concluído.`
   }
-  if (goal && weekly != null && weekly >= goal) {
-    return 'Meta da semana fechada. Seu corpo já sentiu a diferença.'
+  if (goal && weekly != null) {
+    return `Nesta semana: ${weekly} de ${goal} treinos concluídos.`
   }
   if (weekly > 0) {
-    return `Você já treinou ${weekly} ${weekly === 1 ? 'vez' : 'vezes'} nesta semana. O próximo passo é o de hoje.`
+    return `Nesta semana: ${weekly} ${weekly === 1 ? 'treino concluído' : 'treinos concluídos'}.`
   }
-  return 'O primeiro treino da semana é o que muda o resto. Comece leve e termine bem.'
+  return 'Nenhum treino concluído nesta semana ainda.'
 }
 
 export default function EvolutionTrail({ history = [], workouts = [] }) {

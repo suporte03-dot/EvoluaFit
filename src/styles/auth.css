@@ -380,12 +380,20 @@
 
 .auth-split__cast {
   position: absolute;
-  inset: 0;
+  z-index: 1;
+  top: 40%;
+  right: -2%;
+  width: min(76%, 940px);
+  aspect-ratio: 1.28;
+  height: auto;
+  transform: translateY(-42%);
   overflow: hidden;
-  background: #05070c;
+  background: transparent;
+  -webkit-mask-image: radial-gradient(ellipse 92% 96% at 64% 50%, #000 32%, transparent 72%);
+  mask-image: radial-gradient(ellipse 92% 96% at 64% 50%, #000 32%, transparent 72%);
 }
 
-/* Placa só com os corpos — UI baked ficou no JPG original. */
+/* Casal como uma cena só, à direita da copy. */
 .login-hero-art {
   position: absolute;
   inset: 0;
@@ -393,31 +401,21 @@
   height: 100%;
   display: block;
   object-fit: cover;
-  object-position: 54% 38%;
+  object-position: 46% 30%;
   transform: none;
+  transform-origin: 50% 40%;
   pointer-events: none;
   user-select: none;
-}
-
-.auth-split__cast::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background:
-    linear-gradient(90deg, rgba(7, 10, 15, 0.42) 0%, rgba(7, 10, 15, 0.12) 26%, transparent 48%),
-    linear-gradient(180deg, rgba(7, 10, 15, 0.28) 0%, transparent 22%);
 }
 
 .auth-split__cast::after {
   content: '';
   position: absolute;
   inset: auto 0 0;
-  height: 48%;
+  height: 18%;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(180deg, transparent 0%, rgba(7, 10, 15, 0.5) 38%, rgba(7, 10, 15, 0.94) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(7, 10, 15, 0.4) 100%);
 }
 
 .auth-split__evolution {
@@ -465,8 +463,8 @@
   z-index: 3;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(7, 10, 15, 0.55) 0%, rgba(7, 10, 15, 0.18) 38%, transparent 58%),
-    linear-gradient(180deg, rgba(7, 10, 15, 0.35) 0%, transparent 22%);
+    linear-gradient(90deg, rgba(7, 10, 15, 0.72) 0%, rgba(7, 10, 15, 0.22) 24%, transparent 46%),
+    linear-gradient(180deg, rgba(7, 10, 15, 0.28) 0%, transparent 20%);
 }
 
 .auth-split__top {
@@ -930,6 +928,10 @@
     min-height: 0;
   }
 
+  .auth-split__cast {
+    width: min(76%, 620px);
+  }
+
   .auth-split__panel {
     min-height: 0;
     height: 100%;
@@ -975,6 +977,10 @@
 @media (min-width: 1024px) {
   .auth-split__main {
     grid-template-columns: minmax(0, 1fr) 540px;
+  }
+
+  .auth-split__cast {
+    width: min(68%, 800px);
   }
 
   .auth-split__panel {

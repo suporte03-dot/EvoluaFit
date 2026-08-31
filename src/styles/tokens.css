@@ -20,7 +20,7 @@
   --progress-positive: #b8f23a;
   --danger: #ff4d5d;
 
-  --gradient-brand: linear-gradient(135deg, #9aa6ff 0%, #7657ff 100%);
+  --gradient-brand: linear-gradient(135deg, #6bb0ff 0%, #6b68ff 48%, #8a52f5 100%);
 
   /* Compat aliases (legado → Performance Electric) */
   --app-bg: var(--bg-primary);

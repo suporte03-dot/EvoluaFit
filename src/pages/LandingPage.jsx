@@ -84,7 +84,7 @@ export default function LandingPage() {
       ))}
 
       <section className="landing-final">
-        <EvoluaFitMark size={56} />
+        <EvoluaFitMark size={56} withBackground />
         <h2 className="landing-final__title">
           Seu próximo treino pode ser o começo da sua melhor fase.
         </h2>

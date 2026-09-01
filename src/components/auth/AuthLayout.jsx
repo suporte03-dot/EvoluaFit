@@ -13,23 +13,21 @@ export default function AuthLayout({
   if (variant === 'split') {
     return (
       <div className="auth-split">
-        <div className="auth-split__main">
-          <LoginHero />
+        <LoginHero />
 
-          <div className="auth-split__panel">
-            <div className="auth-split__panel-inner auth-login-card">
-              <div className="auth-split__mobile-brand">
-                <EvoluaFitLogo size="medium" showWordmark />
-              </div>
-              {!hideHeading ? (
-                <header className="auth-card__heading">
-                  <h1>{title}</h1>
-                  {subtitle ? <p>{subtitle}</p> : null}
-                </header>
-              ) : null}
-              {children}
-              {footer ? <footer className="auth-card__footer">{footer}</footer> : null}
+        <div className="auth-split__panel">
+          <div className="auth-split__panel-inner auth-login-card">
+            <div className="auth-split__mobile-brand">
+              <EvoluaFitLogo size="medium" showWordmark />
             </div>
+            {!hideHeading ? (
+              <header className="auth-card__heading">
+                <h1>{title}</h1>
+                {subtitle ? <p>{subtitle}</p> : null}
+              </header>
+            ) : null}
+            {children}
+            {footer ? <footer className="auth-card__footer">{footer}</footer> : null}
           </div>
         </div>
         {below || null}

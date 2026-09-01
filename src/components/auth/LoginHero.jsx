@@ -45,67 +45,67 @@ function EvolveIcon() {
 export default function LoginHero() {
   return (
     <aside className="auth-split__visual" aria-label="EvoluaFit">
-      <div className="auth-split__stage">
-        <div className="auth-split__cast">
-          <img
-            className="login-hero-art"
-            src="/branding/evoluafit-login-cast.jpg?v=login-layout-2"
-            alt=""
-            decoding="async"
-            fetchPriority="high"
-          />
+      <div className="auth-split__brand">
+        <EvoluaFitLogo size="small" showWordmark className="auth-split__logo" />
+        <div className="auth-split__hero">
+          <h2>
+            Evolua além do <span className="auth-gradient-text">treino.</span>
+          </h2>
+          <p>Treine com propósito, acompanhe sua evolução e saiba exatamente qual é o próximo passo.</p>
         </div>
-        <div className="auth-split__scrim" />
-
-        <div className="auth-split__top">
-          <EvoluaFitLogo size="small" showWordmark className="auth-split__logo" />
-          <div className="auth-split__hero">
-            <h2>
-              Evolua além <span className="auth-gradient-text">do treino.</span>
-            </h2>
-            <p>Treine com propósito, acompanhe sua evolução e saiba exatamente qual é o próximo passo.</p>
-          </div>
-          <ul className="auth-split__features">
-            <li>
-              <span className="auth-split__feature-icon">
-                <TargetIcon />
-              </span>
-              Treine com propósito
-            </li>
-            <li>
-              <span className="auth-split__feature-icon">
-                <ChartIcon />
-              </span>
-              Acompanhe sua evolução
-            </li>
-            <li>
-              <span className="auth-split__feature-icon">
-                <EvolveIcon />
-              </span>
-              Evolua sem limites
-            </li>
-          </ul>
-        </div>
-
-        <div className="auth-split__bottom">
-          <div className="auth-split__privacy">
-            <span className="auth-split__privacy-icon">
-              <ShieldIcon />
+        <ul className="auth-split__features">
+          <li>
+            <span className="auth-split__feature-icon">
+              <TargetIcon />
             </span>
-            <div>
-              <strong>Ambiente seguro</strong>
-              <p>
-                Seus dados estão <em>protegidos</em>
-              </p>
-            </div>
+            <span className="auth-split__feature-copy">
+              <strong>Treine</strong>
+              <span>com propósito</span>
+            </span>
+          </li>
+          <li>
+            <span className="auth-split__feature-icon">
+              <ChartIcon />
+            </span>
+            <span className="auth-split__feature-copy">
+              <strong>Acompanhe</strong>
+              <span>sua evolução</span>
+            </span>
+          </li>
+          <li>
+            <span className="auth-split__feature-icon">
+              <EvolveIcon />
+            </span>
+            <span className="auth-split__feature-copy">
+              <strong>Evolua</strong>
+              <span>sem limites</span>
+            </span>
+          </li>
+        </ul>
+        <div className="auth-split__privacy">
+          <span className="auth-split__privacy-icon">
+            <ShieldIcon />
+          </span>
+          <div>
+            <strong>Ambiente seguro</strong>
+            <p>Seus dados estão protegidos</p>
           </div>
-
-          <ol className="auth-split__steps" aria-hidden="true">
-            <li>Treine</li>
-            <li>Acompanhe</li>
-            <li className="is-active">Evolua</li>
-          </ol>
         </div>
+      </div>
+
+      <div className="auth-split__cast">
+        <img
+          className="login-hero-art"
+          src="/branding/evoluafit-login-athletes.png?v=fullbody-1"
+          alt=""
+          decoding="async"
+          fetchPriority="high"
+        />
+        <ol className="auth-split__steps" aria-hidden="true">
+          <li>Treine</li>
+          <li>Acompanhe</li>
+          <li className="is-active">Evolua</li>
+        </ol>
       </div>
     </aside>
   )

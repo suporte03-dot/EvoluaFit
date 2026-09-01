@@ -49,7 +49,7 @@ export default function LoginHero() {
         <div className="auth-split__cast">
           <img
             className="login-hero-art"
-            src="/branding/evoluafit-login-hero-approved.jpg?v=mockup-login-1"
+            src="/branding/evoluafit-login-cast.jpg?v=login-layout-2"
             alt=""
             decoding="async"
             fetchPriority="high"

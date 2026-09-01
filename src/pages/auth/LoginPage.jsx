@@ -12,6 +12,15 @@ function IconMail({ size = 18 }) {
   )
 }
 
+function IconLock({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="5" y="11" width="14" height="10" rx="2.2" stroke="currentColor" strokeWidth="1.75" />
+      <path d="M8 11V8.4a4 4 0 0 1 8 0V11" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 function IconEye({ size = 18, off = false }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -64,12 +73,16 @@ export default function LoginPage() {
     <AuthLayout variant="split" hideHeading>
       <header className="auth-card__heading auth-card__heading--login">
         <h1>Entrar na sua conta</h1>
+        <p>Bem-vindo de volta!</p>
       </header>
 
       <form className="auth-form auth-form--login" onSubmit={handleSubmit} noValidate>
         <label className="form-field form-field--sr-only-label">
           <span className="visually-hidden">E-mail</span>
-          <div className="auth-input auth-input--trailing">
+          <div className="auth-input auth-input--leading">
+            <span className="auth-input__icon auth-input__icon--leading" aria-hidden="true">
+              <IconMail />
+            </span>
             <input
               type="email"
               autoComplete="email"
@@ -79,15 +92,15 @@ export default function LoginPage() {
               aria-required="true"
               placeholder="seu@email.com"
             />
-            <span className="auth-input__icon auth-input__icon--trailing" aria-hidden="true">
-              <IconMail />
-            </span>
           </div>
         </label>
 
         <label className="form-field form-field--sr-only-label">
           <span className="visually-hidden">Senha</span>
-          <div className="auth-input auth-input--trailing auth-input--password">
+          <div className="auth-input auth-input--leading auth-input--password">
+            <span className="auth-input__icon auth-input__icon--leading" aria-hidden="true">
+              <IconLock />
+            </span>
             <input
               type={showPassword ? 'text' : 'password'}
               autoComplete="current-password"
@@ -96,7 +109,7 @@ export default function LoginPage() {
               required
               minLength={8}
               aria-required="true"
-              placeholder="••••••••"
+              placeholder="Sua senha"
             />
             <button
               type="button"
@@ -146,6 +159,11 @@ export default function LoginPage() {
       <Link to="/cadastro" className="auth-btn-secondary">
         Criar nova conta
       </Link>
+
+      <p className="auth-card__crypto">
+        <IconLock size={13} />
+        Seus dados protegidos com criptografia
+      </p>
     </AuthLayout>
   )
 }

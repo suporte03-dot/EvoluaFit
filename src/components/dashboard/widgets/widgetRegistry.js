@@ -25,6 +25,7 @@ export const WIDGET_REGISTRY = [
     defaultSize: 'large',
     supportedSizes: ['medium', 'large'],
     locked: true,
+    presentation: 'hero',
     Component: TodayWorkoutWidget,
   },
   {
@@ -33,6 +34,7 @@ export const WIDGET_REGISTRY = [
     category: 'hoje',
     defaultSize: 'small',
     supportedSizes: ['small', 'medium'],
+    presentation: 'card',
     Component: WeeklyGoalWidget,
   },
   {
@@ -41,6 +43,7 @@ export const WIDGET_REGISTRY = [
     category: 'hoje',
     defaultSize: 'small',
     supportedSizes: ['small', 'medium'],
+    presentation: 'signal',
     Component: StreakWidget,
   },
   {
@@ -49,8 +52,9 @@ export const WIDGET_REGISTRY = [
     category: 'evolucao',
     defaultSize: 'small',
     supportedSizes: ['small', 'medium'],
+    presentation: 'signal',
     Component: EvoluaScoreCard,
-    mapProps: (ctx) => ({ score: ctx.score }),
+    mapProps: (ctx) => ({ score: ctx.score, volumeDelta: ctx.volumeDelta }),
   },
   {
     id: 'weekly-volume',
@@ -58,6 +62,7 @@ export const WIDGET_REGISTRY = [
     category: 'evolucao',
     defaultSize: 'small',
     supportedSizes: ['small', 'medium'],
+    presentation: 'card',
     Component: WeeklyVolumeWidget,
   },
   {
@@ -66,6 +71,7 @@ export const WIDGET_REGISTRY = [
     category: 'coach',
     defaultSize: 'medium',
     supportedSizes: ['medium', 'large'],
+    presentation: 'signal',
     Component: CoachInsightCard,
     mapProps: (ctx) => ({ insights: ctx.insights }),
   },
@@ -75,6 +81,7 @@ export const WIDGET_REGISTRY = [
     category: 'treino',
     defaultSize: 'medium',
     supportedSizes: ['medium', 'large'],
+    presentation: 'card',
     Component: AdaptiveWeekNudge,
     mapProps: (ctx) => ({ missed: ctx.missed, onReorganize: ctx.onReorganize, allowEmpty: true }),
   },
@@ -84,6 +91,7 @@ export const WIDGET_REGISTRY = [
     category: 'metas',
     defaultSize: 'medium',
     supportedSizes: ['small', 'medium'],
+    presentation: 'card',
     Component: ChallengeCard,
     mapProps: (ctx) => ({ challenge: ctx.challenge }),
   },
@@ -93,6 +101,7 @@ export const WIDGET_REGISTRY = [
     category: 'metas',
     defaultSize: 'medium',
     supportedSizes: ['small', 'medium'],
+    presentation: 'card',
     Component: AchievementsWidget,
   },
 ]

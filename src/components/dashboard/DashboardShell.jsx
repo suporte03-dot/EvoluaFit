@@ -120,11 +120,8 @@ export default function DashboardShell() {
   )
 
   const volumeDelta = useMemo(
-    () =>
-      pinned.has('weekly-volume') || pinned.has('coach-insight')
-        ? getWeeklyVolumeDelta({ history, summaries })
-        : null,
-    [pinned, history, summaries],
+    () => getWeeklyVolumeDelta({ history, summaries }),
+    [history, summaries],
   )
   const score = useMemo(
     () => (pinned.has('evolua-score') ? computeEvoluaScore(metrics) : null),

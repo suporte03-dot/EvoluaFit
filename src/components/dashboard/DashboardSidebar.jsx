@@ -24,38 +24,38 @@ const NAV_GROUPS = [
   {
     id: 'hoje',
     label: 'Hoje',
-    items: [{ id: 'inicio', label: 'Agora', Icon: IconHome, tone: 'orange' }],
+    items: [{ id: 'inicio', label: 'Agora', Icon: IconHome, tone: 'quiet' }],
   },
   {
     id: 'treinar',
     label: 'Treinar',
     items: [
-      { id: 'treinos', label: 'Meus treinos', Icon: IconDumbbell, tone: 'orange' },
-      { id: 'planilha', label: 'Planilha', Icon: IconPanel, tone: 'orange' },
-      { id: 'exercicios', label: 'Biblioteca', Icon: IconLibrary, tone: 'orange' },
+      { id: 'treinos', label: 'Meus treinos', Icon: IconDumbbell, tone: 'quiet' },
+      { id: 'planilha', label: 'Planilha', Icon: IconPanel, tone: 'quiet' },
+      { id: 'exercicios', label: 'Biblioteca', Icon: IconLibrary, tone: 'quiet' },
     ],
   },
   {
     id: 'evolucao',
     label: 'Evolução',
     items: [
-      { id: 'desempenho', label: 'Indicadores', Icon: IconTrend, tone: 'orange' },
-      { id: 'metas', label: 'Metas', Icon: IconChart, tone: 'orange' },
-      { id: 'espelho', label: 'Espelho Evolutivo', Icon: IconMirror, tone: 'orange', to: '/app/evolucao/espelho' },
+      { id: 'desempenho', label: 'Indicadores', Icon: IconTrend, tone: 'quiet' },
+      { id: 'metas', label: 'Metas', Icon: IconChart, tone: 'quiet' },
+      { id: 'espelho', label: 'Espelho Evolutivo', Icon: IconMirror, tone: 'quiet', to: '/app/evolucao/espelho' },
     ],
   },
   {
     id: 'coach',
     label: 'Coach',
-    items: [{ id: 'coach-ia', label: 'Coach', Icon: IconSpark, tone: 'orange' }],
+    items: [{ id: 'coach-ia', label: 'Coach', Icon: IconSpark, tone: 'quiet' }],
   },
   {
     id: 'perfil',
     label: 'Perfil',
     items: [
-      { id: 'calendario', label: 'Agenda', Icon: IconCalendar, tone: 'orange' },
-      { id: 'perfil', label: 'Conta', Icon: IconSettings, tone: 'orange', to: '/app/perfil' },
-      { id: 'ajuda', label: 'Ajuda', Icon: IconSpark, tone: 'orange' },
+      { id: 'calendario', label: 'Agenda', Icon: IconCalendar, tone: 'quiet' },
+      { id: 'perfil', label: 'Conta', Icon: IconSettings, tone: 'quiet', to: '/app/perfil' },
+      { id: 'ajuda', label: 'Ajuda', Icon: IconSpark, tone: 'quiet' },
     ],
   },
 ]
@@ -91,8 +91,6 @@ export default function DashboardSidebar({
   const levelLabel = xp.levelName || 'Começando'
   const trainingLevel = profile?.level ? `Treino: ${profile.level}` : null
   const initials = loadingProfile ? '··' : initialsFromName(accountLabel)
-  const xpCeiling = xp.nextName ? xp.xp - xp.intoLevel + xp.nextLevelAt : xp.xp
-  const xpLabel = `${xp.xp.toLocaleString('pt-BR')} / ${xpCeiling.toLocaleString('pt-BR')} XP`
   const onDedicatedRoute =
     location.pathname.startsWith('/app/perfil') || location.pathname.startsWith('/app/evolucao')
 
@@ -181,7 +179,7 @@ export default function DashboardSidebar({
         <nav className="dash-sidebar__nav" aria-label="Navegação">
           {NAV_GROUPS.map((group) => (
             <div key={group.id} className="dash-sidebar__group">
-              <p className="dash-sidebar__group-label">{collapsed ? '·' : group.label}</p>
+              <p className="dash-sidebar__group-label">{group.label}</p>
               <ul className="dash-sidebar__list">
                 {group.items.map((item) => {
                   const Icon = item.Icon
@@ -239,17 +237,6 @@ export default function DashboardSidebar({
                     {trainingLevel ? <small className="dash-sidebar__xp-label">{trainingLevel}</small> : null}
                   </>
                 )}
-                <div
-                  className="dash-sidebar__xp"
-                  role="progressbar"
-                  aria-valuenow={xp.intoLevel}
-                  aria-valuemin={0}
-                  aria-valuemax={xp.nextLevelAt}
-                  aria-label="Progresso de XP"
-                >
-                  <div className="dash-sidebar__xp-fill" style={{ width: `${xp.pct}%` }} />
-                </div>
-                <small className="dash-sidebar__xp-label">{xpLabel}</small>
               </div>
             )}
           </button>

@@ -22,6 +22,7 @@
   --warning: #e8b84a;
 
   --gradient-brand: linear-gradient(135deg, #6bb0ff 0%, #6b68ff 48%, #8a52f5 100%);
+  --evolua-pulse: linear-gradient(90deg, #4da3ff 0%, #7657ff 48%, #8a52f5 100%);
 
   /* Compat aliases (legado → Performance Electric) */
   --app-bg: var(--bg-primary);

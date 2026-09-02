@@ -71,7 +71,7 @@ function AppLayout() {
   useSectionHash(sectionIds)
   const { toasts, history, workouts } = useFitness()
   const { page, id: exerciseId } = useHashRoute()
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const isProfileRoute = location.pathname.startsWith('/app/perfil')
   const isMirrorRoute = location.pathname.startsWith('/app/evolucao')
@@ -105,7 +105,7 @@ function AppLayout() {
           activeSection={shellSection}
           history={history}
           workouts={workouts}
-          collapsed={sidebarCollapsed}
+          collapsed={sidebarCollapsed && !mobileMenuOpen}
           onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
           mobileOpen={mobileMenuOpen}
           onCloseMobile={() => setMobileMenuOpen(false)}

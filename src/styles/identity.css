@@ -905,3 +905,264 @@
     width: min(100% - 2rem, 1120px);
   }
 }
+
+/* ----- Área de Foco ----- */
+.focus-chrome {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.35rem;
+}
+
+.focus-chrome__edit {
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 999px;
+  min-height: 36px;
+  padding: 0.35rem 0.85rem;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 650;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.focus-chrome__edit:hover,
+.focus-chrome__edit:focus-visible {
+  color: var(--text-primary);
+  border-color: var(--primary-border, rgba(118, 87, 255, 0.4));
+}
+
+.focus-customize {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.focus-customize p {
+  margin: 0.15rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+}
+
+.focus-customize__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.focus-customize__actions button {
+  min-height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 650;
+  cursor: pointer;
+  padding: 0 0.75rem;
+}
+
+.focus-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.focus-cell {
+  grid-column: span 6;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-primary);
+  padding: 1.05rem 1.15rem 1.15rem;
+  min-width: 0;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.focus-cell--small { grid-column: span 4; }
+.focus-cell--medium { grid-column: span 6; }
+.focus-cell--large { grid-column: span 12; }
+
+.focus-cell.is-editing {
+  cursor: grab;
+  border-color: rgba(118, 87, 255, 0.35);
+}
+
+.focus-cell.is-dragging {
+  cursor: grabbing;
+  opacity: 0.92;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  transform: scale(1.02);
+}
+
+.focus-cell__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: -0.2rem 0 0.65rem;
+}
+
+.focus-cell__toolbar button,
+.focus-cell__handle {
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 8px;
+  min-width: 32px;
+  min-height: 32px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.focus-cell__handle {
+  letter-spacing: -0.12em;
+  cursor: grab;
+}
+
+.focus-cell__lock {
+  margin-left: auto;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.focus-today__title {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-heading);
+  font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+  letter-spacing: -0.03em;
+}
+
+.focus-cell .evolua-score {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  min-height: 0;
+}
+
+.focus-library {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 40;
+  width: min(360px, 100%);
+  height: 100vh;
+  overflow: auto;
+  padding: 1.2rem 1.15rem 2rem;
+  background: rgba(8, 10, 16, 0.96);
+  border-left: 1px solid var(--border-subtle);
+  backdrop-filter: blur(16px);
+}
+
+.focus-library__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.focus-library h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.focus-library h3 {
+  margin: 1rem 0 0.4rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.focus-library ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.focus-library button {
+  width: 100%;
+  text-align: left;
+  min-height: 42px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  cursor: pointer;
+  padding: 0.45rem 0.75rem;
+}
+
+.focus-library__close {
+  width: auto !important;
+}
+
+.focus-hint {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.focus-hint__card {
+  padding: 1.1rem 1.2rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(118, 87, 255, 0.28);
+  background: var(--surface-secondary);
+}
+
+.focus-hint__card h2 {
+  margin: 0 0 0.4rem;
+}
+
+.focus-hint__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+}
+
+.focus-empty {
+  margin-top: 0.5rem;
+  padding: 1.2rem;
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.focus-empty h3 {
+  margin: 0 0 0.35rem;
+}
+
+@media (max-width: 767px) {
+  .focus-chrome {
+    flex-direction: column;
+  }
+
+  .focus-cell,
+  .focus-cell--small,
+  .focus-cell--medium,
+  .focus-cell--large {
+    grid-column: span 12;
+  }
+
+  .focus-library {
+    width: 100%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .focus-cell--small,
+  .focus-cell--medium {
+    grid-column: span 6;
+  }
+}

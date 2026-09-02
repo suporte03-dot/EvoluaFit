@@ -309,16 +309,18 @@ export default function WorkoutPlanner() {
         />
 
         {missed.count > 0 ? (
-          <AdaptiveWeekNudge
-            missed={missed}
-            onReorganize={() => {
-              missed.moves.forEach((move) => {
-                if (move.id && move.toDate) updateWorkout(move.id, { date: move.toDate })
-              })
-              showToast('Semana reorganizada para os dias que restam.')
-            }}
-            compact
-          />
+          <div className="hoje-card">
+            <AdaptiveWeekNudge
+              missed={missed}
+              onReorganize={() => {
+                missed.moves.forEach((move) => {
+                  if (move.id && move.toDate) updateWorkout(move.id, { date: move.toDate })
+                })
+                showToast('Semana reorganizada para os dias que restam.')
+              }}
+              compact
+            />
+          </div>
         ) : null}
 
         <div className="planner-sync" role="status" aria-live="polite">

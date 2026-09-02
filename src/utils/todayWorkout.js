@@ -162,6 +162,22 @@ export function weeklyProgressSentence(progress) {
   return 'Sua semana ainda está em branco — o primeiro treino acende a trilha.'
 }
 
+export function weeklyGoalPathSentence(progress) {
+  const { completedCount = 0, weeklyGoal } = progress || {}
+  if (!(weeklyGoal > 0)) return null
+  const remaining = Math.max(0, weeklyGoal - completedCount)
+  if (remaining === 0 && completedCount > 0) {
+    return 'Você atingiu a meta desta semana.'
+  }
+  if (remaining === 1) {
+    return 'Falta 1 treino para completar sua meta semanal.'
+  }
+  if (completedCount > 0) {
+    return 'Você está no caminho certo para atingir sua meta desta semana.'
+  }
+  return `Meta desta semana: ${weeklyGoal} ${weeklyGoal === 1 ? 'treino' : 'treinos'}.`
+}
+
 export function situationCopy(situation, { daysSinceLast, nextWorkout } = {}) {
   switch (situation) {
     case 'no_plan':

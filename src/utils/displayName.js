@@ -11,7 +11,8 @@ export function resolveDisplayName({ cloudName, localName, metaName } = {}) {
 }
 
 export function greetingLine(hello, name) {
-  return name ? `${hello}, ${name}` : hello
+  const head = name ? `${hello}, ${name}` : hello
+  return `${head}. Hoje é dia de evoluir.`
 }
 
 export function initialsFromDisplayName(name) {

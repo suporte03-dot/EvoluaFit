@@ -647,7 +647,235 @@
   max-width: 100%;
 }
 
-/* ----- Mobile ----- */
+.dash-hero__path {
+  margin: 0 0 0.55rem;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  color: rgba(226, 232, 240, 0.88);
+}
+
+.dash-hero__volume {
+  margin: 0.15rem 0 0;
+  font-size: 0.76rem;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.evolua-score__band {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: var(--brand-secondary, #7657ff);
+}
+
+.evolua-score__dims {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem 0.75rem;
+  margin: 0;
+  padding: 0;
+}
+
+.evolua-score__dims li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  text-transform: capitalize;
+}
+
+.hoje-card {
+  padding: 1.1rem 1.2rem 1.2rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-primary);
+}
+
+.hoje-card__kicker {
+  margin: 0 0 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brand-secondary, #7657ff);
+}
+
+.hoje-card__title {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  letter-spacing: -0.03em;
+}
+
+.hoje-card__body,
+.hoje-card__note {
+  margin: 0 0 0.75rem;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.hoje-card__note {
+  margin-bottom: 0.55rem;
+  font-size: 0.78rem;
+}
+
+.hoje-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin: 0;
+}
+
+.hoje-stats div {
+  min-width: 0;
+}
+
+.hoje-stats dt {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.hoje-stats dd {
+  margin: 0.15rem 0 0;
+  font-weight: 750;
+}
+
+.hoje-insights {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.hoje-insights__title {
+  margin: 0 0 0.2rem;
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.hoje-insights__evidence {
+  margin: 0 0 0.4rem;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.hoje-insights button,
+.hoje-feed button,
+.hoje-adaptive__actions .dash-hero__more {
+  border: none;
+  background: transparent;
+  color: var(--brand-secondary, #7657ff);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
+.hoje-xp {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(248, 250, 252, 0.08);
+  overflow: hidden;
+  margin-bottom: 0.55rem;
+}
+
+.hoje-xp > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--energy, #b8f23a);
+}
+
+.hoje-achievements {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hoje-achievements li {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.28rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--primary-border, rgba(118, 87, 255, 0.35));
+  color: var(--text-primary);
+}
+
+.hoje-feed {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.hoje-feed li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.hoje-feed__title {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.hoje-feed__meta {
+  margin: 0.15rem 0 0;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+.hoje-feed button {
+  min-height: 36px;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+.hoje-feed button.is-on {
+  border-color: var(--energy, #b8f23a);
+  color: var(--energy, #b8f23a);
+}
+
+.hoje-adaptive {
+  margin-bottom: 0.25rem;
+}
+
+.hoje-adaptive__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hoje-adaptive--compact {
+  margin: 0 0 1.1rem;
+}
+
+@media (min-width: 768px) {
+  .dash-hoje-grid--intel {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .hoje-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+}
 @media (max-width: 480px) {
   .dash-hoje-links {
     flex-direction: column;

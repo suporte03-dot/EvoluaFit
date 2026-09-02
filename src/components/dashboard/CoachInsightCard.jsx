@@ -1,32 +1,20 @@
 import { scrollToSection } from '../../utils/scrollToSection'
 
 export default function CoachInsightCard({ insights }) {
-  const items = insights?.items || []
+  const item = insights?.items?.[0]
+  const body = item?.evidence || 'Conclua um treino para o Coach falar com números reais.'
 
   return (
-    <div className="focus-widget-body" aria-label="Insights da semana">
-      <p className="hoje-card__kicker">Coach</p>
-      <h3 className="hoje-card__title">Insight do Coach</h3>
-      {items.length ? (
-        <>
-          {insights.fallbackNote ? <p className="hoje-card__note">{insights.fallbackNote}</p> : null}
-          <ul className="hoje-insights">
-            {items.map((item) => (
-              <li key={item.id}>
-                <p className="hoje-insights__title">{item.title}</p>
-                <p className="hoje-insights__evidence">{item.evidence}</p>
-                {item.ctaSection ? (
-                  <button type="button" onClick={() => scrollToSection(item.ctaSection)}>
-                    {item.ctaLabel || 'Ver'}
-                  </button>
-                ) : null}
-              </li>
-            ))}
-          </ul>
-        </>
-      ) : (
-        <p className="hoje-card__body">Conclua um treino para o insight aparecer com números reais.</p>
-      )}
+    <div className="coach-whisper" aria-label="Coach Evolua">
+      <p className="coach-whisper__kicker">Coach Evolua</p>
+      <p className="coach-whisper__line">“{body}”</p>
+      <button
+        type="button"
+        className="coach-whisper__cta"
+        onClick={() => scrollToSection(item?.ctaSection || 'coach-ia')}
+      >
+        {item?.ctaLabel || 'Ver análise'}
+      </button>
     </div>
   )
 }

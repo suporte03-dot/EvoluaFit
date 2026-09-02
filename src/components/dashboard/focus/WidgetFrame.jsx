@@ -8,6 +8,7 @@ const SIZE_LABEL = { small: 'S', medium: 'M', large: 'L' }
 export default function WidgetFrame({
   id,
   size,
+  variant = 'card',
   customizing,
   children,
   onUnpin,
@@ -36,7 +37,7 @@ export default function WidgetFrame({
     <article
       ref={sortable.setNodeRef}
       style={style}
-      className={`focus-cell focus-cell--${size}${customizing ? ' is-editing' : ''}${
+      className={`focus-cell focus-cell--${size} focus-cell--${variant}${customizing ? ' is-editing' : ''}${
         sortable.isDragging ? ' is-dragging' : ''
       }`}
       aria-label={def?.title || id}

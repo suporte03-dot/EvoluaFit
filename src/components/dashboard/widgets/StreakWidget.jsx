@@ -1,60 +1,60 @@
-import { weeklyActivitySeries } from '../dashboardUtils'
+import { useMemo } from 'react'
+import { isCompletedSession } from '../../../utils/completedSession'
 import { metricAvailability } from '../../../utils/dashboardMetrics'
 import { IconFlame } from '../icons'
 
-function Sparkline({ series }) {
-  const w = 148
-  const h = 36
-  const max = Math.max(1, ...series)
-  const step = series.length > 1 ? w / (series.length - 1) : w
-  const pts = series.map((v, i) => {
-    const x = i * step
-    const y = h - (v / max) * (h - 8) - 4
-    return [x, y]
-  })
-  const line = pts.map(([x, y]) => `${x},${y}`).join(' ')
-  const area = `M ${pts[0][0]},${h} ${pts.map(([x, y]) => `L ${x},${y}`).join(' ')} L ${pts[pts.length - 1][0]},${h} Z`
-  const hasActivity = series.some((v) => v > 0)
+function lastNDays(n = 7) {
+  const days = []
+  const now = new Date()
+  now.setHours(12, 0, 0, 0)
+  for (let i = n - 1; i >= 0; i -= 1) {
+    const d = new Date(now)
+    d.setDate(now.getDate() - i)
+    days.push({
+      key: d.toISOString().slice(0, 10),
+      label: d.toLocaleDateString('pt-BR', { weekday: 'narrow' }),
+      isToday: i === 0,
+    })
+  }
+  return days
+}
 
-  return (
-    <svg viewBox={`0 0 ${w} ${h}`} width="100%" height={h} aria-hidden="true">
-      <defs>
-        <linearGradient id="streakSpark" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#7657ff" stopOpacity="0.5" />
-          <stop offset="100%" stopColor="#7657ff" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      {hasActivity && <path d={area} fill="url(#streakSpark)" />}
-      <polyline
-        fill="none"
-        stroke="#7657ff"
-        strokeWidth="2.2"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-        points={line}
-        opacity={hasActivity ? 1 : 0.35}
-      />
-    </svg>
-  )
+function completedKeys(history = [], workouts = []) {
+  const keys = new Set()
+  history.forEach((h) => {
+    if (!isCompletedSession(h)) return
+    const k = String(h.completedAt || h.date || '').slice(0, 10)
+    if (k) keys.add(k)
+  })
+  workouts.forEach((w) => {
+    const s = String(w.status || '').toLowerCase()
+    if (s !== 'realizado' && s !== 'completed' && s !== 'done') return
+    const k = String(w.completedAt || w.date || '').slice(0, 10)
+    if (k) keys.add(k)
+  })
+  return keys
 }
 
 export default function StreakWidget({ metrics, history, workouts }) {
   const ready = metricAvailability('streak', metrics)
-  const days = ready ? metrics.streak : null
-  const series = weeklyActivitySeries(history, workouts, 7)
+  const days = ready ? metrics.streak : 0
+  const week = lastNDays(7)
+  const done = useMemo(() => completedKeys(history, workouts), [history, workouts])
 
   return (
-    <div className="focus-widget-body">
-      <p className="hoje-card__kicker">Hoje</p>
-      <h3 className="hoje-card__title">
-        {ready ? `${days} ${days === 1 ? 'dia' : 'dias'} evoluindo` : 'Sequência'}
-      </h3>
-      <p className="hoje-card__body">
-        {ready
-          ? 'Dias com treino concluído. Sem punição — o importante é voltar.'
-          : 'Complete um treino hoje para registrar o primeiro dia.'}
+    <div className="streak-sig">
+      <p className="streak-sig__title">
+        <IconFlame size={16} />
+        {ready ? `${days} ${days === 1 ? 'dia' : 'dias'} evoluindo` : 'Comece a sequência'}
       </p>
-      <Sparkline series={series} />
+      <ol className="streak-sig__week" aria-label="Dias da semana">
+        {week.map((day) => (
+          <li key={day.key} className={done.has(day.key) ? 'is-on' : day.isToday ? 'is-today' : ''}>
+            <span>{day.label}</span>
+            <i aria-hidden="true" />
+          </li>
+        ))}
+      </ol>
     </div>
   )
 }

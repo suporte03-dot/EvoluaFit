@@ -1,14 +1,14 @@
-export const LAYOUT_VERSION = 1
+export const LAYOUT_VERSION = 2
 export const LOCKED_WIDGET_ID = 'today-workout'
 
 export const DEFAULT_PINNED = [
   { id: 'today-workout', size: 'large' },
-  { id: 'weekly-goal', size: 'small' },
+  { id: 'streak', size: 'small' },
   { id: 'evolua-score', size: 'small' },
   { id: 'coach-insight', size: 'medium' },
 ]
 
-export const DEFAULT_LIBRARY = ['streak', 'weekly-volume', 'adaptive-week', 'challenge', 'achievements']
+export const DEFAULT_LIBRARY = ['weekly-goal', 'weekly-volume', 'adaptive-week', 'challenge', 'achievements']
 
 export function createDefaultLayout() {
   return {
@@ -51,11 +51,11 @@ const PRESETS = {
     presetId: 'consistencia',
     pinned: [
       { id: 'today-workout', size: 'large' },
-      { id: 'weekly-goal', size: 'small' },
       { id: 'streak', size: 'small' },
+      { id: 'evolua-score', size: 'small' },
       { id: 'challenge', size: 'medium' },
     ],
-    library: ['evolua-score', 'weekly-volume', 'adaptive-week', 'coach-insight', 'achievements'],
+    library: ['weekly-goal', 'weekly-volume', 'adaptive-week', 'coach-insight', 'achievements'],
   }),
 }
 
@@ -79,8 +79,12 @@ export function normalizeSize(size, supported = ['small', 'medium', 'large']) {
 }
 
 export function normalizeLayout(raw, registryIds = []) {
-  const base = createDefaultLayout()
   const input = raw && typeof raw === 'object' ? raw : {}
+  if ((Number(input.version) || 1) < 2 && (input.presetId === 'default' || !input.presetId)) {
+    return createDefaultLayout()
+  }
+
+  const base = createDefaultLayout()
   const known = new Set(registryIds.length ? registryIds : [
     ...DEFAULT_PINNED.map((p) => p.id),
     ...DEFAULT_LIBRARY,

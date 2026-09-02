@@ -6,6 +6,8 @@ import { exportWorkoutToExcel } from '../utils/exportWorkoutToExcel'
 import SectionTitle from './SectionTitle'
 import GeneratedPlan from './GeneratedPlan'
 import PremiumSelect from './PremiumSelect'
+import AdaptiveWeekNudge from './dashboard/AdaptiveWeekNudge'
+import { detectMissedWorkouts } from '../utils/adaptiveWeek'
 
 const PLANNER_DRAFT_KEY = 'evoluafit-planner-draft'
 
@@ -56,7 +58,7 @@ const STEPS = [
 ]
 
 export default function WorkoutPlanner() {
-  const { profile, savePlan, addPlanWorkouts, showToast, generatedPlan, workouts } = useFitness()
+  const { profile, savePlan, addPlanWorkouts, showToast, generatedPlan, workouts, updateWorkout } = useFitness()
   const {
     loadingWorkoutPlan,
     workoutPlanError,
@@ -84,6 +86,7 @@ export default function WorkoutPlanner() {
   const [step, setStep] = useState(() => Math.min(5, Math.max(1, draft?.step || 1)))
   const [generating, setGenerating] = useState(false)
   const [justGenerated, setJustGenerated] = useState(false)
+  const missed = useMemo(() => detectMissedWorkouts(workouts), [workouts])
 
 
   useEffect(() => {
@@ -304,6 +307,19 @@ export default function WorkoutPlanner() {
           title="Monte sua planilha ideal"
           subtitle="Siga as etapas e gere um plano equilibrado para a sua rotina. Seu progresso no formulário é salvo automaticamente."
         />
+
+        {missed.count > 0 ? (
+          <AdaptiveWeekNudge
+            missed={missed}
+            onReorganize={() => {
+              missed.moves.forEach((move) => {
+                if (move.id && move.toDate) updateWorkout(move.id, { date: move.toDate })
+              })
+              showToast('Semana reorganizada para os dias que restam.')
+            }}
+            compact
+          />
+        ) : null}
 
         <div className="planner-sync" role="status" aria-live="polite">
           {loadingWorkoutPlan ? (

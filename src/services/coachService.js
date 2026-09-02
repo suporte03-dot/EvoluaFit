@@ -16,6 +16,7 @@
 import { exercises, getExerciseById } from '../data/exercisesData'
 import { objectiveLabels } from '../data/workoutTemplates'
 import { generateWorkoutPlan as buildPlan, planToWorkouts } from '../utils/workoutGenerator'
+import { generateCoachInsights } from '../utils/coachInsights'
 import { formatSignedDelta } from '../utils/bodyEvolutionMetrics'
 
 // Futuro: import { supabase } from '../lib/supabaseClient'
@@ -582,6 +583,14 @@ export async function getTodaySuggestion(context = {}) {
   await delay()
 
   const { profile = {}, workouts = [], history = [], performance } = context
+  const insightPack = generateCoachInsights({
+    history,
+    workouts,
+    summaries: context.summaries || [],
+    records: context.records || [],
+    weekly: context.weekly || {},
+  })
+  const insightLine = insightPack.items[0]?.evidence
   const lastMuscles = getLastSessionMuscles(history)
   const lastSplit = detectSplit(lastMuscles)
   const streak = performance?.streak ?? 0
@@ -595,6 +604,7 @@ export async function getTodaySuggestion(context = {}) {
   let reason = hasData
     ? `Com base no seu objetivo (${objective}) e nível ${profile?.level || 'Iniciante'}, sugiro uma sessão equilibrada e moderada.`
     : 'Ainda não há histórico suficiente. Sugestão genérica segura: treino completo leve, com foco em técnica e recuperação.'
+  if (insightLine) reason = `${reason} ${insightLine}`
 
   if (streak >= 4 || daysSinceLast < 1) {
     title = 'Descanso ativo / mobilidade'

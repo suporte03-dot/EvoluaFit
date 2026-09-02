@@ -228,6 +228,7 @@ export function buildDashboardMetricsFromProgress(stats, weeklyGoal) {
     hasData: Boolean(stats?.hasData),
     weeklyWorkouts: stats?.hasData ? stats.weekSessions : null,
     weeklyGoal: weeklyGoal || null,
+    monthlyWorkouts: stats?.hasData ? stats.monthSessions : null,
     streak: stats?.hasData && stats.currentStreak > 0 ? stats.currentStreak : null,
     monthlyPerformancePct: stats?.monthlyComparisonPct ?? null,
     monthlyComparisonLabel: stats?.monthlyComparisonLabel || null,

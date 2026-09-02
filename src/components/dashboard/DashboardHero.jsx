@@ -1,21 +1,20 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useFitness } from '../../context/FitnessContext'
-import { useAuth } from '../../context/AuthContext'
-import { useProfile } from '../../context/ProfileContext'
 import { greetingParts, weeklyActivitySeries } from './dashboardUtils'
 import { greetingLine, resolveDisplayName } from '../../utils/displayName'
 import { IconChevron, IconFlame } from './icons'
 import { scrollToSection } from '../../utils/scrollToSection'
 import { metricAvailability } from '../../utils/dashboardMetrics'
 import {
-  getWeeklyProgress,
-  resolveTodayWorkout,
-  situationCopy,
+  weeklyGoalPathSentence,
   weeklyProgressSentence,
   workoutCardMeta,
 } from '../../utils/todayWorkout'
 import WorkoutDetailModal from '../WorkoutDetailModal'
 import { formatDateShort } from '../../utils/dateFormat'
+import { useAuth } from '../../context/AuthContext'
+import { useProfile } from '../../context/ProfileContext'
 
 function Sparkline({ series }) {
   const w = 148
@@ -69,10 +68,21 @@ function Sparkline({ series }) {
   )
 }
 
-export default function DashboardHero({ profile, metrics, history, workouts }) {
-  const { plans, generatedPlan, startWorkout, pendingSession, resumePendingSession } = useFitness()
+export default function DashboardHero({
+  profile,
+  metrics,
+  history,
+  workouts,
+  today,
+  weekly,
+  volumeDelta,
+  nextAction,
+  onReorganize,
+}) {
+  const { startWorkout, pendingSession, resumePendingSession } = useFitness()
   const { user } = useAuth()
   const { profile: cloudProfile } = useProfile()
+  const navigate = useNavigate()
   const [detailWorkout, setDetailWorkout] = useState(null)
   const { hello } = greetingParts()
   const name = resolveDisplayName({
@@ -83,78 +93,60 @@ export default function DashboardHero({ profile, metrics, history, workouts }) {
   const streakReady = metricAvailability('streak', metrics)
   const streakDays = streakReady ? metrics.streak : null
   const series = weeklyActivitySeries(history, workouts, 7)
-
-  const today = useMemo(
-    () =>
-      resolveTodayWorkout({
-        workouts,
-        history,
-        plans: plans?.length ? plans : generatedPlan ? [generatedPlan] : [],
-      }),
-    [workouts, history, plans, generatedPlan],
-  )
-
-  const weekly = useMemo(
-    () => getWeeklyProgress({ workouts, history, profile }),
-    [workouts, history, profile],
-  )
-
-  const hasPendingSession = Boolean(pendingSession?.workoutId)
-  const copy = situationCopy(today.situation, {
-    daysSinceLast: today.daysSinceLast,
-    nextWorkout: today.nextWorkout || today.workout,
-  })
-
-  const meta = workoutCardMeta(today.workout, profile)
+  const pathSentence = weeklyGoalPathSentence(weekly)
+  const meta = workoutCardMeta(today?.workout, profile)
   const weekPct =
-    weekly.weeklyGoal > 0
+    weekly?.weeklyGoal > 0
       ? Math.min(100, Math.round((weekly.completedCount / weekly.weeklyGoal) * 100))
       : 0
 
-  const canStart = Boolean(today.workout?.exercises?.length) &&
-    ['ready', 'partial', 'returning'].includes(today.situation)
+  const detailTarget = nextAction?.workout || today?.workout
+
+  const runNavigate = (section, href) => {
+    if (href) {
+      navigate(href)
+      return
+    }
+    if (section) scrollToSection(section)
+  }
 
   const handlePrimary = () => {
-    if (hasPendingSession) {
+    if (nextAction?.kind === 'resume' || pendingSession?.workoutId) {
       resumePendingSession()
       return
     }
-    if (canStart) {
-      startWorkout(today.workout)
+    if (nextAction?.kind === 'start' && nextAction.workout) {
+      startWorkout(nextAction.workout)
       return
     }
-    if (copy.primarySection) scrollToSection(copy.primarySection)
+    if (nextAction?.kind === 'reorganize') {
+      onReorganize?.()
+      return
+    }
+    runNavigate(nextAction?.section, nextAction?.href)
   }
 
   const handleSecondary = () => {
-    if (
-      today.workout &&
-      (today.situation === 'ready' ||
-        today.situation === 'partial' ||
-        today.situation === 'returning' ||
-        today.situation === 'completed')
-    ) {
-      setDetailWorkout(today.workout)
+    if (detailTarget && (nextAction?.kind === 'start' || nextAction?.kind === 'resume' || nextAction?.id === 'one-to-goal')) {
+      setDetailWorkout(detailTarget)
       return
     }
-    if (copy.secondarySection) scrollToSection(copy.secondarySection)
+    runNavigate(nextAction?.secondarySection || nextAction?.section, null)
   }
 
-  const title =
-    copy.title ||
-    meta?.name ||
-    (today.situation === 'no_workout_today' ? 'Dia de descanso' : 'Treino de hoje')
+  const title = nextAction?.title || meta?.name || 'Treino de hoje'
 
   return (
     <>
-      <header className="dash-hero dash-hero--today">
+      <header className="dash-hero dash-hero--today dash-hero--daily">
         <div className="dash-hero__media" aria-hidden="true">
           <div className="dash-hero__fade" />
         </div>
 
         <div className="dash-hero__copy">
           <p className="dash-hero__greeting">{greetingLine(hello, name)}</p>
-          <p className="dash-hero__eyebrow">{copy.label}</p>
+          {pathSentence ? <p className="dash-hero__path">{pathSentence}</p> : null}
+          <p className="dash-hero__eyebrow">Evolua Daily</p>
           <h1 className="dash-hero__title">{title}</h1>
 
           {meta ? (
@@ -167,19 +159,22 @@ export default function DashboardHero({ profile, metrics, history, workouts }) {
             </ul>
           ) : (
             <p className="dash-hero__subtitle">
-              {copy.description ||
-                'Organize a rotina com equilíbrio — o próximo passo aparece aqui.'}
+              {nextAction?.description || 'O próximo passo da sua evolução aparece aqui.'}
             </p>
           )}
 
-          {copy.description && meta && (
-            <p className="dash-hero__subtitle dash-hero__subtitle--tight">{copy.description}</p>
-          )}
+          {nextAction?.description && meta ? (
+            <p className="dash-hero__subtitle dash-hero__subtitle--tight">{nextAction.description}</p>
+          ) : null}
 
           <div className="dash-hero__week">
             <div className="dash-hero__week-row">
               <span>{weeklyProgressSentence(weekly)}</span>
-              {weekly.weeklyGoal > 0 && <strong>{weekPct}%</strong>}
+              {weekly?.weeklyGoal > 0 && (
+                <strong>
+                  {weekly.completedCount}/{weekly.weeklyGoal}
+                </strong>
+              )}
             </div>
             <div
               className="dash-hero__week-bar"
@@ -191,14 +186,17 @@ export default function DashboardHero({ profile, metrics, history, workouts }) {
             >
               <span style={{ width: `${weekPct}%` }} />
             </div>
+            {volumeDelta?.sentence ? (
+              <p className="dash-hero__volume">{volumeDelta.sentence}</p>
+            ) : null}
           </div>
 
           <div className="dash-hero__actions">
             <button type="button" className="dash-hero__cta" onClick={handlePrimary}>
-              {hasPendingSession ? 'Continuar sessão' : copy.primaryLabel}
+              {nextAction?.primaryLabel || 'Continuar'}
             </button>
             <button type="button" className="dash-hero__more" onClick={handleSecondary}>
-              {copy.secondaryLabel || 'Ver detalhes'}
+              {nextAction?.secondaryLabel || 'Ver detalhes'}
               <IconChevron size={16} />
             </button>
           </div>
@@ -215,16 +213,18 @@ export default function DashboardHero({ profile, metrics, history, workouts }) {
             <div>
               <p className="dash-hero__streak-value">
                 {streakReady
-                  ? `${streakDays} ${streakDays === 1 ? 'DIA' : 'DIAS'} EM SEQUÊNCIA`
+                  ? `${streakDays} ${streakDays === 1 ? 'DIA' : 'DIAS'} EVOLUINDO`
                   : 'COMECE SUA SEQUÊNCIA'}
               </p>
               <p className="dash-hero__streak-hint">
-                {streakReady ? 'Dias seguidos com treino concluído.' : 'Complete um treino hoje para registrar o primeiro dia.'}
+                {streakReady
+                  ? 'Dias com treino concluído. Sem punição — o importante é voltar.'
+                  : 'Complete um treino hoje para registrar o primeiro dia.'}
               </p>
             </div>
           </div>
           <Sparkline series={series} />
-          {today.nextWorkout && today.situation === 'no_workout_today' && (
+          {today?.nextWorkout && today.situation === 'no_workout_today' && (
             <p className="dash-hero__next-hint">
               Próximo: {today.nextWorkout.name}
               {today.nextWorkout.date ? ` · ${formatDateShort(today.nextWorkout.date)}` : ''}

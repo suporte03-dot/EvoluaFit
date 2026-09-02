@@ -88,9 +88,10 @@ export default function DashboardSidebar({
   const xp = deriveXpProgress({ history, workouts })
   const name = resolveDisplayName({ cloudName: profile?.full_name })
   const accountLabel = name || 'Conta'
-  const levelLabel = profile?.level ? `Nível ${profile.level}` : 'Nível —'
+  const levelLabel = xp.levelName || 'Começando'
+  const trainingLevel = profile?.level ? `Treino: ${profile.level}` : null
   const initials = loadingProfile ? '··' : initialsFromName(accountLabel)
-  const xpCeiling = xp.xp - xp.intoLevel + xp.nextLevelAt
+  const xpCeiling = xp.nextName ? xp.xp - xp.intoLevel + xp.nextLevelAt : xp.xp
   const xpLabel = `${xp.xp.toLocaleString('pt-BR')} / ${xpCeiling.toLocaleString('pt-BR')} XP`
   const onDedicatedRoute =
     location.pathname.startsWith('/app/perfil') || location.pathname.startsWith('/app/evolucao')
@@ -211,7 +212,7 @@ export default function DashboardSidebar({
           <button
             type="button"
             className="dash-sidebar__user dash-sidebar__user--button"
-            title={loadingProfile ? 'Carregando perfil' : `${accountLabel} · ${levelLabel}`}
+            title={loadingProfile ? 'Carregando perfil' : `${accountLabel} · ${levelLabel}${trainingLevel ? ` · ${trainingLevel}` : ''}`}
             onClick={() => {
               onCloseMobile?.()
               navigate('/app/perfil')
@@ -235,6 +236,7 @@ export default function DashboardSidebar({
                   <>
                     <strong>{accountLabel}</strong>
                     <span>{levelLabel}</span>
+                    {trainingLevel ? <small className="dash-sidebar__xp-label">{trainingLevel}</small> : null}
                   </>
                 )}
                 <div

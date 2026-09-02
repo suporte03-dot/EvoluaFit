@@ -377,15 +377,6 @@
   overflow: visible;
 }
 
-.auth-split__cast::before {
-  content: '';
-  position: absolute;
-  inset: 2% -8% 8%;
-  z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(ellipse 88% 82% at 50% 46%, rgba(78, 52, 196, 0.38), transparent 68%);
-}
-
 .login-hero-art {
   display: block;
   width: auto;
@@ -394,19 +385,10 @@
   max-height: calc(100% - 3.2rem);
   object-fit: contain;
   object-position: center bottom;
-  position: relative;
-  z-index: 1;
   pointer-events: none;
   user-select: none;
-  mix-blend-mode: darken;
-  -webkit-mask-image:
-    linear-gradient(90deg, transparent 0%, #000 22%, #000 78%, transparent 100%),
-    linear-gradient(180deg, transparent 0%, #000 8%, #000 94%, transparent 100%);
-  -webkit-mask-composite: source-in;
-  mask-image:
-    linear-gradient(90deg, transparent 0%, #000 22%, #000 78%, transparent 100%),
-    linear-gradient(180deg, transparent 0%, #000 8%, #000 94%, transparent 100%);
-  mask-composite: intersect;
+  -webkit-mask-image: radial-gradient(ellipse 72% 88% at 50% 52%, #000 38%, transparent 78%);
+  mask-image: radial-gradient(ellipse 72% 88% at 50% 52%, #000 38%, transparent 78%);
 }
 
 .auth-split__logo.evoluafit-logo,
@@ -518,8 +500,6 @@
   margin: 0.35rem 0 1rem;
   padding: 0;
   list-style: none;
-  position: relative;
-  z-index: 1;
 }
 
 .auth-split__steps li {

@@ -53,42 +53,44 @@ export default function LoginHero() {
           </h2>
           <p>Treine com propósito, acompanhe sua evolução e saiba exatamente qual é o próximo passo.</p>
         </div>
-        <ul className="auth-split__features">
-          <li>
-            <span className="auth-split__feature-icon">
-              <TargetIcon />
+        <div className="auth-split__support">
+          <ul className="auth-split__features">
+            <li>
+              <span className="auth-split__feature-icon">
+                <TargetIcon />
+              </span>
+              <span className="auth-split__feature-copy">
+                <strong>Treine</strong>
+                <span>com propósito</span>
+              </span>
+            </li>
+            <li>
+              <span className="auth-split__feature-icon">
+                <ChartIcon />
+              </span>
+              <span className="auth-split__feature-copy">
+                <strong>Acompanhe</strong>
+                <span>sua evolução</span>
+              </span>
+            </li>
+            <li>
+              <span className="auth-split__feature-icon">
+                <EvolveIcon />
+              </span>
+              <span className="auth-split__feature-copy">
+                <strong>Evolua</strong>
+                <span>sem limites</span>
+              </span>
+            </li>
+          </ul>
+          <div className="auth-split__privacy">
+            <span className="auth-split__privacy-icon">
+              <ShieldIcon />
             </span>
-            <span className="auth-split__feature-copy">
-              <strong>Treine</strong>
-              <span>com propósito</span>
-            </span>
-          </li>
-          <li>
-            <span className="auth-split__feature-icon">
-              <ChartIcon />
-            </span>
-            <span className="auth-split__feature-copy">
-              <strong>Acompanhe</strong>
-              <span>sua evolução</span>
-            </span>
-          </li>
-          <li>
-            <span className="auth-split__feature-icon">
-              <EvolveIcon />
-            </span>
-            <span className="auth-split__feature-copy">
-              <strong>Evolua</strong>
-              <span>sem limites</span>
-            </span>
-          </li>
-        </ul>
-        <div className="auth-split__privacy">
-          <span className="auth-split__privacy-icon">
-            <ShieldIcon />
-          </span>
-          <div>
-            <strong>Ambiente seguro</strong>
-            <p>Seus dados estão protegidos</p>
+            <div>
+              <strong>Ambiente seguro</strong>
+              <p>Seus dados estão protegidos</p>
+            </div>
           </div>
         </div>
       </div>

@@ -451,6 +451,16 @@
   color: #d5dae6;
 }
 
+.auth-split__support {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 24.5rem;
+  margin-top: auto;
+}
+
 .auth-split__features {
   display: flex;
   flex-direction: row;
@@ -458,8 +468,7 @@
   align-items: stretch;
   gap: 0.45rem;
   width: 100%;
-  max-width: 24.5rem;
-  margin: 0.15rem 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -519,14 +528,14 @@
 
 .auth-split__privacy {
   display: flex;
-  max-width: 248px;
+  width: 100%;
+  max-width: none;
   align-items: center;
   flex-shrink: 0;
   gap: 0.65rem;
-  margin-top: 0.9rem;
-  margin-bottom: 0;
-  padding: 0.62rem 0.88rem;
-  border-radius: 14px;
+  margin: 0;
+  padding: 0.58rem 0.8rem;
+  border-radius: 12px;
   border: 1px solid rgba(196, 181, 255, 0.32);
   background: rgba(12, 16, 24, 0.82);
   backdrop-filter: blur(12px);
@@ -1115,6 +1124,10 @@
     line-height: 1.4;
   }
 
+  .auth-split__support {
+    gap: 0.4rem;
+  }
+
   .auth-split__features {
     gap: 0.38rem;
   }
@@ -1124,7 +1137,8 @@
   }
 
   .auth-split__privacy {
-    margin-top: 0.7rem;
+    margin: 0;
+    padding: 0.48rem 0.7rem;
   }
 
   .login-hero-frame {

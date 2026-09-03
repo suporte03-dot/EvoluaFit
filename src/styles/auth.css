@@ -116,7 +116,8 @@
   .auth-split__panel-inner,
   .auth-split__brand,
   .auth-split__privacy,
-  .login-hero-art {
+  .login-hero-art,
+  .login-hero-stage .evolua-pulse--mesh {
     animation: none;
   }
 }
@@ -345,10 +346,10 @@
   display: grid;
   grid-template-columns: 1fr;
   background:
-    radial-gradient(ellipse 58% 72% at 46% 52%, rgba(78, 58, 176, 0.16), transparent 68%),
-    radial-gradient(ellipse 32% 42% at 78% 28%, rgba(58, 110, 210, 0.08), transparent 62%),
-    radial-gradient(ellipse 40% 36% at 8% 88%, rgba(40, 48, 90, 0.18), transparent 58%),
-    linear-gradient(180deg, #070910 0%, #05070c 42%, #04060a 100%);
+    radial-gradient(ellipse 42% 38% at 12% 8%, rgba(77, 163, 255, 0.07), transparent 62%),
+    radial-gradient(ellipse 36% 32% at 88% 14%, rgba(118, 87, 255, 0.08), transparent 64%),
+    radial-gradient(ellipse 48% 28% at 50% 108%, rgba(138, 82, 245, 0.06), transparent 58%),
+    linear-gradient(180deg, #05070c 0%, #04060a 55%, #03050a 100%);
   color: var(--auth-text, #f8fafc);
   overflow: hidden;
 }
@@ -418,8 +419,68 @@
   width: auto;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 16%, #000 84%, transparent 100%);
-  mask-image: linear-gradient(to right, transparent 0%, #000 16%, #000 84%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%);
+}
+
+.login-hero-stage {
+  position: absolute;
+  inset: 4% -4% 2%;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.login-hero-stage__beam {
+  position: absolute;
+  left: 50%;
+  top: 4%;
+  width: 12%;
+  height: 76%;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    180deg,
+    rgba(77, 163, 255, 0.1) 0%,
+    rgba(118, 87, 255, 0.22) 42%,
+    rgba(138, 82, 245, 0.1) 72%,
+    transparent 100%
+  );
+  filter: blur(14px);
+  opacity: 0.7;
+}
+
+.login-hero-stage__core {
+  position: absolute;
+  left: 50%;
+  top: 18%;
+  width: 8%;
+  height: 48%;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(180, 210, 255, 0.18), rgba(118, 87, 255, 0.08) 70%, transparent);
+  filter: blur(8px);
+  opacity: 0.55;
+}
+
+.login-hero-stage__floor {
+  position: absolute;
+  left: 50%;
+  bottom: 9%;
+  width: 64%;
+  height: 14%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at 50% 40%, rgba(118, 87, 255, 0.22), transparent 70%);
+  filter: blur(16px);
+}
+
+.login-hero-stage .evolua-pulse--mesh {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 16%;
+  bottom: 24%;
+  width: auto;
+  height: auto;
+  opacity: 0.28;
 }
 
 .login-hero-art {
@@ -427,7 +488,7 @@
   position: relative;
   left: auto;
   top: auto;
-  z-index: 0;
+  z-index: 1;
   width: auto;
   height: 100%;
   max-width: none;
@@ -437,8 +498,9 @@
   transform: none;
   pointer-events: none;
   user-select: none;
-  -webkit-mask-image: radial-gradient(ellipse 84% 90% at 50% 47%, #000 40%, rgba(0, 0, 0, 0.72) 62%, transparent 90%);
-  mask-image: radial-gradient(ellipse 84% 90% at 50% 47%, #000 40%, rgba(0, 0, 0, 0.72) 62%, transparent 90%);
+  filter: contrast(1.06) saturate(0.94) brightness(1.02);
+  -webkit-mask-image: radial-gradient(ellipse 70% 86% at 50% 48%, #000 42%, rgba(0, 0, 0, 0.75) 68%, transparent 88%);
+  mask-image: radial-gradient(ellipse 70% 86% at 50% 48%, #000 42%, rgba(0, 0, 0, 0.75) 68%, transparent 88%);
 }
 
 .auth-split__logo.evoluafit-logo,

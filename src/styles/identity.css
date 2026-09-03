@@ -13,6 +13,7 @@
 }
 
 .dash-sidebar {
+  color-scheme: dark;
   background:
     linear-gradient(180deg, rgba(118, 87, 255, 0.1) 0%, transparent 38%),
     linear-gradient(180deg, #0d1219 0%, #070a0f 100%) !important;
@@ -467,6 +468,81 @@
 /* ----- Sidebar groups ----- */
 .dash-sidebar__nav {
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(107, 119, 136, 0.22) transparent;
+}
+
+.dash-sidebar__nav::-webkit-scrollbar {
+  width: 5px;
+}
+
+.dash-sidebar__nav::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.dash-sidebar__nav::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.dash-sidebar__nav::-webkit-scrollbar-track {
+  margin: 8px 0;
+  background: rgba(7, 10, 15, 0.35);
+  border-radius: 999px;
+}
+
+.dash-sidebar__nav::-webkit-scrollbar-thumb {
+  background-color: rgba(107, 119, 136, 0.2);
+  background-clip: padding-box;
+  border: 1px solid transparent;
+  border-radius: 999px;
+}
+
+.dash-sidebar__nav:hover::-webkit-scrollbar-thumb,
+.dash-sidebar__nav:focus-within::-webkit-scrollbar-thumb {
+  background-color: rgba(118, 87, 255, 0.42);
+}
+
+.dash-sidebar__nav::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(139, 116, 255, 0.62);
+}
+
+.dash-sidebar--collapsed .dash-sidebar__nav::-webkit-scrollbar {
+  width: 4px;
+}
+
+.dash-sidebar__scroll::before,
+.dash-sidebar__scroll::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 28px;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.dash-sidebar__scroll::before {
+  top: 0;
+  background: linear-gradient(180deg, rgba(13, 18, 25, 0.96) 0%, rgba(13, 18, 25, 0) 100%);
+}
+
+.dash-sidebar__scroll::after {
+  bottom: 0;
+  background: linear-gradient(0deg, rgba(7, 10, 15, 0.96) 0%, rgba(7, 10, 15, 0) 100%);
+}
+
+.dash-sidebar__scroll.has-top::before,
+.dash-sidebar__scroll.has-bottom::after {
+  opacity: 1;
+}
+
+.dash-sidebar__nav:hover,
+.dash-sidebar__nav:focus-within {
+  scrollbar-color: rgba(118, 87, 255, 0.45) transparent;
 }
 
 .dash-sidebar__group {
@@ -1613,7 +1689,11 @@
   .evolua-pulse.is-live,
   .fit-hero__cta,
   .fit-hero__week-fill,
-  .score-sig__value {
+  .score-sig__value,
+  .dash-sidebar__scroll::before,
+  .dash-sidebar__scroll::after,
+  .evoluafit-brand__collapse,
+  .evoluafit-brand__collapse svg {
     animation: none !important;
     transition: none !important;
   }

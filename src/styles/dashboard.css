@@ -130,6 +130,7 @@ body:has(.dash-sidebar--open) .dash-sidebar {
   flex-direction: column;
   gap: 0.55rem;
   padding: 0.9rem 0.7rem 0.85rem;
+  color-scheme: dark;
   background:
     linear-gradient(180deg, rgba(14, 40, 72, 0.55) 0%, transparent 38%),
     linear-gradient(180deg, #091427 0%, #070f1c 100%);
@@ -235,11 +236,23 @@ body:has(.dash-sidebar--open) .dash-sidebar {
   outline-offset: 2px;
 }
 
+.dash-sidebar__scroll {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .dash-sidebar__nav {
   flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
   overflow-y: auto;
-  padding: 0.25rem 0.1rem;
+  overscroll-behavior: contain;
+  padding: 0.25rem 0.15rem 0.35rem 0.1rem;
   scrollbar-width: thin;
+  scrollbar-color: rgba(107, 119, 136, 0.22) transparent;
 }
 
 .dash-sidebar__group-label {

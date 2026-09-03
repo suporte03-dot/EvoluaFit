@@ -1,4 +1,5 @@
 import EvoluaFitLogo from '../branding/EvoluaFitLogo'
+import { EvoluaPulseMesh } from '../branding/EvoluaPulse'
 
 function ShieldIcon() {
   return (
@@ -97,9 +98,15 @@ export default function LoginHero() {
 
       <div className="auth-split__cast">
         <div className="login-hero-frame">
+          <div className="login-hero-stage" aria-hidden="true">
+            <span className="login-hero-stage__beam" />
+            <span className="login-hero-stage__core" />
+            <span className="login-hero-stage__floor" />
+            <EvoluaPulseMesh />
+          </div>
           <img
             className="login-hero-art"
-            src="/branding/evoluafit-login-athletes.png?v=fullbody-2"
+            src="/branding/evoluafit-login-athletes.png?v=studio-2"
             alt=""
             decoding="async"
             fetchPriority="high"

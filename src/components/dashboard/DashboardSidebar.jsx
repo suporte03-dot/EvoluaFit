@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   IconCalendar,
   IconChart,
+  IconChevron,
   IconDumbbell,
   IconHome,
   IconLibrary,
@@ -85,6 +86,8 @@ export default function DashboardSidebar({
   const navigate = useNavigate()
   const location = useLocation()
   const [signingOut, setSigningOut] = useState(false)
+  const navRef = useRef(null)
+  const [scrollEdges, setScrollEdges] = useState({ top: false, bottom: false })
   const xp = deriveXpProgress({ history, workouts })
   const name = resolveDisplayName({ cloudName: profile?.full_name })
   const accountLabel = name || 'Conta'
@@ -93,6 +96,29 @@ export default function DashboardSidebar({
   const initials = loadingProfile ? '··' : initialsFromName(accountLabel)
   const onDedicatedRoute =
     location.pathname.startsWith('/app/perfil') || location.pathname.startsWith('/app/evolucao')
+
+  const updateScrollEdges = useCallback(() => {
+    const el = navRef.current
+    if (!el) return
+    const max = el.scrollHeight - el.clientHeight
+    setScrollEdges({
+      top: el.scrollTop > 8,
+      bottom: max > 10 && el.scrollTop < max - 8,
+    })
+  }, [])
+
+  useEffect(() => {
+    const el = navRef.current
+    if (!el) return undefined
+    updateScrollEdges()
+    const observer = new ResizeObserver(updateScrollEdges)
+    observer.observe(el)
+    el.addEventListener('scroll', updateScrollEdges, { passive: true })
+    return () => {
+      observer.disconnect()
+      el.removeEventListener('scroll', updateScrollEdges)
+    }
+  }, [updateScrollEdges, collapsed])
 
   const handleLogout = async () => {
     if (signingOut) return
@@ -169,42 +195,49 @@ export default function DashboardSidebar({
                 onClick={onToggleCollapse}
                 aria-label={collapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'}
                 aria-pressed={collapsed}
+                title={collapsed ? 'Expandir menu' : 'Recolher menu'}
               >
-                <IconPanel size={16} />
+                <IconChevron size={15} />
               </button>
             }
           />
         </div>
 
-        <nav className="dash-sidebar__nav" aria-label="Navegação">
-          {NAV_GROUPS.map((group) => (
-            <div key={group.id} className="dash-sidebar__group">
-              <p className="dash-sidebar__group-label">{group.label}</p>
-              <ul className="dash-sidebar__list">
-                {group.items.map((item) => {
-                  const Icon = item.Icon
-                  const active = isActive(item)
-                  return (
-                    <li key={`${item.label}-${item.id}`}>
-                      <button
-                        type="button"
-                        className={`dash-sidebar__link dash-sidebar__link--${item.tone || 'orange'}${
-                          active ? ' is-active' : ''
-                        }`}
-                        onClick={() => go(item)}
-                        aria-current={active ? 'page' : undefined}
-                        title={item.label}
-                      >
-                        <Icon size={18} className="dash-sidebar__icon" />
-                        {!collapsed && <span>{item.label}</span>}
-                      </button>
-                    </li>
-                  )
-                })}
-              </ul>
-            </div>
-          ))}
-        </nav>
+        <div
+          className={`dash-sidebar__scroll${scrollEdges.top ? ' has-top' : ''}${
+            scrollEdges.bottom ? ' has-bottom' : ''
+          }`}
+        >
+          <nav ref={navRef} className="dash-sidebar__nav" aria-label="Navegação">
+            {NAV_GROUPS.map((group) => (
+              <div key={group.id} className="dash-sidebar__group">
+                <p className="dash-sidebar__group-label">{group.label}</p>
+                <ul className="dash-sidebar__list">
+                  {group.items.map((item) => {
+                    const Icon = item.Icon
+                    const active = isActive(item)
+                    return (
+                      <li key={`${item.label}-${item.id}`}>
+                        <button
+                          type="button"
+                          className={`dash-sidebar__link dash-sidebar__link--${item.tone || 'orange'}${
+                            active ? ' is-active' : ''
+                          }`}
+                          onClick={() => go(item)}
+                          aria-current={active ? 'page' : undefined}
+                          title={item.label}
+                        >
+                          <Icon size={18} className="dash-sidebar__icon" />
+                          {!collapsed && <span>{item.label}</span>}
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            ))}
+          </nav>
+        </div>
 
         <div className="dash-sidebar__account">
           <button

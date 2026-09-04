@@ -338,7 +338,7 @@
 
 html:has(.auth-split),
 html:has(.auth-split) body {
-  background: #071018;
+  background: #05070c;
 }
 .auth-split {
   position: relative;
@@ -348,14 +348,13 @@ html:has(.auth-split) body {
   width: 100%;
   display: grid;
   grid-template-columns: 1fr;
-  background-color: #071018;
+  background-color: #05070c;
   background-image:
-    radial-gradient(ellipse 92% 78% at 48% 42%, rgba(28, 54, 104, 0.58) 0%, transparent 72%),
-    radial-gradient(ellipse 78% 28% at 48% 76%, rgba(77, 163, 255, 0.2) 0%, rgba(118, 87, 255, 0.16) 48%, rgba(138, 82, 245, 0.12) 100%),
-    radial-gradient(ellipse 48% 58% at 10% 38%, rgba(36, 72, 132, 0.32) 0%, transparent 68%),
-    radial-gradient(ellipse 52% 62% at 90% 48%, rgba(56, 36, 110, 0.42) 0%, transparent 66%),
-    radial-gradient(ellipse 90% 40% at 50% 100%, rgba(18, 12, 48, 0.55) 0%, transparent 55%),
-    linear-gradient(168deg, #0a1626 0%, #071018 42%, #050910 78%, #04070e 100%);
+    radial-gradient(ellipse 70% 58% at 48% 40%, rgba(18, 36, 72, 0.22) 0%, transparent 68%),
+    radial-gradient(ellipse 42% 36% at 12% 38%, rgba(22, 42, 78, 0.14) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 88% 48%, rgba(32, 22, 64, 0.16) 0%, transparent 68%),
+    radial-gradient(ellipse 80% 28% at 50% 100%, rgba(10, 8, 28, 0.4) 0%, transparent 58%),
+    linear-gradient(180deg, #070b12 0%, #05070c 48%, #04060a 100%);
   color: var(--auth-text, #f8fafc);
   overflow: hidden;
 }
@@ -368,7 +367,7 @@ html:has(.auth-split) body {
   grid-row: 1;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.062;
+  opacity: 0.04;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   mix-blend-mode: overlay;
 }
@@ -381,10 +380,7 @@ html:has(.auth-split) body {
   grid-row: 1;
   z-index: 0;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse 70% 28% at 24% 78%, rgba(77, 163, 255, 0.08), transparent 62%),
-    radial-gradient(ellipse 50% 26% at 78% 80%, rgba(138, 82, 245, 0.08), transparent 64%),
-    radial-gradient(ellipse 90% 80% at 50% 46%, transparent 46%, rgba(3, 5, 10, 0.42) 100%);
+  background: radial-gradient(ellipse 88% 78% at 50% 46%, transparent 52%, rgba(2, 4, 8, 0.62) 100%);
 }
 
 .auth-split__visual {
@@ -438,39 +434,19 @@ html:has(.auth-split) body {
 
 .login-hero-backdrop__halo {
   position: absolute;
-  left: 42%;
-  top: -4%;
-  width: min(78vw, 1100px);
-  height: min(78vw, 1100px);
+  left: 48%;
+  top: 6%;
+  width: min(42vw, 560px);
+  height: min(42vw, 560px);
   transform: translateX(-50%);
   border-radius: 50%;
-  background:
-    radial-gradient(circle at 34% 42%, rgba(77, 163, 255, 0.28) 0%, transparent 46%),
-    radial-gradient(circle at 62% 40%, rgba(122, 72, 255, 0.3) 0%, transparent 48%),
-    radial-gradient(circle at 48% 48%, rgba(138, 82, 245, 0.12) 0%, transparent 60%);
-  filter: blur(14px);
+  background: radial-gradient(circle at 50% 46%, rgba(70, 110, 190, 0.12) 0%, transparent 58%);
+  filter: blur(28px);
+  opacity: 0.55;
 }
 
 .login-hero-backdrop__ring {
-  position: absolute;
-  left: 50%;
-  top: 16%;
-  z-index: 2;
-  width: 48%;
-  aspect-ratio: 1;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    transparent 58%,
-    rgba(77, 163, 255, 0.32) 66%,
-    rgba(122, 72, 255, 0.38) 72%,
-    rgba(138, 82, 245, 0.16) 78%,
-    transparent 86%
-  );
-  filter: blur(7px);
-  opacity: 0.5;
-  pointer-events: none;
+  display: none;
 }
 
 .login-hero-veil {
@@ -480,73 +456,55 @@ html:has(.auth-split) body {
   pointer-events: none;
 }
 
-.login-hero-veil__wash {
-  position: absolute;
-  inset: 0;
-  mix-blend-mode: screen;
-  background:
-    radial-gradient(ellipse 62% 58% at 50% 38%, transparent 20%, rgba(90, 150, 255, 0.22) 36%, rgba(118, 87, 255, 0.18) 50%, rgba(28, 48, 96, 0.32) 68%, transparent 82%),
-    radial-gradient(ellipse 90% 48% at 50% 70%, rgba(40, 64, 120, 0.24) 0%, transparent 72%);
+.login-hero-veil__wash,
+.login-hero-veil__wave {
+  display: none;
 }
 
 .login-hero-veil__halo {
   position: absolute;
   left: 50%;
-  top: 8%;
-  width: 78%;
+  top: 12%;
+  width: 54%;
   aspect-ratio: 1;
   transform: translateX(-50%);
   border-radius: 50%;
   mix-blend-mode: screen;
-  background:
-    radial-gradient(circle at 38% 42%, rgba(77, 163, 255, 0.36) 0%, transparent 46%),
-    radial-gradient(circle at 62% 40%, rgba(122, 72, 255, 0.4) 0%, transparent 48%);
-  filter: blur(18px);
-}
-
-.login-hero-veil__wave {
-  position: absolute;
-  left: -8%;
-  right: -8%;
-  top: 48%;
-  height: 42%;
-  mix-blend-mode: screen;
-  background:
-    radial-gradient(ellipse 90% 42% at 18% 58%, rgba(77, 163, 255, 0.28) 0%, transparent 58%),
-    radial-gradient(ellipse 80% 40% at 50% 62%, rgba(118, 87, 255, 0.26) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 38% at 82% 55%, rgba(138, 82, 245, 0.22) 0%, transparent 58%);
-  filter: blur(22px);
+  background: radial-gradient(circle at 50% 44%, rgba(90, 130, 210, 0.12) 0%, transparent 62%);
+  filter: blur(28px);
+  opacity: 0.45;
 }
 
 .login-hero-veil__floor {
   position: absolute;
-  left: 8%;
-  right: 8%;
-  bottom: 6%;
-  height: 28%;
+  left: 18%;
+  right: 18%;
+  bottom: 8%;
+  height: 18%;
   mix-blend-mode: screen;
-  background: radial-gradient(ellipse 70% 60% at 50% 80%, rgba(110, 80, 210, 0.32) 0%, transparent 72%);
-  filter: blur(16px);
+  background: radial-gradient(ellipse 70% 60% at 50% 80%, rgba(80, 60, 150, 0.1) 0%, transparent 72%);
+  filter: blur(22px);
+  opacity: 0.5;
 }
 
 .login-hero-backdrop__mist {
   position: absolute;
-  left: -70%;
-  right: 8%;
-  top: 22%;
-  height: 56%;
-  background: radial-gradient(ellipse 74% 58% at 38% 46%, rgba(90, 110, 170, 0.16) 0%, transparent 64%);
-  filter: blur(32px);
+  left: -40%;
+  right: 18%;
+  top: 28%;
+  height: 42%;
+  background: radial-gradient(ellipse 70% 55% at 40% 48%, rgba(80, 96, 140, 0.05) 0%, transparent 68%);
+  filter: blur(36px);
 }
 
 .login-hero-backdrop__ground {
   position: absolute;
-  left: -90%;
-  right: 6%;
+  left: -50%;
+  right: 16%;
   bottom: 0;
-  height: 38%;
-  background: radial-gradient(ellipse 70% 55% at 36% 80%, rgba(90, 70, 180, 0.26) 0%, transparent 70%);
-  filter: blur(18px);
+  height: 28%;
+  background: radial-gradient(ellipse 70% 55% at 36% 80%, rgba(70, 55, 130, 0.08) 0%, transparent 72%);
+  filter: blur(22px);
 }
 
 .login-hero-waves {
@@ -597,13 +555,13 @@ html:has(.auth-split) body {
   transform: translateX(-50%);
   background: linear-gradient(
     180deg,
-    rgba(77, 163, 255, 0.1) 0%,
-    rgba(118, 87, 255, 0.22) 42%,
-    rgba(138, 82, 245, 0.1) 72%,
+    rgba(77, 163, 255, 0.04) 0%,
+    rgba(118, 87, 255, 0.08) 42%,
+    rgba(138, 82, 245, 0.04) 72%,
     transparent 100%
   );
-  filter: blur(14px);
-  opacity: 0.7;
+  filter: blur(16px);
+  opacity: 0.35;
 }
 
 .login-hero-stage__core {
@@ -613,9 +571,9 @@ html:has(.auth-split) body {
   width: 8%;
   height: 48%;
   transform: translateX(-50%);
-  background: linear-gradient(180deg, rgba(180, 210, 255, 0.18), rgba(118, 87, 255, 0.08) 70%, transparent);
-  filter: blur(8px);
-  opacity: 0.55;
+  background: linear-gradient(180deg, rgba(180, 210, 255, 0.08), rgba(118, 87, 255, 0.04) 70%, transparent);
+  filter: blur(10px);
+  opacity: 0.28;
 }
 
 .login-hero-stage__floor {
@@ -625,8 +583,8 @@ html:has(.auth-split) body {
   width: 70%;
   height: 16%;
   transform: translateX(-50%);
-  background: radial-gradient(ellipse at 50% 40%, rgba(118, 87, 255, 0.28), transparent 72%);
-  filter: blur(18px);
+  background: radial-gradient(ellipse at 50% 40%, rgba(118, 87, 255, 0.1), transparent 72%);
+  filter: blur(20px);
 }
 
 .login-hero-art {
@@ -644,7 +602,7 @@ html:has(.auth-split) body {
   transform: none;
   pointer-events: none;
   user-select: none;
-  filter: contrast(1.06) saturate(0.94) brightness(1.02);
+  filter: contrast(1.12) saturate(0.96) brightness(0.98);
 }
 
 .auth-split__logo.evoluafit-logo,
@@ -670,8 +628,9 @@ html:has(.auth-split) body {
   font-weight: 720;
   letter-spacing: -0.042em;
   line-height: 1.1;
-  color: var(--auth-text, #f8fafc);
+  color: #f8fafc;
   text-wrap: balance;
+  text-shadow: 0 1px 18px rgba(0, 0, 0, 0.45);
 }
 
 .auth-split__hero p {
@@ -681,7 +640,7 @@ html:has(.auth-split) body {
   line-height: 1.65;
   letter-spacing: 0.008em;
   font-weight: 400;
-  color: rgba(198, 206, 220, 0.82);
+  color: rgba(214, 222, 234, 0.9);
 }
 
 .auth-split__support {
@@ -715,9 +674,9 @@ html:has(.auth-split) body {
   min-width: 0;
   padding: 0.5rem 0.48rem 0.48rem;
   border-radius: 14px;
-  border: 1px solid rgba(168, 150, 255, 0.12);
-  background: rgba(255, 255, 255, 0.028);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(160, 172, 198, 0.16);
+  background: rgba(8, 12, 20, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   font-size: 0.74rem;
@@ -773,9 +732,9 @@ html:has(.auth-split) body {
   margin: 0;
   padding: 0.4rem 0.75rem;
   border-radius: 14px;
-  border: 1px solid rgba(168, 150, 255, 0.12);
-  background: rgba(255, 255, 255, 0.025);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(160, 172, 198, 0.16);
+  background: rgba(8, 12, 20, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -903,16 +862,15 @@ html:has(.auth-split) body {
   position: relative;
   padding: 2.2rem 2rem 1.85rem;
   border-radius: 22px;
-  border: 1px solid rgba(150, 168, 255, 0.18);
-  background: linear-gradient(180deg, rgba(18, 24, 40, 0.68), rgba(8, 12, 22, 0.6));
-  backdrop-filter: blur(28px) saturate(1.12);
-  -webkit-backdrop-filter: blur(28px) saturate(1.12);
+  border: 1px solid rgba(140, 158, 255, 0.14);
+  background: linear-gradient(180deg, rgba(14, 18, 30, 0.82), rgba(8, 11, 18, 0.88));
+  backdrop-filter: blur(28px) saturate(1.08);
+  -webkit-backdrop-filter: blur(28px) saturate(1.08);
   box-shadow:
-    0 28px 64px rgba(0, 0, 0, 0.42),
-    0 8px 24px rgba(20, 24, 40, 0.28),
-    0 0 64px rgba(77, 163, 255, 0.06),
-    0 0 90px rgba(122, 72, 255, 0.05),
-    inset 0 1px 0 rgba(210, 220, 255, 0.1),
+    0 28px 64px rgba(0, 0, 0, 0.55),
+    0 8px 24px rgba(0, 0, 0, 0.28),
+    0 0 40px rgba(77, 163, 255, 0.03),
+    inset 0 1px 0 rgba(210, 220, 255, 0.08),
     inset 0 0 0 1px rgba(255, 255, 255, 0.02);
   animation: none;
 }
@@ -1300,7 +1258,7 @@ html:has(.auth-split) body {
     padding: 1.35rem 1.1rem 1.35rem 0.7rem;
     align-items: center;
     justify-content: center;
-    background: radial-gradient(ellipse 90% 80% at 78% 46%, rgba(44, 30, 92, 0.28), transparent 72%);
+    background: transparent;
     -webkit-overflow-scrolling: touch;
   }
 

@@ -4,34 +4,28 @@ import EvoluaFitLogo from '../branding/EvoluaFitLogo'
 function LoginHeroWaves() {
   const id = useId().replace(/:/g, '')
   const waves = [
-    { d: 'M-80 268 C 40 232, 150 108, 292 142 S 520 262, 710 188 S 900 96, 1080 118', w: 2.4, o: 0.9 },
-    { d: 'M-80 280 C 48 244, 158 122, 300 154 S 528 272, 718 198 S 908 108, 1080 128', w: 1.9, o: 0.62 },
-    { d: 'M-80 256 C 36 220, 146 96, 286 132 S 512 250, 702 176 S 892 86, 1080 108', w: 1.7, o: 0.52 },
-    { d: 'M-80 292 C 56 256, 166 136, 308 166 S 536 284, 726 210 S 916 120, 1080 140', w: 1.6, o: 0.46 },
-    { d: 'M-80 244 C 28 208, 140 84, 278 122 S 504 240, 694 166 S 884 76, 1080 98', w: 1.4, o: 0.34 },
-    { d: 'M-80 304 C 62 268, 174 148, 316 178 S 544 296, 734 222 S 924 132, 1080 152', w: 1.4, o: 0.32 },
-    { d: 'M-80 232 C 22 198, 132 74, 270 114 S 496 230, 686 156 S 876 68, 1080 90', w: 1.2, o: 0.24 },
-    { d: 'M-80 316 C 70 280, 182 160, 324 190 S 552 308, 742 234 S 932 144, 1080 164', w: 1.2, o: 0.22 },
-    { d: 'M-80 220 C 16 188, 124 66, 262 106 S 488 222, 678 148 S 868 60, 1080 82', w: 1.1, o: 0.16 },
-    { d: 'M-80 328 C 78 292, 190 172, 332 202 S 560 320, 750 246 S 940 156, 1080 176', w: 1.1, o: 0.14 },
-  ]
-  const sparks = [
-    [86, 168, 1.1], [140, 214, 0.8], [210, 132, 0.7], [268, 198, 1],
-    [340, 156, 0.6], [412, 236, 0.9], [488, 148, 0.7], [560, 208, 0.8],
-    [638, 126, 0.6], [720, 184, 0.9], [802, 142, 0.7], [188, 258, 0.5],
+    { d: 'M-90 286 C 50 248, 170 318, 330 278 S 540 208, 730 268 S 910 338, 1120 278', w: 2.4, o: 0.58 },
+    { d: 'M-70 308 C 70 270, 190 340, 350 300 S 560 230, 750 290 S 930 360, 1100 300', w: 2.0, o: 0.44 },
+    { d: 'M-100 264 C 40 226, 180 296, 340 256 S 550 186, 740 246 S 920 316, 1140 256', w: 1.8, o: 0.36 },
+    { d: 'M-60 330 C 80 292, 210 362, 370 322 S 580 252, 770 312 S 950 382, 1120 322', w: 1.7, o: 0.3 },
+    { d: 'M-80 246 C 30 210, 170 278, 340 240 S 550 172, 740 228 S 920 298, 1120 238', w: 1.45, o: 0.24 },
+    { d: 'M-50 352 C 90 314, 220 384, 390 344 S 600 274, 790 334 S 970 404, 1140 344', w: 1.45, o: 0.22 },
+    { d: 'M-70 228 C 40 194, 180 260, 350 224 S 560 158, 750 214 S 930 282, 1100 222', w: 1.2, o: 0.16 },
+    { d: 'M-40 370 C 100 332, 240 400, 410 362 S 620 292, 810 352 S 990 420, 1140 362', w: 1.2, o: 0.14 },
   ]
 
   return (
-    <svg className="login-hero-waves" viewBox="0 0 1000 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <svg className="login-hero-waves" viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true">
       <defs>
-        <linearGradient id={`${id}-stroke`} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#3d6bff" />
-          <stop offset="28%" stopColor="#4da3ff" />
-          <stop offset="55%" stopColor="#7657ff" />
-          <stop offset="100%" stopColor="#8a52f5" />
+        <linearGradient id={`${id}-stroke`} x1="0%" y1="50%" x2="100%" y2="50%">
+          <stop offset="0%" stopColor="#4ecbff" stopOpacity="0.18" />
+          <stop offset="22%" stopColor="#4da3ff" stopOpacity="0.9" />
+          <stop offset="52%" stopColor="#7657ff" stopOpacity="1" />
+          <stop offset="78%" stopColor="#8a52f5" stopOpacity="0.82" />
+          <stop offset="100%" stopColor="#5a2ab8" stopOpacity="0.2" />
         </linearGradient>
-        <filter id={`${id}-glow`} x="-20%" y="-40%" width="140%" height="180%">
-          <feGaussianBlur stdDeviation="3.2" result="blur" />
+        <filter id={`${id}-glow`} x="-12%" y="-30%" width="124%" height="160%">
+          <feGaussianBlur stdDeviation="2.2" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
@@ -49,9 +43,6 @@ function LoginHeroWaves() {
           opacity={wave.o}
           filter={`url(#${id}-glow)`}
         />
-      ))}
-      {sparks.map(([x, y, r]) => (
-        <circle key={`${x}-${y}`} cx={x} cy={y} r={r} fill="#d7e6ff" opacity="0.42" />
       ))}
     </svg>
   )
@@ -153,9 +144,12 @@ export default function LoginHero() {
       </div>
 
       <div className="auth-split__cast">
-        <div className="login-hero-backdrop" aria-hidden="true">
+        <div className="login-hero-atmosphere" aria-hidden="true">
           <span className="login-hero-backdrop__halo" />
           <span className="login-hero-backdrop__mist" />
+          <span className="login-hero-backdrop__ground" />
+        </div>
+        <div className="login-hero-backdrop" aria-hidden="true">
           <LoginHeroWaves />
         </div>
         <div className="login-hero-frame">
@@ -171,6 +165,7 @@ export default function LoginHero() {
             decoding="async"
             fetchPriority="high"
           />
+          <span className="login-hero-backdrop__ring" aria-hidden="true" />
         </div>
         <ol className="auth-split__steps" aria-hidden="true">
           <li>Treine</li>

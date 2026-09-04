@@ -116,8 +116,7 @@
   .auth-split__panel-inner,
   .auth-split__brand,
   .auth-split__privacy,
-  .login-hero-art,
-  .login-hero-stage .evolua-pulse--mesh {
+  .login-hero-art {
     animation: none;
   }
 }
@@ -407,11 +406,52 @@
   overflow: visible;
 }
 
+.login-hero-backdrop {
+  position: absolute;
+  left: -72%;
+  top: 14%;
+  z-index: 0;
+  width: 230%;
+  height: 70%;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 0.7) 0%, #000 12%, #000 68%, transparent 92%);
+  mask-image: linear-gradient(to right, rgba(0, 0, 0, 0.7) 0%, #000 12%, #000 68%, transparent 92%);
+}
+
+.login-hero-backdrop__halo {
+  position: absolute;
+  left: 38%;
+  top: 8%;
+  width: 46%;
+  height: 72%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 46%, rgba(90, 150, 255, 0.4) 0%, rgba(118, 87, 255, 0.2) 36%, transparent 72%);
+  filter: blur(16px);
+}
+
+.login-hero-backdrop__mist {
+  position: absolute;
+  left: 38%;
+  bottom: 2%;
+  width: 48%;
+  height: 28%;
+  background: radial-gradient(ellipse at 50% 80%, rgba(72, 42, 140, 0.34), transparent 72%);
+  filter: blur(22px);
+}
+
+.login-hero-waves {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
 .login-hero-frame {
   position: absolute;
   left: calc(50% - 32px);
   top: 48%;
-  z-index: 0;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -419,6 +459,7 @@
   width: auto;
   transform: translate(-50%, -50%);
   pointer-events: none;
+  mix-blend-mode: lighten;
   -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%);
   mask-image: linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%);
 }
@@ -472,17 +513,6 @@
   filter: blur(16px);
 }
 
-.login-hero-stage .evolua-pulse--mesh {
-  position: absolute;
-  left: 6%;
-  right: 6%;
-  top: 16%;
-  bottom: 24%;
-  width: auto;
-  height: auto;
-  opacity: 0.28;
-}
-
 .login-hero-art {
   display: block;
   position: relative;
@@ -499,6 +529,7 @@
   pointer-events: none;
   user-select: none;
   filter: contrast(1.06) saturate(0.94) brightness(1.02);
+  mix-blend-mode: lighten;
   -webkit-mask-image: radial-gradient(ellipse 70% 86% at 50% 48%, #000 42%, rgba(0, 0, 0, 0.75) 68%, transparent 88%);
   mask-image: radial-gradient(ellipse 70% 86% at 50% 48%, #000 42%, rgba(0, 0, 0, 0.75) 68%, transparent 88%);
 }

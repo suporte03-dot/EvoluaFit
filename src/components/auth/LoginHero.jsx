@@ -1,5 +1,61 @@
+import { useId } from 'react'
 import EvoluaFitLogo from '../branding/EvoluaFitLogo'
-import { EvoluaPulseMesh } from '../branding/EvoluaPulse'
+
+function LoginHeroWaves() {
+  const id = useId().replace(/:/g, '')
+  const waves = [
+    { d: 'M-80 268 C 40 232, 150 108, 292 142 S 520 262, 710 188 S 900 96, 1080 118', w: 2.4, o: 0.9 },
+    { d: 'M-80 280 C 48 244, 158 122, 300 154 S 528 272, 718 198 S 908 108, 1080 128', w: 1.9, o: 0.62 },
+    { d: 'M-80 256 C 36 220, 146 96, 286 132 S 512 250, 702 176 S 892 86, 1080 108', w: 1.7, o: 0.52 },
+    { d: 'M-80 292 C 56 256, 166 136, 308 166 S 536 284, 726 210 S 916 120, 1080 140', w: 1.6, o: 0.46 },
+    { d: 'M-80 244 C 28 208, 140 84, 278 122 S 504 240, 694 166 S 884 76, 1080 98', w: 1.4, o: 0.34 },
+    { d: 'M-80 304 C 62 268, 174 148, 316 178 S 544 296, 734 222 S 924 132, 1080 152', w: 1.4, o: 0.32 },
+    { d: 'M-80 232 C 22 198, 132 74, 270 114 S 496 230, 686 156 S 876 68, 1080 90', w: 1.2, o: 0.24 },
+    { d: 'M-80 316 C 70 280, 182 160, 324 190 S 552 308, 742 234 S 932 144, 1080 164', w: 1.2, o: 0.22 },
+    { d: 'M-80 220 C 16 188, 124 66, 262 106 S 488 222, 678 148 S 868 60, 1080 82', w: 1.1, o: 0.16 },
+    { d: 'M-80 328 C 78 292, 190 172, 332 202 S 560 320, 750 246 S 940 156, 1080 176', w: 1.1, o: 0.14 },
+  ]
+  const sparks = [
+    [86, 168, 1.1], [140, 214, 0.8], [210, 132, 0.7], [268, 198, 1],
+    [340, 156, 0.6], [412, 236, 0.9], [488, 148, 0.7], [560, 208, 0.8],
+    [638, 126, 0.6], [720, 184, 0.9], [802, 142, 0.7], [188, 258, 0.5],
+  ]
+
+  return (
+    <svg className="login-hero-waves" viewBox="0 0 1000 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <linearGradient id={`${id}-stroke`} x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#3d6bff" />
+          <stop offset="28%" stopColor="#4da3ff" />
+          <stop offset="55%" stopColor="#7657ff" />
+          <stop offset="100%" stopColor="#8a52f5" />
+        </linearGradient>
+        <filter id={`${id}-glow`} x="-20%" y="-40%" width="140%" height="180%">
+          <feGaussianBlur stdDeviation="3.2" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      {waves.map((wave) => (
+        <path
+          key={wave.d}
+          d={wave.d}
+          fill="none"
+          stroke={`url(#${id}-stroke)`}
+          strokeWidth={wave.w}
+          strokeLinecap="round"
+          opacity={wave.o}
+          filter={`url(#${id}-glow)`}
+        />
+      ))}
+      {sparks.map(([x, y, r]) => (
+        <circle key={`${x}-${y}`} cx={x} cy={y} r={r} fill="#d7e6ff" opacity="0.42" />
+      ))}
+    </svg>
+  )
+}
 
 function ShieldIcon() {
   return (
@@ -97,12 +153,16 @@ export default function LoginHero() {
       </div>
 
       <div className="auth-split__cast">
+        <div className="login-hero-backdrop" aria-hidden="true">
+          <span className="login-hero-backdrop__halo" />
+          <span className="login-hero-backdrop__mist" />
+          <LoginHeroWaves />
+        </div>
         <div className="login-hero-frame">
           <div className="login-hero-stage" aria-hidden="true">
             <span className="login-hero-stage__beam" />
             <span className="login-hero-stage__core" />
             <span className="login-hero-stage__floor" />
-            <EvoluaPulseMesh />
           </div>
           <img
             className="login-hero-art"

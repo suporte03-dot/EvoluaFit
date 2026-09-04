@@ -170,7 +170,6 @@ export default function LoginHero() {
             <span className="login-hero-veil__halo" />
             <span className="login-hero-veil__wave" />
             <span className="login-hero-veil__floor" />
-            <span className="login-hero-veil__grain" />
             <span className="login-hero-backdrop__ring" />
           </div>
         </div>

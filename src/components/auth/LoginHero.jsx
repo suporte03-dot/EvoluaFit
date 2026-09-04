@@ -4,21 +4,21 @@ import EvoluaFitLogo from '../branding/EvoluaFitLogo'
 function LoginHeroWaves() {
   const id = useId().replace(/:/g, '')
   const waves = [
-    { d: 'M-90 286 C 50 248, 170 318, 330 278 S 540 208, 730 268 S 910 338, 1120 278', w: 1.3, o: 0.16 },
-    { d: 'M-70 308 C 70 270, 190 340, 350 300 S 560 230, 750 290 S 930 360, 1100 300', w: 1.15, o: 0.13 },
-    { d: 'M-100 264 C 40 226, 180 296, 340 256 S 550 186, 740 246 S 920 316, 1140 256', w: 1.05, o: 0.11 },
-    { d: 'M-60 330 C 80 292, 210 362, 370 322 S 580 252, 770 312 S 950 382, 1120 322', w: 0.95, o: 0.09 },
-    { d: 'M-80 246 C 30 210, 170 278, 340 240 S 550 172, 740 228 S 920 298, 1120 238', w: 0.85, o: 0.08 },
+    { d: 'M-90 286 C 50 248, 170 318, 330 278 S 540 208, 730 268 S 910 338, 1120 278', w: 1.1, o: 0.11 },
+    { d: 'M-70 308 C 70 270, 190 340, 350 300 S 560 230, 750 290 S 930 360, 1100 300', w: 0.95, o: 0.09 },
+    { d: 'M-100 264 C 40 226, 180 296, 340 256 S 550 186, 740 246 S 920 316, 1140 256', w: 0.85, o: 0.08 },
+    { d: 'M-60 330 C 80 292, 210 362, 370 322 S 580 252, 770 312 S 950 382, 1120 322', w: 0.75, o: 0.07 },
+    { d: 'M-80 246 C 30 210, 170 278, 340 240 S 550 172, 740 228 S 920 298, 1120 238', w: 0.7, o: 0.06 },
   ]
 
   return (
     <svg className="login-hero-waves" viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true">
       <defs>
         <linearGradient id={`${id}-stroke`} x1="0%" y1="50%" x2="100%" y2="50%">
-          <stop offset="0%" stopColor="#4da3ff" stopOpacity="0.7" />
-          <stop offset="38%" stopColor="#6d4aff" stopOpacity="0.9" />
-          <stop offset="72%" stopColor="#8a52f5" stopOpacity="0.45" />
-          <stop offset="100%" stopColor="#5a2ab8" stopOpacity="0.08" />
+          <stop offset="0%" stopColor="#4da3ff" stopOpacity="0.55" />
+          <stop offset="38%" stopColor="#6d4aff" stopOpacity="0.7" />
+          <stop offset="72%" stopColor="#8a52f5" stopOpacity="0.32" />
+          <stop offset="100%" stopColor="#5a2ab8" stopOpacity="0.05" />
         </linearGradient>
         <filter id={`${id}-glow`} x="-12%" y="-30%" width="124%" height="160%">
           <feGaussianBlur stdDeviation="0.8" result="blur" />
@@ -140,21 +140,10 @@ export default function LoginHero() {
       </div>
 
       <div className="auth-split__cast">
-        <div className="login-hero-atmosphere" aria-hidden="true">
-          <span className="login-hero-backdrop__halo" />
-          <span className="login-hero-backdrop__side" />
-          <span className="login-hero-backdrop__mist" />
-          <span className="login-hero-backdrop__ground" />
-        </div>
         <div className="login-hero-backdrop" aria-hidden="true">
           <LoginHeroWaves />
         </div>
         <div className="login-hero-frame">
-          <div className="login-hero-stage" aria-hidden="true">
-            <span className="login-hero-stage__beam" />
-            <span className="login-hero-stage__core" />
-            <span className="login-hero-stage__floor" />
-          </div>
           <img
             className="login-hero-art"
             src="/branding/evoluafit-login-athletes.png?v=behind-1"
@@ -162,14 +151,6 @@ export default function LoginHero() {
             decoding="async"
             fetchPriority="high"
           />
-          <span className="login-hero-light" aria-hidden="true" />
-          <div className="login-hero-veil" aria-hidden="true">
-            <span className="login-hero-veil__wash" />
-            <span className="login-hero-veil__halo" />
-            <span className="login-hero-veil__wave" />
-            <span className="login-hero-veil__floor" />
-            <span className="login-hero-backdrop__ring" />
-          </div>
         </div>
         <ol className="auth-split__steps" aria-hidden="true">
           <li>Treine</li>

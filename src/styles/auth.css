@@ -459,9 +459,8 @@
   width: auto;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  mix-blend-mode: lighten;
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%);
-  mask-image: linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
 }
 
 .login-hero-stage {
@@ -529,9 +528,6 @@
   pointer-events: none;
   user-select: none;
   filter: contrast(1.06) saturate(0.94) brightness(1.02);
-  mix-blend-mode: lighten;
-  -webkit-mask-image: radial-gradient(ellipse 70% 86% at 50% 48%, #000 42%, rgba(0, 0, 0, 0.75) 68%, transparent 88%);
-  mask-image: radial-gradient(ellipse 70% 86% at 50% 48%, #000 42%, rgba(0, 0, 0, 0.75) 68%, transparent 88%);
 }
 
 .auth-split__logo.evoluafit-logo,

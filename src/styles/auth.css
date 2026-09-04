@@ -470,10 +470,10 @@ html:has(.auth-split) body {
   pointer-events: none;
   background: radial-gradient(
     ellipse at 50% 42%,
-    rgba(37, 99, 235, 0.18) 0%,
-    rgba(37, 99, 235, 0.14) 32%,
-    rgba(109, 74, 255, 0.1) 54%,
-    rgba(109, 74, 255, 0.045) 72%,
+    rgba(37, 99, 235, 0.28) 0%,
+    rgba(37, 99, 235, 0.18) 32%,
+    rgba(109, 74, 255, 0.12) 54%,
+    rgba(109, 74, 255, 0.05) 72%,
     transparent 86%
   );
   filter: blur(32px);
@@ -696,20 +696,19 @@ html:has(.auth-split) body {
   inset: 0;
   z-index: 3;
   pointer-events: none;
-  mix-blend-mode: lighten;
   background:
     radial-gradient(
-      ellipse 38% 22% at 53% 74%,
-      rgba(109, 74, 255, 0.08) 0%,
+      ellipse 42% 24% at 53% 74%,
+      rgba(109, 74, 255, 0.16) 0%,
       transparent 72%
     ),
     radial-gradient(
-      ellipse 62% 64% at 50% 40%,
-      rgba(37, 99, 235, 0.18) 0%,
-      rgba(37, 99, 235, 0.12) 32%,
-      rgba(109, 74, 255, 0.08) 52%,
-      rgba(109, 74, 255, 0.03) 70%,
-      transparent 84%
+      ellipse 70% 72% at 50% 40%,
+      rgba(37, 99, 235, 0.4) 0%,
+      rgba(37, 99, 235, 0.24) 28%,
+      rgba(109, 74, 255, 0.16) 50%,
+      rgba(109, 74, 255, 0.06) 70%,
+      transparent 86%
     );
 }
 

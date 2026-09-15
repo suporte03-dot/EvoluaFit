@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useProfile } from '../context/ProfileContext'
+import { useFitness } from '../context/FitnessContext'
 import SectionTitle from '../components/SectionTitle'
 import InstallPwaButton from '../components/pwa/InstallPwaButton'
+import { cloudGoalToCode, displayGoalLabel } from '../utils/profileIdentity'
 
 const GOAL_OPTIONS = [
   'Saúde geral',
@@ -18,13 +20,14 @@ const LEVEL_OPTIONS = ['Iniciante', 'Intermediário', 'Avançado']
 
 const EMPTY_FORM = {
   full_name: '',
-  goal: 'Saúde geral',
-  level: 'Iniciante',
+  goal: '',
+  level: '',
 }
 
 export default function ProfilePage() {
   const { user, signOut } = useAuth()
   const { profile, loadingProfile, profileError, updateProfile } = useProfile()
+  const { profile: localProfile, generatedPlan, updateProfile: updateLocalProfile } = useFitness()
   const navigate = useNavigate()
   const [form, setForm] = useState(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
@@ -34,16 +37,32 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!profile) {
-      setForm(EMPTY_FORM)
+      const inferredGoal = displayGoalLabel({ objective: generatedPlan?.objective || localProfile?.objective })
+      setForm({
+        full_name: localProfile?.name || '',
+        goal: GOAL_OPTIONS.includes(inferredGoal) ? inferredGoal : '',
+        level: LEVEL_OPTIONS.includes(generatedPlan?.level || localProfile?.level)
+          ? generatedPlan?.level || localProfile?.level
+          : '',
+      })
       return
     }
 
+    const goalFromCloud = GOAL_OPTIONS.includes(profile.goal)
+      ? profile.goal
+      : displayGoalLabel({ cloudGoal: profile.goal, objective: generatedPlan?.objective || localProfile?.objective })
+    const levelFromCloud = LEVEL_OPTIONS.includes(profile.level)
+      ? profile.level
+      : LEVEL_OPTIONS.includes(generatedPlan?.level || localProfile?.level)
+        ? generatedPlan?.level || localProfile?.level
+        : ''
+
     setForm({
-      full_name: profile.full_name || '',
-      goal: GOAL_OPTIONS.includes(profile.goal) ? profile.goal : GOAL_OPTIONS[0],
-      level: LEVEL_OPTIONS.includes(profile.level) ? profile.level : LEVEL_OPTIONS[0],
+      full_name: profile.full_name || localProfile?.name || '',
+      goal: GOAL_OPTIONS.includes(goalFromCloud) ? goalFromCloud : '',
+      level: levelFromCloud,
     })
-  }, [profile])
+  }, [profile, generatedPlan, localProfile])
 
   const updateField = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }))
@@ -68,6 +87,18 @@ export default function ProfilePage() {
       return
     }
 
+    if (!form.goal) {
+      setError('Selecione um objetivo.')
+      setSuccess('')
+      return
+    }
+
+    if (!form.level) {
+      setError('Selecione um nível.')
+      setSuccess('')
+      return
+    }
+
     setSaving(true)
     setError('')
     setSuccess('')
@@ -84,6 +115,16 @@ export default function ProfilePage() {
       setError(updateError.message || 'Não foi possível salvar o perfil.')
       return
     }
+
+    const objectiveCode = cloudGoalToCode(form.goal)
+    updateLocalProfile(
+      {
+        name: fullName,
+        ...(objectiveCode ? { objective: objectiveCode } : {}),
+        ...(form.level ? { level: form.level } : {}),
+      },
+      { silent: true },
+    )
 
     setSuccess('Perfil atualizado com sucesso.')
   }
@@ -137,7 +178,8 @@ export default function ProfilePage() {
                   {profile?.full_name?.trim() || user?.user_metadata?.full_name || 'Sem nome'}
                 </strong>
                 <p className="profile-summary__meta">
-                  {profile?.goal || 'Objetivo não definido'} · {profile?.level || 'Nível não definido'}
+                  {form.goal || profile?.goal || 'Objetivo não definido'} ·{' '}
+                  {form.level || profile?.level || 'Nível não definido'}
                 </p>
               </>
             )}
@@ -184,6 +226,7 @@ export default function ProfilePage() {
                 onChange={(e) => updateField('goal', e.target.value)}
                 disabled={loadingProfile || saving}
               >
+                <option value="">Selecione o objetivo</option>
                 {GOAL_OPTIONS.map((option) => (
                   <option key={option} value={option}>
                     {option}
@@ -199,6 +242,7 @@ export default function ProfilePage() {
                 onChange={(e) => updateField('level', e.target.value)}
                 disabled={loadingProfile || saving}
               >
+                <option value="">Selecione o nível</option>
                 {LEVEL_OPTIONS.map((option) => (
                   <option key={option} value={option}>
                     {option}

@@ -1,6 +1,15 @@
 import { useEffect } from 'react'
 
-export default function Modal({ isOpen, onClose, title, children, size = 'md', className = '' }) {
+export default function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
+  size = 'md',
+  className = '',
+  closeLabel = 'Fechar',
+  showClose = true,
+}) {
   useEffect(() => {
     if (!isOpen) return undefined
     const handleKey = (e) => {
@@ -35,9 +44,11 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md', c
               Diálogo
             </span>
           )}
-          <button type="button" className="modal__close" onClick={onClose} aria-label="Fechar">
-            ×
-          </button>
+          {showClose ? (
+            <button type="button" className="modal__close" onClick={onClose} aria-label={closeLabel}>
+              ×
+            </button>
+          ) : null}
         </div>
         <div className="modal__body">{children}</div>
       </div>

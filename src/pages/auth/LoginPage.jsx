@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import AuthLayout from '../../components/auth/AuthLayout'
@@ -35,15 +35,30 @@ function IconEye({ size = 18, off = false }) {
   )
 }
 
+const REMEMBER_EMAIL_KEY = 'evoluafit-remember-email'
+
+function readRememberedEmail() {
+  try {
+    return localStorage.getItem(REMEMBER_EMAIL_KEY) || ''
+  } catch {
+    return ''
+  }
+}
+
 export default function LoginPage() {
   const { signIn } = useAuth()
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
+  const rememberedEmail = readRememberedEmail()
+  const [email, setEmail] = useState(rememberedEmail)
   const [password, setPassword] = useState('')
   const [remember, setRemember] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+
+  useEffect(() => {
+    if (rememberedEmail) setEmail(rememberedEmail)
+  }, [rememberedEmail])
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -60,7 +75,13 @@ export default function LoginPage() {
 
     if (remember) {
       try {
-        localStorage.setItem('evoluafit-remember-email', email)
+        localStorage.setItem(REMEMBER_EMAIL_KEY, email)
+      } catch {
+        /* ignore */
+      }
+    } else {
+      try {
+        localStorage.removeItem(REMEMBER_EMAIL_KEY)
       } catch {
         /* ignore */
       }
@@ -127,7 +148,19 @@ export default function LoginPage() {
             <input
               type="checkbox"
               checked={remember}
-              onChange={(e) => setRemember(e.target.checked)}
+              onChange={(e) => {
+                const next = e.target.checked
+                setRemember(next)
+                if (!next) {
+                  try {
+                    localStorage.removeItem(REMEMBER_EMAIL_KEY)
+                  } catch {
+                    /* ignore */
+                  }
+                }
+              }}
+              aria-checked={remember}
+              aria-readonly="false"
             />
             <span>Lembrar de mim</span>
           </label>

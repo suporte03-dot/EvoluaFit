@@ -110,7 +110,14 @@ export function resolveTodayWorkout({ workouts = [], history = [], plans = [] } 
 /**
  * Weekly progress from history + completed workouts.
  */
-export function getWeeklyProgress({ workouts = [], history = [], profile = {}, goals = [] } = {}) {
+export function getWeeklyProgress({
+  workouts = [],
+  history = [],
+  profile = {},
+  goals = [],
+  generatedPlan = null,
+  plans = [],
+} = {}) {
   const start = startOfWeek()
   const end = endOfWeek()
 
@@ -132,7 +139,9 @@ export function getWeeklyProgress({ workouts = [], history = [], profile = {}, g
   const completedCount = completedFromHistory.length + completedFromWorkouts.length
 
   const goalFromGoals = goals?.find((g) => g.type === 'weekly_workouts')?.target
-  const weeklyGoal = goalFromGoals || profile?.daysPerWeek || null
+  const fromPlan = Number(generatedPlan?.daysPerWeek || plans?.[0]?.daysPerWeek || 0)
+  const fromProfile = Number(profile?.daysPerWeek || 0)
+  const weeklyGoal = goalFromGoals || (fromPlan > 0 ? fromPlan : null) || (fromProfile > 0 ? fromProfile : null)
 
   const pendingThisWeek = (workouts || []).filter((w) => {
     if (isRestWorkout(w) || !isPendingStatus(w.status)) return false
@@ -140,13 +149,9 @@ export function getWeeklyProgress({ workouts = [], history = [], profile = {}, g
     return d >= start && d < end
   }).length
 
-  const plannedTotal =
-    weeklyGoal ||
-    (pendingThisWeek + completedCount > 0 ? pendingThisWeek + completedCount : null)
-
   return {
     completedCount,
-    weeklyGoal: plannedTotal,
+    weeklyGoal: weeklyGoal || null,
     pendingThisWeek,
   }
 }

@@ -5,6 +5,8 @@ import { useProfile } from '../context/ProfileContext'
 import { getExerciseCache } from '../data/exerciseCache'
 import { scrollToSection } from '../utils/scrollToSection'
 import { formatDateShort } from '../utils/dateFormat'
+import { cloudGoalToCode, displayGoalLabel, resolveDaysPerWeek } from '../utils/profileIdentity'
+import { markRestDay } from '../utils/calendarUtils'
 import useCoachVoice from '../hooks/useCoachVoice'
 import { cancelSpeech } from '../utils/coachVoice'
 import {
@@ -190,8 +192,9 @@ function formatLastWorkout(lastWorkout) {
 }
 
 function CoachContextChips({ summary, profile }) {
-  const objective = profile?.objective || summary?.objective
+  const objective = displayGoalLabel({ objective: profile?.objective }) || summary?.objective
   const level = profile?.level || summary?.level
+  const days = Number(profile?.daysPerWeek || 0)
   const chips = [
     {
       id: 'level',
@@ -204,6 +207,12 @@ function CoachContextChips({ summary, profile }) {
       Icon: IconTarget,
       label: 'Objetivo',
       value: objective || 'Defina um objetivo para personalizar as sugestões',
+    },
+    {
+      id: 'freq',
+      Icon: IconDumbbell,
+      label: 'Frequência',
+      value: days > 0 ? `${days}× por semana` : 'Ainda não definida na planilha',
     },
     {
       id: 'last',
@@ -446,6 +455,9 @@ export default function CoachIA() {
     addWorkoutToPlan,
     addExerciseToPlan,
     startWorkout,
+    generatedPlan,
+    updateWorkout,
+    replaceWorkouts,
   } = useFitness()
   const { user } = useAuth()
   const { profile: cloudProfile } = useProfile()
@@ -482,10 +494,11 @@ export default function CoachIA() {
     () => ({
       ...profile,
       name: cloudProfile?.full_name || profile?.name,
-      objective: cloudProfile?.goal || profile?.objective,
-      level: cloudProfile?.level || profile?.level,
+      objective: cloudGoalToCode(cloudProfile?.goal) || generatedPlan?.objective || profile?.objective,
+      level: cloudProfile?.level || generatedPlan?.level || profile?.level,
+      daysPerWeek: resolveDaysPerWeek({ profile, generatedPlan }),
     }),
-    [profile, cloudProfile],
+    [profile, cloudProfile, generatedPlan],
   )
 
   const context = useMemo(
@@ -550,6 +563,8 @@ export default function CoachIA() {
   const speakCoachReplyRef = useRef(null)
   const markIdleRef = useRef(null)
 
+  const applySuggestionRef = useRef(null)
+
   const runCoach = useCallback(
     async (question, handler) => {
       const q = String(question || '').trim()
@@ -559,6 +574,9 @@ export default function CoachIA() {
       try {
         const result = await handler()
         pushExchange(q, result)
+        if (result?.suggestion?.autoApply) {
+          applySuggestionRef.current?.(result.suggestion, 'save')
+        }
         loadingRef.current = false
         setLoading(false)
         markIdleRef.current?.()
@@ -723,10 +741,37 @@ export default function CoachIA() {
         return true
       }
 
+      if (payload.kind === 'schedule') {
+        addWorkoutToPlan(payload.workout)
+        showToast('Treino colocado na agenda.', 'success')
+        return true
+      }
+
+      if (payload.kind === 'reschedule' && payload.id && payload.date) {
+        updateWorkout(payload.id, { date: payload.date })
+        showToast('Treino adiado na agenda.', 'success')
+        return true
+      }
+
+      if (payload.kind === 'reorganize' && payload.moves?.length) {
+        payload.moves.forEach((move) => {
+          if (move.id && move.toDate) updateWorkout(move.id, { date: move.toDate })
+        })
+        showToast('Semana reorganizada.', 'success')
+        return true
+      }
+
+      if (payload.kind === 'rest_day' && payload.date) {
+        replaceWorkouts(markRestDay(workouts, payload.date).workouts, 'Descanso marcado na agenda.')
+        return true
+      }
+
       return false
     },
-    [addExerciseToPlan, addPlanWorkouts, addWorkoutToPlan, savePlan, showToast, startWorkout],
+    [addExerciseToPlan, addPlanWorkouts, addWorkoutToPlan, replaceWorkouts, savePlan, showToast, startWorkout, updateWorkout, workouts],
   )
+
+  applySuggestionRef.current = applySuggestion
 
   const openRelatedExercises = (muscleGroup) => {
     const group = muscleGroup || summary.recommendedGroup || 'Todos'
@@ -860,7 +905,7 @@ export default function CoachIA() {
                 placeholder={
                   voiceState === 'listening'
                     ? 'Ouvindo… diga, por exemplo: o que treino hoje?'
-                    : 'Ex.: Monte um treino de costas de 40 min · ou use o microfone'
+                    : 'Ex.: Monte 4x hipertrofia em 45 min · Marca Pull quinta · ou use o microfone'
                 }
                 value={interimText && voiceState === 'listening' ? interimText : input}
                 onChange={(e) => {

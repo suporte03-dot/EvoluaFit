@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react'
 
-export function useScrollSpy(sectionIds, offset = 120) {
-  const [activeSection, setActiveSection] = useState(sectionIds[0])
+export function useScrollSpy(sectionIds, offset = 120, initialId) {
+  const [activeSection, setActiveSection] = useState(initialId || sectionIds[0])
+
+  useEffect(() => {
+    if (initialId && sectionIds.includes(initialId)) {
+      setActiveSection(initialId)
+    }
+  }, [initialId, sectionIds])
 
   useEffect(() => {
     const ratios = new Map()

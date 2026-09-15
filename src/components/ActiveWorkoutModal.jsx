@@ -24,6 +24,7 @@ import Modal from './Modal'
 import RestTimer from './RestTimer'
 import WorkoutProgressBar from './WorkoutProgressBar'
 import WorkoutSummaryModal from './WorkoutSummaryModal'
+import WorkoutVoiceBar from './WorkoutVoiceBar'
 
 const SAFETY_NOTE =
   'Priorize técnica e recuperação. Pare se sentir dor aguda e consulte um profissional se o desconforto persistir.'
@@ -276,12 +277,15 @@ export default function ActiveWorkoutModal() {
     return () => clearTimeout(t)
   }, [restDoneToast])
 
-  const handleClose = () => {
-    if (window.confirm('Deseja sair do treino? O progresso desta sessão ficará salvo para continuar depois.')) {
-      persistSession()
-      setActiveWorkout(null)
-      window.setTimeout(() => refreshPendingSession?.(), 0)
+  const handleClose = (options = {}) => {
+    if (!options.skipConfirm) {
+      if (!window.confirm('Deseja sair do treino? O progresso desta sessão ficará salvo para continuar depois.')) {
+        return
+      }
     }
+    persistSession()
+    setActiveWorkout(null)
+    window.setTimeout(() => refreshPendingSession?.(), 0)
   }
 
   const togglePause = () => {
@@ -417,7 +421,10 @@ export default function ActiveWorkoutModal() {
     remoteStartRef.current = false
   }
 
-  const handleCancelRemoteSession = async () => {
+  const handleCancelRemoteSession = async (options = {}) => {
+    if (!options.skipConfirm) {
+      if (!window.confirm('Cancelar este treino? O andamento da sessão atual será descartado.')) return
+    }
     const result = await cancelSession()
     if (result?.error?.code === 'ABORTED') return
     if (result?.error) {
@@ -525,6 +532,20 @@ export default function ActiveWorkoutModal() {
     setRestTimer((t) => Math.max(0, t + delta))
   }
 
+  const goAdjacentExercise = (delta) => {
+    if (!sessionExercises.length) return
+    const next = Math.min(sessionExercises.length - 1, Math.max(0, exerciseIndex + delta))
+    setExerciseIndex(next)
+    setExpandedIndex(next)
+  }
+
+  const startRestNow = () => {
+    const ex = sessionExercises[exerciseIndex]
+    if (!ex) return
+    setRestTimer(parseRestFromExercise(ex))
+    setTimerActive(true)
+  }
+
   if (!activeWorkout) return null
 
   const current = sessionExercises[exerciseIndex] || sessionExercises[expandedIndex]
@@ -535,7 +556,8 @@ export default function ActiveWorkoutModal() {
       <Modal
         isOpen={isOpen}
         onClose={handleClose}
-        title=""
+        title={`Modo foco — ${activeWorkout.name}`}
+        closeLabel="Sair do modo foco"
         size="lg"
         className="active-workout-modal active-workout-modal--focus"
       >
@@ -554,9 +576,6 @@ export default function ActiveWorkoutModal() {
                 </span>
               </div>
             </div>
-            <button type="button" className="btn btn--ghost btn--sm workout-session__exit" onClick={handleClose}>
-              Sair
-            </button>
           </header>
 
           <div className="workout-session__topbar">
@@ -613,7 +632,7 @@ export default function ActiveWorkoutModal() {
             ) : null}
             <button
               type="button"
-              className="btn btn--ghost btn--sm"
+              className="btn btn--ghost btn--sm workout-session__cancel"
               onClick={handleCancelRemoteSession}
               disabled={savingSession}
             >
@@ -627,6 +646,25 @@ export default function ActiveWorkoutModal() {
               {current.muscleGroup ? ` · ${current.muscleGroup}` : ''}
             </p>
           )}
+
+          <WorkoutVoiceBar
+            current={current}
+            draft={drafts[exerciseIndex] || { weight: '', reps: '' }}
+            onDraftChange={(d) => setDrafts((prev) => ({ ...prev, [exerciseIndex]: d }))}
+            onCompleteSet={(setNumber, draft) => handleCompleteSet(exerciseIndex, setNumber, draft)}
+            onSkipRest={skipRest}
+            onStartRest={startRestNow}
+            onNextExercise={() => goAdjacentExercise(1)}
+            onSkipExercise={() => goAdjacentExercise(1)}
+            onPause={togglePause}
+            onResume={togglePause}
+            onFinish={() => openSummary(false)}
+            onExit={() => handleClose({ skipConfirm: true })}
+            onCancel={() => handleCancelRemoteSession({ skipConfirm: true })}
+            isPaused={isPaused}
+            restActive={timerActive && restTimer > 0}
+            disabled={false}
+          />
 
           {timerActive && restTimer > 0 && (
             <RestTimer

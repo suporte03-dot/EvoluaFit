@@ -1,5 +1,6 @@
 import { useNavigate as useRouterNavigate } from 'react-router-dom'
 import { mobileNavItems } from '../data/siteData'
+import { SECTION_PATHS, isDedicatedAppRoute } from '../data/dashboardRoutes'
 import { scrollToSection } from '../utils/scrollToSection'
 import {
   IconDumbbell,
@@ -38,7 +39,7 @@ const ICONS = {
 const AREA_SECTIONS = {
   inicio: ['inicio'],
   treinos: ['treinos', 'planilha', 'exercicios'],
-  desempenho: ['desempenho', 'metas'],
+  desempenho: ['desempenho', 'metas', 'espelho'],
   'coach-ia': ['coach-ia'],
   perfil: ['perfil', 'calendario', 'ajuda'],
 }
@@ -51,11 +52,17 @@ export default function MobileNav({ activeSection }) {
   const routerNavigate = useRouterNavigate()
 
   const navigate = (id) => {
-    if (id === 'perfil') {
-      routerNavigate('/app/perfil')
+    const path = SECTION_PATHS[id]
+    if (path) {
+      routerNavigate(path)
+      if (id === 'coach-ia' && !isDedicatedAppRoute(path)) {
+        window.setTimeout(() => {
+          document.getElementById('coach-question')?.focus?.()
+        }, 350)
+      }
       return
     }
-    if (window.location.pathname.startsWith('/app/perfil') || window.location.pathname.startsWith('/app/evolucao')) {
+    if (isDedicatedAppRoute(window.location.pathname)) {
       routerNavigate('/app')
       window.setTimeout(() => {
         scrollToSection(id)

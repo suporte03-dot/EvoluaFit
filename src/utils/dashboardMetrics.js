@@ -51,7 +51,7 @@ function hasScheduledWorkouts(workouts) {
 /**
  * @param {{ profile?: object, workouts: object[], history: object[], goals: object[], performance?: object }} ctx
  */
-export function getDashboardMetrics({ profile, workouts, history, goals, performance }) {
+export function getDashboardMetrics({ profile, workouts, history, goals, performance, generatedPlan }) {
   const perf = performance || getPerformanceSummary(workouts, history)
   const hasData = hasTrainingData(workouts, history)
   const hasSchedule = hasScheduledWorkouts(workouts)
@@ -60,7 +60,8 @@ export function getDashboardMetrics({ profile, workouts, history, goals, perform
 
   const weeklyGoal =
     goals?.find((g) => g.type === 'weekly_workouts')?.target ||
-    profile?.daysPerWeek ||
+    generatedPlan?.daysPerWeek ||
+    (profile?.daysPerWeek > 0 ? profile.daysPerWeek : null) ||
     null
 
   return {

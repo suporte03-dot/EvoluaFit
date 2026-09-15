@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { formatDateShort } from '../../utils/dateFormat'
+import { formatDateShort, formatLastUpdate } from '../../utils/dateFormat'
 import { avatarFactorsFromMeasures, formatSignedDelta } from '../../utils/bodyEvolutionMetrics'
 import BodyAvatar2D from './BodyAvatar2D'
 import BodyComparisonSlider from './BodyComparisonSlider'
@@ -58,7 +58,7 @@ export default function BodyEvolutionDashboard({
         <div>
           <p className="body-evo-kicker">Espelho Evolutivo</p>
           <h1 id="body-dash-title">Seu Espelho Evolutivo</h1>
-          <p>Última atualização: {lastUpdate ? formatDateShort(lastUpdate) : '—'}</p>
+          <p>Última atualização: {lastUpdate ? formatLastUpdate(lastUpdate) : 'Nenhum registro ainda'}</p>
         </div>
         <button type="button" className="btn btn--primary" onClick={onNewCheckin}>
           Novo check-in

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import {
   createCheckin,
@@ -27,6 +27,9 @@ export function useBodyEvolution() {
   const [error, setError] = useState(null)
   const [saving, setSaving] = useState(false)
 
+  const snapshotRef = useRef(snapshot)
+  snapshotRef.current = snapshot
+
   const refresh = useCallback(async () => {
     if (!userId) {
       setSnapshot(null)
@@ -34,7 +37,7 @@ export function useBodyEvolution() {
       setError(null)
       return
     }
-    setLoading(true)
+    if (!snapshotRef.current) setLoading(true)
     const { data, error: nextError } = await getSnapshot(userId)
     setSnapshot(data)
     setError(nextError)

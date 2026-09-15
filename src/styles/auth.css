@@ -811,7 +811,7 @@ html:has(.auth-split) body {
   align-items: center;
   justify-content: center;
   padding: 1.5rem 1.25rem 1.25rem;
-  background: var(--auth-bg, #05070c);
+  background: transparent;
 }
 
 .auth-split__panel-inner,
@@ -998,13 +998,19 @@ html:has(.auth-split) body {
   color: rgba(200, 208, 220, 0.78);
   cursor: pointer;
   min-height: 44px;
+  position: relative;
+  z-index: 2;
+  user-select: none;
 }
 
 .auth-check input {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
   accent-color: var(--auth-accent-a, #7657ff);
   border-radius: 4px;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .auth-link {

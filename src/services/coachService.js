@@ -18,6 +18,8 @@ import { objectiveLabels } from '../data/workoutTemplates'
 import { generateWorkoutPlan as buildPlan, planToWorkouts } from '../utils/workoutGenerator'
 import { generateCoachInsights } from '../utils/coachInsights'
 import { formatSignedDelta } from '../utils/bodyEvolutionMetrics'
+import { parseAppVoiceCommand, describeBuildSlots } from '../utils/voiceIntents'
+import { detectMissedWorkouts } from '../utils/adaptiveWeek'
 
 // Futuro: import { supabase } from '../lib/supabaseClient'
 
@@ -379,8 +381,9 @@ export function getContextualRecommendations(context = {}) {
   const streak = performance?.streak ?? 0
   const days = daysSince(last?.completedAt || last?.date)
   const pending = workouts.filter((w) => w.status === 'Pendente')
+  const weeklyDays = Number(profile.daysPerWeek) || 0
   const weeklyGoal =
-    goals.find((g) => g.type === 'weekly_workouts')?.target || profile.daysPerWeek || 3
+    goals.find((g) => g.type === 'weekly_workouts')?.target || (weeklyDays > 0 ? weeklyDays : 0)
   const weeklyDone = performance?.weeklyWorkouts ?? 0
   const cards = []
 
@@ -595,14 +598,14 @@ export async function getTodaySuggestion(context = {}) {
   const lastSplit = detectSplit(lastMuscles)
   const streak = performance?.streak ?? 0
   const daysSinceLast = daysSince(history[0]?.completedAt || history[0]?.date)
-  const objective = objectiveLabels[profile?.objective] || 'Saúde geral'
+  const objective = objectiveLabels[profile?.objective] || ''
   const pending = workouts.filter((w) => w.status === 'Pendente')
   const hasData = Boolean(profile?.objective || workouts.length || history.length)
 
   let title = 'Treino equilibrado'
   let focus = ['Peitoral', 'Costas', 'Pernas']
   let reason = hasData
-    ? `Com base no seu objetivo (${objective}) e nível ${profile?.level || 'Iniciante'}, sugiro uma sessão equilibrada e moderada.`
+    ? `Com base no seu ${objective ? `objetivo (${objective})` : 'perfil'} e nível ${profile?.level || 'ainda não definido'}, sugiro uma sessão equilibrada e moderada.`
     : 'Ainda não há histórico suficiente. Sugestão genérica segura: treino completo leve, com foco em técnica e recuperação.'
   if (insightLine) reason = `${reason} ${insightLine}`
 
@@ -682,16 +685,17 @@ export async function generateWorkoutPlan(context = {}, options = {}) {
   await delay()
 
   const { profile = {} } = context
-  const home = options.home || profile.location === 'Casa'
+  const home = options.home || options.location === 'Casa' || profile.location === 'Casa'
+  const restrictions = options.restrictions?.length ? options.restrictions : profile.restrictions || []
 
   const plan = buildPlan({
-    objective: profile?.objective || 'saude',
-    level: profile?.level || 'Iniciante',
-    daysPerWeek: profile?.daysPerWeek || 3,
+    objective: options.objective || profile?.objective || 'saude',
+    level: options.level || profile?.level || 'Iniciante',
+    daysPerWeek: options.daysPerWeek || (profile?.daysPerWeek > 0 ? profile.daysPerWeek : 3),
     duration: options.minutes || profile?.duration || 45,
-    location: home ? 'Casa' : profile?.location || 'Academia',
+    location: options.location || (home ? 'Casa' : profile?.location || 'Academia'),
     equipment: home ? HOME_EQUIPMENT : profile?.equipment || ['Academia completa'],
-    restrictions: profile?.restrictions || [],
+    restrictions,
   })
 
   const summary = plan.schedule
@@ -722,9 +726,16 @@ export async function generateWorkoutPlan(context = {}, options = {}) {
     : null
 
   const title = `Planilha de ${plan.daysPerWeek} dias`
+  const voiceHint = describeBuildSlots({
+    daysPerWeek: plan.daysPerWeek,
+    objective: plan.objective,
+    minutes: plan.duration,
+    location: plan.location,
+    restrictions,
+  })
   const reason = `Montei uma divisão para ${plan.objectiveLabel}, nível ${plan.level}, com sessões de ~${plan.duration} min${
     home ? ' adaptada para casa' : ''
-  }. Você pode salvar a planilha inteira ou iniciar o primeiro dia.`
+  } (${voiceHint}). Você pode salvar a planilha inteira ou iniciar o primeiro dia.`
 
   const answer = withSafety(
     [
@@ -1099,6 +1110,22 @@ export function saveCoachSuggestionToPlan(suggestion) {
     return { kind: 'exercise', exercise: suggestion.data }
   }
 
+  if (suggestion.type === 'schedule' && suggestion.data) {
+    return { kind: 'schedule', workout: suggestion.data }
+  }
+
+  if (suggestion.type === 'reschedule' && suggestion.data) {
+    return { kind: 'reschedule', id: suggestion.data.id, date: suggestion.data.date }
+  }
+
+  if (suggestion.type === 'reorganize' && suggestion.data?.moves) {
+    return { kind: 'reorganize', moves: suggestion.data.moves }
+  }
+
+  if (suggestion.type === 'rest_day' && suggestion.data?.date) {
+    return { kind: 'rest_day', date: suggestion.data.date }
+  }
+
   return null
 }
 
@@ -1153,6 +1180,100 @@ function answerBodyEvolution(context = {}) {
   })
 }
 
+function isPendingWorkout(w) {
+  const s = String(w?.status || '').toLowerCase()
+  return !w?.isRest && ['pendente', 'planned', 'pending', 'parcial', 'partial'].includes(s)
+}
+
+function todayKeyLocal() {
+  const d = new Date()
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+async function answerScheduleVoice(context, intent) {
+  await delay()
+  const workouts = context.workouts || []
+
+  if (intent.type === 'reorganize') {
+    const missed = detectMissedWorkouts(workouts)
+    if (!missed.count) {
+      return makeResult({
+        title: 'Sem atraso nesta semana',
+        reason: 'Não há treinos atrasados para reorganizar.',
+      })
+    }
+    return {
+      ...makeResult({
+        title: 'Reorganizar a semana',
+        reason: missed.sentence || 'Vou mover os treinos atrasados para os dias que restam.',
+      }),
+      suggestion: { type: 'reorganize', autoApply: true, data: { moves: missed.moves } },
+      actions: [ACTION.SAVE, ACTION.COPY],
+    }
+  }
+
+  if (intent.type === 'rest') {
+    const date = intent.slots?.date || todayKeyLocal()
+    return {
+      ...makeResult({
+        title: 'Descanso na agenda',
+        reason: `Marquei descanso em ${date}. Priorize sono, hidratação e mobilidade leve.`,
+      }),
+      suggestion: { type: 'rest_day', autoApply: true, data: { date } },
+      actions: [ACTION.SAVE, ACTION.COPY],
+    }
+  }
+
+  if (intent.type === 'postpone') {
+    const today = todayKeyLocal()
+    const target = workouts.find((w) => isPendingWorkout(w) && w.date === today) || workouts.find(isPendingWorkout)
+    const date = intent.slots?.date || todayKeyLocal()
+    if (!target?.id) {
+      return makeResult({
+        title: 'Nada para adiar',
+        reason: 'Não encontrei um treino pendente para mover. Monte a planilha primeiro.',
+      })
+    }
+    return {
+      ...makeResult({
+        title: 'Treino adiado',
+        reason: `${target.name} vai para ${date}.`,
+      }),
+      suggestion: { type: 'reschedule', autoApply: true, data: { id: target.id, date } },
+      actions: [ACTION.SAVE, ACTION.COPY],
+    }
+  }
+
+  const date = intent.slots?.date || todayKeyLocal()
+  const name = intent.slots?.name || 'Treino'
+  const workout = {
+    id: `voice-cal-${Date.now()}`,
+    name,
+    date,
+    workoutType: intent.slots?.workoutType || name,
+    muscleGroups: [],
+    exercises: [],
+    estimatedMinutes: 45,
+    status: 'Pendente',
+    source: 'voice',
+    createdAt: new Date().toISOString(),
+  }
+
+  return {
+    ...makeResult({
+      title: `${name} na agenda`,
+      reason: `Agendei ${name} para ${date}. Abra o calendário se quiser ajustar horário ou exercícios.`,
+      workout,
+    }),
+    suggestion: { type: 'schedule', autoApply: true, data: workout },
+    relatedWorkout: workout,
+    actions: [ACTION.SAVE, ACTION.START, ACTION.COPY],
+  }
+}
+
 function matchIntent(question) {
   const q = question.toLowerCase()
 
@@ -1187,6 +1308,24 @@ export async function askCoach(question, context = {}) {
   //   body: { question, context: summarizeContext(context) },
   // })
   // if (!error && data?.answer) return data
+
+  const appIntent = parseAppVoiceCommand(question)
+  if (appIntent.domain === 'build') {
+    return generateWorkoutPlan(context, {
+      objective: appIntent.slots?.objective,
+      daysPerWeek: appIntent.slots?.daysPerWeek,
+      minutes: appIntent.slots?.minutes,
+      location: appIntent.slots?.location,
+      restrictions: appIntent.slots?.restrictions,
+      home: appIntent.slots?.location === 'Casa',
+    })
+  }
+  if (appIntent.domain === 'schedule') {
+    return answerScheduleVoice(context, appIntent)
+  }
+  if (appIntent.domain === 'query' || appIntent.domain === 'train') {
+    return getTodaySuggestion(context)
+  }
 
   const intent = matchIntent(question)
 
@@ -1257,11 +1396,15 @@ export async function askCoach(question, context = {}) {
       }
     default: {
       const hasData = Boolean(context.profile?.objective || context.workouts?.length || context.history?.length)
-      const objective = objectiveLabels[context.profile?.objective] || 'saúde geral'
+      const objective = objectiveLabels[context.profile?.objective] || ''
+      const days = Number(context.profile?.daysPerWeek) || 0
+      const profileBit = [objective, context.profile?.level, days > 0 ? `${days}x/semana` : '']
+        .filter(Boolean)
+        .join(', ')
       return makeResult({
         title: 'Orientação geral',
         reason: hasData
-          ? `Entendi sua dúvida sobre "${question}". Com seu perfil (${objective}, nível ${context.profile?.level || 'Iniciante'}, ${context.profile?.daysPerWeek || 3}x/semana), recomendo manter consistência, variar grupos musculares e ajustar carga gradualmente. Use os atalhos para montar treino, ver sugestão de hoje ou ajustar a planilha.`
+          ? `Entendi sua dúvida sobre "${question}".${profileBit ? ` Com seu perfil (${profileBit})` : ''} recomendo manter consistência, variar grupos musculares e ajustar carga gradualmente. Use os atalhos para montar treino, ver sugestão de hoje ou ajustar a planilha.`
           : `Entendi sua dúvida sobre "${question}". Ainda há poucos dados locais — use os atalhos para montar um treino seguro e genérico, ou preencha o perfil para sugestões mais alinhadas à sua rotina.`,
         workout: null,
         careNotes: [

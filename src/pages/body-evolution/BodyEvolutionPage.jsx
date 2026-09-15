@@ -62,10 +62,15 @@ export default function BodyEvolutionPage() {
     setViewer({ title: 'Foto do registro', url })
   }
 
-  if (body.loading) {
+  if (body.loading && !body.latest) {
     return (
       <div className="body-evo">
-        <div className="body-evo-skel" aria-busy="true" aria-live="polite">
+        <section className="body-evo-card" aria-busy="true" aria-live="polite">
+          <p className="body-evo-kicker">Espelho Evolutivo</p>
+          <h1>Seu Espelho Evolutivo</h1>
+          <p>Carregando seus registros…</p>
+        </section>
+        <div className="body-evo-skel">
           <span />
           <span />
           <span />

@@ -1256,23 +1256,34 @@ export function planToWorkouts(plan, referenceDate = new Date()) {
     workoutDate.setDate(monday.getDate() + Math.max(0, dayNum - 1))
 
     const muscleGroups = day.muscleGroups || day.focus || []
-    const exercises = (day.exercises || []).map((ex) => ({
-      exerciseId: ex.exerciseId,
-      name: ex.name,
-      muscleGroup: ex.muscleGroup,
-      sets: ex.sets,
-      reps: ex.reps,
-      restSeconds: ex.restSeconds ?? ex.rest ?? 60,
-      rest: ex.rest ?? ex.restSeconds ?? 60,
-      equipment: ex.equipment,
-      observation: ex.observation,
-      safetyTip: ex.safetyTip,
-      load: ex.load || '',
-      completed: false,
-      level: ex.level,
-      movementType: ex.movementType,
-      movementRoleLabel: ex.movementRoleLabel,
-    }))
+    const exercises = (day.exercises || []).map((ex) => {
+      const catalog = ex.exerciseId ? getExerciseById(ex.exerciseId) : null
+      return {
+        exerciseId: ex.exerciseId,
+        name: ex.name,
+        muscleGroup: ex.muscleGroup,
+        sets: ex.sets,
+        reps: ex.reps,
+        restSeconds: ex.restSeconds ?? ex.rest ?? 60,
+        rest: ex.rest ?? ex.restSeconds ?? 60,
+        equipment: ex.equipment,
+        observation: ex.observation,
+        safetyTip: ex.safetyTip,
+        load: ex.load || '',
+        completed: false,
+        level: ex.level,
+        movementType: ex.movementType,
+        movementRoleLabel: ex.movementRoleLabel,
+        mediaType: ex.mediaType || catalog?.mediaType,
+        mediaUrl: ex.mediaUrl || catalog?.mediaUrl,
+        gif: ex.gif || catalog?.gif,
+        image: ex.image || catalog?.image,
+        thumbnail: ex.thumbnail || catalog?.thumbnail,
+        video: ex.video || catalog?.video,
+        fallbackImage: ex.fallbackImage || catalog?.fallbackImage,
+        fallbackSvg: ex.fallbackSvg || catalog?.fallbackSvg,
+      }
+    })
 
     const volumeSummary =
       day.volumeSummary || summarizeDayVolume(exercises, day.workoutType || day.workoutName || day.name).text

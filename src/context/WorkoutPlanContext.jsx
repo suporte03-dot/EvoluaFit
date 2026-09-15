@@ -287,7 +287,7 @@ export function WorkoutPlanProvider({ children }) {
       setWorkoutPlan(data)
       setLastSavedAt(data.updated_at || null)
       applyRemotePlanLocally(data.plan_data, data)
-      setSaveStatus('saved')
+      setSaveStatus('idle')
       setLoadingWorkoutPlan(false)
       markMigrationDone(user.id)
       return { data, error: null }
@@ -337,7 +337,7 @@ export function WorkoutPlanProvider({ children }) {
         setLastSavedAt(confirmed.updated_at || null)
         applyRemotePlanLocally(confirmed.plan_data, confirmed)
         markMigrationDone(user.id)
-        setSaveStatus('saved')
+        setSaveStatus('idle')
         setLoadingWorkoutPlan(false)
         return { data: confirmed, error: null }
       }
@@ -385,6 +385,12 @@ export function WorkoutPlanProvider({ children }) {
       }
     }
   }, [])
+
+  useEffect(() => {
+    if (saveStatus !== 'saved') return undefined
+    const timer = window.setTimeout(() => setSaveStatus('idle'), 4000)
+    return () => window.clearTimeout(timer)
+  }, [saveStatus])
 
   const saveWorkoutPlan = useCallback(
     async (planData) => {

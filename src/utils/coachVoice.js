@@ -18,14 +18,14 @@ export function isSpeechSynthesisSupported() {
   return typeof window !== 'undefined' && typeof window.speechSynthesis !== 'undefined'
 }
 
-/** Preferência “Ouvir respostas” — default ligado quando TTS existe. */
+/** Preferência “Ouvir respostas” — default desligado até o usuário ligar. */
 export function loadTtsPreference() {
   try {
     const raw = localStorage.getItem(VOICE_TTS_STORAGE_KEY)
-    if (raw === null) return isSpeechSynthesisSupported()
+    if (raw === null) return false
     return raw === '1' || raw === 'true'
   } catch {
-    return isSpeechSynthesisSupported()
+    return false
   }
 }
 

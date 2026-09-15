@@ -61,7 +61,7 @@ export function getNextAction({
     return {
       id: 'start',
       kind: 'start',
-      title: situation === 'returning' ? 'Retomar a rotina' : 'Treino de hoje',
+      title: workout.name || (situation === 'returning' ? 'Retomar a rotina' : 'Treino de hoje'),
       description:
         situation === 'returning'
           ? 'Recomece com volume confortável. Consistência vale mais que intensidade.'

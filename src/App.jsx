@@ -1,9 +1,11 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { sectionIds } from './data/siteData'
+import { sectionFromPath, isDedicatedAppRoute } from './data/dashboardRoutes'
 import { useScrollSpy } from './hooks/useScrollSpy'
 import { useSectionHash } from './hooks/useSectionHash'
 import { useHashRoute } from './hooks/useHashRoute'
+import { scrollToSection } from './utils/scrollToSection'
 import { AuthProvider } from './context/AuthContext'
 import { ProfileProvider } from './context/ProfileContext'
 import { WorkoutPlanProvider } from './context/WorkoutPlanContext'
@@ -23,6 +25,7 @@ import FirstRunGuide, { hasCompletedOnboarding } from './components/FirstRunGuid
 import MobileNav from './components/MobileNav'
 import DashboardShell from './components/dashboard/DashboardShell'
 import DashboardSidebar from './components/dashboard/DashboardSidebar'
+import ProfileFitnessSync from './components/ProfileFitnessSync'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import GuestRoute from './components/auth/GuestRoute'
 import RootRedirect from './components/auth/RootRedirect'
@@ -67,15 +70,31 @@ function SectionFallback({ label = 'Carregando' }) {
 
 function AppLayout() {
   const location = useLocation()
-  const activeSection = useScrollSpy(sectionIds)
+  const pathSection = sectionFromPath(location.pathname)
+  const spySeed =
+    pathSection && pathSection !== 'perfil' && pathSection !== 'espelho' ? pathSection : 'inicio'
+  const activeSection = useScrollSpy(sectionIds, 120, spySeed)
   useSectionHash(sectionIds)
   const { toasts, history, workouts } = useFitness()
   const { page, id: exerciseId } = useHashRoute()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const isProfileRoute = location.pathname.startsWith('/app/perfil')
-  const isMirrorRoute = location.pathname.startsWith('/app/evolucao')
-  const shellSection = isProfileRoute ? 'perfil' : isMirrorRoute ? 'desempenho' : activeSection
+  const dedicated = isDedicatedAppRoute(location.pathname)
+  const shellSection = dedicated ? pathSection : activeSection
+
+  useEffect(() => {
+    if (dedicated) return undefined
+    const section = sectionFromPath(location.pathname)
+    if (!section) return undefined
+    const timer = window.setTimeout(() => {
+      if (section === 'inicio') {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        return
+      }
+      scrollToSection(section)
+    }, 60)
+    return () => window.clearTimeout(timer)
+  }, [location.pathname, dedicated])
 
   useEffect(() => {
     const onResize = () => {
@@ -119,7 +138,7 @@ function AppLayout() {
             onOpenDashboardMenu={() => setMobileMenuOpen((open) => !open)}
           />
           <main>
-            <Outlet />
+            {dedicated ? <Outlet /> : <DashboardHome />}
           </main>
         </div>
       </div>
@@ -171,9 +190,18 @@ function DashboardApp() {
           <WorkoutSessionProvider>
             <ProgressProvider>
               <SyncProvider>
+                <ProfileFitnessSync />
                 <Routes>
                   <Route element={<AppLayout />}>
-                    <Route index element={<DashboardHome />} />
+                    <Route index element={null} />
+                    <Route path="treinos" element={null} />
+                    <Route path="planilha" element={null} />
+                    <Route path="biblioteca" element={null} />
+                    <Route path="indicadores" element={null} />
+                    <Route path="metas" element={null} />
+                    <Route path="coach" element={null} />
+                    <Route path="agenda" element={null} />
+                    <Route path="ajuda" element={null} />
                     <Route path="perfil" element={<ProfilePage />} />
                     <Route
                       path="evolucao/espelho/*"

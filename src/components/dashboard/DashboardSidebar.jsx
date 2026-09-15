@@ -18,6 +18,7 @@ import EvoluaFitBrand from '../branding/EvoluaFitBrand'
 import { deriveXpProgress, initialsFromName } from './dashboardUtils'
 import { resolveDisplayName } from '../../utils/displayName'
 import { scrollToSection, handleSectionClick } from '../../utils/scrollToSection'
+import { SECTION_PATHS, isDedicatedAppRoute } from '../../data/dashboardRoutes'
 import { useAuth } from '../../context/AuthContext'
 import { useProfile } from '../../context/ProfileContext'
 
@@ -25,38 +26,38 @@ const NAV_GROUPS = [
   {
     id: 'hoje',
     label: 'Hoje',
-    items: [{ id: 'inicio', label: 'Agora', Icon: IconHome, tone: 'quiet' }],
+    items: [{ id: 'inicio', label: 'Agora', Icon: IconHome, tone: 'quiet', to: SECTION_PATHS.inicio }],
   },
   {
     id: 'treinar',
     label: 'Treinar',
     items: [
-      { id: 'treinos', label: 'Meus treinos', Icon: IconDumbbell, tone: 'quiet' },
-      { id: 'planilha', label: 'Planilha', Icon: IconPanel, tone: 'quiet' },
-      { id: 'exercicios', label: 'Biblioteca', Icon: IconLibrary, tone: 'quiet' },
+      { id: 'treinos', label: 'Meus treinos', Icon: IconDumbbell, tone: 'quiet', to: SECTION_PATHS.treinos },
+      { id: 'planilha', label: 'Planilha', Icon: IconPanel, tone: 'quiet', to: SECTION_PATHS.planilha },
+      { id: 'exercicios', label: 'Biblioteca', Icon: IconLibrary, tone: 'quiet', to: SECTION_PATHS.exercicios },
     ],
   },
   {
     id: 'evolucao',
     label: 'Evolução',
     items: [
-      { id: 'desempenho', label: 'Indicadores', Icon: IconTrend, tone: 'quiet' },
-      { id: 'metas', label: 'Metas', Icon: IconChart, tone: 'quiet' },
-      { id: 'espelho', label: 'Espelho Evolutivo', Icon: IconMirror, tone: 'quiet', to: '/app/evolucao/espelho' },
+      { id: 'desempenho', label: 'Indicadores', Icon: IconTrend, tone: 'quiet', to: SECTION_PATHS.desempenho },
+      { id: 'metas', label: 'Metas', Icon: IconChart, tone: 'quiet', to: SECTION_PATHS.metas },
+      { id: 'espelho', label: 'Espelho Evolutivo', Icon: IconMirror, tone: 'quiet', to: SECTION_PATHS.espelho },
     ],
   },
   {
     id: 'coach',
     label: 'Coach',
-    items: [{ id: 'coach-ia', label: 'Coach', Icon: IconSpark, tone: 'quiet' }],
+    items: [{ id: 'coach-ia', label: 'Coach', Icon: IconSpark, tone: 'quiet', to: SECTION_PATHS['coach-ia'] }],
   },
   {
     id: 'perfil',
     label: 'Perfil',
     items: [
-      { id: 'calendario', label: 'Agenda', Icon: IconCalendar, tone: 'quiet' },
-      { id: 'perfil', label: 'Conta', Icon: IconSettings, tone: 'quiet', to: '/app/perfil' },
-      { id: 'ajuda', label: 'Ajuda', Icon: IconSpark, tone: 'quiet' },
+      { id: 'calendario', label: 'Agenda', Icon: IconCalendar, tone: 'quiet', to: SECTION_PATHS.calendario },
+      { id: 'perfil', label: 'Conta', Icon: IconSettings, tone: 'quiet', to: SECTION_PATHS.perfil },
+      { id: 'ajuda', label: 'Ajuda', Icon: IconSpark, tone: 'quiet', to: SECTION_PATHS.ajuda },
     ],
   },
 ]
@@ -94,8 +95,7 @@ export default function DashboardSidebar({
   const levelLabel = xp.levelName || 'Começando'
   const trainingLevel = profile?.level ? `Treino: ${profile.level}` : null
   const initials = loadingProfile ? '··' : initialsFromName(accountLabel)
-  const onDedicatedRoute =
-    location.pathname.startsWith('/app/perfil') || location.pathname.startsWith('/app/evolucao')
+  const onDedicatedRoute = isDedicatedAppRoute(location.pathname)
 
   const updateScrollEdges = useCallback(() => {
     const el = navRef.current
@@ -132,10 +132,9 @@ export default function DashboardSidebar({
   }
 
   const isActive = (item) => {
-    if (item.to) return location.pathname.startsWith(item.to)
+    if (item.id === 'espelho') return location.pathname.startsWith('/app/evolucao')
+    if (item.id === 'perfil') return location.pathname.startsWith('/app/perfil')
     if (onDedicatedRoute) return false
-    if (item.label === 'Agora') return activeSection === 'inicio' && !item.hash
-    if (item.hash) return false
     return activeSection === item.id
   }
 

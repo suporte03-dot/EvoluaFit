@@ -78,9 +78,9 @@ export function FitnessProvider({ children }) {
   }, [])
 
   const updateProfile = useCallback(
-    (profile) => {
+    (profile, options = {}) => {
       persist((prev) => ({ ...prev, profile: { ...prev.profile, ...profile } }))
-      showToast('Perfil atualizado!')
+      if (!options.silent) showToast('Perfil atualizado!')
     },
     [persist, showToast],
   )
@@ -195,7 +195,18 @@ export function FitnessProvider({ children }) {
     (plan) => {
       persist((prev) => {
         const withoutDup = (prev.plans || []).filter((p) => p.id !== plan.id)
-        return { ...prev, plans: [plan, ...withoutDup] }
+        const nextProfile = { ...prev.profile }
+        if (plan?.daysPerWeek) nextProfile.daysPerWeek = plan.daysPerWeek
+        if (plan?.objective) nextProfile.objective = plan.objective
+        if (plan?.level) nextProfile.level = plan.level
+        if (plan?.duration || plan?.minutesPerWorkout) {
+          nextProfile.duration = plan.duration || plan.minutesPerWorkout
+        }
+        if (plan?.location) nextProfile.location = plan.location
+        if (Array.isArray(plan?.equipment) && plan.equipment.length) {
+          nextProfile.equipment = plan.equipment
+        }
+        return { ...prev, plans: [plan, ...withoutDup], profile: nextProfile }
       })
       setGeneratedPlan(plan)
     },

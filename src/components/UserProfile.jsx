@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useFitness } from '../context/FitnessContext'
 import { useAuth } from '../context/AuthContext'
@@ -22,6 +22,10 @@ export default function UserProfile() {
   const navigate = useNavigate()
   const [form, setForm] = useState({ ...profile })
   const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    if (!open) setForm({ ...profile })
+  }, [profile, open])
   const [backupOpen, setBackupOpen] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
 

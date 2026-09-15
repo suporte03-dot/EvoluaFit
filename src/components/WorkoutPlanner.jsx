@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
 import { useWorkoutPlan } from '../context/WorkoutPlanContext'
 import { generateWorkoutPlan, planToWorkouts } from '../utils/workoutGenerator'
@@ -68,35 +68,40 @@ export default function WorkoutPlanner() {
     lastSavedAt,
     saveWorkoutPlan,
   } = useWorkoutPlan()
-  const draft = readPlannerDraft()
+  const draft = generatedPlan ? null : readPlannerDraft()
 
   const [form, setForm] = useState(() => ({
-    objective: draft?.form?.objective || profile.objective || 'saude',
-    level: draft?.form?.level || profile.level || 'Iniciante',
-    daysPerWeek: draft?.form?.daysPerWeek || profile.daysPerWeek || 3,
-    duration: draft?.form?.duration || profile.duration || 45,
-    location: draft?.form?.location || profile.location || 'Academia',
-    equipment: draft?.form?.equipment || profile.equipment || ['Academia completa'],
-    restrictions: draft?.form?.restrictions || profile.restrictions || [],
+    objective: draft?.form?.objective || generatedPlan?.objective || profile.objective || 'saude',
+    level: draft?.form?.level || generatedPlan?.level || profile.level || 'Iniciante',
+    daysPerWeek: draft?.form?.daysPerWeek || generatedPlan?.daysPerWeek || profile.daysPerWeek || 3,
+    duration: draft?.form?.duration || generatedPlan?.duration || generatedPlan?.minutesPerWorkout || profile.duration || 45,
+    location: draft?.form?.location || generatedPlan?.location || profile.location || 'Academia',
+    equipment: draft?.form?.equipment || generatedPlan?.equipment || profile.equipment || ['Academia completa'],
+    restrictions: draft?.form?.restrictions || generatedPlan?.restrictions || profile.restrictions || [],
   }))
   const [plan, setPlan] = useState(() => generatedPlan || null)
   const [noRestrictions, setNoRestrictions] = useState(
-    draft ? Boolean(draft.noRestrictions) : !(profile.restrictions || []).length,
+    draft ? Boolean(draft.noRestrictions) : !(generatedPlan?.restrictions || profile.restrictions || []).length,
   )
   const [step, setStep] = useState(() => Math.min(5, Math.max(1, draft?.step || 1)))
   const [generating, setGenerating] = useState(false)
   const [justGenerated, setJustGenerated] = useState(false)
+  const [wizardOpen, setWizardOpen] = useState(() => !generatedPlan)
+  const userOpenedWizard = useRef(false)
   const missed = useMemo(() => detectMissedWorkouts(workouts), [workouts])
 
 
   useEffect(() => {
     if (generatedPlan) {
       setPlan(generatedPlan)
+      if (!userOpenedWizard.current) setWizardOpen(false)
     } else if (!loadingWorkoutPlan) {
       setPlan(null)
+      setWizardOpen(true)
     }
   }, [generatedPlan, loadingWorkoutPlan])
   useEffect(() => {
+    if (!wizardOpen) return undefined
     try {
       localStorage.setItem(
         PLANNER_DRAFT_KEY,
@@ -110,7 +115,8 @@ export default function WorkoutPlanner() {
     } catch {
       /* ignore quota */
     }
-  }, [form, step, noRestrictions])
+    return undefined
+  }, [form, step, noRestrictions, wizardOpen])
 
   const update = (key, value) => setForm((prev) => ({ ...prev, [key]: value }))
 
@@ -178,6 +184,8 @@ export default function WorkoutPlanner() {
       savePlan(generated)
       setGenerating(false)
       setJustGenerated(true)
+      setWizardOpen(false)
+      userOpenedWizard.current = false
       window.setTimeout(() => setJustGenerated(false), 900)
       showToast('Planilha gerada com sucesso!', 'success')
     }, 280)
@@ -226,13 +234,24 @@ export default function WorkoutPlanner() {
 
   const currentStep = STEPS.find((s) => s.id === step) || STEPS[0]
 
-  const stepField = (key, value) => {
-    if (step < 5) {
-      // Fields fill as user progresses; show — until visited
-      const visited = { objective: 1, level: 1, daysPerWeek: 2, duration: 2, location: 3, equipment: 3, restrictions: 4 }
-      if (step < (visited[key] || 5)) return '—'
+  const stepField = (_key, value) => value
+
+  const openWizard = () => {
+    userOpenedWizard.current = true
+    if (generatedPlan) {
+      setForm({
+        objective: generatedPlan.objective || profile.objective || 'saude',
+        level: generatedPlan.level || profile.level || 'Iniciante',
+        daysPerWeek: generatedPlan.daysPerWeek || profile.daysPerWeek || 3,
+        duration: generatedPlan.duration || generatedPlan.minutesPerWorkout || profile.duration || 45,
+        location: generatedPlan.location || profile.location || 'Academia',
+        equipment: generatedPlan.equipment || profile.equipment || ['Academia completa'],
+        restrictions: generatedPlan.restrictions || profile.restrictions || [],
+      })
+      setNoRestrictions(!(generatedPlan.restrictions || []).length)
+      setStep(1)
     }
-    return value
+    setWizardOpen(true)
   }
 
   const bumpDays = (delta) => {
@@ -304,8 +323,12 @@ export default function WorkoutPlanner() {
       <div className="container">
         <SectionTitle
           tag="Planilha"
-          title="Monte sua planilha ideal"
-          subtitle="Siga as etapas e gere um plano equilibrado para a sua rotina. Seu progresso no formulário é salvo automaticamente."
+          title={plan && !wizardOpen ? 'Sua planilha' : 'Monte sua planilha ideal'}
+          subtitle={
+            plan && !wizardOpen
+              ? 'Este é o plano ativo desta conta. Gere uma nova planilha se quiser substituir a rotina.'
+              : 'Siga as etapas e gere um plano equilibrado para a sua rotina. Seu progresso no formulário é salvo automaticamente.'
+          }
         />
 
         {missed.count > 0 ? (
@@ -364,6 +387,26 @@ export default function WorkoutPlanner() {
           ) : null}
         </div>
 
+        {plan && !wizardOpen ? (
+          <div className="planner-current-actions">
+            <button type="button" className="btn btn--ghost" onClick={openWizard}>
+              Gerar nova planilha
+            </button>
+          </div>
+        ) : null}
+
+        {wizardOpen ? (
+          <>
+        {plan ? (
+          <div className="planner-current-actions">
+            <button type="button" className="btn btn--ghost btn--sm" onClick={() => {
+              userOpenedWizard.current = false
+              setWizardOpen(false)
+            }}>
+              Voltar à planilha atual
+            </button>
+          </div>
+        ) : null}
         <div className="planner-wizard-progress" aria-label={`Etapa ${step} de ${STEPS.length}`}>
           <div className="planner-wizard-progress__meta">
             <strong>Etapa {step} de {STEPS.length}</strong>
@@ -611,6 +654,8 @@ export default function WorkoutPlanner() {
 
           {summaryPanel}
         </div>
+          </>
+        ) : null}
 
         {plan && (
           <div className={justGenerated ? 'planner-result is-revealed' : 'planner-result'}>

@@ -40,7 +40,7 @@ export default function DashboardShell() {
   )
 
   const metrics = useMemo(() => {
-    const base = getDashboardMetrics({ profile, workouts, history, goals, performance })
+    const base = getDashboardMetrics({ profile, workouts, history, goals, performance, generatedPlan })
     const progressReady = !loadingProgress
     const progressHasData = Boolean(progressReady && homeProgressMetrics?.hasData)
 
@@ -72,7 +72,7 @@ export default function DashboardShell() {
         : null,
       hasData: progressHasData || base.hasData,
     }
-  }, [profile, workouts, history, goals, performance, homeProgressMetrics, loadingProgress])
+  }, [profile, workouts, history, goals, performance, generatedPlan, homeProgressMetrics, loadingProgress])
 
   const today = useMemo(
     () =>
@@ -85,7 +85,7 @@ export default function DashboardShell() {
   )
 
   const weekly = useMemo(() => {
-    const local = getWeeklyProgress({ workouts, history, profile, goals })
+    const local = getWeeklyProgress({ workouts, history, profile, goals, generatedPlan, plans })
     if (metrics.weeklyWorkouts != null) {
       return {
         ...local,
@@ -97,7 +97,7 @@ export default function DashboardShell() {
       ...local,
       weeklyGoal: metrics.weeklyGoal ?? local.weeklyGoal,
     }
-  }, [workouts, history, profile, goals, metrics.weeklyWorkouts, metrics.weeklyGoal])
+  }, [workouts, history, profile, goals, generatedPlan, plans, metrics.weeklyWorkouts, metrics.weeklyGoal])
 
   const missed = useMemo(() => detectMissedWorkouts(workouts), [workouts])
   const hasPlan = Boolean(plans?.length || generatedPlan || workouts?.length)

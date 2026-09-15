@@ -51,3 +51,28 @@ export function formatDateLong(input) {
 export function formatMonthYear(year, month) {
   return `${MONTHS_LONG[month]} de ${year}`
 }
+
+/** Relative past — e.g. "hoje", "há 3 semanas" */
+export function formatRelativePast(input) {
+  const d = toDate(input)
+  if (!d) return ''
+  const now = new Date()
+  const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const startThen = new Date(d.getFullYear(), d.getMonth(), d.getDate())
+  const days = Math.round((startToday - startThen) / 86400000)
+  if (days <= 0) return 'hoje'
+  if (days === 1) return 'ontem'
+  if (days < 7) return `há ${days} dias`
+  const weeks = Math.floor(days / 7)
+  if (weeks < 8) return `há ${weeks} ${weeks === 1 ? 'semana' : 'semanas'}`
+  const months = Math.floor(days / 30)
+  if (months < 18) return `há ${months} ${months === 1 ? 'mês' : 'meses'}`
+  return formatDateShort(d)
+}
+
+export function formatLastUpdate(input) {
+  const rel = formatRelativePast(input)
+  if (!rel) return '—'
+  if (rel === 'hoje' || rel === 'ontem') return rel
+  return `${formatDateShort(input)} · ${rel}`
+}

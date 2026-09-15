@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { scrollToSection, handleSectionClick } from '../utils/scrollToSection'
+import { isDedicatedAppRoute } from '../data/dashboardRoutes'
 import { IconMenu } from './dashboard/icons'
 import EvoluaFitLogo from './branding/EvoluaFitLogo'
 
@@ -9,12 +11,23 @@ import EvoluaFitLogo from './branding/EvoluaFitLogo'
  */
 export default function Header({ onOpenDashboardMenu, mobileMenuOpen = false }) {
   const [scrolled, setScrolled] = useState(false)
+  const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  const goHome = (e) => {
+    e.preventDefault()
+    if (isDedicatedAppRoute(location.pathname)) {
+      navigate('/app')
+      return
+    }
+    handleSectionClick(e, 'inicio')
+  }
 
   return (
     <header className={`header header--saas-mobile ${scrolled ? 'header--scrolled' : ''}`}>
@@ -37,9 +50,9 @@ export default function Header({ onOpenDashboardMenu, mobileMenuOpen = false }) 
         )}
 
         <a
-          href="#inicio"
+          href="/app"
           className="header__brand"
-          onClick={(e) => handleSectionClick(e, 'inicio')}
+          onClick={goHome}
           aria-label="EvoluaFit — Início"
         >
           <EvoluaFitLogo size="medium" showWordmark />
@@ -48,7 +61,13 @@ export default function Header({ onOpenDashboardMenu, mobileMenuOpen = false }) 
         <button
           type="button"
           className="btn btn--primary header__cta-desktop btn--start-workout"
-          onClick={() => scrollToSection('planilha')}
+          onClick={() => {
+            if (isDedicatedAppRoute(location.pathname)) {
+              navigate('/app/planilha')
+              return
+            }
+            scrollToSection('planilha')
+          }}
         >
           Criar treino
         </button>

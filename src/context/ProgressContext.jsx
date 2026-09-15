@@ -26,7 +26,7 @@ const ProgressContext = createContext(null)
 
 export function ProgressProvider({ children }) {
   const { user, loading: authLoading } = useAuth()
-  const { profile, goals } = useFitness()
+  const { profile, goals, generatedPlan } = useFitness()
   const { sessionHistory } = useWorkoutSession()
 
   const [summaries, setSummaries] = useState([])
@@ -210,9 +210,10 @@ export function ProgressProvider({ children }) {
   const weeklyGoal = useMemo(() => {
     const fromGoal = goals?.find((g) => g.type === 'weekly_workouts')?.target
     if (fromGoal > 0) return fromGoal
+    if (generatedPlan?.daysPerWeek > 0) return generatedPlan.daysPerWeek
     if (profile?.daysPerWeek > 0) return profile.daysPerWeek
     return null
-  }, [goals, profile])
+  }, [goals, profile, generatedPlan])
 
   const homeProgressMetrics = useMemo(
     () => buildDashboardMetricsFromProgress(periodStats, weeklyGoal),

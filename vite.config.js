@@ -15,7 +15,7 @@ export default defineConfig({
         name: 'EvoluaFit',
         short_name: 'EvoluaFit',
         description: 'Evolua além do treino. Treine com propósito e acompanhe seu progresso.',
-        start_url: '/',
+        start_url: '/app',
         scope: '/',
         display: 'standalone',
         orientation: 'portrait-primary',

@@ -20,6 +20,7 @@ export default function UpdatePasswordPage() {
   if (!user) {
     return (
       <AuthLayout
+        variant="split"
         title="Link inválido"
         subtitle="Abra o link do e-mail de recuperação ou solicite um novo."
         footer={
@@ -67,6 +68,7 @@ export default function UpdatePasswordPage() {
 
   return (
     <AuthLayout
+      variant="split"
       title="Nova senha"
       subtitle="Defina uma nova senha para sua conta EvoluaFit."
       footer={
@@ -116,7 +118,7 @@ export default function UpdatePasswordPage() {
 
         <button
           type="submit"
-          className="btn btn--primary auth-form__submit"
+          className={`btn auth-form__submit auth-form__submit--gradient${submitting ? ' is-loading' : ''}`}
           disabled={submitting}
         >
           {submitting ? 'Salvando...' : 'Salvar nova senha'}

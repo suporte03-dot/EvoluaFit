@@ -34,6 +34,34 @@
   height: 40px;
 }
 
+.landing .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-sm, 10px);
+  border: 1px solid transparent;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.landing .btn--primary {
+  background: var(--brand-primary, #7657ff);
+  color: #f8fafc;
+}
+
+.landing .btn--ghost {
+  background: transparent;
+  color: var(--text-primary, #f8fafc);
+  border-color: rgba(248, 250, 252, 0.16);
+}
+
 .landing__top-actions {
   display: flex;
   gap: 0.5rem;

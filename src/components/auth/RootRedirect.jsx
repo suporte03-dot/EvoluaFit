@@ -1,6 +1,9 @@
+import { lazy, Suspense } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import LandingPage from '../../pages/LandingPage'
+import AuthLoading from './AuthLoading'
+
+const LandingPage = lazy(() => import('../../pages/LandingPage'))
 
 /** `/` — app se autenticado; landing pública se visitante. */
 export default function RootRedirect() {
@@ -10,5 +13,9 @@ export default function RootRedirect() {
     return <Navigate to="/app" replace />
   }
 
-  return <LandingPage />
+  return (
+    <Suspense fallback={<AuthLoading label="Carregando" />}>
+      <LandingPage />
+    </Suspense>
+  )
 }

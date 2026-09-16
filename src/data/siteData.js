@@ -30,7 +30,7 @@ export const mobileNavItems = [
 
 /** Sheet "Mais" — atalhos secundários (planilha, biblioteca, agenda, etc.) */
 export const mobileNavMoreItems = [
-  { id: 'planilha', label: 'Planilha' },
+  { id: 'planilha', label: 'Monte seu treino' },
   { id: 'exercicios', label: 'Biblioteca' },
   { id: 'calendario', label: 'Agenda' },
   { id: 'metas', label: 'Metas' },

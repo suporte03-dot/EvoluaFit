@@ -322,8 +322,8 @@ export default function WorkoutPlanner() {
     <section id="planilha" className="section section--alt planner-section">
       <div className="container">
         <SectionTitle
-          tag="Planilha"
-          title={plan && !wizardOpen ? 'Sua planilha' : 'Monte sua planilha ideal'}
+          tag="Monte seu treino"
+          title={plan && !wizardOpen ? 'Sua rotina' : 'Monte o treino da semana'}
           subtitle={
             plan && !wizardOpen
               ? 'Este é o plano ativo desta conta. Gere uma nova planilha se quiser substituir a rotina.'

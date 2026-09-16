@@ -38,7 +38,7 @@ export const MODULE_HELP = [
   {
     id: 'planilha',
     sectionId: 'planilha',
-    label: 'Planilha',
+    label: 'Monte seu treino',
     summary: 'Monte ou ajuste sua divisão de treinos.',
     steps: [
       'Informe objetivo, nível e dias por semana.',
@@ -132,7 +132,7 @@ export const MODULE_HELP_FAQ = [
     id: 'faq-start',
     question: 'Por onde começo?',
     answer:
-      'Abra o Dashboard, confira o treino do dia e toque em Iniciar treino. Se ainda não tiver planilha, vá em Planilha e gere a primeira rotina.',
+      'Abra o Dashboard, confira o treino do dia e toque em Iniciar treino. Se ainda não tiver rotina, vá em Monte seu treino e gere a primeira semana.',
   },
   {
     id: 'faq-offline',

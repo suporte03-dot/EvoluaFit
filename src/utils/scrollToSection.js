@@ -1,3 +1,11 @@
+import { SECTION_PATHS } from '../data/dashboardRoutes'
+
+let navigateTo = null
+
+export function setSectionNavigator(fn) {
+  navigateTo = typeof fn === 'function' ? fn : null
+}
+
 function getScrollOffset() {
   const styles = getComputedStyle(document.documentElement)
   const headerH = parseFloat(styles.getPropertyValue('--header-h')) || 0
@@ -8,10 +16,16 @@ function getScrollOffset() {
 
 export const scrollToSection = (id) => {
   const section = document.getElementById(id)
-  if (!section) return
+  if (section) {
+    const y = section.getBoundingClientRect().top + window.scrollY - getScrollOffset()
+    window.scrollTo({ top: y, behavior: 'smooth' })
+    return
+  }
 
-  const y = section.getBoundingClientRect().top + window.scrollY - getScrollOffset()
-  window.scrollTo({ top: y, behavior: 'smooth' })
+  const path = SECTION_PATHS[id]
+  if (!path || path === window.location.pathname) return
+  if (navigateTo) navigateTo(path)
+  else window.location.assign(path)
 }
 
 export const handleSectionClick = (event, sectionId, callback) => {

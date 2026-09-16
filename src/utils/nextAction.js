@@ -93,7 +93,7 @@ export function getNextAction({
       title: 'Reorganizar a semana',
       description: missed.sentence,
       primaryLabel: 'Reorganizar semana',
-      secondaryLabel: 'Abrir planilha',
+      secondaryLabel: 'Abrir rotina',
       section: 'planilha',
       secondarySection: 'planilha',
     }
@@ -121,9 +121,9 @@ export function getNextAction({
     return {
       id: 'plan',
       kind: 'navigate',
-      title: 'Montar planilha',
-      description: 'Sem planilha ainda. Monte a rotina para o treino de hoje aparecer aqui.',
-      primaryLabel: 'Criar planilha',
+      title: 'Monte seu treino',
+      description: 'Ainda sem rotina. Monte os treinos para o de hoje aparecer aqui.',
+      primaryLabel: 'Monte seu treino',
       secondaryLabel: 'Falar com o Coach',
       section: 'planilha',
       secondarySection: 'coach-ia',
@@ -136,10 +136,10 @@ export function getNextAction({
       kind: 'navigate',
       title: workout ? 'Nada agendado para hoje' : 'Escolha o próximo passo',
       description: workout
-        ? `Próximo na planilha: ${workout.name}.`
-        : 'Abra a agenda ou ajuste a planilha.',
+        ? `Próximo na rotina: ${workout.name}.`
+        : 'Abra o calendário ou ajuste a rotina.',
       primaryLabel: workout ? 'Ver próximo treino' : 'Abrir calendário',
-      secondaryLabel: 'Ajustar planilha',
+      secondaryLabel: 'Ajustar treino',
       workout,
       section: workout ? 'treinos' : 'calendario',
       secondarySection: 'planilha',

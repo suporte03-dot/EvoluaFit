@@ -25,7 +25,7 @@ const NAV_GROUPS = [
   {
     id: 'hoje',
     label: 'Hoje',
-    items: [{ id: 'inicio', label: 'Agora', Icon: IconHome, tone: 'quiet', to: SECTION_PATHS.inicio }],
+    items: [{ id: 'inicio', label: 'Hoje', Icon: IconHome, tone: 'quiet', to: SECTION_PATHS.inicio }],
   },
   {
     id: 'treinar',
@@ -33,14 +33,14 @@ const NAV_GROUPS = [
     items: [
       { id: 'treinos', label: 'Meus treinos', Icon: IconDumbbell, tone: 'quiet', to: SECTION_PATHS.treinos },
       { id: 'planilha', label: 'Monte seu treino', Icon: IconPanel, tone: 'quiet', to: SECTION_PATHS.planilha },
-      { id: 'exercicios', label: 'Biblioteca', Icon: IconLibrary, tone: 'quiet', to: SECTION_PATHS.exercicios },
+      { id: 'exercicios', label: 'Grupos musculares', Icon: IconLibrary, tone: 'quiet', to: SECTION_PATHS.exercicios },
     ],
   },
   {
     id: 'evolucao',
     label: 'Evolução',
     items: [
-      { id: 'desempenho', label: 'Indicadores', Icon: IconTrend, tone: 'quiet', to: SECTION_PATHS.desempenho },
+      { id: 'desempenho', label: 'Progresso', Icon: IconTrend, tone: 'quiet', to: SECTION_PATHS.desempenho },
       { id: 'metas', label: 'Metas', Icon: IconChart, tone: 'quiet', to: SECTION_PATHS.metas },
       { id: 'espelho', label: 'Espelho Evolutivo', Icon: IconMirror, tone: 'quiet', to: SECTION_PATHS.espelho },
     ],
@@ -54,7 +54,7 @@ const NAV_GROUPS = [
     id: 'perfil',
     label: 'Perfil',
     items: [
-      { id: 'calendario', label: 'Agenda', Icon: IconCalendar, tone: 'quiet', to: SECTION_PATHS.calendario },
+      { id: 'calendario', label: 'Calendário', Icon: IconCalendar, tone: 'quiet', to: SECTION_PATHS.calendario },
       { id: 'perfil', label: 'Conta', Icon: IconSettings, tone: 'quiet', to: SECTION_PATHS.perfil },
       { id: 'ajuda', label: 'Ajuda', Icon: IconSpark, tone: 'quiet', to: SECTION_PATHS.ajuda },
     ],

@@ -384,7 +384,7 @@ export default function TrainingCalendar() {
 
   const confirmSyncPlan = () => {
     if (!planSource) {
-      showToast('Nenhuma planilha disponível. Gere uma na seção Planilha.', 'info')
+      showToast('Nenhuma rotina disponível. Monte a sua em Monte seu treino.', 'info')
       setSyncConfirm(false)
       return
     }
@@ -830,7 +830,7 @@ export default function TrainingCalendar() {
                 onClick={() => setAddForm((p) => ({ ...p, source: 'plan' }))}
                 disabled={!planSource}
               >
-                Planilha
+                Rotina
               </button>
             </div>
           )}
@@ -973,7 +973,7 @@ export default function TrainingCalendar() {
         </p>
         {planSource && (
           <p className="cal-sync-plan-name">
-            Planilha: <strong>{planSource.name || 'Plano gerado'}</strong> ·{' '}
+            Rotina: <strong>{planSource.name || 'Plano gerado'}</strong> ·{' '}
             {planSource.schedule?.length || 0} dias
           </p>
         )}

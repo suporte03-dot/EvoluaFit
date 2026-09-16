@@ -193,11 +193,14 @@ export default function ExerciseLibrary() {
         <header className="el-header">
           <p className="el-header__eyebrow">
             <span className="el-header__marker" aria-hidden="true" />
-            Exercícios
+            Módulos
           </p>
           <h2 className="el-header__title">
-            Explore por <span className="el-header__gradient">grupo muscular</span>
+            Módulos por <span className="el-header__gradient">grupo muscular</span>
           </h2>
+          <p className="el-header__lead">
+            Peito, costas, pernas e os demais grupos — um módulo para cada.
+          </p>
         </header>
 
         <div className="library-control-panel">
@@ -310,11 +313,11 @@ export default function ExerciseLibrary() {
 
         {loading ? (
           <p className="library-loading" aria-live="polite">
-            Carregando exercícios...
+            Carregando módulos...
           </p>
         ) : error && exercises.length === 0 ? (
           <div className="library-empty library-empty--error" role="alert">
-            <p>Não foi possível carregar a biblioteca.</p>
+            <p>Não foi possível carregar os módulos.</p>
             <p className="library-empty__hint">{error}</p>
             <button type="button" className="btn btn--primary" onClick={reload}>
               Tentar novamente

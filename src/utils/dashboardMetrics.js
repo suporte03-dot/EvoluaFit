@@ -181,7 +181,7 @@ export function metricEmptyCopy(key) {
     case 'nextWorkout':
       return {
         value: 'Marcar próximo',
-        hint: 'Abra a agenda ou gere uma planilha',
+        hint: 'Abra o calendário ou monte seu treino',
       }
     case 'weeklyWorkouts':
       return {

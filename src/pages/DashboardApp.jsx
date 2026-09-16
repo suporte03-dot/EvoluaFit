@@ -178,7 +178,7 @@ export default function DashboardApp() {
                     <Route
                       path="biblioteca"
                       element={
-                        <SectionPage label="Carregando biblioteca">
+                        <SectionPage label="Carregando grupos musculares">
                           <ExerciseLibrary />
                         </SectionPage>
                       }
@@ -186,7 +186,7 @@ export default function DashboardApp() {
                     <Route
                       path="indicadores"
                       element={
-                        <SectionPage label="Carregando indicadores">
+                        <SectionPage label="Carregando progresso">
                           <PerformanceDashboard />
                         </SectionPage>
                       }
@@ -210,7 +210,7 @@ export default function DashboardApp() {
                     <Route
                       path="agenda"
                       element={
-                        <SectionPage label="Carregando agenda">
+                        <SectionPage label="Carregando calendário">
                           <TrainingCalendar />
                         </SectionPage>
                       }

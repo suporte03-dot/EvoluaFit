@@ -80,7 +80,7 @@ export default function Dashboard() {
   )
 
   return (
-    <section className={`dashboard${metrics.hasData ? '' : ' dashboard--empty'}`} aria-label="Indicadores do início">
+    <section className={`dashboard${metrics.hasData ? '' : ' dashboard--empty'}`} aria-label="Resumo da semana">
       <div className="container">
         {!metrics.hasData && !metrics.hasSchedule ? (
           <EmptyState

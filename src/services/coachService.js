@@ -795,9 +795,9 @@ export async function explainExercise(exerciseOrId, _context) {
     return makeResult({
       title: 'Exercício não encontrado',
       reason:
-        'Não encontrei esse exercício na biblioteca. Escolha um da lista ou digite o nome com mais detalhes.',
+        'Não encontrei esse exercício nos módulos. Escolha um da lista ou digite o nome com mais detalhes.',
       workout: null,
-      careNotes: ['Use o seletor de exercícios ou a biblioteca para escolher um movimento.'],
+      careNotes: ['Use o seletor de exercícios ou abra Grupos musculares para escolher um movimento.'],
       extraActions: [ACTION.RELATED, ACTION.COPY],
     })
   }

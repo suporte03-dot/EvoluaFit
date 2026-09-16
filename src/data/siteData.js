@@ -28,11 +28,11 @@ export const mobileNavItems = [
   { id: 'perfil', label: 'Perfil' },
 ]
 
-/** Sheet "Mais" — atalhos secundários (planilha, biblioteca, agenda, etc.) */
+/** Sheet "Mais" — atalhos secundários (monte seu treino, grupos musculares, calendário, etc.) */
 export const mobileNavMoreItems = [
   { id: 'planilha', label: 'Monte seu treino' },
-  { id: 'exercicios', label: 'Biblioteca' },
-  { id: 'calendario', label: 'Agenda' },
+  { id: 'exercicios', label: 'Grupos musculares' },
+  { id: 'calendario', label: 'Calendário' },
   { id: 'metas', label: 'Metas' },
   { id: 'espelho', label: 'Espelho', to: '/app/evolucao/espelho' },
   { id: 'ajuda', label: 'Ajuda' },

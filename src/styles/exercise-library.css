@@ -54,6 +54,14 @@
   color: transparent;
 }
 
+.el-header__lead {
+  margin: 0.55rem 0 0;
+  max-width: 36rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: rgba(186, 198, 216, 0.88);
+}
+
 /* ----- Search / filters ----- */
 .exercise-library .library-control-panel {
   display: flex;

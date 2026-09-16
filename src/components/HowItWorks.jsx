@@ -9,9 +9,9 @@ const STEPS = [
     tone: 'green',
     icon: '📝',
     step: '01',
-    title: 'Criar planilha',
+    title: 'Monte seu treino',
     desc: 'Defina objetivo, nível e dias.',
-    cta: 'Montar planilha',
+    cta: 'Monte seu treino',
   },
   {
     id: 'treinos',

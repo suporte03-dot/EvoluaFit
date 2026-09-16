@@ -32,7 +32,7 @@ const NAV_GROUPS = [
     label: 'Treinar',
     items: [
       { id: 'treinos', label: 'Meus treinos', Icon: IconDumbbell, tone: 'quiet', to: SECTION_PATHS.treinos },
-      { id: 'planilha', label: 'Planilha', Icon: IconPanel, tone: 'quiet', to: SECTION_PATHS.planilha },
+      { id: 'planilha', label: 'Monte seu treino', Icon: IconPanel, tone: 'quiet', to: SECTION_PATHS.planilha },
       { id: 'exercicios', label: 'Biblioteca', Icon: IconLibrary, tone: 'quiet', to: SECTION_PATHS.exercicios },
     ],
   },

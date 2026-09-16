@@ -170,7 +170,7 @@ export default function DashboardApp() {
                     <Route
                       path="planilha"
                       element={
-                        <SectionPage label="Carregando planilha">
+                        <SectionPage label="Carregando seu treino">
                           <WorkoutPlanner />
                         </SectionPage>
                       }

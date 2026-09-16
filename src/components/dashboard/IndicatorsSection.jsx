@@ -119,7 +119,7 @@ export default function IndicatorsSection({ metrics }) {
         <header className="dash-indicators__head">
           <h2 id="dash-indicadores-title" className="dash-indicators__title">
             <IconChart size={18} />
-            Indicadores
+            Sua semana
           </h2>
           <button
             type="button"

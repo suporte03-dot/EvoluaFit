@@ -1046,7 +1046,7 @@ export default function CoachIA() {
               <h4>Escolha um exercício</h4>
               {exerciseOptions.length === 0 ? (
                 <div className="coach-ia__picker-empty">
-                  <p>Nenhum exercício disponível ainda. Abra a Biblioteca para explorar o catálogo.</p>
+                  <p>Nenhum exercício disponível ainda. Abra Grupos musculares para ver os módulos.</p>
                   <button
                     type="button"
                     className="btn btn--primary btn--sm"
@@ -1055,7 +1055,7 @@ export default function CoachIA() {
                       scrollToSection('exercicios')
                     }}
                   >
-                    Ir para Biblioteca
+                    Ir para grupos musculares
                   </button>
                 </div>
               ) : (

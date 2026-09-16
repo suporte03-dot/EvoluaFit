@@ -36,9 +36,9 @@ const STEPS = [
     tone: 'blue',
     icon: '📈',
     step: '04',
-    title: 'Evolução',
+    title: 'Progresso',
     desc: 'Frequência, volume e recordes.',
-    cta: 'Ver evolução',
+    cta: 'Ver progresso',
   },
 ]
 

@@ -188,9 +188,9 @@ export function situationCopy(situation, { daysSinceLast, nextWorkout } = {}) {
     case 'no_plan':
       return {
         label: 'Comece por aqui',
-        title: 'Ainda sem planilha',
+        title: 'Ainda sem rotina',
         description: 'Monte uma rotina e o treino de hoje aparece aqui.',
-        primaryLabel: 'Criar planilha',
+        primaryLabel: 'Monte seu treino',
         primarySection: 'planilha',
         secondaryLabel: 'Falar com o Coach',
         secondarySection: 'coach-ia',
@@ -200,11 +200,11 @@ export function situationCopy(situation, { daysSinceLast, nextWorkout } = {}) {
         label: 'Hoje',
         title: nextWorkout ? 'Nada agendado para hoje' : 'Escolha o próximo passo',
         description: nextWorkout
-          ? `Próximo na planilha: ${nextWorkout.name}.`
-          : 'Abra a planilha e defina o próximo treino.',
+          ? `Próximo na rotina: ${nextWorkout.name}.`
+          : 'Abra Monte seu treino e defina o próximo treino.',
         primaryLabel: nextWorkout ? 'Ver próximo treino' : 'Abrir calendário',
         primarySection: nextWorkout ? 'treinos' : 'calendario',
-        secondaryLabel: 'Criar planilha',
+        secondaryLabel: 'Monte seu treino',
         secondarySection: 'planilha',
       }
     case 'completed':
@@ -234,7 +234,7 @@ export function situationCopy(situation, { daysSinceLast, nextWorkout } = {}) {
         description: 'Sem pressão: recomece com volume confortável e foque na técnica.',
         primaryLabel: 'Retomar treino',
         primarySection: null,
-        secondaryLabel: 'Ajustar planilha',
+        secondaryLabel: 'Ajustar treino',
         secondarySection: 'planilha',
       }
     case 'ready':

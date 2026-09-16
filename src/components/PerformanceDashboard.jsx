@@ -133,7 +133,7 @@ export default function PerformanceDashboard() {
       <section id="desempenho" className="section section--alt">
         <div className="container">
           <SectionTitle
-            tag="Evolução"
+            tag="Progresso"
             title="Sua evolução"
             subtitle={
               <>
@@ -156,7 +156,7 @@ export default function PerformanceDashboard() {
       <section id="desempenho" className="section section--alt">
         <div className="container">
           <SectionTitle
-            tag="Evolução"
+            tag="Progresso"
             title="Sua evolução"
             subtitle={
               <>
@@ -185,7 +185,7 @@ export default function PerformanceDashboard() {
       <section id="desempenho" className="section section--alt">
         <div className="container">
           <SectionTitle
-            tag="Evolução"
+            tag="Progresso"
             title="Sua evolução"
             subtitle={
               <>
@@ -211,7 +211,7 @@ export default function PerformanceDashboard() {
     <section id="desempenho" className="section section--alt">
       <div className="container">
         <SectionTitle
-          tag="Evolução"
+          tag="Progresso"
           title="Sua evolução"
           subtitle={
             <>

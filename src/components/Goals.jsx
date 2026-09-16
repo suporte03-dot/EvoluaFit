@@ -38,7 +38,7 @@ export default function Goals() {
           <EmptyState
             title="Nenhuma meta criada"
             description="As metas só aparecem quando você as define. Nada é preenchido automaticamente."
-            ctaLabel="Montar planilha"
+            ctaLabel="Monte seu treino"
             ctaSection="planilha"
           />
         ) : (

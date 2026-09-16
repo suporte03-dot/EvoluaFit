@@ -1,7 +1,6 @@
 import { useNavigate as useRouterNavigate } from 'react-router-dom'
 import { mobileNavItems } from '../data/siteData'
-import { SECTION_PATHS, isDedicatedAppRoute } from '../data/dashboardRoutes'
-import { scrollToSection } from '../utils/scrollToSection'
+import { SECTION_PATHS } from '../data/dashboardRoutes'
 import {
   IconDumbbell,
   IconHome,
@@ -52,30 +51,8 @@ export default function MobileNav({ activeSection }) {
   const routerNavigate = useRouterNavigate()
 
   const navigate = (id) => {
-    const path = SECTION_PATHS[id]
-    if (path) {
-      routerNavigate(path)
-      if (id === 'coach-ia' && !isDedicatedAppRoute(path)) {
-        window.setTimeout(() => {
-          document.getElementById('coach-question')?.focus?.()
-        }, 350)
-      }
-      return
-    }
-    if (isDedicatedAppRoute(window.location.pathname)) {
-      routerNavigate('/app')
-      window.setTimeout(() => {
-        scrollToSection(id)
-        if (id === 'coach-ia') document.getElementById('coach-question')?.focus?.()
-      }, 80)
-      return
-    }
-    scrollToSection(id)
-    if (id === 'coach-ia') {
-      window.setTimeout(() => {
-        document.getElementById('coach-question')?.focus?.()
-      }, 350)
-    }
+    const path = SECTION_PATHS[id] || '/app'
+    routerNavigate(path)
   }
 
   return (

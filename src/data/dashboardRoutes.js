@@ -44,6 +44,5 @@ export function isDedicatedAppRoute(pathname) {
 }
 
 export function isDashboardHomePath(pathname) {
-  const section = sectionFromPath(pathname)
-  return Boolean(section) && !isDedicatedAppRoute(pathname)
+  return sectionFromPath(pathname) === 'inicio'
 }

@@ -17,8 +17,7 @@ import {
 import EvoluaFitBrand from '../branding/EvoluaFitBrand'
 import { deriveXpProgress, initialsFromName } from './dashboardUtils'
 import { resolveDisplayName } from '../../utils/displayName'
-import { scrollToSection, handleSectionClick } from '../../utils/scrollToSection'
-import { SECTION_PATHS, isDedicatedAppRoute } from '../../data/dashboardRoutes'
+import { SECTION_PATHS, sectionFromPath } from '../../data/dashboardRoutes'
 import { useAuth } from '../../context/AuthContext'
 import { useProfile } from '../../context/ProfileContext'
 
@@ -62,15 +61,21 @@ const NAV_GROUPS = [
   },
 ]
 
-function navTarget(item) {
-  if (item.hash) {
-    const el = document.getElementById(item.hash)
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      return
-    }
-  }
-  scrollToSection(item.id)
+const PREFETCH = {
+  treinos: () => import('../MyWorkouts'),
+  planilha: () => import('../WorkoutPlanner'),
+  exercicios: () => import('../ExerciseLibrary'),
+  desempenho: () => import('../PerformanceDashboard'),
+  metas: () => import('../Goals'),
+  'coach-ia': () => import('../CoachIA'),
+  calendario: () => import('../TrainingCalendar'),
+  ajuda: () => import('../HowItWorks'),
+  perfil: () => import('../../pages/ProfilePage'),
+  espelho: () => import('../../pages/body-evolution/BodyEvolutionPage'),
+}
+
+function prefetchSection(id) {
+  PREFETCH[id]?.()
 }
 
 export default function DashboardSidebar({
@@ -95,7 +100,7 @@ export default function DashboardSidebar({
   const levelLabel = xp.levelName || 'Começando'
   const trainingLevel = profile?.level ? `Treino: ${profile.level}` : null
   const initials = loadingProfile ? '··' : initialsFromName(accountLabel)
-  const onDedicatedRoute = isDedicatedAppRoute(location.pathname)
+  const currentSection = sectionFromPath(location.pathname) || activeSection
 
   const updateScrollEdges = useCallback(() => {
     const el = navRef.current
@@ -131,38 +136,21 @@ export default function DashboardSidebar({
     }
   }
 
-  const isActive = (item) => {
-    if (item.id === 'espelho') return location.pathname.startsWith('/app/evolucao')
-    if (item.id === 'perfil') return location.pathname.startsWith('/app/perfil')
-    if (onDedicatedRoute) return false
-    return activeSection === item.id
-  }
+  const isActive = (item) => currentSection === item.id
 
   const go = (item) => {
     onCloseMobile?.()
-
     if (item.to) {
       navigate(item.to)
       return
     }
-
-    if (onDedicatedRoute) {
-      navigate('/app')
-      window.setTimeout(() => navTarget(item), 80)
-      return
-    }
-
-    navTarget(item)
+    navigate('/app')
   }
 
   const goHome = (e) => {
+    e?.preventDefault?.()
     onCloseMobile?.()
-    if (onDedicatedRoute) {
-      e?.preventDefault?.()
-      navigate('/app')
-      return
-    }
-    handleSectionClick(e, 'inicio', onCloseMobile)
+    navigate('/app')
   }
 
   const drawer = (
@@ -223,6 +211,7 @@ export default function DashboardSidebar({
                             active ? ' is-active' : ''
                           }`}
                           onClick={() => go(item)}
+                          onPointerEnter={() => prefetchSection(item.id)}
                           aria-current={active ? 'page' : undefined}
                           title={item.label}
                         >

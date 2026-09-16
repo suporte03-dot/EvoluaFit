@@ -1,11 +1,8 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { Outlet, Route, Routes, useLocation } from 'react-router-dom'
-import { sectionIds } from '../data/siteData'
-import { sectionFromPath, isDedicatedAppRoute } from '../data/dashboardRoutes'
-import { useScrollSpy } from '../hooks/useScrollSpy'
-import { useSectionHash } from '../hooks/useSectionHash'
+import { Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { sectionFromPath } from '../data/dashboardRoutes'
 import { useHashRoute } from '../hooks/useHashRoute'
-import { scrollToSection } from '../utils/scrollToSection'
+import { setSectionNavigator } from '../utils/scrollToSection'
 import { ProfileProvider } from '../context/ProfileContext'
 import { WorkoutPlanProvider } from '../context/WorkoutPlanContext'
 import { WorkoutSessionProvider } from '../context/WorkoutSessionContext'
@@ -15,7 +12,6 @@ import { FitnessProvider, useFitness } from '../context/FitnessContext'
 import SyncStatusIndicator from '../components/SyncStatusIndicator'
 import { loadExercises } from '../services/exerciseService'
 import Header from '../components/Header'
-import SectionDivider from '../components/SectionDivider'
 import Toast from '../components/Toast'
 import StartWorkoutModal from '../components/StartWorkoutModal'
 import SessionResumeBanner from '../components/SessionResumeBanner'
@@ -38,9 +34,8 @@ const ExerciseDetailPage = lazy(() => import('../components/ExerciseDetailPage')
 const TrainingCalendar = lazy(() => import('../components/TrainingCalendar'))
 const PerformanceDashboard = lazy(() => import('../components/PerformanceDashboard'))
 const Goals = lazy(() => import('../components/Goals'))
-const UserProfile = lazy(() => import('../components/UserProfile'))
 const BodyEvolutionPage = lazy(() => import('./body-evolution/BodyEvolutionPage'))
-const BodyMirrorEntry = lazy(() => import('../components/body-evolution/BodyMirrorEntry'))
+const HowItWorks = lazy(() => import('../components/HowItWorks'))
 
 function SectionFallback({ label = 'Carregando' }) {
   return (
@@ -51,33 +46,42 @@ function SectionFallback({ label = 'Carregando' }) {
   )
 }
 
+function SectionPage({ label, children }) {
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
+  return <Suspense fallback={<SectionFallback label={label} />}>{children}</Suspense>
+}
+
+function HomePage() {
+  const [showOnboard, setShowOnboard] = useState(() => !hasCompletedOnboarding())
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
+  return (
+    <>
+      {showOnboard && <FirstRunGuide onClose={() => setShowOnboard(false)} />}
+      <DashboardShell />
+    </>
+  )
+}
+
 function AppLayout() {
   const location = useLocation()
-  const pathSection = sectionFromPath(location.pathname)
-  const spySeed =
-    pathSection && pathSection !== 'perfil' && pathSection !== 'espelho' ? pathSection : 'inicio'
-  const activeSection = useScrollSpy(sectionIds, 120, spySeed)
-  useSectionHash(sectionIds)
+  const navigate = useNavigate()
+  const pathSection = sectionFromPath(location.pathname) || 'inicio'
   const { toasts, history, workouts } = useFitness()
   const { page, id: exerciseId } = useHashRoute()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const dedicated = isDedicatedAppRoute(location.pathname)
-  const shellSection = dedicated ? pathSection : activeSection
 
   useEffect(() => {
-    if (dedicated) return undefined
-    const section = sectionFromPath(location.pathname)
-    if (!section) return undefined
-    const timer = window.setTimeout(() => {
-      if (section === 'inicio') {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-        return
-      }
-      scrollToSection(section)
-    }, 60)
-    return () => window.clearTimeout(timer)
-  }, [location.pathname, dedicated])
+    setSectionNavigator((path) => navigate(path))
+    return () => setSectionNavigator(null)
+  }, [navigate])
 
   useEffect(() => {
     const onResize = () => {
@@ -104,7 +108,7 @@ function AppLayout() {
     >
       <div className="app__frame">
         <DashboardSidebar
-          activeSection={shellSection}
+          activeSection={pathSection}
           history={history}
           workouts={workouts}
           collapsed={sidebarCollapsed && !mobileMenuOpen}
@@ -116,52 +120,26 @@ function AppLayout() {
         <div className="app__content">
           <SyncStatusIndicator />
           <Header
-            activeSection={shellSection}
+            activeSection={pathSection}
             mobileMenuOpen={mobileMenuOpen}
             onOpenDashboardMenu={() => setMobileMenuOpen((open) => !open)}
           />
           <main>
-            {dedicated ? <Outlet /> : <DashboardHome />}
+            <SessionResumeBanner />
+            <Outlet />
           </main>
         </div>
       </div>
 
       <Toast toasts={toasts} />
       <StartWorkoutModal />
-      <MobileNav activeSection={shellSection} />
+      <MobileNav activeSection={pathSection} />
       {page === 'exercise' && exerciseId && (
         <Suspense fallback={<SectionFallback label="Carregando exercício" />}>
           <ExerciseDetailPage exerciseId={exerciseId} />
         </Suspense>
       )}
     </div>
-  )
-}
-
-function DashboardHome() {
-  const [showOnboard, setShowOnboard] = useState(() => !hasCompletedOnboarding())
-
-  return (
-    <>
-      {showOnboard && <FirstRunGuide onClose={() => setShowOnboard(false)} />}
-      <SessionResumeBanner />
-      <DashboardShell />
-      <Suspense fallback={<SectionFallback label="Carregando conteúdo" />}>
-        <MyWorkouts />
-        <WorkoutPlanner />
-        <SectionDivider variant="coach" label="COACH" />
-        <CoachIA />
-        <ExerciseLibrary />
-        <SectionDivider variant="calendar" label="CALENDÁRIO" />
-        <TrainingCalendar />
-        <SectionDivider variant="progress" label="EVOLUÇÃO" />
-        <PerformanceDashboard />
-        <BodyMirrorEntry />
-        <Goals />
-        <SectionDivider variant="profile" label="PERFIL" />
-        <UserProfile />
-      </Suspense>
-    </>
   )
 }
 
@@ -180,22 +158,78 @@ export default function DashboardApp() {
                 <ProfileFitnessSync />
                 <Routes>
                   <Route element={<AppLayout />}>
-                    <Route index element={null} />
-                    <Route path="treinos" element={null} />
-                    <Route path="planilha" element={null} />
-                    <Route path="biblioteca" element={null} />
-                    <Route path="indicadores" element={null} />
-                    <Route path="metas" element={null} />
-                    <Route path="coach" element={null} />
-                    <Route path="agenda" element={null} />
-                    <Route path="ajuda" element={null} />
+                    <Route index element={<HomePage />} />
+                    <Route
+                      path="treinos"
+                      element={
+                        <SectionPage label="Carregando treinos">
+                          <MyWorkouts />
+                        </SectionPage>
+                      }
+                    />
+                    <Route
+                      path="planilha"
+                      element={
+                        <SectionPage label="Carregando planilha">
+                          <WorkoutPlanner />
+                        </SectionPage>
+                      }
+                    />
+                    <Route
+                      path="biblioteca"
+                      element={
+                        <SectionPage label="Carregando biblioteca">
+                          <ExerciseLibrary />
+                        </SectionPage>
+                      }
+                    />
+                    <Route
+                      path="indicadores"
+                      element={
+                        <SectionPage label="Carregando indicadores">
+                          <PerformanceDashboard />
+                        </SectionPage>
+                      }
+                    />
+                    <Route
+                      path="metas"
+                      element={
+                        <SectionPage label="Carregando metas">
+                          <Goals />
+                        </SectionPage>
+                      }
+                    />
+                    <Route
+                      path="coach"
+                      element={
+                        <SectionPage label="Carregando Coach">
+                          <CoachIA />
+                        </SectionPage>
+                      }
+                    />
+                    <Route
+                      path="agenda"
+                      element={
+                        <SectionPage label="Carregando agenda">
+                          <TrainingCalendar />
+                        </SectionPage>
+                      }
+                    />
+                    <Route
+                      path="ajuda"
+                      element={
+                        <SectionPage label="Carregando ajuda">
+                          <HowItWorks />
+                        </SectionPage>
+                      }
+                    />
                     <Route path="perfil" element={<ProfilePage />} />
                     <Route
                       path="evolucao/espelho/*"
                       element={
-                        <Suspense fallback={<SectionFallback label="Carregando Espelho Evolutivo" />}>
+                        <SectionPage label="Carregando Espelho Evolutivo">
                           <BodyEvolutionPage />
-                        </Suspense>
+                        </SectionPage>
                       }
                     />
                   </Route>

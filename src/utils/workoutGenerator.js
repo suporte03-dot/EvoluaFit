@@ -1,6 +1,7 @@
 import { exercises, parseSets, parseRestSeconds, getExerciseById } from '../data/exercisesData'
 import {
   getSplitTemplate,
+  getSplitStyleLabel,
   levelConfig,
   objectiveLabels,
   PROFESSIONAL_DISCLAIMER,
@@ -26,6 +27,11 @@ const DAY_QUOTAS = {
   Mobilidade: { Mobilidade: 3, Alongamento: 2 },
   HybridRecovery: { Abdômen: 2, Cardio: 2, Mobilidade: 2, Alongamento: 1 },
   LegsLight: { Pernas: 2, Glúteos: 1, Panturrilha: 1, Mobilidade: 1, Abdômen: 1 },
+  Chest: { Peitoral: 4 },
+  Back: { Costas: 3, Trapézio: 1, Lombar: 1 },
+  Shoulders: { Ombros: 4 },
+  Arms: { Bíceps: 2, Tríceps: 2 },
+  ShouldersArms: { Ombros: 2, Bíceps: 1, Tríceps: 1 },
 }
 
 /** Grupos obrigatórios mínimos por tipo (evita Push só de tríceps, etc.) */
@@ -172,11 +178,20 @@ function inferDayType(name = '', focus = []) {
   if (/descanso|recuper/.test(n)) return 'Mobilidade'
   if (/core.*cardio|cardio.*mobil|core \+ cardio|core \+/.test(n)) return 'HybridRecovery'
   if (/legs.*leve|perna.*leve|legs light/.test(n)) return 'LegsLight'
+  if (/upper/.test(n)) return 'Superiores'
+  if (/lower/.test(n)) return 'Inferiores'
   if (/push/.test(n)) return 'Push'
   if (/pull/.test(n)) return 'Pull'
   if (/legs|perna/.test(n)) return 'Legs'
   if (/superior/.test(n)) return 'Superiores'
   if (/inferior/.test(n)) return 'Inferiores'
+  if (/ombro/.test(n) && /bra[cç]o/.test(n)) return 'ShouldersArms'
+  if (/peito|peitoral/.test(n) && /tr[ií]ceps/.test(n)) return 'Push'
+  if (/costas/.test(n) && /b[ií]ceps/.test(n)) return 'Pull'
+  if (/^peito$|peito(?!.*tr)/.test(n) && !/tr[ií]ceps|push|full/.test(n)) return 'Chest'
+  if (/costas/.test(n) && !/b[ií]ceps|pull|full/.test(n)) return 'Back'
+  if (/ombro/.test(n) && !/push|peito/.test(n)) return 'Shoulders'
+  if (/bra[cç]o/.test(n)) return 'Arms'
   if (/core|abd/.test(n) && !/cardio/.test(n)) return 'Core'
   if (/cardio/.test(n) && !/mobil|core/.test(n)) return 'Cardio'
   if (/mobil|along/.test(n)) return 'Mobilidade'
@@ -1101,6 +1116,11 @@ function workoutTypeLabel(dayType, name) {
     Cardio: 'Cardio',
     Mobilidade: 'Mobilidade',
     HybridRecovery: 'Core + Cardio + Mobilidade',
+    Chest: 'Peito',
+    Back: 'Costas',
+    Shoulders: 'Ombros',
+    Arms: 'Braços',
+    ShouldersArms: 'Ombros e braços',
   }
   return map[dayType] || name || 'Treino'
 }
@@ -1117,8 +1137,9 @@ export function generateWorkoutPlan(input = {}) {
   const location = input.location || 'Academia'
   const equipment = input.equipment?.length ? input.equipment : ['Academia completa']
   const restrictions = normalizeRestrictions(input.restrictions || [])
+  const splitStyle = input.splitStyle || 'auto'
 
-  const template = getSplitTemplate(days, level, goal)
+  const template = getSplitTemplate(days, level, goal, splitStyle)
   const maxExercises = getMaxExercises(level, minutesPerWorkout, goal)
   const usedIds = new Set()
   let usedFallback = false
@@ -1222,6 +1243,8 @@ export function generateWorkoutPlan(input = {}) {
     location,
     equipment,
     restrictions: input.restrictions || [],
+    splitStyle,
+    splitLabel: getSplitStyleLabel(splitStyle),
     weeklyPlan,
     objective: goal,
     objectiveLabel,

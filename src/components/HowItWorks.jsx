@@ -10,7 +10,7 @@ const STEPS = [
     icon: '📝',
     step: '01',
     title: 'Monte seu treino',
-    desc: 'Defina objetivo, nível e dias.',
+    desc: 'Objetivo, dias e como organizar a semana.',
     cta: 'Monte seu treino',
   },
   {

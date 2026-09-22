@@ -2300,6 +2300,26 @@
     grid-column: 1 / -1;
   }
 
+  .planner-choices,
+  .planner-choices--split {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .planner-choices--compact {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .planner-choice {
+    min-height: 48px;
+    padding: 0.9rem 1rem;
+  }
+
+  .planner-split-block {
+    width: 100%;
+  }
+
   .planner-stepper {
     justify-content: flex-start;
     width: 100%;

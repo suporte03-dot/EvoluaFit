@@ -43,6 +43,8 @@ export default defineConfig({
         ],
       },
       workbox: {
+        skipWaiting: true,
+        clientsClaim: true,
         cleanupOutdatedCaches: true,
         navigateFallback: '/index.html',
         // App shell only — no PNGs (avoids clashing with manifest icons / public assets)

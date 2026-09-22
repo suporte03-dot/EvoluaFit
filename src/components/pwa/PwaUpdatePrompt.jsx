@@ -9,6 +9,7 @@ export default function PwaUpdatePrompt() {
   } = useRegisterSW({
     onRegisteredSW(_url, registration) {
       if (!registration) return
+      registration.update()
       window.setInterval(() => {
         registration.update()
       }, 15 * 60 * 1000)

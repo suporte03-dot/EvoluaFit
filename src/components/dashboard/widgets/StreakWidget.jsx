@@ -43,17 +43,25 @@ export default function StreakWidget({ metrics, history, workouts }) {
 
   return (
     <div className="streak-sig">
+      <p className="streak-sig__kicker">Sequência</p>
       <p className="streak-sig__title">
         <IconFlame size={16} />
         {ready ? `${days} ${days === 1 ? 'dia' : 'dias'} evoluindo` : 'Comece a sequência'}
       </p>
       <ol className="streak-sig__week" aria-label="Dias da semana">
-        {week.map((day) => (
-          <li key={day.key} className={done.has(day.key) ? 'is-on' : day.isToday ? 'is-today' : ''}>
-            <span>{day.label}</span>
-            <i aria-hidden="true" />
-          </li>
-        ))}
+        {week.map((day, index) => {
+          const on = done.has(day.key)
+          return (
+            <li
+              key={day.key}
+              className={`${on ? 'is-on' : ''} ${day.isToday ? 'is-today' : ''}`.trim()}
+              style={{ '--bar': on ? `${0.42 + (index % 3) * 0.18}` : '0.22' }}
+            >
+              <i aria-hidden="true" />
+              <span>{day.label}</span>
+            </li>
+          )
+        })}
       </ol>
     </div>
   )

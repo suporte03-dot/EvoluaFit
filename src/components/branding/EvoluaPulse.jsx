@@ -48,6 +48,7 @@ export function EvoluaPulseRing({ value = 0, size = 112 }) {
         strokeWidth="3.5"
         strokeLinecap="round"
         strokeDasharray={`${dash} ${c}`}
+        style={{ transition: 'stroke-dasharray 220ms ease' }}
         transform="rotate(-90 54 54)"
       />
     </svg>

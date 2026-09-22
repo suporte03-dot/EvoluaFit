@@ -49,7 +49,7 @@ function getPlanDays(plan) {
   return plan?.weeklyPlan || plan?.schedule || []
 }
 
-export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
+export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan, onGenerateNew }) {
   const { addPlanWorkouts, addWorkoutToPlan, startWorkout, showToast } = useFitness()
   const [detailWorkout, setDetailWorkout] = useState(null)
   const days = getPlanDays(plan)
@@ -127,6 +127,11 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
           </p>
         </div>
         <div className="generated-plan__actions">
+          {onGenerateNew ? (
+            <button type="button" className="btn btn--ghost" onClick={onGenerateNew}>
+              Gerar nova planilha
+            </button>
+          ) : null}
           <button type="button" className="btn btn--primary" onClick={handleAddWorkouts}>
             Salvar na minha planilha
           </button>
@@ -137,6 +142,20 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
           )}
         </div>
       </div>
+
+      {days.length ? (
+        <ol className="generated-plan__week" aria-label="Divisão semanal">
+          {days.map((day) => {
+            const type = resolveDayType(day)
+            return (
+              <li key={day.day} className={`generated-plan__chip generated-plan__chip--${type.tone}`}>
+                <span>{weekdayForDay(day.day).slice(0, 3)}</span>
+                <strong>{type.label}</strong>
+              </li>
+            )
+          })}
+        </ol>
+      ) : null}
 
       <div className="generated-plan__days" role="list">
         {days.map((day) => {

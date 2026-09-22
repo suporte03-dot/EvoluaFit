@@ -6,8 +6,11 @@ export default function CoachInsightCard({ insights }) {
 
   return (
     <div className="coach-whisper" aria-label="Coach Evolua">
-      <p className="coach-whisper__kicker">Coach Evolua</p>
-      <p className="coach-whisper__line">“{body}”</p>
+      <span className="coach-whisper__mark" aria-hidden="true">
+        “
+      </span>
+      <p className="coach-whisper__line">{body}</p>
+      <p className="coach-whisper__by">Coach Evolua</p>
       <button
         type="button"
         className="coach-whisper__cta"

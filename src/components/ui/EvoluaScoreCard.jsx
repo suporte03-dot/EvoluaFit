@@ -18,7 +18,7 @@ function useCountUp(target, enabled) {
     let frame = 0
     const start = performance.now()
     const tick = (now) => {
-      const t = Math.min(1, (now - start) / 280)
+      const t = Math.min(1, (now - start) / 220)
       setValue(Math.round(end * t))
       if (t < 1) frame = requestAnimationFrame(tick)
     }

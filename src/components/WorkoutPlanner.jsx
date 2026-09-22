@@ -236,8 +236,7 @@ export default function WorkoutPlanner() {
   }
 
   const currentStep = STEPS.find((s) => s.id === step) || STEPS[0]
-
-  const stepField = (_key, value) => value
+  const syncQuiet = Boolean(plan) && !workoutPlanError && saveStatus !== 'error' && !loadingWorkoutPlan
 
   const openWizard = () => {
     userOpenedWizard.current = true
@@ -273,67 +272,6 @@ export default function WorkoutPlanner() {
     update('duration', Math.min(90, Math.max(20, form.duration + delta)))
   }
 
-  const summaryPanel = (
-    <aside className="planner-preview" aria-live="polite">
-      <div className="planner-preview__card">
-        <p className="planner-preview__eyebrow">Prévia</p>
-        <h3 className="planner-preview__title">Resumo do plano</h3>
-        <div className="planner-preview__progress-label">
-          Etapa {step} de {STEPS.length}
-        </div>
-        <div className="planner-preview__progress-bar" role="progressbar" aria-valuenow={step} aria-valuemin={1} aria-valuemax={5}>
-          <div className="planner-preview__progress-fill" style={{ width: `${(step / STEPS.length) * 100}%` }} />
-        </div>
-        <ul className="planner-preview__list">
-          <li>
-            <span>Objetivo</span>
-            <strong>{stepField('objective', objectiveLabel)}</strong>
-          </li>
-          <li>
-            <span>Nível</span>
-            <strong>{stepField('level', form.level)}</strong>
-          </li>
-          <li>
-            <span>Frequência</span>
-            <strong>{stepField('daysPerWeek', `${form.daysPerWeek}x por semana`)}</strong>
-          </li>
-          <li>
-            <span>Duração</span>
-            <strong>{stepField('duration', `${form.duration} min`)}</strong>
-          </li>
-          <li>
-            <span>Divisão</span>
-            <strong>{stepField('splitStyle', splitLabel)}</strong>
-          </li>
-          <li>
-            <span>Local</span>
-            <strong>{stepField('location', form.location)}</strong>
-          </li>
-          <li>
-            <span>Equipamentos</span>
-            <strong>
-              {stepField('equipment', form.equipment.length ? form.equipment.join(', ') : '—')}
-            </strong>
-          </li>
-          <li>
-            <span>Cuidados</span>
-            <strong>
-              {stepField(
-                'restrictions',
-                noRestrictions || !form.restrictions.length
-                  ? NONE_RESTRICTION
-                  : form.restrictions.join(', '),
-              )}
-            </strong>
-          </li>
-        </ul>
-        <p className="planner-preview__hint">
-          O plano gerado equilibra grupos musculares e inclui descanso quando necessário.
-        </p>
-      </div>
-    </aside>
-  )
-
   return (
     <section id="planilha" className="section section--alt planner-section">
       <div className="container">
@@ -342,7 +280,7 @@ export default function WorkoutPlanner() {
           title={plan && !wizardOpen ? 'Sua rotina' : 'Monte o treino da semana'}
           subtitle={
             plan && !wizardOpen
-              ? 'Este é o plano ativo desta conta. Gere uma nova planilha se quiser substituir a rotina.'
+              ? 'Rotina ativa nesta conta. Ajuste a divisão da semana ou gere uma nova planilha.'
               : 'Escolha como organizar a semana. O progresso fica salvo neste aparelho.'
           }
         />
@@ -362,7 +300,7 @@ export default function WorkoutPlanner() {
           </div>
         ) : null}
 
-        <div className="planner-sync" role="status" aria-live="polite">
+        <div className={`planner-sync${syncQuiet ? ' planner-sync--quiet' : ''}`} role="status" aria-live="polite">
           {loadingWorkoutPlan ? (
             <p className="planner-sync__msg">Carregando sua planilha...</p>
           ) : workoutPlanError ? (
@@ -402,14 +340,6 @@ export default function WorkoutPlanner() {
             </p>
           ) : null}
         </div>
-
-        {plan && !wizardOpen ? (
-          <div className="planner-current-actions">
-            <button type="button" className="btn btn--ghost" onClick={openWizard}>
-              Gerar nova planilha
-            </button>
-          </div>
-        ) : null}
 
         {wizardOpen ? (
           <>
@@ -704,15 +634,18 @@ export default function WorkoutPlanner() {
               </div>
             )}
           </form>
-
-          {summaryPanel}
         </div>
           </>
         ) : null}
 
-        {plan && (
+        {plan && !wizardOpen && (
           <div className={justGenerated ? 'planner-result is-revealed' : 'planner-result'}>
-            <GeneratedPlan plan={plan} onDownloadExcel={handleDownloadExcel} onSaveToPlan={handleSaveToMyPlan} />
+            <GeneratedPlan
+              plan={plan}
+              onDownloadExcel={handleDownloadExcel}
+              onSaveToPlan={handleSaveToMyPlan}
+              onGenerateNew={openWizard}
+            />
           </div>
         )}
       </div>

@@ -6,7 +6,16 @@ import { scrollToSection } from '../../../utils/scrollToSection'
 import { workoutCardMeta, weeklyProgressSentence } from '../../../utils/todayWorkout'
 import WorkoutDetailModal from '../../WorkoutDetailModal'
 import { formatDateShort } from '../../../utils/dateFormat'
-import { EvoluaPulseLine, EvoluaPulseMesh } from '../../branding/EvoluaPulse'
+
+function heroTone(workout, title) {
+  const hay = `${title || ''} ${workout?.name || ''} ${workout?.workoutType || ''} ${(workout?.muscleGroups || []).join(' ')}`.toLowerCase()
+  if (/descanso|recuper/.test(hay)) return 'rest'
+  if (/push|peito|peitoral|ombro|tr[íi]ceps|empurr/.test(hay)) return 'push'
+  if (/pull|costas|b[íi]ceps|puxar|dorsal/.test(hay)) return 'pull'
+  if (/legs|perna|gl[úu]teo|inferior|lower|quadri/.test(hay)) return 'legs'
+  if (/full|corpo/.test(hay)) return 'full'
+  return 'default'
+}
 
 export default function TodayWorkoutWidget({ profile, today, weekly, nextAction, onReorganize }) {
   const { startWorkout, pendingSession, resumePendingSession } = useFitness()
@@ -15,6 +24,7 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
   const meta = workoutCardMeta(today?.workout, profile)
   const detailTarget = nextAction?.workout || today?.workout
   const title = nextAction?.title || meta?.name || 'Treino de hoje'
+  const tone = heroTone(detailTarget, title)
   const weekPct =
     weekly?.weeklyGoal > 0
       ? Math.min(100, Math.round((weekly.completedCount / weekly.weeklyGoal) * 100))
@@ -56,11 +66,9 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
   }
 
   return (
-    <div className="fit-hero">
+    <div className={`fit-hero fit-hero--${tone}`}>
       <div className="fit-hero__glow" aria-hidden="true" />
-      <div className="fit-hero__mesh" aria-hidden="true">
-        <EvoluaPulseMesh />
-      </div>
+      <div className={`fit-hero__form fit-hero__form--${tone}`} aria-hidden="true" />
       <div className="fit-hero__copy">
         <p className="fit-hero__kicker">Treino de hoje</p>
         <h2 className="fit-hero__title">{title}</h2>
@@ -100,7 +108,6 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
             aria-valuemax={100}
             aria-label="Progresso semanal"
           >
-            <EvoluaPulseLine />
             <span className="fit-hero__week-fill" style={{ width: `${weekPct}%` }} />
           </div>
         </div>

@@ -200,6 +200,39 @@ export function IconMirror(props) {
   )
 }
 
+export function IconGrip(props) {
+  return (
+    <Icon {...props}>
+      <path d="M8 6v12M16 6v12" />
+    </Icon>
+  )
+}
+
+export function IconSize(props) {
+  return (
+    <Icon {...props}>
+      <rect x="4" y="9" width="10" height="10" rx="1.5" />
+      <rect x="10" y="4" width="10" height="10" rx="1.5" />
+    </Icon>
+  )
+}
+
+export function IconMinimize(props) {
+  return (
+    <Icon {...props}>
+      <path d="M6 12h12" />
+    </Icon>
+  )
+}
+
+export function IconClose(props) {
+  return (
+    <Icon {...props}>
+      <path d="M7 7l10 10M17 7 7 17" />
+    </Icon>
+  )
+}
+
 /** Clean metallic dumbbell for Meus Treinos — disc plates, soft emerald, no neon/glow mess. */
 export function DumbbellsVisual({ className = '' }) {
   const uid = useId().replace(/:/g, '')

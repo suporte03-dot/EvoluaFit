@@ -2,8 +2,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { LOCKED_WIDGET_ID } from '../../../utils/dashboardLayout'
 import { getWidget } from '../widgets/widgetRegistry'
-
-const SIZE_LABEL = { small: 'S', medium: 'M', large: 'L' }
+import { IconChevron, IconClose, IconGrip, IconMinimize, IconSize } from '../icons'
 
 export default function WidgetFrame({
   id,
@@ -33,6 +32,8 @@ export default function WidgetFrame({
     onResize?.(id, next, supported)
   }
 
+  const title = def?.title || 'widget'
+
   return (
     <article
       ref={sortable.setNodeRef}
@@ -47,34 +48,50 @@ export default function WidgetFrame({
           <button
             type="button"
             className="focus-cell__handle"
-            aria-label={`Mover ${def?.title || 'widget'}`}
+            title="Mover"
+            aria-label={`Mover ${title}`}
             {...sortable.attributes}
             {...sortable.listeners}
           >
-            ⋮⋮
+            <IconGrip size={14} />
           </button>
           {isMobile ? (
             <>
-              <button type="button" aria-label="Mover para cima" onClick={() => onMoveBy?.(id, -1)}>
-                ↑
+              <button
+                type="button"
+                title="Mover para cima"
+                aria-label="Mover para cima"
+                onClick={() => onMoveBy?.(id, -1)}
+              >
+                <IconChevron size={14} style={{ transform: 'rotate(-90deg)' }} />
               </button>
-              <button type="button" aria-label="Mover para baixo" onClick={() => onMoveBy?.(id, 1)}>
-                ↓
+              <button
+                type="button"
+                title="Mover para baixo"
+                aria-label="Mover para baixo"
+                onClick={() => onMoveBy?.(id, 1)}
+              >
+                <IconChevron size={14} style={{ transform: 'rotate(90deg)' }} />
               </button>
             </>
           ) : null}
           {supported.length > 1 ? (
-            <button type="button" aria-label="Alterar tamanho" onClick={cycleSize}>
-              {SIZE_LABEL[size] || size}
+            <button type="button" title="Tamanho" aria-label={`Alterar tamanho de ${title}`} onClick={cycleSize}>
+              <IconSize size={14} />
             </button>
           ) : null}
           {!locked ? (
             <>
-              <button type="button" aria-label="Enviar para a biblioteca" onClick={() => onUnpin?.(id)}>
-                −
+              <button
+                type="button"
+                title="Minimizar"
+                aria-label={`Minimizar ${title}`}
+                onClick={() => onUnpin?.(id)}
+              >
+                <IconMinimize size={14} />
               </button>
-              <button type="button" aria-label="Ocultar widget" onClick={() => onHide?.(id)}>
-                ×
+              <button type="button" title="Remover" aria-label={`Remover ${title}`} onClick={() => onHide?.(id)}>
+                <IconClose size={14} />
               </button>
             </>
           ) : (

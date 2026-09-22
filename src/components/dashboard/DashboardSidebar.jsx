@@ -247,16 +247,9 @@ export default function DashboardSidebar({
             {!collapsed && (
               <div className="dash-sidebar__user-meta">
                 {loadingProfile ? (
-                  <>
-                    <strong className="dash-sidebar__placeholder">Carregando</strong>
-                    <span className="dash-sidebar__placeholder">Nível —</span>
-                  </>
+                  <strong className="dash-sidebar__placeholder">Carregando</strong>
                 ) : (
-                  <>
-                    <strong>{accountLabel}</strong>
-                    <span>{levelLabel}</span>
-                    {trainingLevel ? <small className="dash-sidebar__xp-label">{trainingLevel}</small> : null}
-                  </>
+                  <strong>{accountLabel}</strong>
                 )}
               </div>
             )}

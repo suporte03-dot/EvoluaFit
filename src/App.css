@@ -1071,11 +1071,11 @@ main {
 
 .planner-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.72fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.25rem;
   align-items: start;
   margin-bottom: 2rem;
-  max-width: 1120px;
+  max-width: 760px;
 }
 
 .planner-config {
@@ -10198,6 +10198,14 @@ main {
   background: rgba(15, 23, 42, 0.55);
   border: 1px solid rgba(148, 163, 184, 0.22);
   color: var(--text-muted, #94a3b8);
+}
+
+.sync-indicator--ok {
+  padding: 0.12rem 0.2rem;
+  background: transparent;
+  border-color: transparent;
+  font-size: 0.7rem;
+  color: rgba(148, 163, 184, 0.7);
 }
 
 .sync-indicator__dot {

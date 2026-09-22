@@ -5,9 +5,9 @@ import { generateWorkoutPlan, planToWorkouts } from '../utils/workoutGenerator'
 import { exportWorkoutToExcel } from '../utils/exportWorkoutToExcel'
 import SectionTitle from './SectionTitle'
 import GeneratedPlan from './GeneratedPlan'
-import PremiumSelect from './PremiumSelect'
 import AdaptiveWeekNudge from './dashboard/AdaptiveWeekNudge'
 import { detectMissedWorkouts } from '../utils/adaptiveWeek'
+import { getSplitOptionsForDays, getSplitStyleLabel } from '../data/workoutTemplates'
 
 const PLANNER_DRAFT_KEY = 'evoluafit-planner-draft'
 
@@ -51,10 +51,10 @@ const NONE_RESTRICTION = 'Sem restrições'
 
 const STEPS = [
   { id: 1, title: 'Objetivo e nível', desc: 'Para onde quer evoluir e seu ponto de partida.' },
-  { id: 2, title: 'Dias e tempo', desc: 'Frequência e duração de cada sessão.' },
+  { id: 2, title: 'Semana e divisão', desc: 'Quantos dias, quanto tempo e como organizar os treinos.' },
   { id: 3, title: 'Local e equipamentos', desc: 'Onde treina e o que tem disponível.' },
   { id: 4, title: 'Cuidados e restrições', desc: 'Informações para um plano mais seguro.' },
-  { id: 5, title: 'Resumo e gerar', desc: 'Confira e gere sua planilha.' },
+  { id: 5, title: 'Resumo e gerar', desc: 'Confira e gere sua rotina.' },
 ]
 
 export default function WorkoutPlanner() {
@@ -78,6 +78,7 @@ export default function WorkoutPlanner() {
     location: draft?.form?.location || generatedPlan?.location || profile.location || 'Academia',
     equipment: draft?.form?.equipment || generatedPlan?.equipment || profile.equipment || ['Academia completa'],
     restrictions: draft?.form?.restrictions || generatedPlan?.restrictions || profile.restrictions || [],
+    splitStyle: draft?.form?.splitStyle || generatedPlan?.splitStyle || 'auto',
   }))
   const [plan, setPlan] = useState(() => generatedPlan || null)
   const [noRestrictions, setNoRestrictions] = useState(
@@ -150,6 +151,8 @@ export default function WorkoutPlanner() {
     () => objectives.find((o) => o.value === form.objective)?.label || form.objective,
     [form.objective],
   )
+  const splitOptions = useMemo(() => getSplitOptionsForDays(form.daysPerWeek), [form.daysPerWeek])
+  const splitLabel = useMemo(() => getSplitStyleLabel(form.splitStyle), [form.splitStyle])
 
   const canGoNext = () => {
     if (step === 3 && !form.equipment.length) return false
@@ -247,6 +250,7 @@ export default function WorkoutPlanner() {
         location: generatedPlan.location || profile.location || 'Academia',
         equipment: generatedPlan.equipment || profile.equipment || ['Academia completa'],
         restrictions: generatedPlan.restrictions || profile.restrictions || [],
+        splitStyle: generatedPlan.splitStyle || 'auto',
       })
       setNoRestrictions(!(generatedPlan.restrictions || []).length)
       setStep(1)
@@ -255,7 +259,15 @@ export default function WorkoutPlanner() {
   }
 
   const bumpDays = (delta) => {
-    update('daysPerWeek', Math.min(7, Math.max(2, form.daysPerWeek + delta)))
+    setForm((prev) => {
+      const daysPerWeek = Math.min(7, Math.max(2, prev.daysPerWeek + delta))
+      const allowed = getSplitOptionsForDays(daysPerWeek).some((style) => style.id === prev.splitStyle)
+      return {
+        ...prev,
+        daysPerWeek,
+        splitStyle: allowed ? prev.splitStyle : 'auto',
+      }
+    })
   }
   const bumpDuration = (delta) => {
     update('duration', Math.min(90, Math.max(20, form.duration + delta)))
@@ -288,6 +300,10 @@ export default function WorkoutPlanner() {
           <li>
             <span>Duração</span>
             <strong>{stepField('duration', `${form.duration} min`)}</strong>
+          </li>
+          <li>
+            <span>Divisão</span>
+            <strong>{stepField('splitStyle', splitLabel)}</strong>
           </li>
           <li>
             <span>Local</span>
@@ -327,7 +343,7 @@ export default function WorkoutPlanner() {
           subtitle={
             plan && !wizardOpen
               ? 'Este é o plano ativo desta conta. Gere uma nova planilha se quiser substituir a rotina.'
-              : 'Siga as etapas e gere um plano equilibrado para a sua rotina. Seu progresso no formulário é salvo automaticamente.'
+              : 'Escolha como organizar a semana. O progresso fica salvo neste aparelho.'
           }
         />
 
@@ -451,23 +467,33 @@ export default function WorkoutPlanner() {
               </div>
 
               {step === 1 && (
-                <div className="planner-step__grid">
-                  <label className="planner-field">
-                    <PremiumSelect
-                      label="Objetivo"
-                      value={form.objective}
-                      options={objectives}
-                      onChange={(value) => update('objective', value)}
-                    />
-                  </label>
-                  <label className="planner-field">
-                    <PremiumSelect
-                      label="Nível"
-                      value={form.level}
-                      options={levels}
-                      onChange={(value) => update('level', value)}
-                    />
-                  </label>
+                <div className="planner-step__body">
+                  <p className="planner-choice-label">Objetivo</p>
+                  <div className="planner-choices">
+                    {objectives.map((item) => (
+                      <button
+                        key={item.value}
+                        type="button"
+                        className={`planner-choice${form.objective === item.value ? ' is-active' : ''}`}
+                        onClick={() => update('objective', item.value)}
+                      >
+                        <strong>{item.label}</strong>
+                      </button>
+                    ))}
+                  </div>
+                  <p className="planner-choice-label">Nível</p>
+                  <div className="planner-choices planner-choices--compact">
+                    {levels.map((item) => (
+                      <button
+                        key={item}
+                        type="button"
+                        className={`planner-choice${form.level === item ? ' is-active' : ''}`}
+                        onClick={() => update('level', item)}
+                      >
+                        <strong>{item}</strong>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -512,19 +538,42 @@ export default function WorkoutPlanner() {
                       <em>90 min</em>
                     </span>
                   </div>
+
+                  <div className="planner-split-block">
+                    <p className="planner-choice-label">Como organizar os treinos</p>
+                    <div className="planner-choices planner-choices--split">
+                      {splitOptions.map((item) => (
+                        <button
+                          key={item.id}
+                          type="button"
+                          className={`planner-choice planner-choice--split${form.splitStyle === item.id ? ' is-active' : ''}`}
+                          onClick={() => update('splitStyle', item.id)}
+                        >
+                          <strong>{item.label}</strong>
+                          <span>{item.desc}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
 
               {step === 3 && (
                 <div className="planner-step__body">
-                  <label className="planner-field">
-                    <PremiumSelect
-                      label="Local"
-                      value={form.location}
-                      options={locations}
-                      onChange={(value) => update('location', value)}
-                    />
-                  </label>
+                  <p className="planner-choice-label">Local</p>
+                  <div className="planner-choices planner-choices--compact">
+                    {locations.map((item) => (
+                      <button
+                        key={item}
+                        type="button"
+                        className={`planner-choice${form.location === item ? ' is-active' : ''}`}
+                        onClick={() => update('location', item)}
+                      >
+                        <strong>{item}</strong>
+                      </button>
+                    ))}
+                  </div>
+                  <p className="planner-choice-label">Equipamentos</p>
                   <div className="planner-chips">
                     {equipmentOptions.map((eq) => (
                       <button
@@ -584,6 +633,10 @@ export default function WorkoutPlanner() {
                         <strong>{form.daysPerWeek}x · {form.duration} min</strong>
                       </li>
                       <li>
+                        <span>Divisão</span>
+                        <strong>{splitLabel}</strong>
+                      </li>
+                      <li>
                         <span>Local</span>
                         <strong>{form.location}</strong>
                       </li>
@@ -626,7 +679,7 @@ export default function WorkoutPlanner() {
                   className={`btn btn--primary btn--lg planner-btn--generate${generating ? ' is-generating' : ''}${justGenerated ? ' is-done-pulse' : ''}`}
                   disabled={generating}
                 >
-                  {generating ? 'Gerando…' : 'Gerar planilha'}
+                  {generating ? 'Gerando…' : 'Gerar rotina'}
                 </button>
               )}
             </div>

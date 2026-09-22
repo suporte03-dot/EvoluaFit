@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
 import { planToWorkouts } from '../utils/workoutGenerator'
+import { getSplitStyleLabel } from '../data/workoutTemplates'
 import DayVolumeSummary from './DayVolumeSummary'
 import WorkoutDetailModal from './WorkoutDetailModal'
 
@@ -121,8 +122,8 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan }) {
             {plan.title || `Sua planilha — ${plan.objectiveLabel || plan.goal}`}
           </h3>
           <p className="generated-plan__meta">
-            {plan.level} · {plan.daysPerWeek}x/semana · {plan.minutesPerWorkout || plan.duration} min ·{' '}
-            {plan.location}
+            {plan.level} · {plan.daysPerWeek}x/semana · {plan.splitLabel || getSplitStyleLabel(plan.splitStyle)} ·{' '}
+            {plan.minutesPerWorkout || plan.duration} min · {plan.location}
           </p>
         </div>
         <div className="generated-plan__actions">

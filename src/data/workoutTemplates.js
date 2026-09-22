@@ -47,12 +47,146 @@ export const splitTemplates = {
   ],
 }
 
-/**
- * Retorna a divisão semanal conforme dias, nível e objetivo.
- * Iniciante em 3 dias usa Full Body A/B/C; 7 dias nunca são todos intensos.
- */
-export function getSplitTemplate(daysPerWeek, level = 'Intermediário', goal = 'saude') {
+export const SPLIT_STYLES = [
+  {
+    id: 'auto',
+    label: 'EvoluaFit escolhe',
+    desc: 'Divisão equilibrada para os seus dias e o seu nível.',
+    minDays: 2,
+    maxDays: 7,
+  },
+  {
+    id: 'full_body',
+    label: 'Corpo inteiro',
+    desc: 'Todos os grupos em cada sessão. Ideal para 2 a 4 dias.',
+    minDays: 2,
+    maxDays: 4,
+  },
+  {
+    id: 'ppl',
+    label: 'Push · Pull · Legs',
+    desc: 'Empurrar, puxar e pernas em dias separados.',
+    minDays: 3,
+    maxDays: 6,
+  },
+  {
+    id: 'upper_lower',
+    label: 'Superior e inferior',
+    desc: 'Um dia de cima, um de baixo.',
+    minDays: 2,
+    maxDays: 6,
+  },
+  {
+    id: 'abc',
+    label: 'A · B · C',
+    desc: 'Peito e tríceps, costas e bíceps, pernas.',
+    minDays: 3,
+    maxDays: 6,
+  },
+  {
+    id: 'muscle',
+    label: 'Por grupo muscular',
+    desc: 'Um módulo por dia: peito, costas, pernas…',
+    minDays: 4,
+    maxDays: 7,
+  },
+]
+
+const SPLIT_PARTS = {
+  push: { name: 'Push', focus: ['Peitoral', 'Ombros', 'Tríceps'] },
+  pull: { name: 'Pull', focus: ['Costas', 'Bíceps', 'Trapézio', 'Lombar'] },
+  legs: { name: 'Legs', focus: ['Pernas', 'Glúteos', 'Panturrilha', 'Abdômen'] },
+  upper: { name: 'Upper', focus: ['Peitoral', 'Costas', 'Ombros', 'Bíceps', 'Tríceps'] },
+  lower: { name: 'Lower', focus: ['Pernas', 'Glúteos', 'Panturrilha', 'Abdômen'] },
+  abcA: { name: 'A — Peito e tríceps', focus: ['Peitoral', 'Tríceps'] },
+  abcB: { name: 'B — Costas e bíceps', focus: ['Costas', 'Bíceps', 'Trapézio'] },
+  abcC: { name: 'C — Pernas', focus: ['Pernas', 'Glúteos', 'Panturrilha'] },
+  chest: { name: 'Peito', focus: ['Peitoral'] },
+  back: { name: 'Costas', focus: ['Costas', 'Trapézio', 'Lombar'] },
+  legsFocus: { name: 'Pernas', focus: ['Pernas', 'Glúteos', 'Panturrilha'] },
+  shoulders: { name: 'Ombros', focus: ['Ombros'] },
+  arms: { name: 'Braços', focus: ['Bíceps', 'Tríceps'] },
+  core: { name: 'Core + Cardio', focus: ['Abdômen', 'Cardio'] },
+  mobility: { name: 'Mobilidade', focus: ['Mobilidade', 'Alongamento'] },
+}
+
+function numberedDays(list) {
+  return list.map((day, index) => ({ ...day, day: index + 1 }))
+}
+
+function repeatPattern(parts, days) {
+  return numberedDays(
+    Array.from({ length: days }, (_, index) => {
+      const part = parts[index % parts.length]
+      const round = Math.floor(index / parts.length)
+      if (round === 0) return { name: part.name, focus: part.focus }
+      return { name: `${part.name} ${String.fromCharCode(65 + round)}`, focus: part.focus }
+    }),
+  )
+}
+
+function buildFullBodySplit(days) {
+  const variants = [
+    { name: 'Full Body A', focus: ['Peitoral', 'Costas', 'Pernas', 'Abdômen'] },
+    { name: 'Full Body B', focus: ['Ombros', 'Pernas', 'Glúteos', 'Bíceps'] },
+    { name: 'Full Body C', focus: ['Peitoral', 'Costas', 'Glúteos', 'Tríceps'] },
+    { name: 'Full Body D', focus: ['Ombros', 'Pernas', 'Abdômen', 'Mobilidade'] },
+  ]
+  return numberedDays(variants.slice(0, days))
+}
+
+function buildMuscleSplit(days) {
+  const sequence = [
+    SPLIT_PARTS.chest,
+    SPLIT_PARTS.back,
+    SPLIT_PARTS.legsFocus,
+    days <= 4 ? { name: 'Ombros e braços', focus: ['Ombros', 'Bíceps', 'Tríceps'] } : SPLIT_PARTS.shoulders,
+    SPLIT_PARTS.arms,
+    SPLIT_PARTS.core,
+    SPLIT_PARTS.mobility,
+  ]
+  return numberedDays(sequence.slice(0, days))
+}
+
+function buildStyledSplit(days, splitStyle) {
+  switch (splitStyle) {
+    case 'full_body':
+      return buildFullBodySplit(days)
+    case 'ppl':
+      return repeatPattern([SPLIT_PARTS.push, SPLIT_PARTS.pull, SPLIT_PARTS.legs], days)
+    case 'upper_lower':
+      return repeatPattern([SPLIT_PARTS.upper, SPLIT_PARTS.lower], days)
+    case 'abc':
+      return repeatPattern([SPLIT_PARTS.abcA, SPLIT_PARTS.abcB, SPLIT_PARTS.abcC], days)
+    case 'muscle':
+      return buildMuscleSplit(days)
+    default:
+      return null
+  }
+}
+
+export function getSplitOptionsForDays(daysPerWeek) {
   const days = Math.min(Math.max(Number(daysPerWeek) || 3, 2), 7)
+  return SPLIT_STYLES.filter((style) => days >= style.minDays && days <= style.maxDays)
+}
+
+export function getSplitStyleLabel(splitStyle) {
+  return SPLIT_STYLES.find((style) => style.id === splitStyle)?.label || SPLIT_STYLES[0].label
+}
+
+/**
+ * Retorna a divisão semanal conforme dias, nível, objetivo e estilo escolhido.
+ * `auto` preserva a lógica atual (iniciante em 3 dias = Full Body).
+ */
+export function getSplitTemplate(daysPerWeek, level = 'Intermediário', goal = 'saude', splitStyle = 'auto') {
+  const days = Math.min(Math.max(Number(daysPerWeek) || 3, 2), 7)
+  const allowed = getSplitOptionsForDays(days).some((style) => style.id === splitStyle)
+  const style = allowed ? splitStyle : 'auto'
+
+  if (style && style !== 'auto') {
+    const styled = buildStyledSplit(days, style)
+    if (styled?.length) return styled
+  }
 
   if (days === 3 && level === 'Iniciante') {
     return splitTemplates['3_beginner']

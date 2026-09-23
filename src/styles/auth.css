@@ -1897,3 +1897,127 @@ html:has(.auth-split) body {
   }
 }
 
+/* Arquitetura final do fundo: uma única superfície global + atletas RGBA */
+@media (min-width: 768px) {
+  .auth-split {
+    background:
+      radial-gradient(
+        ellipse 38% 62% at 51% 43%,
+        rgba(37, 99, 235, 0.12) 0%,
+        rgba(99, 70, 255, 0.07) 38%,
+        rgba(99, 70, 255, 0.025) 60%,
+        transparent 76%
+      ),
+      radial-gradient(
+        ellipse 26% 24% at 53% 80%,
+        rgba(124, 58, 237, 0.045) 0%,
+        transparent 72%
+      ),
+      linear-gradient(
+        135deg,
+        #03050b 0%,
+        #050817 42%,
+        #070817 68%,
+        #03050b 100%
+      );
+  }
+
+  .auth-split::before {
+    z-index: 1;
+    opacity: 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1600 900' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke-linecap='round'%3E%3Cpath d='M-80 760 C180 650 300 830 545 744 S850 650 1090 750' stroke='%235344ff' stroke-opacity='.10' stroke-width='1.4'/%3E%3Cpath d='M-90 782 C150 680 310 842 555 765 S830 690 1060 770' stroke='%232d9cff' stroke-opacity='.08' stroke-width='1.1'/%3E%3Cpath d='M-60 735 C170 640 315 790 555 715 S820 625 1070 720' stroke='%237c3cff' stroke-opacity='.07' stroke-width='1'/%3E%3Cpath d='M40 805 C260 725 365 842 610 782 S850 720 1030 790' stroke='%232f67ff' stroke-opacity='.05' stroke-width='.8'/%3E%3C/g%3E%3C/svg%3E");
+    background-position: left bottom;
+    background-size: cover;
+    background-repeat: no-repeat;
+    mix-blend-mode: normal;
+    pointer-events: none;
+  }
+
+  .auth-split::after {
+    z-index: 1;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 48%,
+      rgba(0, 0, 0, 0.18) 100%
+    );
+    pointer-events: none;
+  }
+
+  .auth-split__visual,
+  .auth-split__brand,
+  .auth-split__cast,
+  .auth-split__panel {
+    background-color: transparent;
+    background-image: none;
+  }
+
+  .auth-split__cast {
+    z-index: 2;
+    overflow: visible;
+    opacity: 1;
+    filter: none;
+    mix-blend-mode: normal;
+  }
+
+  .auth-split__cast::before,
+  .auth-split__cast::after {
+    content: none;
+    display: none;
+  }
+
+  .login-hero-frame {
+    z-index: 2;
+    overflow: visible;
+    opacity: 1;
+    background: transparent;
+    filter: none;
+    mix-blend-mode: normal;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .login-hero-art {
+    z-index: 2;
+    display: block;
+    opacity: 1;
+    background: transparent;
+    object-fit: contain;
+    filter: none;
+    mix-blend-mode: normal;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .auth-split__brand,
+  .auth-split__panel,
+  .auth-split__edition,
+  .auth-split__steps {
+    z-index: 3;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1366px) {
+  .auth-split {
+    background:
+      radial-gradient(
+        ellipse 36% 60% at 51% 43%,
+        rgba(37, 99, 235, 0.09) 0%,
+        rgba(99, 70, 255, 0.05) 38%,
+        rgba(99, 70, 255, 0.018) 60%,
+        transparent 76%
+      ),
+      radial-gradient(
+        ellipse 24% 22% at 53% 80%,
+        rgba(124, 58, 237, 0.035) 0%,
+        transparent 72%
+      ),
+      linear-gradient(
+        135deg,
+        #03050b 0%,
+        #050817 42%,
+        #070817 68%,
+        #03050b 100%
+      );
+  }
+}
+

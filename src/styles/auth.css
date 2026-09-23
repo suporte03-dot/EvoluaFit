@@ -1809,7 +1809,7 @@ html:has(.auth-split) body {
   .auth-split__cast::before {
     content: '';
     position: absolute;
-    z-index: 3;
+    z-index: 1;
     inset: 3% -18% 4% -18%;
     pointer-events: none;
     background:
@@ -1822,7 +1822,7 @@ html:has(.auth-split) body {
   .auth-split__cast::after {
     content: '';
     position: absolute;
-    z-index: 3;
+    z-index: 1;
     left: -38%;
     right: -34%;
     bottom: -3%;
@@ -1836,7 +1836,7 @@ html:has(.auth-split) body {
   }
 
   .login-hero-monogram {
-    z-index: 3;
+    z-index: 1;
     left: 68%;
     top: 37%;
     width: 78%;
@@ -1873,7 +1873,7 @@ html:has(.auth-split) body {
   }
 
   .login-hero-backdrop {
-    z-index: 4;
+    z-index: 1;
     opacity: 1;
     filter:
       drop-shadow(0 0 8px rgba(59, 91, 255, 0.24))
@@ -1886,7 +1886,7 @@ html:has(.auth-split) body {
   }
 
   .login-hero-frame {
-    z-index: 2;
+    z-index: 4;
   }
 
   .auth-split__brand,

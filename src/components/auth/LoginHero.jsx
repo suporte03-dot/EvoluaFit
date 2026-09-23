@@ -147,7 +147,11 @@ export default function LoginHero() {
           <span>Uma versão</span>
           <strong>mais forte de você</strong>
         </div>
-        <div className="login-hero-monogram" aria-hidden="true">E</div>
+        <div className="login-hero-monogram" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
         <div className="login-hero-backdrop" aria-hidden="true">
           <LoginHeroWaves />
         </div>

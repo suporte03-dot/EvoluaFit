@@ -47,12 +47,37 @@
     <script>
       (function () {
         var KEY = 'evoluafit-sw-bust'
+        var MAX_ATTEMPTS = 2
+
+        function showRecovery() {
+          var boot = document.querySelector('.ef-boot')
+          if (!boot) return
+          boot.innerHTML =
+            '<span>Não foi possível abrir o EvoluaFit.</span>' +
+            '<button type="button" style="margin-top:16px;padding:10px 18px;border:0;border-radius:8px;background:#7657ff;color:#fff;font:inherit;cursor:pointer">Tentar novamente</button>'
+          boot.style.textAlign = 'center'
+          boot.style.alignContent = 'center'
+          boot.querySelector('button').addEventListener('click', function () {
+            try {
+              sessionStorage.removeItem(KEY)
+            } catch (err) {
+              /* segue com o reload */
+            }
+            location.reload()
+          })
+        }
+
         function bust() {
+          var attempts = 0
           try {
-            if (sessionStorage.getItem(KEY)) return
-            sessionStorage.setItem(KEY, '1')
+            attempts = Number(sessionStorage.getItem(KEY) || 0)
+            if (attempts >= MAX_ATTEMPTS) {
+              showRecovery()
+              return
+            }
+            sessionStorage.setItem(KEY, String(attempts + 1))
           } catch (err) {
-            return
+            /* tenta recuperar mesmo sem sessionStorage */
           }
           if (!('serviceWorker' in navigator)) {
             location.reload()
@@ -90,6 +115,17 @@
             bust()
           }
         })
+        window.setTimeout(function () {
+          if (document.querySelector('.ef-boot')) {
+            bust()
+            return
+          }
+          try {
+            sessionStorage.removeItem(KEY)
+          } catch (err) {
+            /* app já iniciou */
+          }
+        }, 7000)
       })()
     </script>
     <script type="module" src="/src/main.jsx"></script>

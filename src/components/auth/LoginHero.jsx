@@ -91,6 +91,7 @@ export default function LoginHero() {
     <aside className="auth-split__visual" aria-label="EvoluaFit">
       <div className="auth-split__brand">
         <EvoluaFitLogo size="small" showWordmark className="auth-split__logo" />
+        <p className="auth-split__discipline">Disciplina hoje<br />Resultados sempre</p>
         <div className="auth-split__hero">
           <h2>
             Evolua além do <span className="auth-gradient-text">treino.</span>
@@ -135,11 +136,18 @@ export default function LoginHero() {
               <strong>Ambiente seguro</strong>
               <p>Seus dados estão protegidos</p>
             </div>
+            <span className="auth-split__privacy-arrow" aria-hidden="true">›</span>
           </div>
         </div>
+        <p className="auth-split__values" aria-hidden="true">Saúde · Foco · Evolução · Sem limites</p>
       </div>
 
       <div className="auth-split__cast">
+        <div className="auth-split__edition" aria-hidden="true">
+          <span>Uma versão</span>
+          <strong>mais forte de você</strong>
+        </div>
+        <div className="login-hero-monogram" aria-hidden="true">E</div>
         <div className="login-hero-backdrop" aria-hidden="true">
           <LoginHeroWaves />
         </div>

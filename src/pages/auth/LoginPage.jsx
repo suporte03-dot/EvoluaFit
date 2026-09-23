@@ -181,7 +181,8 @@ export default function LoginPage() {
           disabled={submitting}
           aria-busy={submitting}
         >
-          {submitting ? 'Entrando...' : 'Entrar'}
+          <span>{submitting ? 'Entrando...' : 'Entrar'}</span>
+          {!submitting ? <span className="auth-form__submit-arrow" aria-hidden="true">→</span> : null}
         </button>
       </form>
 

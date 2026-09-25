@@ -111,6 +111,7 @@ export default function LoginHero() {
             decoding="async"
             fetchPriority="high"
           />
+          <div className="login-hero-wash" aria-hidden="true" />
         </div>
         <ol className="auth-split__steps" aria-hidden="true">
           <li>Treine</li>

@@ -3,7 +3,7 @@
 :root {
   --dash-sidebar-w: 268px;
   --dash-sidebar-collapsed: 78px;
-  --dash-bg: var(--app-bg, #070a0f);
+  --dash-bg: var(--app-bg, #040814);
   --dash-surface: var(--surface-primary, #121923);
   --dash-surface-2: var(--surface-secondary, #182230);
   --dash-orange: var(--accent-primary, #7657ff);
@@ -93,7 +93,8 @@ body:has(.dash-sidebar--open) .dash-sidebar {
   display: flex;
   flex-direction: column;
   background:
-    radial-gradient(ellipse at 70% -10%, rgba(59, 130, 246, 0.08), transparent 42%),
+    radial-gradient(ellipse 46% 36% at 78% -8%, rgba(48, 104, 255, 0.12), transparent 58%),
+    radial-gradient(ellipse 34% 28% at 8% 100%, rgba(102, 76, 255, 0.06), transparent 62%),
     var(--dash-bg);
 }
 
@@ -261,7 +262,7 @@ body:has(.dash-sidebar--open) .dash-sidebar {
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(148, 163, 184, 0.72);
+  color: rgba(180, 192, 212, 0.82);
 }
 
 .dash-sidebar__list {
@@ -281,7 +282,7 @@ body:has(.dash-sidebar--open) .dash-sidebar {
   border: 1px solid transparent;
   border-radius: 11px;
   background: transparent;
-  color: rgba(203, 213, 225, 0.82);
+  color: rgba(214, 224, 238, 0.9);
   font-size: 0.86rem;
   font-weight: 600;
   cursor: pointer;
@@ -465,9 +466,9 @@ body:has(.dash-sidebar--open) .dash-sidebar {
   padding: 1.4rem 1.5rem;
   min-height: 0;
   border-radius: var(--dash-radius);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid rgba(96, 130, 180, 0.28);
   background: var(--surface-primary);
-  box-shadow: var(--dash-shadow);
+  box-shadow: var(--dash-shadow), inset 0 1px 0 rgba(186, 204, 230, 0.05);
   animation: dashRise 0.45s ease both;
 }
 

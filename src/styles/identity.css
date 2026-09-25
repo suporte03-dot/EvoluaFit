@@ -15,18 +15,18 @@
 .dash-sidebar {
   color-scheme: dark;
   background:
-    linear-gradient(180deg, rgba(118, 87, 255, 0.05) 0%, transparent 28%),
-    linear-gradient(180deg, #0d1219 0%, #070a0f 100%) !important;
-  border-right-color: var(--border-subtle, #243142) !important;
+    linear-gradient(180deg, rgba(48, 104, 255, 0.08) 0%, transparent 30%),
+    linear-gradient(180deg, #0a1628 0%, #071021 100%) !important;
+  border-right-color: var(--border-subtle, #2a3b58) !important;
 }
 
 .header {
-  background: linear-gradient(180deg, rgba(7, 10, 15, 0.94), rgba(13, 18, 25, 0.9));
-  border-bottom-color: var(--border-subtle, #243142);
+  background: linear-gradient(180deg, rgba(4, 8, 20, 0.94), rgba(7, 16, 33, 0.9));
+  border-bottom-color: var(--border-subtle, #2a3b58);
 }
 
 .mobile-nav {
-  background: rgba(7, 10, 15, 0.97);
+  background: rgba(4, 8, 20, 0.97);
 }
 
 .section-lazy-fallback__pulse {
@@ -61,8 +61,9 @@
 .dash-hoje-panel {
   padding: 1.1rem 1.2rem 1.2rem;
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid rgba(96, 130, 180, 0.28);
   background: var(--surface-primary);
+  box-shadow: 0 16px 36px rgba(4, 12, 28, 0.28), inset 0 1px 0 rgba(186, 204, 230, 0.05);
 }
 
 .dash-hoje-panel__insight {
@@ -639,7 +640,7 @@
 
 .coach-rec {
   border-color: rgba(53, 120, 255, 0.18) !important;
-  background: linear-gradient(165deg, #182230 0%, #121923 100%) !important;
+  background: linear-gradient(165deg, #122036 0%, #0c1628 100%) !important;
 }
 
 .coach-rec__icon {
@@ -668,7 +669,7 @@
 
 .coach-hero {
   border-color: rgba(53, 120, 255, 0.28) !important;
-  background: linear-gradient(115deg, #121923 0%, #070a0f 100%) !important;
+  background: linear-gradient(115deg, #0c1628 0%, #040814 100%) !important;
 }
 
 /* ----- Foco treino ----- */

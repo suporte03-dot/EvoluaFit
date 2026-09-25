@@ -1,8 +1,8 @@
 ﻿/* Auth — EvoluaFit · fidelidade ao mockup login */
 
 :root {
-  --auth-bg: var(--bg-primary, #070a0f);
-  --auth-bg-panel: var(--bg-secondary, #0d1219);
+  --auth-bg: var(--bg-primary, #040814);
+  --auth-bg-panel: var(--bg-secondary, #071021);
   --auth-bg-deep: #0a0e18;
   --auth-surface: var(--surface-primary, #121923);
   --auth-surface-solid: var(--surface-elevated, #182230);

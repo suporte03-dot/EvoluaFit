@@ -3,15 +3,15 @@
 
 :root {
   /* Master palette */
-  --bg-primary: #070a0f;
-  --bg-secondary: #0d1219;
-  --surface-primary: #121923;
-  --surface-elevated: #182230;
-  --border-subtle: #243142;
+  --bg-primary: #040814;
+  --bg-secondary: #071021;
+  --surface-primary: #0c1628;
+  --surface-elevated: #122036;
+  --border-subtle: #2a3b58;
 
   --text-primary: #f8fafc;
-  --text-secondary: #9da9b8;
-  --text-muted: #6b7788;
+  --text-secondary: #b4c0d4;
+  --text-muted: #8b97ab;
 
   --brand-primary: #7657ff;
   --brand-primary-hover: #8b74ff;
@@ -40,7 +40,7 @@
   --radius-sm: 10px;
   --radius-md: 14px;
   --radius-lg: 16px;
-  --shadow-card: 0 16px 40px rgba(0, 0, 0, 0.35);
+  --shadow-card: 0 16px 40px rgba(4, 12, 28, 0.36);
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -116,7 +116,7 @@
   --fn-volume: var(--primary);
   --fn-goals: var(--energy);
 
-  --bg-deep: #05070b;
+  --bg-deep: #030610;
   --graphite: var(--bg-section);
   --green: var(--progress-positive);
   --green-secondary: #9ad628;
@@ -131,8 +131,8 @@
   --gray: var(--text-muted);
 
   --bg-page: var(--bg-main);
-  --bg-glass: rgba(13, 18, 25, 0.88);
-  --bg-glass-soft: rgba(18, 25, 35, 0.72);
+  --bg-glass: rgba(7, 16, 33, 0.88);
+  --bg-glass-soft: rgba(12, 22, 40, 0.72);
   --border: var(--border-soft);
   --border-strong: var(--primary-border);
 

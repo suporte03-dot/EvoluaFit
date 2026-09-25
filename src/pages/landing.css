@@ -3,7 +3,7 @@
   background:
     radial-gradient(ellipse 80% 50% at 10% -10%, rgba(118, 87, 255, 0.18), transparent 55%),
     radial-gradient(ellipse 60% 40% at 90% 0%, rgba(154, 166, 255, 0.1), transparent 50%),
-    var(--app-bg, #070a0f);
+    var(--app-bg, #040814);
   color: var(--text-primary, #f7f7f2);
   font-family: var(--font, 'Figtree', system-ui, sans-serif);
 }

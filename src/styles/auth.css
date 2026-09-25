@@ -495,14 +495,8 @@ html:has(.auth-split) body {
   isolation: isolate;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  -webkit-mask-image:
-    linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.4) 10%, #000 22%, #000 78%, rgba(0, 0, 0, 0.45) 90%, transparent 100%),
-    linear-gradient(to bottom, #000 0%, #000 84%, rgba(0, 0, 0, 0.62) 94%, transparent 100%);
-  mask-image:
-    linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.4) 10%, #000 22%, #000 78%, rgba(0, 0, 0, 0.45) 90%, transparent 100%),
-    linear-gradient(to bottom, #000 0%, #000 84%, rgba(0, 0, 0, 0.62) 94%, transparent 100%);
-  -webkit-mask-composite: source-in;
-  mask-composite: intersect;
+  -webkit-mask-image: none;
+  mask-image: none;
 }
 
 .login-hero-stage {
@@ -569,7 +563,9 @@ html:has(.auth-split) body {
   transform: none;
   pointer-events: none;
   user-select: none;
-  filter: contrast(1.12) saturate(0.96) brightness(0.98);
+  opacity: 1;
+  filter: none;
+  mix-blend-mode: normal;
 }
 
 .auth-split__logo.evoluafit-logo,
@@ -1608,8 +1604,9 @@ html:has(.auth-split) body {
   }
 
   .login-hero-art {
-    mix-blend-mode: screen;
-    filter: contrast(1.12) saturate(1.02) brightness(0.94);
+    mix-blend-mode: normal;
+    filter: none;
+    opacity: 1;
   }
 
   .login-hero-backdrop {
@@ -1915,10 +1912,10 @@ html:has(.auth-split) body {
       ),
       linear-gradient(
         135deg,
-        #03050b 0%,
-        #050817 42%,
-        #070817 68%,
-        #03050b 100%
+        #000000 0%,
+        #02040a 42%,
+        #040612 68%,
+        #000000 100%
       );
   }
 
@@ -2013,10 +2010,10 @@ html:has(.auth-split) body {
       ),
       linear-gradient(
         135deg,
-        #03050b 0%,
-        #050817 42%,
-        #070817 68%,
-        #03050b 100%
+        #000000 0%,
+        #02040a 42%,
+        #040612 68%,
+        #000000 100%
       );
   }
 }

@@ -106,7 +106,7 @@ export default function LoginHero() {
         <div className="login-hero-frame">
           <img
             className="login-hero-art"
-            src="/branding/evoluafit-login-athletes-transparent.png"
+            src="/branding/evoluafit-login-athletes.png?v=solid-2"
             alt=""
             decoding="async"
             fetchPriority="high"

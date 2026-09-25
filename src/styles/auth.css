@@ -341,13 +341,13 @@
 
 html:has(.auth-split),
 html:has(.auth-split) body {
-  background: #040814;
+  background: #071428;
 }
 .auth-split {
-  --login-glow-blue: 0.1;
-  --login-glow-violet: 0.055;
-  --login-glow-outer: 0.02;
-  --login-glow-floor: 0.04;
+  --login-glow-blue: 0.16;
+  --login-glow-violet: 0.09;
+  --login-glow-outer: 0.035;
+  --login-glow-floor: 0.07;
   position: relative;
   isolation: isolate;
   min-height: 100vh;
@@ -355,7 +355,7 @@ html:has(.auth-split) body {
   width: 100%;
   display: grid;
   grid-template-columns: 1fr;
-  background-color: #040814;
+  background-color: #071428;
   background-image:
     radial-gradient(
       ellipse 78% 58% at 50% 42%,
@@ -369,7 +369,7 @@ html:has(.auth-split) body {
       rgba(124, 58, 237, var(--login-glow-floor)) 0%,
       transparent 78%
     ),
-    linear-gradient(135deg, #040814 0%, #071021 38%, #081326 68%, #050915 100%);
+    linear-gradient(135deg, #071428 0%, #0b1c38 38%, #0d2242 68%, #081530 100%);
   color: var(--auth-text, #f8fafc);
   overflow: hidden;
 }
@@ -1899,43 +1899,43 @@ html:has(.auth-split) body {
   .auth-split {
     background:
       radial-gradient(
-        ellipse 46% 68% at 51% 42%,
-        rgba(48, 104, 255, 0.16) 0%,
-        rgba(102, 76, 255, 0.1) 34%,
-        rgba(102, 76, 255, 0.045) 58%,
-        transparent 78%
+        ellipse 52% 72% at 51% 42%,
+        rgba(48, 104, 255, 0.22) 0%,
+        rgba(102, 76, 255, 0.14) 34%,
+        rgba(102, 76, 255, 0.07) 58%,
+        transparent 80%
       ),
       radial-gradient(
-        ellipse 30% 24% at 52% 82%,
-        rgba(124, 58, 237, 0.06) 0%,
-        rgba(59, 130, 246, 0.03) 30%,
+        ellipse 34% 28% at 52% 82%,
+        rgba(124, 58, 237, 0.1) 0%,
+        rgba(59, 130, 246, 0.05) 30%,
         transparent 74%
       ),
       radial-gradient(
-        ellipse 34% 55% at 12% 42%,
-        rgba(37, 99, 235, 0.08) 0%,
-        rgba(37, 99, 235, 0.03) 42%,
+        ellipse 38% 58% at 12% 42%,
+        rgba(37, 99, 235, 0.14) 0%,
+        rgba(37, 99, 235, 0.05) 42%,
         transparent 78%
       ),
       radial-gradient(
-        ellipse 28% 48% at 88% 46%,
-        rgba(91, 66, 230, 0.06) 0%,
-        rgba(59, 130, 246, 0.025) 40%,
+        ellipse 32% 52% at 88% 46%,
+        rgba(91, 66, 230, 0.1) 0%,
+        rgba(59, 130, 246, 0.045) 40%,
         transparent 78%
       ),
       linear-gradient(
         135deg,
-        #040814 0%,
-        #071021 38%,
-        #081326 68%,
-        #050915 100%
+        #071428 0%,
+        #0b1c38 38%,
+        #0d2242 68%,
+        #081530 100%
       );
   }
 
   .auth-split::before {
     z-index: 1;
     opacity: 1;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1600 900' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke-linecap='round'%3E%3Cpath d='M-80 760 C180 650 300 830 545 744 S850 650 1090 750' stroke='%235344ff' stroke-opacity='.14' stroke-width='1.5'/%3E%3Cpath d='M-90 782 C150 680 310 842 555 765 S830 690 1060 770' stroke='%232d9cff' stroke-opacity='.12' stroke-width='1.2'/%3E%3Cpath d='M-60 735 C170 640 315 790 555 715 S820 625 1070 720' stroke='%237c3cff' stroke-opacity='.11' stroke-width='1.1'/%3E%3Cpath d='M40 805 C260 725 365 842 610 782 S850 720 1030 790' stroke='%232f67ff' stroke-opacity='.10' stroke-width='.9'/%3E%3C/g%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1600 900' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke-linecap='round'%3E%3Cpath d='M-80 760 C180 650 300 830 545 744 S850 650 1090 750' stroke='%235344ff' stroke-opacity='.16' stroke-width='1.5'/%3E%3Cpath d='M-90 782 C150 680 310 842 555 765 S830 690 1060 770' stroke='%232d9cff' stroke-opacity='.14' stroke-width='1.2'/%3E%3Cpath d='M-60 735 C170 640 315 790 555 715 S820 625 1070 720' stroke='%237c3cff' stroke-opacity='.12' stroke-width='1.1'/%3E%3Cpath d='M40 805 C260 725 365 842 610 782 S850 720 1030 790' stroke='%232f67ff' stroke-opacity='.11' stroke-width='.9'/%3E%3C/g%3E%3C/svg%3E");
     background-position: left bottom;
     background-size: cover;
     background-repeat: no-repeat;
@@ -1947,8 +1947,8 @@ html:has(.auth-split) body {
     z-index: 1;
     background: radial-gradient(
       ellipse at center,
-      transparent 64%,
-      rgba(0, 0, 0, 0.06) 100%
+      transparent 70%,
+      rgba(0, 0, 0, 0.04) 100%
     );
     pointer-events: none;
   }
@@ -1994,8 +1994,14 @@ html:has(.auth-split) body {
     object-fit: contain;
     filter: none;
     mix-blend-mode: normal;
-    -webkit-mask-image: none;
-    mask-image: none;
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 2%, #000 14%, #000 86%, transparent 98%),
+      linear-gradient(to bottom, transparent 4%, #000 16%, #000 88%, transparent 100%);
+    mask-image:
+      linear-gradient(to right, transparent 2%, #000 14%, #000 86%, transparent 98%),
+      linear-gradient(to bottom, transparent 4%, #000 16%, #000 88%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
   }
 
   .auth-split__brand,
@@ -2010,36 +2016,36 @@ html:has(.auth-split) body {
   .auth-split {
     background:
       radial-gradient(
-        ellipse 44% 64% at 51% 42%,
-        rgba(48, 104, 255, 0.12) 0%,
-        rgba(102, 76, 255, 0.075) 34%,
-        rgba(102, 76, 255, 0.032) 58%,
-        transparent 78%
+        ellipse 50% 68% at 51% 42%,
+        rgba(48, 104, 255, 0.18) 0%,
+        rgba(102, 76, 255, 0.11) 34%,
+        rgba(102, 76, 255, 0.05) 58%,
+        transparent 80%
       ),
       radial-gradient(
-        ellipse 28% 22% at 52% 82%,
-        rgba(124, 58, 237, 0.045) 0%,
-        rgba(59, 130, 246, 0.022) 30%,
+        ellipse 32% 26% at 52% 82%,
+        rgba(124, 58, 237, 0.08) 0%,
+        rgba(59, 130, 246, 0.04) 30%,
         transparent 74%
       ),
       radial-gradient(
-        ellipse 32% 52% at 12% 42%,
-        rgba(37, 99, 235, 0.06) 0%,
-        rgba(37, 99, 235, 0.022) 42%,
+        ellipse 36% 54% at 12% 42%,
+        rgba(37, 99, 235, 0.11) 0%,
+        rgba(37, 99, 235, 0.04) 42%,
         transparent 78%
       ),
       radial-gradient(
-        ellipse 26% 44% at 88% 46%,
-        rgba(91, 66, 230, 0.045) 0%,
-        rgba(59, 130, 246, 0.018) 40%,
+        ellipse 30% 48% at 88% 46%,
+        rgba(91, 66, 230, 0.08) 0%,
+        rgba(59, 130, 246, 0.035) 40%,
         transparent 78%
       ),
       linear-gradient(
         135deg,
-        #040814 0%,
-        #071021 38%,
-        #081326 68%,
-        #050915 100%
+        #071428 0%,
+        #0b1c38 38%,
+        #0d2242 68%,
+        #081530 100%
       );
   }
 }

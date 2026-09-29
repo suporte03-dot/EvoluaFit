@@ -2008,3 +2008,251 @@
   height: 0.38rem;
   opacity: 0.7;
 }
+
+/* ===== Premium refinement — navy surfaces, blue signature, violet accents ===== */
+.app--saas,
+html:has(.app--saas) body {
+  background: var(--app-gradient);
+}
+
+.app--saas .app__content {
+  background:
+    radial-gradient(ellipse at 84% -10%, rgba(59, 157, 255, 0.06), transparent 46%),
+    radial-gradient(ellipse at 10% 110%, rgba(117, 82, 255, 0.035), transparent 48%),
+    var(--app-gradient);
+}
+
+.app--saas .app__content::before {
+  opacity: 0.03;
+}
+
+/* Sidebar — one step deeper than content */
+.dash-sidebar {
+  background: var(--surface-sidebar) !important;
+  border-right: 1px solid rgba(130, 150, 190, 0.1) !important;
+  box-shadow: none;
+}
+
+.dash-sidebar__scroll::before {
+  background: linear-gradient(180deg, rgba(8, 17, 30, 0.96) 0%, rgba(8, 17, 30, 0) 100%);
+}
+
+.dash-sidebar__scroll::after {
+  background: linear-gradient(0deg, rgba(8, 17, 30, 0.96) 0%, rgba(8, 17, 30, 0) 100%);
+}
+
+.dash-sidebar__group-label {
+  color: var(--text-muted);
+}
+
+.dash-sidebar__link {
+  color: var(--text-secondary);
+  border-left: 2px solid transparent;
+  border-radius: 0 9px 9px 0;
+}
+
+.dash-sidebar__link .dash-sidebar__icon,
+.dash-sidebar__link--quiet .dash-sidebar__icon {
+  color: #8fa3bd;
+}
+
+.dash-sidebar__link:hover {
+  background: rgba(76, 166, 255, 0.06);
+  color: var(--text-primary);
+}
+
+.dash-sidebar__link:hover .dash-sidebar__icon {
+  color: var(--brand-blue-soft);
+}
+
+.dash-sidebar__link.is-active {
+  background: rgba(117, 82, 255, 0.12);
+  border-color: transparent;
+  border-left-color: #7552ff;
+  color: var(--text-primary);
+  box-shadow: none;
+}
+
+.dash-sidebar__link.is-active .dash-sidebar__icon {
+  color: var(--brand-blue-soft);
+  filter: none;
+}
+
+@supports selector(::-webkit-scrollbar) {
+  .dash-sidebar__nav,
+  .dash-sidebar__nav:hover,
+  .dash-sidebar__nav:focus-within {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+  }
+}
+
+.dash-sidebar__nav::-webkit-scrollbar {
+  width: 4px;
+}
+
+.dash-sidebar__nav::-webkit-scrollbar-thumb,
+.dash-sidebar__nav:hover::-webkit-scrollbar-thumb,
+.dash-sidebar__nav:focus-within::-webkit-scrollbar-thumb {
+  border: 0;
+  border-radius: 999px;
+  background-color: rgba(135, 150, 180, 0.22);
+}
+
+.dash-sidebar__nav::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(117, 82, 255, 0.55);
+}
+
+/* Sidebar profile */
+.dash-sidebar__user {
+  padding: 0.5rem 0.55rem;
+  border: 1px solid rgba(76, 166, 255, 0.16);
+  border-radius: 12px;
+  background: linear-gradient(145deg, #0d1a2b, #0b1726);
+}
+
+.dash-sidebar__user:hover,
+.dash-sidebar__user:focus-visible {
+  background: linear-gradient(145deg, #0f1e31, #0d1a2b);
+  border-color: rgba(76, 166, 255, 0.26);
+}
+
+.dash-sidebar__avatar {
+  color: #f4f7fb;
+  background: linear-gradient(135deg, #3b9dff, #7552ff);
+  box-shadow: 0 0 0 1px rgba(76, 166, 255, 0.3), 0 0 12px rgba(76, 166, 255, 0.22);
+}
+
+.dash-sidebar__user-meta strong {
+  color: var(--text-primary);
+}
+
+.dash-sidebar__xp-fill {
+  background: var(--evolua-pulse);
+}
+
+/* Cards — standard */
+.focus-cell,
+.focus-cell--card:not(.is-editing),
+.evolua-score {
+  background: var(--surface-primary);
+  border: 1px solid rgba(130, 150, 190, 0.12);
+  box-shadow: 0 1px 0 rgba(244, 247, 251, 0.02) inset, 0 6px 18px rgba(2, 8, 18, 0.16);
+  transition: background 200ms ease, border-color 200ms ease, transform 200ms ease;
+}
+
+.focus-cell--signal,
+.focus-cell--signal:not(.is-editing),
+.focus-cell .evolua-score {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* Cards — important */
+.focus-cell--large:not(.focus-cell--signal),
+.dash-module {
+  background: linear-gradient(160deg, #0d1a2b 0%, #0c1829 100%);
+  border: 1px solid rgba(117, 82, 255, 0.18);
+}
+
+.focus-cell:not(.focus-cell--signal):not(.is-editing):hover,
+.dash-module:hover {
+  background: var(--surface-hover);
+  border-color: rgba(117, 82, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+.focus-cell.is-editing {
+  border-color: rgba(117, 82, 255, 0.35);
+}
+
+/* Hero — Treino de hoje */
+.fit-hero {
+  border: 1px solid rgba(117, 82, 255, 0.16);
+  background:
+    radial-gradient(ellipse 42% 60% at 100% 0%, rgba(128, 80, 255, 0.1), transparent 70%),
+    linear-gradient(110deg, #0d1928 0%, #101b2d 58%, #251d4a 100%);
+  box-shadow: inset 0 1px 0 rgba(244, 247, 251, 0.04), 0 12px 32px rgba(2, 8, 18, 0.22);
+}
+
+.fit-hero__glow {
+  background: radial-gradient(circle at 80% 18%, rgba(128, 80, 255, 0.08), transparent 62%);
+}
+
+.fit-hero__form {
+  opacity: 0.35;
+}
+
+.fit-hero__kicker {
+  color: var(--brand-blue-soft);
+}
+
+.fit-hero__meta,
+.fit-hero__lead,
+.fit-hero__week-row {
+  color: var(--text-secondary);
+}
+
+.fit-hero__week-track {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.fit-hero__week-fill {
+  background: var(--evolua-pulse);
+  opacity: 1;
+}
+
+/* CTA */
+.fit-hero__cta,
+.btn--primary {
+  background: var(--gradient-brand);
+  color: #f4f7fb;
+  box-shadow: 0 4px 14px rgba(76, 110, 255, 0.18);
+  transition: transform 200ms ease, box-shadow 200ms ease, filter 200ms ease;
+}
+
+.fit-hero__cta:hover,
+.fit-hero__cta:focus-visible,
+.btn--primary:hover {
+  background: var(--gradient-brand);
+  box-shadow: 0 8px 20px rgba(76, 110, 255, 0.24);
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.fit-hero__more:hover,
+.fit-hero__more:focus-visible {
+  color: var(--brand-blue-soft);
+}
+
+/* Data — blue signature, violet only for special progress */
+.evolua-score__kicker,
+.evolua-score__band {
+  color: var(--brand-blue-soft);
+}
+
+.evolua-score__bar {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.evolua-score__bar > span,
+.dash-hero__week-bar span {
+  background: var(--evolua-pulse);
+}
+
+.streak-sig__title svg {
+  color: var(--brand-blue-soft);
+}
+
+.streak-sig__week i {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.streak-sig__week .is-today:not(.is-on) i {
+  box-shadow: inset 0 0 0 1px rgba(76, 166, 255, 0.7);
+}
+
+.focus-chrome__hello {
+  color: var(--text-secondary);
+}

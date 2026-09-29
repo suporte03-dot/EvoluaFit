@@ -30,9 +30,9 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 52% 42% at 82% -8%, rgba(48, 104, 255, 0.1), transparent 58%),
-    radial-gradient(ellipse 40% 34% at 8% 92%, rgba(102, 76, 255, 0.06), transparent 62%),
-    linear-gradient(180deg, #040814 0%, #071021 58%, #050915 100%);
+    radial-gradient(ellipse 52% 42% at 82% -8%, rgba(59, 157, 255, 0.06), transparent 58%),
+    radial-gradient(ellipse 40% 34% at 8% 92%, rgba(117, 82, 255, 0.04), transparent 62%),
+    var(--app-gradient);
   pointer-events: none;
   z-index: -1;
 }
@@ -50,8 +50,33 @@ h1, h2, h3, h4 {
 }
 
 ::selection {
-  background: rgba(0, 229, 143, 0.28);
+  background: rgba(59, 157, 255, 0.28);
   color: #fff;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(135, 150, 180, 0.22) transparent;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(135, 150, 180, 0.22);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(117, 82, 255, 0.55);
 }
 
 a {

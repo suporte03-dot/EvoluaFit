@@ -1,28 +1,33 @@
-/* EvoluaFit — marca violeta (ação) + lime só para progresso real.
-   Coral/vermelho NÃO é branding — só --danger. */
+/* EvoluaFit — navy profundo + azul (assinatura) + violeta (destaque).
+   Verde só para progresso real; vermelho só para --danger. */
 
 :root {
   /* Master palette */
-  --bg-primary: #040814;
-  --bg-secondary: #071021;
-  --surface-primary: #0c1628;
-  --surface-elevated: #122036;
-  --border-subtle: #2a3b58;
+  --bg-primary: #06101c;
+  --bg-secondary: #071321;
+  --surface-primary: #0b1726;
+  --surface-elevated: #0d1a2b;
+  --surface-hover: #0f1e31;
+  --surface-sidebar: #08111e;
+  --border-subtle: rgba(130, 150, 190, 0.12);
 
-  --text-primary: #f8fafc;
-  --text-secondary: #b4c0d4;
-  --text-muted: #8b97ab;
+  --text-primary: #f4f7fb;
+  --text-secondary: #aab6c8;
+  --text-muted: #8190a8;
 
-  --brand-primary: #7657ff;
-  --brand-primary-hover: #8b74ff;
-  --brand-primary-active: #5e42e0;
-  --brand-secondary: #9aa6ff;
-  --progress-positive: #b8f23a;
-  --danger: #ff4d5d;
-  --warning: #e8b84a;
+  --brand-primary: #7552ff;
+  --brand-primary-hover: #8050ff;
+  --brand-primary-active: #6344e6;
+  --brand-secondary: #4ca6ff;
+  --brand-blue: #3b9dff;
+  --brand-blue-soft: #4ca6ff;
+  --progress-positive: #35d07f;
+  --danger: #e05b64;
+  --warning: #e9a94a;
 
-  --gradient-brand: linear-gradient(135deg, #6bb0ff 0%, #6b68ff 48%, #8a52f5 100%);
-  --evolua-pulse: linear-gradient(90deg, #4da3ff 0%, #7657ff 48%, #8a52f5 100%);
+  --app-gradient: linear-gradient(135deg, #06101c 0%, #071321 45%, #081626 72%, #060d18 100%);
+  --gradient-brand: linear-gradient(90deg, #4ca6ff 0%, #665fff 50%, #8050ff 100%);
+  --evolua-pulse: linear-gradient(90deg, #3b9dff 0%, #7552ff 100%);
 
   /* Compat aliases (legado → Performance Electric) */
   --app-bg: var(--bg-primary);
@@ -30,17 +35,17 @@
   --accent-primary: var(--brand-primary);
   --accent-lime: var(--progress-positive);
   --accent-red: var(--danger);
-  --accent-blue: var(--brand-primary);
+  --accent-blue: var(--brand-blue);
   --accent-orange: var(--brand-primary);
   --accent-green: var(--progress-positive);
-  --accent-purple: var(--brand-secondary);
-  --accent-cyan: #8b74ff;
+  --accent-purple: var(--brand-primary);
+  --accent-cyan: var(--brand-blue-soft);
 
-  --border-accent: rgba(118, 87, 255, 0.45);
+  --border-accent: rgba(117, 82, 255, 0.4);
   --radius-sm: 10px;
   --radius-md: 14px;
   --radius-lg: 16px;
-  --shadow-card: 0 16px 40px rgba(4, 12, 28, 0.36);
+  --shadow-card: 0 10px 28px rgba(2, 8, 18, 0.28);
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -57,26 +62,27 @@
   --bg-card: var(--surface-primary);
   --bg-card-soft: var(--surface-elevated);
   --primary: var(--brand-primary);
-  --primary-soft: rgba(118, 87, 255, 0.14);
-  --primary-border: rgba(118, 87, 255, 0.5);
+  --primary-soft: rgba(117, 82, 255, 0.12);
+  --primary-border: rgba(117, 82, 255, 0.42);
   --secondary: var(--brand-secondary);
-  --secondary-soft: rgba(154, 166, 255, 0.14);
+  --secondary-soft: rgba(76, 166, 255, 0.12);
   --coach: var(--brand-primary);
-  --coach-soft: rgba(118, 87, 255, 0.16);
+  --coach-soft: rgba(117, 82, 255, 0.14);
   --energy: var(--progress-positive);
-  --energy-soft: rgba(184, 242, 58, 0.14);
-  --performance: #8b74ff;
-  --performance-soft: rgba(139, 116, 255, 0.14);
-  --danger-soft: rgba(255, 77, 93, 0.14);
+  --energy-soft: rgba(53, 208, 127, 0.12);
+  --performance: var(--brand-blue);
+  --performance-soft: rgba(59, 157, 255, 0.12);
+  --warning-soft: rgba(233, 169, 74, 0.12);
+  --danger-soft: rgba(224, 91, 100, 0.12);
   --text-main: var(--text-primary);
   --border-soft: var(--border-subtle);
 
   --gradient-primary: var(--gradient-brand);
   --gradient-coach: var(--gradient-brand);
-  --glow-primary: 0 0 20px rgba(118, 87, 255, 0.22);
-  --glow-secondary: 0 0 18px rgba(118, 87, 255, 0.16);
-  --glow-coach: 0 0 18px rgba(118, 87, 255, 0.18);
-  --glow-energy: 0 0 16px rgba(184, 242, 58, 0.16);
+  --glow-primary: 0 0 16px rgba(117, 82, 255, 0.16);
+  --glow-secondary: 0 0 14px rgba(76, 166, 255, 0.14);
+  --glow-coach: 0 0 14px rgba(117, 82, 255, 0.14);
+  --glow-energy: 0 0 12px rgba(53, 208, 127, 0.14);
 
   --type-push: var(--brand-primary);
   --type-push-soft: var(--primary-soft);
@@ -116,23 +122,23 @@
   --fn-volume: var(--primary);
   --fn-goals: var(--energy);
 
-  --bg-deep: #030610;
+  --bg-deep: #050c16;
   --graphite: var(--bg-section);
   --green: var(--progress-positive);
-  --green-secondary: #9ad628;
+  --green-secondary: #2cb56d;
   --accent: var(--primary);
-  --blue: var(--brand-primary);
-  --blue-deep: #1a2740;
+  --blue: var(--brand-blue);
+  --blue-deep: #12233a;
   --cyan: var(--performance);
-  --purple: var(--brand-secondary);
+  --purple: var(--brand-primary);
   --orange: var(--brand-primary);
   --red: var(--danger);
   --snow: var(--text-main);
   --gray: var(--text-muted);
 
   --bg-page: var(--bg-main);
-  --bg-glass: rgba(7, 16, 33, 0.88);
-  --bg-glass-soft: rgba(12, 22, 40, 0.72);
+  --bg-glass: rgba(8, 17, 30, 0.9);
+  --bg-glass-soft: rgba(11, 23, 38, 0.78);
   --border: var(--border-soft);
   --border-strong: var(--primary-border);
 

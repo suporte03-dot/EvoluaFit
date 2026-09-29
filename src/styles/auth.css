@@ -568,6 +568,22 @@ html:has(.auth-split) body {
   mix-blend-mode: normal;
 }
 
+.login-hero-wash {
+  position: absolute;
+  inset: -6% -22% -2%;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 48% 64% at 50% 42%,
+      rgba(48, 104, 255, 0.34) 0%,
+      rgba(13, 34, 66, 0.82) 46%,
+      #0b1c38 78%
+    ),
+    #0b1c38;
+  mix-blend-mode: lighten;
+}
+
 .auth-split__logo.evoluafit-logo,
 .auth-split__logo {
   --ef-mark: 40px;
@@ -1994,14 +2010,14 @@ html:has(.auth-split) body {
     object-fit: contain;
     filter: none;
     mix-blend-mode: normal;
-    -webkit-mask-image:
-      linear-gradient(to right, transparent 2%, #000 14%, #000 86%, transparent 98%),
-      linear-gradient(to bottom, transparent 4%, #000 16%, #000 88%, transparent 100%);
-    mask-image:
-      linear-gradient(to right, transparent 2%, #000 14%, #000 86%, transparent 98%),
-      linear-gradient(to bottom, transparent 4%, #000 16%, #000 88%, transparent 100%);
-    -webkit-mask-composite: source-in;
-    mask-composite: intersect;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .login-hero-wash {
+    z-index: 3;
+    opacity: 1;
+    mix-blend-mode: lighten;
   }
 
   .auth-split__brand,

@@ -568,22 +568,6 @@ html:has(.auth-split) body {
   mix-blend-mode: normal;
 }
 
-.login-hero-wash {
-  position: absolute;
-  inset: -6% -22% -2%;
-  z-index: 3;
-  pointer-events: none;
-  background:
-    radial-gradient(
-      ellipse 48% 64% at 50% 42%,
-      rgba(48, 104, 255, 0.34) 0%,
-      rgba(13, 34, 66, 0.82) 46%,
-      #0b1c38 78%
-    ),
-    #0b1c38;
-  mix-blend-mode: lighten;
-}
-
 .auth-split__logo.evoluafit-logo,
 .auth-split__logo {
   --ef-mark: 40px;
@@ -2012,12 +1996,6 @@ html:has(.auth-split) body {
     mix-blend-mode: normal;
     -webkit-mask-image: none;
     mask-image: none;
-  }
-
-  .login-hero-wash {
-    z-index: 3;
-    opacity: 1;
-    mix-blend-mode: lighten;
   }
 
   .auth-split__brand,

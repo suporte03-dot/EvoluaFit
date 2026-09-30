@@ -6,8 +6,10 @@ import {
   IconChart,
   IconChevron,
   IconDumbbell,
+  IconHelp,
   IconHome,
   IconLibrary,
+  IconLogout,
   IconMirror,
   IconPanel,
   IconSettings,
@@ -56,7 +58,7 @@ const NAV_GROUPS = [
     items: [
       { id: 'calendario', label: 'Calendário', Icon: IconCalendar, tone: 'quiet', to: SECTION_PATHS.calendario },
       { id: 'perfil', label: 'Conta', Icon: IconSettings, tone: 'quiet', to: SECTION_PATHS.perfil },
-      { id: 'ajuda', label: 'Ajuda', Icon: IconSpark, tone: 'quiet', to: SECTION_PATHS.ajuda },
+      { id: 'ajuda', label: 'Ajuda', Icon: IconHelp, tone: 'quiet', to: SECTION_PATHS.ajuda },
     ],
   },
 ]
@@ -98,6 +100,7 @@ export default function DashboardSidebar({
   const name = resolveDisplayName({ cloudName: profile?.full_name })
   const accountLabel = name || 'Conta'
   const levelLabel = xp.levelName || 'Começando'
+  const levelLine = xp.levelNumber ? `Nível ${xp.levelNumber} · ${levelLabel}` : 'Ver perfil'
   const trainingLevel = profile?.level ? `Treino: ${profile.level}` : null
   const initials = loadingProfile ? '··' : initialsFromName(accountLabel)
   const currentSection = sectionFromPath(location.pathname) || activeSection
@@ -184,7 +187,7 @@ export default function DashboardSidebar({
                 aria-pressed={collapsed}
                 title={collapsed ? 'Expandir menu' : 'Recolher menu'}
               >
-                <IconChevron size={15} />
+                <IconChevron size={18} />
               </button>
             }
           />
@@ -215,7 +218,7 @@ export default function DashboardSidebar({
                           aria-current={active ? 'page' : undefined}
                           title={item.label}
                         >
-                          <Icon size={18} className="dash-sidebar__icon" />
+                          <Icon size={20} className="dash-sidebar__icon" />
                           {!collapsed && <span>{item.label}</span>}
                         </button>
                       </li>
@@ -245,13 +248,19 @@ export default function DashboardSidebar({
               {initials}
             </div>
             {!collapsed && (
-              <div className="dash-sidebar__user-meta">
-                {loadingProfile ? (
-                  <strong className="dash-sidebar__placeholder">Carregando</strong>
-                ) : (
-                  <strong>{accountLabel}</strong>
-                )}
-              </div>
+              <>
+                <div className="dash-sidebar__user-meta">
+                  {loadingProfile ? (
+                    <strong className="dash-sidebar__placeholder">Carregando</strong>
+                  ) : (
+                    <>
+                      <strong>{accountLabel}</strong>
+                      <span className="dash-sidebar__user-level">{levelLine}</span>
+                    </>
+                  )}
+                </div>
+                <IconChevron size={16} className="dash-sidebar__user-arrow" />
+              </>
             )}
           </button>
           <button
@@ -262,28 +271,8 @@ export default function DashboardSidebar({
             title="Sair"
             aria-label="Sair da conta"
           >
-            {collapsed ? (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
-                  stroke="currentColor"
-                  strokeWidth="1.75"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M16 17l5-5-5-5M21 12H9"
-                  stroke="currentColor"
-                  strokeWidth="1.75"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            ) : signingOut ? (
-              'Saindo...'
-            ) : (
-              'Sair'
-            )}
+            <IconLogout size={18} className="dash-sidebar__logout-icon" />
+            {!collapsed && <span>{signingOut ? 'Saindo...' : 'Sair'}</span>}
           </button>
         </div>
       </aside>

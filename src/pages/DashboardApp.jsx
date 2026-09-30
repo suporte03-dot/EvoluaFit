@@ -25,6 +25,7 @@ import '../App.css'
 import '../styles/dashboard.css'
 import '../styles/mobile.css'
 import '../styles/identity.css'
+import '../styles/sidebar.css'
 
 const MyWorkouts = lazy(() => import('../components/MyWorkouts'))
 const WorkoutPlanner = lazy(() => import('../components/WorkoutPlanner'))

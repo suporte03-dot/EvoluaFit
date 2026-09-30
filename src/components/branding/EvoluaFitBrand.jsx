@@ -35,6 +35,14 @@ export default function EvoluaFitBrand({
       </a>
 
       {collapseControl}
+
+      {!collapsed ? (
+        <p className="evoluafit-brand__signature" aria-hidden="true">
+          Disciplina hoje
+          <br />
+          Resultados sempre
+        </p>
+      ) : null}
     </div>
   )
 }

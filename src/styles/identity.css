@@ -1316,9 +1316,9 @@
 
 .focus-signals {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.1rem 1.4rem;
-  align-items: center;
+  align-items: stretch;
   padding: 0.15rem 0.1rem 0.35rem;
 }
 
@@ -1410,10 +1410,63 @@
   background: radial-gradient(ellipse at 60% 50%, rgba(148, 163, 184, 0.16), transparent 50%);
 }
 
+.fit-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(220px, 0.85fr);
+  gap: 1.2rem 1.6rem;
+  align-items: stretch;
+}
+
 .fit-hero__copy {
   position: relative;
   z-index: 1;
   max-width: 42rem;
+}
+
+.fit-hero__preview {
+  position: relative;
+  z-index: 1;
+  align-self: center;
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0.85rem 1rem;
+  list-style: none;
+  border-radius: 18px;
+  border: 1px solid rgba(186, 204, 230, 0.16);
+  background: rgba(6, 14, 26, 0.55);
+}
+
+.fit-hero__preview li {
+  display: grid;
+  grid-template-columns: 1.6rem minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: start;
+}
+
+.fit-hero__preview span {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(117, 82, 255, 0.16);
+  color: var(--text-primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.fit-hero__preview strong {
+  display: block;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+}
+
+.fit-hero__preview small {
+  display: block;
+  margin-top: 0.12rem;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
 }
 
 .fit-hero__kicker {
@@ -1807,6 +1860,7 @@
 
   .fit-hero {
     min-height: 0;
+    grid-template-columns: 1fr;
   }
 
   .fit-hero__form {
@@ -2150,4 +2204,130 @@ html:has(.app--saas) body {
 
 .focus-chrome__hello {
   color: var(--text-secondary);
+}
+
+.week-plan__kicker,
+.last-result__kicker {
+  margin: 0 0 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.week-plan__days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.week-plan__day {
+  display: grid;
+  gap: 0.2rem;
+  min-height: 4.6rem;
+  padding: 0.45rem 0.3rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.03);
+  text-align: center;
+}
+
+.week-plan__day strong {
+  font-size: 0.78rem;
+  color: var(--text-primary);
+}
+
+.week-plan__wd,
+.week-plan__state {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+}
+
+.week-plan__day.is-done {
+  border-color: rgba(53, 208, 127, 0.35);
+  background: rgba(53, 208, 127, 0.08);
+}
+
+.week-plan__day.is-next,
+.week-plan__day.is-today {
+  border-color: rgba(117, 82, 255, 0.4);
+  background: rgba(117, 82, 255, 0.1);
+}
+
+.last-result__title {
+  margin: 0 0 0.3rem;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+}
+
+.last-result__meta,
+.last-result__empty {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.last-result__cta {
+  margin-top: 0.7rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--brand-blue-soft);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.workout-group {
+  margin-bottom: 1.4rem;
+}
+
+.workout-group__head h3 {
+  margin: 0 0 0.2rem;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.workout-group__head p {
+  margin: 0 0 0.75rem;
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+}
+
+.goals-empty__picks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.75rem;
+}
+
+.set-checklist__last {
+  margin: 0 0 0.55rem;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+}
+
+.workout-detail__meta-note {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+  .fit-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .week-plan__days {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }

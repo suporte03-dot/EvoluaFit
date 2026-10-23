@@ -1,14 +1,22 @@
-export const LAYOUT_VERSION = 2
+export const LAYOUT_VERSION = 3
 export const LOCKED_WIDGET_ID = 'today-workout'
 
 export const DEFAULT_PINNED = [
   { id: 'today-workout', size: 'large' },
-  { id: 'streak', size: 'small' },
-  { id: 'evolua-score', size: 'small' },
+  { id: 'week-plan', size: 'large' },
+  { id: 'last-result', size: 'small' },
   { id: 'coach-insight', size: 'medium' },
 ]
 
-export const DEFAULT_LIBRARY = ['weekly-goal', 'weekly-volume', 'adaptive-week', 'challenge', 'achievements']
+export const DEFAULT_LIBRARY = [
+  'streak',
+  'evolua-score',
+  'weekly-goal',
+  'weekly-volume',
+  'adaptive-week',
+  'challenge',
+  'achievements',
+]
 
 export function createDefaultLayout() {
   return {
@@ -29,33 +37,33 @@ const PRESETS = {
     presetId: 'treino',
     pinned: [
       { id: 'today-workout', size: 'large' },
+      { id: 'week-plan', size: 'large' },
       { id: 'adaptive-week', size: 'medium' },
       { id: 'streak', size: 'small' },
-      { id: 'weekly-volume', size: 'small' },
     ],
-    library: ['weekly-goal', 'evolua-score', 'coach-insight', 'challenge', 'achievements'],
+    library: ['last-result', 'weekly-goal', 'evolua-score', 'coach-insight', 'weekly-volume', 'challenge', 'achievements'],
   }),
   evolucao: () => ({
     ...createDefaultLayout(),
     presetId: 'evolucao',
     pinned: [
       { id: 'today-workout', size: 'large' },
+      { id: 'last-result', size: 'small' },
       { id: 'evolua-score', size: 'small' },
-      { id: 'weekly-volume', size: 'small' },
       { id: 'coach-insight', size: 'medium' },
     ],
-    library: ['weekly-goal', 'streak', 'adaptive-week', 'challenge', 'achievements'],
+    library: ['week-plan', 'weekly-goal', 'streak', 'weekly-volume', 'adaptive-week', 'challenge', 'achievements'],
   }),
   consistencia: () => ({
     ...createDefaultLayout(),
     presetId: 'consistencia',
     pinned: [
       { id: 'today-workout', size: 'large' },
+      { id: 'week-plan', size: 'large' },
       { id: 'streak', size: 'small' },
-      { id: 'evolua-score', size: 'small' },
       { id: 'challenge', size: 'medium' },
     ],
-    library: ['weekly-goal', 'weekly-volume', 'adaptive-week', 'coach-insight', 'achievements'],
+    library: ['last-result', 'weekly-goal', 'evolua-score', 'weekly-volume', 'adaptive-week', 'coach-insight', 'achievements'],
   }),
 }
 
@@ -80,7 +88,7 @@ export function normalizeSize(size, supported = ['small', 'medium', 'large']) {
 
 export function normalizeLayout(raw, registryIds = []) {
   const input = raw && typeof raw === 'object' ? raw : {}
-  if ((Number(input.version) || 1) < 2 && (input.presetId === 'default' || !input.presetId)) {
+  if ((Number(input.version) || 1) < 3 && (input.presetId === 'default' || !input.presetId)) {
     return createDefaultLayout()
   }
 

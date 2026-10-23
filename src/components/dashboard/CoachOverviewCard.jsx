@@ -61,8 +61,8 @@ export default function CoachOverviewCard({ workouts, history, plans, generatedP
           <h3 className="dash-module__title">Coach</h3>
           <p className="dash-module__desc">
             {profile?.level
-              ? `Sugestões com base no seu nível (${profile.level}) e na planilha.`
-              : 'Sugestões com base no próximo treino da planilha.'}
+              ? `Orientações com base na sua rotina (${profile.level}) e no seu histórico.`
+              : 'Orientações com base na sua rotina e no seu histórico.'}
           </p>
           <button
             type="button"

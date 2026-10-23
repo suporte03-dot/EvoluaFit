@@ -181,6 +181,7 @@ export default function DashboardShell() {
     challenge,
     achievements,
     xp,
+    generatedPlan,
     go: scrollToSection,
     goPerfil: () => navigate('/app/perfil'),
   }

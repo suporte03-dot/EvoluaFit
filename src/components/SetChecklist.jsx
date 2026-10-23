@@ -5,7 +5,12 @@ export default function SetChecklist({
   onDraftChange,
   onCompleteSet,
   disabled = false,
+  tracking = 'reps',
+  lastLoad = '',
 }) {
+  const timed = tracking === 'time' || tracking === 'duration'
+  const valueLabel = timed ? (tracking === 'duration' ? 'Tempo (min)' : 'Tempo (s)') : 'Repetições'
+  const valuePlaceholder = timed ? (tracking === 'duration' ? 'ex: 8' : 'ex: 40') : 'ex: 12'
   const list = slots.length
     ? slots
     : Array.from({ length: targetSets }, (_, i) => ({
@@ -30,7 +35,9 @@ export default function SetChecklist({
             <span className="set-checklist__num">Série {slot.setNumber}</span>
             {slot.completed ? (
               <span className="set-checklist__done">
-                {slot.weight || '—'} kg · {slot.reps || '—'} reps
+                {timed
+                  ? `${slot.reps || '—'} ${tracking === 'duration' ? 'min' : 's'}`
+                  : `${slot.weight || '—'} kg · ${slot.reps || '—'} reps`}
               </span>
             ) : nextOpen?.setNumber === slot.setNumber ? (
               <span className="set-checklist__pending">Em andamento</span>
@@ -46,30 +53,35 @@ export default function SetChecklist({
           <p className="set-checklist__form-label">
             Registrar série {nextOpen.setNumber} de {targetSets}
           </p>
-          <div className="form-grid form-grid--2">
+          {lastLoad && !timed ? (
+            <p className="set-checklist__last">Última carga: {/kg/i.test(String(lastLoad)) ? lastLoad : `${lastLoad} kg`}</p>
+          ) : null}
+          <div className={`form-grid${timed ? '' : ' form-grid--2'}`}>
+            {timed ? null : (
+              <label className="form-field">
+                <span>Peso (kg)</span>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  min="0"
+                  step="0.5"
+                  value={draft.weight}
+                  onChange={(e) => onDraftChange?.({ ...draft, weight: e.target.value })}
+                  placeholder="ex: 20"
+                  disabled={disabled}
+                />
+              </label>
+            )}
             <label className="form-field">
-              <span>Peso (kg)</span>
+              <span>{valueLabel}</span>
               <input
                 type="number"
                 inputMode="decimal"
                 min="0"
-                step="0.5"
-                value={draft.weight}
-                onChange={(e) => onDraftChange?.({ ...draft, weight: e.target.value })}
-                placeholder="ex: 20"
-                disabled={disabled}
-              />
-            </label>
-            <label className="form-field">
-              <span>Repetições</span>
-              <input
-                type="number"
-                inputMode="numeric"
-                min="1"
-                step="1"
+                step={timed ? '1' : '1'}
                 value={draft.reps}
                 onChange={(e) => onDraftChange?.({ ...draft, reps: e.target.value })}
-                placeholder="ex: 12"
+                placeholder={valuePlaceholder}
                 disabled={disabled}
               />
             </label>

@@ -76,7 +76,9 @@ function AppLayout() {
   const pathSection = sectionFromPath(location.pathname) || 'inicio'
   const { toasts, history, workouts } = useFitness()
   const { page, id: exerciseId } = useHashRoute()
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth <= 1100,
+  )
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {

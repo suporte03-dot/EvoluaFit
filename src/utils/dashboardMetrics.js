@@ -186,7 +186,7 @@ export function metricEmptyCopy(key) {
     case 'weeklyWorkouts':
       return {
         value: 'Começar a semana',
-        hint: 'Conclua um treino para acender a trilha',
+        hint: 'Seu primeiro treino acende a trilha da semana',
       }
     case 'monthlyPerformancePct':
       return {
@@ -226,7 +226,7 @@ export function metricEmptyCopy(key) {
     default:
       return {
         value: 'Em construção',
-        hint: 'Conclua um treino para preencher este indicador',
+        hint: 'Seu primeiro treino cria a referência deste indicador',
       }
   }
 }

@@ -678,13 +678,19 @@ function normalizeExercises(exercises = []) {
   return resolveTemplateExercises(exercises)
 }
 
-export function enrichWorkoutDetail(workout) {
+export function enrichWorkoutDetail(workout, extras = {}) {
   if (!workout) return null
 
   const template = resolveTemplateForWorkout(workout)
   const type = template?.type || inferTypeFromWorkout(workout)
   const benefits = template?.benefits || getWorkoutBenefitsByType(type)
   const precautions = template?.precautions || DEFAULT_PRECAUTIONS
+  const planGoal =
+    extras.generatedPlan?.objectiveLabel ||
+    (extras.generatedPlan?.objective && objectiveLabels[extras.generatedPlan.objective]) ||
+    extras.generatedPlan?.goal ||
+    ''
+  const planLevel = extras.generatedPlan?.level || extras.profile?.level || ''
 
   const userExercises = workout.exercises?.length ? resolveTemplateExercises(workout.exercises) : null
   const exercises = userExercises?.length
@@ -695,8 +701,8 @@ export function enrichWorkoutDetail(workout) {
     id: workout.id,
     name: workout.name,
     type,
-    goal: template?.goal || workout.goal || 'Saúde geral',
-    level: template?.level || workout.level || 'Intermediário',
+    goal: workout.goal || planGoal || template?.goal || 'Saúde geral',
+    level: workout.level || planLevel || template?.level || 'Intermediário',
     duration: workout.estimatedMinutes || template?.duration || 45,
     frequency: template?.frequency || 'Conforme sua planilha',
     mainMuscleGroup: template?.mainMuscleGroup || workout.muscleGroups?.[0] || 'Corpo inteiro',
@@ -711,5 +717,6 @@ export function enrichWorkoutDetail(workout) {
     status: workout.status,
     date: workout.date,
     sourceWorkout: workout,
+    levelNote: extras.levelNote || '',
   }
 }

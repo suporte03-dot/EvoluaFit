@@ -122,7 +122,7 @@ export function getNextAction({
       id: 'plan',
       kind: 'navigate',
       title: 'Monte seu treino',
-      description: 'Ainda sem rotina. Monte os treinos para o de hoje aparecer aqui.',
+      description: 'Ainda sem rotina. Monte os treinos para o de hoje aparecer aqui, com uma meta clara.',
       primaryLabel: 'Monte seu treino',
       secondaryLabel: 'Falar com o Coach',
       section: 'planilha',

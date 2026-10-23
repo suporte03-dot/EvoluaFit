@@ -1,17 +1,65 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
 import SectionTitle from './SectionTitle'
 import EmptyState from './EmptyState'
 import WorkoutDetailModal from './WorkoutDetailModal'
 import CollapsibleWorkoutCard from './CollapsibleWorkoutCard'
 
+function isDoneWorkout(workout) {
+  const status = String(workout?.status || '').toLowerCase()
+  return status === 'realizado' || status === 'completed' || status === 'done'
+}
+
+function startOfMonday(ref = new Date()) {
+  const d = new Date(ref)
+  d.setHours(0, 0, 0, 0)
+  const weekday = d.getDay()
+  d.setDate(d.getDate() + (weekday === 0 ? -6 : 1 - weekday))
+  return d
+}
+
+function groupWorkouts(workouts = [], generatedPlan) {
+  const activeId = generatedPlan?.id
+  const weekStart = startOfMonday()
+  const active = []
+  const library = []
+  const previous = []
+
+  workouts.forEach((workout) => {
+    const date = workout?.date ? new Date(`${String(workout.date).slice(0, 10)}T12:00:00`) : null
+    const fromActivePlan = Boolean(activeId && workout.planId === activeId)
+    const thisWeek = date && !Number.isNaN(date.getTime()) ? date >= weekStart : !isDoneWorkout(workout)
+
+    if (fromActivePlan && (thisWeek || !isDoneWorkout(workout))) {
+      active.push(workout)
+      return
+    }
+    if (isDoneWorkout(workout) && (!thisWeek || !fromActivePlan)) {
+      previous.push(workout)
+      return
+    }
+    library.push(workout)
+  })
+
+  return { active, library, previous }
+}
+
 export default function MyWorkouts() {
-  const { workouts, startWorkout, updateWorkout, deleteWorkout, duplicateWorkout, showToast } = useFitness()
+  const {
+    workouts,
+    generatedPlan,
+    startWorkout,
+    updateWorkout,
+    deleteWorkout,
+    duplicateWorkout,
+    showToast,
+  } = useFitness()
   const [editingId, setEditingId] = useState(null)
   const [editName, setEditName] = useState('')
   const [detailWorkout, setDetailWorkout] = useState(null)
   const [openId, setOpenId] = useState(null)
-  const [isTreinosOpen, setIsTreinosOpen] = useState(false)
+  const [isTreinosOpen, setIsTreinosOpen] = useState(true)
+  const groups = useMemo(() => groupWorkouts(workouts, generatedPlan), [workouts, generatedPlan])
 
   const toggleOpen = (id) => {
     setOpenId((current) => (current === id ? null : id))
@@ -48,9 +96,9 @@ export default function MyWorkouts() {
             subtitle={
               <>
                 <span className="copy-desktop">
-                  Gerencie sua rotina, inicie sessões e acompanhe o status de cada treino.
+                  A rotina ativa fica no topo. A biblioteca e os treinos anteriores ficam separados.
                 </span>
-                <span className="copy-mobile">Organize e acompanhe seus treinos.</span>
+                <span className="copy-mobile">Rotina ativa, biblioteca e treinos anteriores.</span>
               </>
             }
           />
@@ -86,27 +134,56 @@ export default function MyWorkouts() {
                 aria-hidden={!isTreinosOpen}
               >
                 <div className="disclose-panel__inner">
-                  <div className="workout-list">
-                    {workouts.map((workout, index) => (
-                      <CollapsibleWorkoutCard
-                        key={workout.id}
-                        workout={workout}
-                        index={index}
-                        isOpen={openId === workout.id}
-                        onToggle={toggleOpen}
-                        editingId={editingId}
-                        editName={editName}
-                        onEditNameChange={setEditName}
-                        onSaveEdit={saveEdit}
-                        onStartWorkout={startWorkout}
-                        onViewWorkout={setDetailWorkout}
-                        onEdit={startEdit}
-                        onDuplicate={duplicateWorkout}
-                        onComplete={markDone}
-                        onDelete={deleteWorkout}
-                      />
+                  {[
+                    {
+                      id: 'active',
+                      title: generatedPlan?.title || 'Rotina ativa',
+                      hint: 'Treinos da planilha em uso nesta semana.',
+                      items: groups.active,
+                    },
+                    {
+                      id: 'library',
+                      title: 'Biblioteca e extras',
+                      hint: 'Sequências salvas que não fazem parte da rotina ativa.',
+                      items: groups.library,
+                    },
+                    {
+                      id: 'previous',
+                      title: 'Planos anteriores',
+                      hint: 'Sessões já concluídas ou de semanas passadas.',
+                      items: groups.previous,
+                    },
+                  ]
+                    .filter((group) => group.items.length)
+                    .map((group) => (
+                      <section key={group.id} className="workout-group" aria-labelledby={`workout-group-${group.id}`}>
+                        <header className="workout-group__head">
+                          <h3 id={`workout-group-${group.id}`}>{group.title}</h3>
+                          <p>{group.hint}</p>
+                        </header>
+                        <div className="workout-list">
+                          {group.items.map((workout, index) => (
+                            <CollapsibleWorkoutCard
+                              key={workout.id}
+                              workout={workout}
+                              index={index}
+                              isOpen={openId === workout.id}
+                              onToggle={toggleOpen}
+                              editingId={editingId}
+                              editName={editName}
+                              onEditNameChange={setEditName}
+                              onSaveEdit={saveEdit}
+                              onStartWorkout={startWorkout}
+                              onViewWorkout={setDetailWorkout}
+                              onEdit={startEdit}
+                              onDuplicate={duplicateWorkout}
+                              onComplete={markDone}
+                              onDelete={deleteWorkout}
+                            />
+                          ))}
+                        </div>
+                      </section>
                     ))}
-                  </div>
                 </div>
               </div>
             </>

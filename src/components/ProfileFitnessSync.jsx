@@ -25,13 +25,13 @@ export default function ProfileFitnessSync() {
     const days = resolveDaysPerWeek({ profile, generatedPlan })
     const cloudCode = cloudGoalToCode(cloud?.goal)
     const nextObjective = cloudCode || planObjective || profile?.objective || ''
-    const nextLevel = cloud?.level || planLevel || profile?.level || ''
+    const nextLevel = profile?.level || planLevel || cloud?.level || ''
     const nextName = (cloud?.full_name || profile?.name || '').trim()
 
     const localPatch = {}
     if (nextName && nextName !== profile?.name) localPatch.name = nextName
     if (nextObjective && nextObjective !== profile?.objective) localPatch.objective = nextObjective
-    if (nextLevel && nextLevel !== profile?.level) localPatch.level = nextLevel
+    if (!profile?.level && nextLevel) localPatch.level = nextLevel
     if (days > 0 && days !== Number(profile?.daysPerWeek || 0)) localPatch.daysPerWeek = days
     if (generatedPlan?.duration && generatedPlan.duration !== profile?.duration) {
       localPatch.duration = generatedPlan.duration

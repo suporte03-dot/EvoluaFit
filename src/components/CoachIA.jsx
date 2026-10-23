@@ -6,6 +6,7 @@ import { getExerciseCache } from '../data/exerciseCache'
 import { scrollToSection } from '../utils/scrollToSection'
 import { formatDateShort } from '../utils/dateFormat'
 import { cloudGoalToCode, displayGoalLabel, resolveDaysPerWeek } from '../utils/profileIdentity'
+import { resolveTrainingLevel } from '../utils/trainingIdentity'
 import { markRestDay } from '../utils/calendarUtils'
 import useCoachVoice from '../hooks/useCoachVoice'
 import { cancelSpeech } from '../utils/coachVoice'
@@ -55,14 +56,14 @@ const COACH_PAGE_CSS = `
 .coach-ia__empty-actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.75rem}
 .coach-ia__picker-empty{display:grid;gap:.75rem}
 .coach-ia__picker-empty p{margin:0;color:rgba(186,198,216,.95);font-size:.9rem;line-height:1.45}
-.coach-hero{position:relative;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(140px,.85fr);align-items:center;gap:1rem;min-height:200px;padding:1.75rem 1.85rem;border-radius:var(--radius,16px);border:1px solid rgba(255,90,61,.28);background:linear-gradient(115deg,#070a0f 0%,#121923 48%,#070a0f 100%);box-shadow:inset 0 1px 0 rgba(255,138,106,.08),0 18px 40px rgba(0,0,0,.28);overflow:hidden}
+.coach-hero{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:.85rem;min-height:0;padding:1rem 1.2rem;border-radius:var(--radius,16px);border:1px solid rgba(117,82,255,.28);background:linear-gradient(115deg,#070a0f 0%,#121923 48%,#070a0f 100%);box-shadow:inset 0 1px 0 rgba(118,87,255,.08),0 12px 28px rgba(0,0,0,.22);overflow:hidden}
 .coach-hero__copy{position:relative;z-index:2;max-width:36rem}
 .coach-hero__label{margin:0 0 .45rem;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7657ff}
-.coach-hero__title{margin:0 0 .65rem;font-size:clamp(1.85rem,3.2vw,2.55rem);font-weight:800;letter-spacing:-.02em;line-height:1.1;color:#f8fafc}
-.coach-hero__subtitle{margin:0;max-width:34ch;font-size:.95rem;line-height:1.55;color:rgba(186,198,214,.92)}
-.coach-hero__art{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;min-height:160px}
+.coach-hero__title{margin:0 0 .35rem;font-size:clamp(1.35rem,2.4vw,1.85rem);font-weight:800;letter-spacing:-.02em;line-height:1.15;color:#f8fafc}
+.coach-hero__subtitle{margin:0;max-width:46ch;font-size:.9rem;line-height:1.45;color:rgba(210,220,234,.95)}
+.coach-hero__art{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;min-height:72px}
 .coach-hero__fade{position:absolute;inset:0 auto 0 -40%;width:55%;background:linear-gradient(90deg,#121923 0%,transparent 100%);pointer-events:none;z-index:2}
-.coach-orb{position:relative;width:min(100%,220px);aspect-ratio:1;display:grid;place-items:center}
+.coach-orb{position:relative;width:min(100%,96px);aspect-ratio:1;display:grid;place-items:center}
 .coach-orb__img{position:relative;z-index:2;width:100%;height:auto;filter:drop-shadow(0 0 22px rgba(255,90,61,.35));animation:coachOrbFloat 6.5s ease-in-out infinite}
 .coach-orb__glow{position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle,rgba(255,90,61,.35) 0%,transparent 70%);filter:blur(8px);animation:coachOrbPulse 4.5s ease-in-out infinite}
 .coach-orb__pulse{position:absolute;inset:8%;border-radius:50%;border:1px solid rgba(255,138,106,.22);animation:coachOrbRing 5s ease-out infinite}
@@ -112,7 +113,7 @@ const COACH_PAGE_CSS = `
 .coach-recs-empty p{margin:0 0 .75rem;color:var(--text-secondary,#94a3b8);font-size:.9rem;line-height:1.45}
 .coach-recs-empty__actions{display:flex;flex-wrap:wrap;gap:.5rem}
 .coach-page .coach-ia__main{margin-top:.35rem}
-@media (max-width:900px){.coach-hero{grid-template-columns:1fr;padding:1.35rem 1.25rem 1.5rem;min-height:0}.coach-hero__art{order:-1;min-height:140px}.coach-hero__fade{display:none}.coach-orb{width:min(160px,48vw)}.coach-recs-panel__grid{grid-template-columns:1fr}}
+@media (max-width:900px){.coach-hero{grid-template-columns:1fr;padding:1rem 1.05rem}.coach-hero__art{display:none}.coach-hero__fade{display:none}.coach-recs-panel__grid{grid-template-columns:1fr}}
 @media (max-width:640px){.coach-page{--coach-page-gap:.7rem}.coach-hero{padding:1.15rem 1rem 1.25rem}.coach-hero__subtitle{max-width:none;font-size:.9rem}.coach-context__chips{flex-direction:column;align-items:stretch}.coach-context__chip{width:100%;box-sizing:border-box}.coach-notice{padding:.65rem .8rem}.coach-notice__text{font-size:.82rem}.coach-rec__actions{flex-direction:column}.coach-rec__btn{width:100%;min-height:48px}.coach-page .coach-context__chips{flex-wrap:wrap;overflow-x:visible}}
 @media (prefers-reduced-motion:reduce){.coach-orb__img,.coach-orb__glow,.coach-orb__pulse,.coach-orb__particle,.coach-rec,.coach-context__chip,.coach-rec__btn{animation:none!important;transition:none!important}.coach-rec:hover,.coach-context__chip:hover,.coach-rec__btn--apply:hover:not(:disabled){transform:none}}
 `
@@ -173,12 +174,12 @@ function CoachHero() {
         <p className="coach-hero__label">Assistente da planilha</p>
         <h2 className="coach-hero__title">Coach</h2>
         <p className="coach-hero__subtitle">
-          Sugestões com base no que está neste aparelho e na sua planilha — sem modelo externo.
+          Orientações com base na sua rotina e no seu histórico.
         </p>
       </div>
       <div className="coach-hero__art">
         <div className="coach-hero__fade" aria-hidden="true" />
-        <CoachOrb size={220} />
+        <CoachOrb size={96} />
       </div>
     </header>
   )
@@ -191,16 +192,18 @@ function formatLastWorkout(lastWorkout) {
   return date ? `${name} · ${date}` : name
 }
 
-function CoachContextChips({ summary, profile }) {
+function CoachContextChips({ summary, profile, identity }) {
   const objective = displayGoalLabel({ objective: profile?.objective }) || summary?.objective
-  const level = profile?.level || summary?.level
+  const level = identity?.level || profile?.level || summary?.level
   const days = Number(profile?.daysPerWeek || 0)
   const chips = [
     {
       id: 'level',
       Icon: IconTrend,
-      label: 'Nível',
-      value: level || 'Ainda não definido — complete o perfil',
+      label: 'Nível da rotina',
+      value: identity?.note
+        ? `${level} — ${identity.note}`
+        : level || 'Ainda não definido — complete o perfil',
     },
     {
       id: 'goal',
@@ -358,11 +361,11 @@ function CoachRecommendations({
 
   return (
     <section className="coach-recs-panel" aria-label="Recomendações do Coach">
-      <h3 className="coach-page__section-title">Recomendações com base no seu histórico</h3>
+      <h3 className="coach-page__section-title">Recomendações com base na sua rotina</h3>
       {recommendations.length === 0 ? (
         <div className="coach-recs-empty" role="status">
           <p>
-            Seu histórico ainda não possui dados suficientes para recomendações personalizadas.
+            Seu primeiro treino cria a referência para o Coach acompanhar sua evolução.
           </p>
           <div className="coach-recs-empty__actions">
             <button type="button" className="btn btn--ghost btn--sm" onClick={() => scrollToSection('treinos')}>
@@ -456,6 +459,7 @@ export default function CoachIA() {
     addExerciseToPlan,
     startWorkout,
     generatedPlan,
+    plans,
     updateWorkout,
     replaceWorkouts,
   } = useFitness()
@@ -490,20 +494,34 @@ export default function CoachIA() {
     }
   }, [user?.id])
 
+  const identity = useMemo(
+    () => resolveTrainingLevel({ profile, cloudProfile, generatedPlan, plans }),
+    [profile, cloudProfile, generatedPlan, plans],
+  )
+
   const coachProfile = useMemo(
     () => ({
       ...profile,
       name: cloudProfile?.full_name || profile?.name,
       objective: cloudGoalToCode(cloudProfile?.goal) || generatedPlan?.objective || profile?.objective,
-      level: cloudProfile?.level || generatedPlan?.level || profile?.level,
-      daysPerWeek: resolveDaysPerWeek({ profile, generatedPlan }),
+      level: identity.level || generatedPlan?.level || profile?.level,
+      daysPerWeek: resolveDaysPerWeek({ profile, generatedPlan, plans }),
     }),
-    [profile, cloudProfile, generatedPlan],
+    [profile, cloudProfile, generatedPlan, plans, identity.level],
   )
 
   const context = useMemo(
-    () => ({ profile: coachProfile, workouts, history, performance, goals, bodyEvolution }),
-    [coachProfile, workouts, history, performance, goals, bodyEvolution],
+    () => ({
+      profile: coachProfile,
+      workouts,
+      history,
+      performance,
+      goals,
+      bodyEvolution,
+      generatedPlan,
+      plans,
+    }),
+    [coachProfile, workouts, history, performance, goals, bodyEvolution, generatedPlan, plans],
   )
 
   const summary = useMemo(() => getCoachSummary(context), [context])
@@ -890,6 +908,14 @@ export default function CoachIA() {
     <section id="coach-ia" className="section section--alt coach-ia coach-page">
       <div className="container">
         <CoachHero />
+        <CoachRecommendations
+          recommendations={recommendations.slice(0, 2)}
+          applyingId={applyingId}
+          appliedIds={appliedIds}
+          onApply={handleApplyRecommendation}
+          onIgnore={handleIgnoreRecommendation}
+          disabled={loading}
+        />
 
         <div className="coach-ia__main glass-card">
           <form className="coach-ia__form" onSubmit={handleSubmit}>
@@ -1211,21 +1237,17 @@ export default function CoachIA() {
           </div>
         </div>
 
+        <CoachContextChips summary={summary} profile={coachProfile} identity={identity} />
+
         <details className="coach-page__notices">
-          <summary>Avisos de segurança e privacidade</summary>
+          <summary>Como funciona, segurança e privacidade</summary>
+          <p className="coach-notice__text" style={{ margin: '0 0 .75rem' }}>
+            O Coach usa a rotina ativa e o histórico deste aparelho. Não há modelo externo nas
+            respostas.
+          </p>
           <CoachSafetyNotice />
           <CoachPrivacyNotice voiceSupported={voiceSupported} />
         </details>
-
-        <CoachContextChips summary={summary} profile={coachProfile} />
-        <CoachRecommendations
-          recommendations={recommendations.slice(0, 2)}
-          applyingId={applyingId}
-          appliedIds={appliedIds}
-          onApply={handleApplyRecommendation}
-          onIgnore={handleIgnoreRecommendation}
-          disabled={loading}
-        />
       </div>
     </section>
   )

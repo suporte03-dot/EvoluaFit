@@ -35,12 +35,50 @@ export default function Goals() {
         />
 
         {syncedGoals.length === 0 ? (
-          <EmptyState
-            title="Nenhuma meta criada"
-            description="As metas só aparecem quando você as define. Nada é preenchido automaticamente."
-            ctaLabel="Monte seu treino"
-            ctaSection="planilha"
-          />
+          <div className="goals-empty">
+            <EmptyState
+              title="Crie sua primeira meta"
+              description="Comece pela consistência: quantos treinos você quer completar nesta semana?"
+              ctaLabel="Criar minha primeira meta"
+              onCta={() =>
+                updateGoals([
+                  {
+                    id: `goal-${Date.now()}`,
+                    type: 'weekly_workouts',
+                    title: 'Treinos na semana',
+                    target: 3,
+                    current: performance?.weeklyWorkouts || 0,
+                    unit: 'treinos',
+                    healthy: true,
+                  },
+                ])
+              }
+            />
+            <div className="goals-empty__picks" role="group" aria-label="Opções rápidas de consistência">
+              {[3, 4, 5].map((target) => (
+                <button
+                  key={target}
+                  type="button"
+                  className="btn btn--outline btn--sm"
+                  onClick={() =>
+                    updateGoals([
+                      {
+                        id: `goal-${Date.now()}`,
+                        type: 'weekly_workouts',
+                        title: 'Treinos na semana',
+                        target,
+                        current: performance?.weeklyWorkouts || 0,
+                        unit: 'treinos',
+                        healthy: true,
+                      },
+                    ])
+                  }
+                >
+                  {target}x por semana
+                </button>
+              ))}
+            </div>
+          </div>
         ) : (
           <>
         <div className="goals-summary glass-card">

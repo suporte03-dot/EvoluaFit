@@ -1,6 +1,7 @@
 import { useId, useState } from 'react'
 import { inferWorkoutType } from '../utils/workoutSession'
 import { formatDateShort } from '../utils/dateFormat'
+import { formatExercisePrescription } from '../utils/trainingIdentity'
 import DayVolumeSummary from './DayVolumeSummary'
 
 const statusClass = {
@@ -190,8 +191,7 @@ export default function CollapsibleWorkoutCard({
                   <li key={`${ex.exerciseId || ex.id || ex.name}-${i}`} className="workout-card__exercise">
                     <strong className="workout-card__exercise-name">{ex.name}</strong>
                     <div className="workout-card__exercise-meta">
-                      {ex.sets != null && <span>{ex.sets} séries</span>}
-                      {ex.reps != null && <span>{ex.reps} reps</span>}
+                      <span>{formatExercisePrescription(ex)}</span>
                       {rest && <span>Descanso {rest}</span>}
                       {ex.load && <span>{ex.load}</span>}
                     </div>

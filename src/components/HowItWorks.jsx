@@ -27,9 +27,9 @@ const STEPS = [
     tone: 'purple',
     icon: '✦',
     step: '03',
-    title: 'Coach IA',
-    desc: 'Sugestões com base na sua rotina.',
-    cta: 'Abrir Coach IA',
+    title: 'Coach',
+    desc: 'Orientações com base na rotina e no histórico.',
+    cta: 'Abrir Coach',
   },
   {
     id: 'desempenho',

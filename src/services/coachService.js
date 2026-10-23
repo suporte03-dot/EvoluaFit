@@ -20,6 +20,7 @@ import { generateCoachInsights } from '../utils/coachInsights'
 import { formatSignedDelta } from '../utils/bodyEvolutionMetrics'
 import { parseAppVoiceCommand, describeBuildSlots } from '../utils/voiceIntents'
 import { detectMissedWorkouts } from '../utils/adaptiveWeek'
+import { resolveCanonicalNextWorkout } from '../utils/trainingIdentity'
 
 // Futuro: import { supabase } from '../lib/supabaseClient'
 
@@ -374,7 +375,8 @@ export function clearCoachMessages() {
  * Never auto-applies; caller must confirm via apply/ignore.
  */
 export function getContextualRecommendations(context = {}) {
-  const { profile = {}, workouts = [], history = [], performance, goals = [] } = context
+  const { profile = {}, workouts = [], history = [], performance, goals = [], generatedPlan, plans } =
+    context
   const last = getLastSession(history)
   const lastMuscles = getLastSessionMuscles(history)
   const lastSplit = detectSplit(lastMuscles)
@@ -385,6 +387,13 @@ export function getContextualRecommendations(context = {}) {
   const weeklyGoal =
     goals.find((g) => g.type === 'weekly_workouts')?.target || (weeklyDays > 0 ? weeklyDays : 0)
   const weeklyDone = performance?.weeklyWorkouts ?? 0
+  const canonical = resolveCanonicalNextWorkout({
+    workouts,
+    history,
+    plans,
+    generatedPlan,
+  })
+  const planWorkout = canonical.workout || canonical.nextWorkout
   const cards = []
 
   if (!workouts.length && !history.length) {
@@ -399,7 +408,25 @@ export function getContextualRecommendations(context = {}) {
     return cards
   }
 
-  if (streak >= 4 || days < 1) {
+  if (planWorkout && ['ready', 'partial', 'returning', 'no_workout_today'].includes(canonical.situation)) {
+    const preview = (planWorkout.exercises || [])
+      .slice(0, 3)
+      .map((ex) => ex.name)
+      .filter(Boolean)
+    cards.push({
+      id: 'rec-plan-next',
+      title: `Seguir: ${planWorkout.name}`,
+      reason:
+        canonical.situation === 'no_workout_today'
+          ? 'É o próximo treino da rotina ativa, mesmo que hoje seja folga.'
+          : 'É o treino definido pela rotina ativa — o mesmo da tela Hoje.',
+      impact: preview.length
+        ? `Prévia: ${preview.join(', ')}.`
+        : `Mantém a frequência alinhada à meta de ${weeklyGoal || planWorkout.muscleGroups?.length || 0}x/semana.`,
+      action: canonical.situation === 'no_workout_today' ? 'save_workout' : 'start_workout',
+      suggestion: { type: 'workout', data: planWorkout },
+    })
+  } else if (streak >= 4 || days < 1) {
     const workout = createQuickWorkout({
       profile,
       focus: ['Mobilidade', 'Alongamento'],
@@ -418,7 +445,7 @@ export function getContextualRecommendations(context = {}) {
       suggestion: { type: 'workout', data: workout },
     })
   } else if (pending.length) {
-    const next = performance?.nextWorkout || pending[0]
+    const next = planWorkout || performance?.nextWorkout || pending[0]
     cards.push({
       id: 'rec-pending',
       title: `Seguir: ${next.name}`,
@@ -516,7 +543,7 @@ export function getContextualRecommendations(context = {}) {
  * Resumo inteligente para os cards da UI (sem chamar “IA”).
  */
 export function getCoachSummary(context = {}) {
-  const { profile, workouts = [], history = [], performance } = context
+  const { profile, workouts = [], history = [], performance, generatedPlan, plans } = context
   const last = getLastSession(history)
   const lastMuscles = getLastSessionMuscles(history)
   const lastSplit = detectSplit(lastMuscles)
@@ -524,6 +551,8 @@ export function getCoachSummary(context = {}) {
   const days = daysSince(last?.completedAt || last?.date)
   const pending = workouts.filter((w) => w.status === 'Pendente')
   const hasData = Boolean(profile?.objective || workouts.length || history.length)
+  const canonical = resolveCanonicalNextWorkout({ workouts, history, plans, generatedPlan })
+  const planWorkout = canonical.workout || canonical.nextWorkout
 
   const weekStart = new Date()
   weekStart.setHours(0, 0, 0, 0)
@@ -535,8 +564,8 @@ export function getCoachSummary(context = {}) {
     return !Number.isNaN(d.getTime()) && d >= weekStart
   }).length
 
-  let nextSuggestion = pending[0]?.name || ''
-  let recommendedGroup = (pending[0]?.muscleGroups || [])[0] || ''
+  let nextSuggestion = planWorkout?.name || pending[0]?.name || ''
+  let recommendedGroup = (planWorkout?.muscleGroups || pending[0]?.muscleGroups || [])[0] || ''
   let attention =
     'Respeite limites, aqueça bem e pare se sentir dor. Progresso consistente vale mais que intensidade excessiva.'
 
@@ -544,6 +573,12 @@ export function getCoachSummary(context = {}) {
     nextSuggestion = ''
     recommendedGroup = ''
     attention = 'Sem histórico ainda — comece com volume moderado e foque na técnica.'
+  } else if (planWorkout) {
+    nextSuggestion = planWorkout.name
+    recommendedGroup = (planWorkout.muscleGroups || [])[0] || recommendedGroup
+    if (canonical.situation === 'completed') {
+      attention = 'Sessão de hoje registrada. O próximo passo segue a rotina ativa.'
+    }
   } else if (streak >= 4 || days < 1) {
     nextSuggestion = 'Descanso ativo ou mobilidade'
     recommendedGroup = 'Mobilidade'
@@ -585,7 +620,7 @@ export function getCoachSummary(context = {}) {
 export async function getTodaySuggestion(context = {}) {
   await delay()
 
-  const { profile = {}, workouts = [], history = [], performance } = context
+  const { profile = {}, workouts = [], history = [], performance, generatedPlan, plans } = context
   const insightPack = generateCoachInsights({
     history,
     workouts,
@@ -601,13 +636,34 @@ export async function getTodaySuggestion(context = {}) {
   const objective = objectiveLabels[profile?.objective] || ''
   const pending = workouts.filter((w) => w.status === 'Pendente')
   const hasData = Boolean(profile?.objective || workouts.length || history.length)
+  const canonical = resolveCanonicalNextWorkout({ workouts, history, plans, generatedPlan })
+  const planWorkout = canonical.workout || canonical.nextWorkout
 
   let title = 'Treino equilibrado'
   let focus = ['Peitoral', 'Costas', 'Pernas']
   let reason = hasData
-    ? `Com base no seu ${objective ? `objetivo (${objective})` : 'perfil'} e nível ${profile?.level || 'ainda não definido'}, sugiro uma sessão equilibrada e moderada.`
-    : 'Ainda não há histórico suficiente. Sugestão genérica segura: treino completo leve, com foco em técnica e recuperação.'
+    ? `Orientações com base na sua rotina e no seu histórico${objective ? ` (${objective})` : ''}.`
+    : 'Seu primeiro treino cria a referência para acompanhar sua evolução.'
   if (insightLine) reason = `${reason} ${insightLine}`
+
+  if (planWorkout && canonical.situation !== 'completed') {
+    const preview = (planWorkout.exercises || []).slice(0, 4).map((ex) => ex.name).filter(Boolean)
+    return makeResult({
+      title: planWorkout.name,
+      reason:
+        canonical.situation === 'no_workout_today'
+          ? `Nada agendado para hoje na rotina. O próximo treino é ${planWorkout.name}.`
+          : `Este é o treino da rotina ativa — o mesmo da tela Hoje.${preview.length ? ` Prévia: ${preview.join(', ')}.` : ''}`,
+      workout: planWorkout,
+      suggestion: { type: 'workout', data: planWorkout },
+      relatedMuscleGroup: (planWorkout.muscleGroups || [])[0] || null,
+      careNotes: [
+        'Aqueça 5–10 min antes.',
+        'Ajuste a carga para manter boa técnica.',
+        'Pare se sentir dor (desconforto ≠ dor).',
+      ],
+    })
+  }
 
   if (streak >= 4 || daysSinceLast < 1) {
     title = 'Descanso ativo / mobilidade'

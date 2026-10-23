@@ -189,7 +189,7 @@ export function situationCopy(situation, { daysSinceLast, nextWorkout } = {}) {
       return {
         label: 'Comece por aqui',
         title: 'Ainda sem rotina',
-        description: 'Monte uma rotina e o treino de hoje aparece aqui.',
+        description: 'Monte uma rotina para o treino de hoje aparecer aqui.',
         primaryLabel: 'Monte seu treino',
         primarySection: 'planilha',
         secondaryLabel: 'Falar com o Coach',

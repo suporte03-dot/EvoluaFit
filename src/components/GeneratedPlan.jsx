@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
 import { planToWorkouts } from '../utils/workoutGenerator'
 import { getSplitStyleLabel } from '../data/workoutTemplates'
+import { classifyWorkoutDay } from '../utils/trainingIdentity'
+import { IconCalendar, IconDumbbell } from './dashboard/icons'
 import DayVolumeSummary from './DayVolumeSummary'
 import WorkoutDetailModal from './WorkoutDetailModal'
 
@@ -19,23 +21,7 @@ function formatFocus(focus = []) {
 }
 
 function resolveDayType(day) {
-  const name = String(day?.workoutName || day?.name || day?.workoutType || '').toLowerCase()
-  const focus = (day?.muscleGroups || day?.focus || []).join(' ').toLowerCase()
-  const hay = `${name} ${focus}`
-
-  if (/descanso|recuper/.test(hay)) return { label: 'Descanso', tone: 'rest' }
-  if (/mobil|along|yoga/.test(hay)) return { label: 'Mobilidade', tone: 'mobility' }
-  if (/core.*cardio|cardio.*mobil/.test(hay)) return { label: 'Core + Cardio', tone: 'core' }
-  if (/cardio|hiit|corrida|aer[óo]bic/.test(hay)) return { label: 'Cardio', tone: 'cardio' }
-  if (/core|abd[ôo]men|abdominal/.test(hay)) return { label: 'Core', tone: 'core' }
-  if (/push|empurr|peito|peitoral|tr[íi]ceps|ombro/.test(hay)) return { label: 'Push', tone: 'push' }
-  if (/pull|puxar|costas|b[íi]ceps|dorsal/.test(hay)) return { label: 'Pull', tone: 'pull' }
-  if (/legs|perna|gl[úu]teo|quadr|posterior|panturr|inferior|lower/.test(hay)) {
-    return { label: 'Legs', tone: 'legs' }
-  }
-  if (/superior|upper/.test(hay)) return { label: 'Superiores', tone: 'push' }
-  if (/full|corpo/.test(hay)) return { label: 'Full Body', tone: 'full' }
-  return { label: day?.workoutType || 'Treino', tone: 'full' }
+  return classifyWorkoutDay(day)
 }
 
 function estimateDuration(day) {
@@ -197,13 +183,13 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan, onG
               <div className="plan-day__stats">
                 <span className="plan-day__stat">
                   <span className="plan-day__stat-icon" aria-hidden="true">
-                    🎯
+                    <IconCalendar size={14} />
                   </span>
                   {formatFocus(muscleGroups) || 'Variado'}
                 </span>
                 <span className="plan-day__stat">
                   <span className="plan-day__stat-icon" aria-hidden="true">
-                    🏋️
+                    <IconDumbbell size={14} />
                   </span>
                   {exerciseCount} {exerciseCount === 1 ? 'exercício' : 'exercícios'}
                   <span className="plan-day__stat-sep" aria-hidden="true">

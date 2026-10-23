@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { getExerciseProgressStats } from '../utils/progressStorage'
 import { getTargetSets, isExerciseComplete } from '../utils/workoutSession'
+import { formatExercisePrescription, inferTrackingMode } from '../utils/trainingIdentity'
 import ExerciseMedia from './ExerciseMedia'
 import ExerciseProgressChart from './ExerciseProgressChart'
 import SetChecklist from './SetChecklist'
@@ -30,6 +31,7 @@ export default function ExerciseSessionCard({
   const stats = getExerciseProgressStats(exercise.exerciseId, exercise.name)
   const lastHint =
     stats.lastWeightLabel || (stats.lastWeight != null ? `${stats.lastWeight}` : null)
+  const tracking = inferTrackingMode(exercise)
 
   // Prefill weight from last session when draft is empty
   const effectiveDraft = {
@@ -49,8 +51,10 @@ export default function ExerciseSessionCard({
           <div>
             <strong className="exercise-session-card__name">{exercise.name}</strong>
             <p className="exercise-session-card__meta">
-              {targetSets} séries · {exercise.reps} reps · Descanso {exercise.restSeconds || 60}s
-              {lastHint ? ` · Último peso: ${lastHint}${/kg/i.test(String(lastHint)) ? '' : ' kg'}` : ''}
+              {formatExercisePrescription(exercise)} · Descanso {exercise.restSeconds || 60}s
+              {lastHint && tracking === 'reps'
+                ? ` · Última carga: ${lastHint}${/kg/i.test(String(lastHint)) ? '' : ' kg'}`
+                : ''}
             </p>
           </div>
         </div>
@@ -87,6 +91,8 @@ export default function ExerciseSessionCard({
             onDraftChange={onDraftChange}
             onCompleteSet={onCompleteSet}
             disabled={disabled || done}
+            tracking={tracking}
+            lastLoad={lastHint}
           />
 
           <div className="exercise-session-card__actions">

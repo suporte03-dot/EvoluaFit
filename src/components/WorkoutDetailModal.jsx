@@ -3,6 +3,11 @@ import { useFitness } from '../context/FitnessContext'
 import { enrichWorkoutDetail } from '../data/workoutTemplates'
 import { navigateToExercise } from '../hooks/useHashRoute'
 import { appendExerciseToList, replaceExerciseInList } from '../utils/exerciseSubstitution'
+import {
+  displayMovementRole,
+  formatExercisePrescription,
+  resolveTrainingLevel,
+} from '../utils/trainingIdentity'
 import { summarizeDayVolume } from '../utils/workoutGenerator'
 import DayVolumeSummary from './DayVolumeSummary'
 import ExerciseMedia from './ExerciseMedia'
@@ -25,12 +30,21 @@ function persistableExercises(list) {
 }
 
 export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
-  const { startWorkout, addWorkoutToPlan, updateWorkout, updatePlanDay, showToast, profile } =
+  const { startWorkout, addWorkoutToPlan, updateWorkout, updatePlanDay, showToast, profile, generatedPlan } =
     useFitness()
   const [substituteIndex, setSubstituteIndex] = useState(null)
   const [showAdd, setShowAdd] = useState(false)
+  const identity = resolveTrainingLevel({ profile, generatedPlan })
 
-  const detail = useMemo(() => enrichWorkoutDetail(workout), [workout])
+  const detail = useMemo(
+    () =>
+      enrichWorkoutDetail(workout, {
+        generatedPlan,
+        profile,
+        levelNote: identity.note,
+      }),
+    [workout, generatedPlan, profile, identity.note],
+  )
   const isAdvanced = profile?.level === 'Avançado'
   const canEdit = Boolean(workout?.id)
 
@@ -113,6 +127,9 @@ export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
             <div className="workout-detail__meta-item">
               <span className="workout-detail__meta-label">Nível</span>
               <strong>{detail.level}</strong>
+              {detail.levelNote ? (
+                <span className="workout-detail__meta-note">{detail.levelNote}</span>
+              ) : null}
             </div>
             <div className="workout-detail__meta-item">
               <span className="workout-detail__meta-label">Duração</span>
@@ -198,11 +215,15 @@ export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
                     </div>
 
                     {ex.type && <span className="exercise-type-tag">{ex.type}</span>}
-                    {(ex.movementRoleLabel || workout?.exercises?.[i]?.movementRoleLabel) && (
+                    {displayMovementRole(
+                      ex.movementRoleLabel || workout?.exercises?.[i]?.movementRoleLabel,
+                    ) ? (
                       <span className="exercise-role-tag">
-                        {ex.movementRoleLabel || workout.exercises[i].movementRoleLabel}
+                        {displayMovementRole(
+                          ex.movementRoleLabel || workout.exercises[i].movementRoleLabel,
+                        )}
                       </span>
-                    )}
+                    ) : null}
 
                     {ex.muscles?.length > 0 && (
                       <div className="workout-detail__exercise-muscles">
@@ -215,8 +236,7 @@ export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
                     )}
 
                     <div className="workout-detail__exercise-meta">
-                      <span>{ex.sets} séries</span>
-                      <span>{ex.reps} reps</span>
+                      <span>{formatExercisePrescription(ex)}</span>
                       <span>Descanso {ex.rest}</span>
                     </div>
 

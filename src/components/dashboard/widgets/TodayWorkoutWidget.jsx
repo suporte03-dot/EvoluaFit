@@ -4,6 +4,7 @@ import { useFitness } from '../../../context/FitnessContext'
 import { IconChevron } from '../icons'
 import { scrollToSection } from '../../../utils/scrollToSection'
 import { workoutCardMeta, weeklyProgressSentence } from '../../../utils/todayWorkout'
+import { formatExercisePrescription } from '../../../utils/trainingIdentity'
 import WorkoutDetailModal from '../../WorkoutDetailModal'
 import { formatDateShort } from '../../../utils/dateFormat'
 
@@ -25,6 +26,7 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
   const detailTarget = nextAction?.workout || today?.workout
   const title = nextAction?.title || meta?.name || 'Treino de hoje'
   const tone = heroTone(detailTarget, title)
+  const preview = (detailTarget?.exercises || []).slice(0, 4)
   const weekPct =
     weekly?.weeklyGoal > 0
       ? Math.min(100, Math.round((weekly.completedCount / weekly.weeklyGoal) * 100))
@@ -122,6 +124,19 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
           </button>
         </div>
       </div>
+      {preview.length ? (
+        <ol className="fit-hero__preview" aria-label="Prévia dos exercícios">
+          {preview.map((ex, index) => (
+            <li key={`${ex.exerciseId || ex.name}-${index}`}>
+              <span>{index + 1}</span>
+              <div>
+                <strong>{ex.name}</strong>
+                <small>{formatExercisePrescription(ex)}</small>
+              </div>
+            </li>
+          ))}
+        </ol>
+      ) : null}
       {detailWorkout ? (
         <WorkoutDetailModal workout={detailWorkout} isOpen onClose={() => setDetailWorkout(null)} />
       ) : null}

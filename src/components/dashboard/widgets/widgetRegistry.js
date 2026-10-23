@@ -7,6 +7,8 @@ import WeeklyGoalWidget from './WeeklyGoalWidget'
 import StreakWidget from './StreakWidget'
 import WeeklyVolumeWidget from './WeeklyVolumeWidget'
 import AchievementsWidget from './AchievementsWidget'
+import WeekPlanWidget from './WeekPlanWidget'
+import LastResultWidget from './LastResultWidget'
 
 export const WIDGET_CATEGORIES = [
   { id: 'hoje', label: 'Hoje' },
@@ -27,6 +29,24 @@ export const WIDGET_REGISTRY = [
     locked: true,
     presentation: 'hero',
     Component: TodayWorkoutWidget,
+  },
+  {
+    id: 'week-plan',
+    title: 'Sua semana',
+    category: 'hoje',
+    defaultSize: 'large',
+    supportedSizes: ['medium', 'large'],
+    presentation: 'card',
+    Component: WeekPlanWidget,
+  },
+  {
+    id: 'last-result',
+    title: 'Último resultado',
+    category: 'evolucao',
+    defaultSize: 'small',
+    supportedSizes: ['small', 'medium'],
+    presentation: 'signal',
+    Component: LastResultWidget,
   },
   {
     id: 'weekly-goal',
@@ -54,7 +74,12 @@ export const WIDGET_REGISTRY = [
     supportedSizes: ['small', 'medium'],
     presentation: 'signal',
     Component: EvoluaScoreCard,
-    mapProps: (ctx) => ({ score: ctx.score, volumeDelta: ctx.volumeDelta }),
+    mapProps: (ctx) => ({
+      score: ctx.score,
+      volumeDelta: ctx.volumeDelta,
+      history: ctx.history,
+      workouts: ctx.workouts,
+    }),
   },
   {
     id: 'weekly-volume',

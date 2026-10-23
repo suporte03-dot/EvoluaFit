@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { EvoluaPulseRing } from '../branding/EvoluaPulse'
+import { scoreUnlockProgress } from '../../utils/trainingIdentity'
 
 function useCountUp(target, enabled) {
   const end = Math.max(0, Number(target) || 0)
@@ -29,14 +30,31 @@ function useCountUp(target, enabled) {
   return value
 }
 
-export default function EvoluaScoreCard({ score, volumeDelta }) {
+export default function EvoluaScoreCard({ score, volumeDelta, history, workouts }) {
   const shown = useCountUp(score?.value ?? 0, Boolean(score))
+  const unlock = scoreUnlockProgress({ history, workouts }, 3)
 
   if (!score) {
+    const pct = Math.round(((unlock.needed - unlock.remaining) / unlock.needed) * 100)
     return (
       <div className="score-sig score-sig--empty">
         <p className="score-sig__kicker">Evolua Score</p>
-        <p className="score-sig__empty">Complete os primeiros treinos para liberar o indicador.</p>
+        <p className="score-sig__empty">
+          Seu indicador será liberado após {unlock.needed} treinos.
+        </p>
+        <p className="score-sig__delta">
+          {unlock.count} de {unlock.needed} concluídos
+          {unlock.remaining > 0 ? ` · faltam ${unlock.remaining}` : ''}.
+        </p>
+        <div
+          className="fit-hero__week-track"
+          role="progressbar"
+          aria-valuenow={pct}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        >
+          <span className="fit-hero__week-fill" style={{ width: `${pct}%` }} />
+        </div>
       </div>
     )
   }

@@ -345,9 +345,10 @@ export function inferMovementRole(exercise) {
 }
 
 function roleLabel(role) {
+  if (!role || role === 'general' || role === 'geral') return ''
   const map = {
     chest_upper: 'Superior/inclinado',
-    chest_flat: 'Reto/geral',
+    chest_flat: 'Reto',
     chest_lower: 'Inferior/alongamento',
     chest_isolation: 'Isolador/máquina',
     shoulder_press: 'Desenvolvimento',
@@ -359,7 +360,7 @@ function roleLabel(role) {
     tri_pushdown: 'Pushdown/corda',
     tri_other: 'Tríceps',
   }
-  return map[role] || role
+  return map[role] || ''
 }
 
 /**
@@ -959,13 +960,32 @@ function applyAdvancedPushVolume(entries, level, dayType) {
   return next
 }
 
+function isTimedPrescription(exercise) {
+  const hay = `${exercise?.id || ''} ${exercise?.name || ''} ${exercise?.type || ''} ${exercise?.category || ''} ${exercise?.reps || ''}`
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+  return /prancha|isometr|segundos|minutos|esteira|bicicleta-leve|aquecimento|desaquecimento|alongamento|mobilidade/.test(
+    hay,
+  )
+}
+
 function buildSetsRepsRest(exercise, level, goal, dayType) {
   const config = levelConfig[level] || levelConfig.Intermediário
+  const timed = isTimedPrescription(exercise)
   let sets = clamp(Math.round(parseSets(exercise.sets) * config.setsMultiplier), config.setsMin, config.setsMax)
   let rest = clamp(parseRestSeconds(exercise.rest) + config.restBonus, config.restMin, config.restMax)
   let reps = exercise.reps || config.defaultReps
   let observation = ''
   let intensityBias = 0
+
+  if (timed) {
+    sets = clamp(parseSets(exercise.sets) || 2, 1, 4)
+    reps = exercise.reps || (String(exercise.category).toLowerCase() === 'cardio' ? '8-12 min' : '30-45s')
+    rest = clamp(parseRestSeconds(exercise.rest) || 45, 20, 90)
+    observation = observation || 'Mantenha o tempo contínuo, com técnica estável.'
+    return { sets, reps, rest, observation, intensityBias: -1 }
+  }
 
   if (level === 'Iniciante') {
     sets = clamp(sets, 2, 3)

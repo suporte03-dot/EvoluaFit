@@ -95,11 +95,11 @@ export const MODULE_HELP = [
     id: 'coach',
     sectionId: 'coach-ia',
     label: 'Coach',
-    summary: 'Sugestões com base na sua rotina, neste aparelho.',
+    summary: 'Orientações com base na sua rotina e no seu histórico.',
     steps: [
       'Descreva o que precisa (ex.: treino em casa).',
-      'Receba sugestões com base no seu perfil.',
-      'Aplique a ideia em Meus treinos ou em Monte seu treino.',
+      'Cada sugestão mostra o motivo e uma prévia antes de aplicar.',
+      'O Coach usa a planilha e o histórico deste aparelho — sem modelo externo.',
     ],
   },
   {

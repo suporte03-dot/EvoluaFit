@@ -6,20 +6,29 @@ export default function EmptyState({
   description,
   ctaLabel,
   ctaSection,
+  onCta,
   secondaryCtaLabel,
   secondaryCtaSection,
   className = '',
   children,
 }) {
+  const handlePrimary = () => {
+    if (onCta) {
+      onCta()
+      return
+    }
+    if (ctaSection) scrollToSection(ctaSection)
+  }
+
   return (
     <div className={`empty-state${className ? ` ${className}` : ''}`}>
       {icon && <div className="empty-state__icon">{icon}</div>}
       <h3 className="empty-state__title">{title}</h3>
       <p className="empty-state__desc">{description}</p>
-      {(ctaLabel && ctaSection) || (secondaryCtaLabel && secondaryCtaSection) || children ? (
+      {(ctaLabel && (ctaSection || onCta)) || (secondaryCtaLabel && secondaryCtaSection) || children ? (
         <div className="empty-state__actions">
-          {ctaLabel && ctaSection && (
-            <button type="button" className="btn btn--primary" onClick={() => scrollToSection(ctaSection)}>
+          {ctaLabel && (ctaSection || onCta) && (
+            <button type="button" className="btn btn--primary" onClick={handlePrimary}>
               {ctaLabel}
             </button>
           )}

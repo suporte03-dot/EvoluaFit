@@ -2,7 +2,7 @@ import { scrollToSection } from '../../utils/scrollToSection'
 
 export default function CoachInsightCard({ insights }) {
   const item = insights?.items?.[0]
-  const body = item?.evidence || 'Conclua um treino para o Coach falar com números reais.'
+  const body = item?.evidence || 'Seu primeiro treino cria a referência para acompanhar sua evolução.'
 
   return (
     <div className="coach-whisper" aria-label="Coach Evolua">
@@ -16,7 +16,7 @@ export default function CoachInsightCard({ insights }) {
         className="coach-whisper__cta"
         onClick={() => scrollToSection(item?.ctaSection || 'coach-ia')}
       >
-        {item?.ctaLabel || 'Ver análise'}
+        {item?.ctaLabel || 'Abrir Coach'}
       </button>
     </div>
   )

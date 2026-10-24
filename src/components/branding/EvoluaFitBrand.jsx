@@ -1,4 +1,5 @@
 const LOCKUP_SRC = `${import.meta.env.BASE_URL}branding/evoluafit-lockup.png?v=nobg`
+const LOCKUP_WEBP = `${import.meta.env.BASE_URL}branding/evoluafit-lockup.webp?v=nobg`
 const MARK_SRC = `${import.meta.env.BASE_URL}branding/evoluafit-mark.png`
 
 /**
@@ -30,7 +31,10 @@ export default function EvoluaFitBrand({
         {collapsed ? (
           <img src={MARK_SRC} alt="" className="evoluafit-brand__mark" width={40} height={40} />
         ) : (
-          <img src={LOCKUP_SRC} alt="" className="evoluafit-brand__lockup" />
+          <picture>
+            <source srcSet={LOCKUP_WEBP} type="image/webp" />
+            <img src={LOCKUP_SRC} alt="" className="evoluafit-brand__lockup" />
+          </picture>
         )}
       </a>
 

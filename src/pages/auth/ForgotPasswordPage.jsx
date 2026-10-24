@@ -2,8 +2,10 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import AuthLayout from '../../components/auth/AuthLayout'
+import useDocumentTitle from '../../hooks/useDocumentTitle'
 
 export default function ForgotPasswordPage() {
+  useDocumentTitle('Esqueci a senha')
   const { resetPassword } = useAuth()
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
@@ -25,7 +27,7 @@ export default function ForgotPasswordPage() {
     }
 
     setInfo(
-      'Se existir uma conta com este e-mail, enviamos um link para redefinir a senha.',
+      'Se existir uma conta com este e-mail, enviamos um link para redefinir a senha. Confira a caixa de entrada e o spam.',
     )
   }
 
@@ -33,7 +35,7 @@ export default function ForgotPasswordPage() {
     <AuthLayout
       variant="split"
       title="Esqueci a senha"
-      subtitle="Informe seu e-mail para receber o link de redefinição."
+      subtitle="Informe o e-mail da conta. Se existir cadastro, o link chega em alguns minutos — confira também o spam."
       footer={
         <p>
           Lembrou a senha? <Link to="/login">Voltar ao login</Link>

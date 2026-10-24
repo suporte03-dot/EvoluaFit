@@ -10,8 +10,11 @@ import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
 import UpdatePasswordPage from './pages/auth/UpdatePasswordPage'
+import TermsPage from './pages/legal/TermsPage'
+import PrivacyPage from './pages/legal/PrivacyPage'
 import './styles/evoluafit-logo.css'
 import './styles/auth.css'
+import './styles/product-polish.css'
 
 const DashboardApp = lazy(() => import('./pages/DashboardApp'))
 
@@ -61,6 +64,8 @@ function App() {
             }
           />
           <Route path="/atualizar-senha" element={<UpdatePasswordPage />} />
+          <Route path="/termos" element={<TermsPage />} />
+          <Route path="/privacidade" element={<PrivacyPage />} />
           <Route
             path="/app/*"
             element={

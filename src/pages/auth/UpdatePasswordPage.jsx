@@ -3,8 +3,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import AuthLayout from '../../components/auth/AuthLayout'
 import AuthLoading from '../../components/auth/AuthLoading'
+import useDocumentTitle from '../../hooks/useDocumentTitle'
 
 export default function UpdatePasswordPage() {
+  useDocumentTitle('Nova senha')
   const { user, loading, updatePassword } = useAuth()
   const navigate = useNavigate()
   const [password, setPassword] = useState('')

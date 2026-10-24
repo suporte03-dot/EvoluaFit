@@ -58,7 +58,7 @@ const STEPS = [
 ]
 
 export default function WorkoutPlanner() {
-  const { profile, savePlan, addPlanWorkouts, showToast, generatedPlan, workouts, updateWorkout } = useFitness()
+  const { profile, savePlan, addPlanWorkouts, showToast, generatedPlan, workouts, history, updateWorkout } = useFitness()
   const {
     loadingWorkoutPlan,
     workoutPlanError,
@@ -89,7 +89,7 @@ export default function WorkoutPlanner() {
   const [justGenerated, setJustGenerated] = useState(false)
   const [wizardOpen, setWizardOpen] = useState(() => !generatedPlan)
   const userOpenedWizard = useRef(false)
-  const missed = useMemo(() => detectMissedWorkouts(workouts), [workouts])
+  const missed = useMemo(() => detectMissedWorkouts(workouts, new Date(), { history }), [workouts, history])
 
 
   useEffect(() => {

@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { getExerciseProgressStats } from '../utils/progressStorage'
 import { getTargetSets, isExerciseComplete } from '../utils/workoutSession'
 import { formatExercisePrescription, inferTrackingMode } from '../utils/trainingIdentity'
+import { FEEL_OPTIONS, lastExerciseFeel, nextLoadSuggestion, recordExerciseFeel } from '../utils/progression'
+import { whyExerciseInWorkout } from '../utils/exerciseWhy'
 import ExerciseMedia from './ExerciseMedia'
 import ExerciseProgressChart from './ExerciseProgressChart'
 import SetChecklist from './SetChecklist'
@@ -25,6 +27,7 @@ export default function ExerciseSessionCard({
   disabled = false,
 }) {
   const [showChart, setShowChart] = useState(false)
+  const [feelId, setFeelId] = useState(() => lastExerciseFeel(exercise.exerciseId || exercise.name)?.feel || '')
   const targetSets = getTargetSets(exercise)
   const done = isExerciseComplete(exercise)
   const status = done ? 'done' : exercise.completedSets > 0 ? 'partial' : 'pending'
@@ -32,6 +35,8 @@ export default function ExerciseSessionCard({
   const lastHint =
     stats.lastWeightLabel || (stats.lastWeight != null ? `${stats.lastWeight}` : null)
   const tracking = inferTrackingMode(exercise)
+  const exerciseKey = exercise.exerciseId || exercise.name
+  const suggestion = nextLoadSuggestion(exerciseKey, lastHint)
 
   // Prefill weight from last session when draft is empty
   const effectiveDraft = {
@@ -77,6 +82,10 @@ export default function ExerciseSessionCard({
               {exercise.shortInstruction || exercise.execution[0]}
             </p>
           )}
+          <p className="exercise-session-card__why">{whyExerciseInWorkout(exercise)}</p>
+          {suggestion?.copy ? (
+            <p className="exercise-session-card__next">{suggestion.copy} {suggestion.kg ? `Sugestão: ${suggestion.kg} kg.` : ''}</p>
+          ) : null}
 
           {lastHint && (
             <p className="exercise-session-card__last-weight">
@@ -94,6 +103,25 @@ export default function ExerciseSessionCard({
             tracking={tracking}
             lastLoad={lastHint}
           />
+
+          {done ? (
+            <div className="exercise-session-card__feel" role="group" aria-label="Como este exercício ficou">
+              <span>Como ficou?</span>
+              {FEEL_OPTIONS.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  className={feelId === option.id ? 'is-active' : ''}
+                  onClick={() => {
+                    recordExerciseFeel(exerciseKey, option.id, lastHint)
+                    setFeelId(option.id)
+                  }}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          ) : null}
 
           <div className="exercise-session-card__actions">
             <button type="button" className="btn btn--ghost btn--sm" onClick={onSubstitute} disabled={disabled}>

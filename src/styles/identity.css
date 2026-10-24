@@ -193,10 +193,10 @@
   grid-template-columns: 1fr;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .dash-hoje-grid {
     grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.7fr);
-    align-items: stretch;
+    align-items: start;
   }
 }
 

@@ -1,4 +1,5 @@
 import { isCompletedSession } from './completedSession'
+import { musclesFromExercises } from './exerciseWhy'
 
 function toDateKey(value) {
   if (!value) return null
@@ -258,9 +259,10 @@ export function workoutCardMeta(workout, profile = {}) {
     workout.estimatedMinutes ||
     workout.durationMinutes ||
     Math.max(20, exercises.length * 8)
+  const fromExercises = musclesFromExercises(exercises)
   return {
     name: workout.name,
-    muscles: workout.muscleGroups || [],
+    muscles: fromExercises.length ? fromExercises : workout.muscleGroups || [],
     exerciseCount: exercises.length,
     duration,
     level: workout.intensity || profile?.level || '—',

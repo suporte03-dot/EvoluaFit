@@ -25,6 +25,7 @@ import RestTimer from './RestTimer'
 import WorkoutProgressBar from './WorkoutProgressBar'
 import WorkoutSummaryModal from './WorkoutSummaryModal'
 import WorkoutVoiceBar from './WorkoutVoiceBar'
+import PreWorkoutCheck, { adaptWorkoutForCheck } from './PreWorkoutCheck'
 
 const SAFETY_NOTE =
   'Priorize técnica e recuperação. Pare se sentir dor aguda e consulte um profissional se o desconforto persistir.'
@@ -90,6 +91,14 @@ export default function ActiveWorkoutModal() {
   const [restDoneToast, setRestDoneToast] = useState(false)
   const [elapsedSec, setElapsedSec] = useState(0)
   const [loadNudgeShown, setLoadNudgeShown] = useState(false)
+  const [prepDone, setPrepDone] = useState(false)
+  const [gymMode, setGymMode] = useState(() => {
+    try {
+      return localStorage.getItem('evoluafit-gym-mode') === '1'
+    } catch {
+      return false
+    }
+  })
 
   const isAdvanced = profile?.level === 'Avançado'
   const canAddExercise = isAdvanced || sessionExercises.length === 0
@@ -138,6 +147,7 @@ export default function ActiveWorkoutModal() {
       restoredRef.current = false
       markedPartialRef.current = false
       setLoadNudgeShown(false)
+      setPrepDone(false)
       return
     }
 
@@ -170,6 +180,7 @@ export default function ActiveWorkoutModal() {
       setIsPaused(false)
       setShowSummary(false)
       setPendingPayload(null)
+      setPrepDone(true)
       showToast('Sessão anterior restaurada.', 'info')
       return
     }
@@ -561,7 +572,29 @@ export default function ActiveWorkoutModal() {
         size="lg"
         className="active-workout-modal active-workout-modal--focus"
       >
-        <div className={`workout-session workout-session--active workout-session--focus ${isPaused ? 'workout-session--paused' : ''}`}>
+        <div className={`workout-session workout-session--active workout-session--focus ${isPaused ? 'workout-session--paused' : ''}${gymMode ? ' workout-session--gym' : ''}${prepDone ? '' : ' workout-session--prep'}`}>
+          {!prepDone ? (
+            <PreWorkoutCheck
+              workout={activeWorkout}
+              onSkip={() => setPrepDone(true)}
+              onConfirm={(check) => {
+                const adapted = adaptWorkoutForCheck(
+                  { ...activeWorkout, exercises: sessionExercises },
+                  check.sleep === 'poor' ? { ...check, minutes: Math.min(check.minutes, 45) } : check,
+                )
+                if (adapted?.exercises?.length) {
+                  setSessionExercises(createSessionExercises(adapted))
+                }
+                if (check.sleep === 'poor') {
+                  showToast('Sono curto: volume um pouco menor hoje.', 'info')
+                }
+                if (check.pain) {
+                  showToast('Evitei o grupo com dor nesta sessão.', 'info')
+                }
+                setPrepDone(true)
+              }}
+            />
+          ) : null}
           <header className="workout-session__session-header">
             <div className="workout-session__session-titles">
               <p className="workout-session__eyebrow">Modo foco</p>
@@ -586,6 +619,21 @@ export default function ActiveWorkoutModal() {
               currentExercise={current?.name || progress.currentExerciseName}
             />
             <div className="workout-session__top-actions">
+              <button
+                type="button"
+                className={`btn btn--ghost btn--sm${gymMode ? ' is-active' : ''}`}
+                onClick={() => {
+                  const next = !gymMode
+                  setGymMode(next)
+                  try {
+                    localStorage.setItem('evoluafit-gym-mode', next ? '1' : '0')
+                  } catch {
+                    /* ignore */
+                  }
+                }}
+              >
+                {gymMode ? 'Modo academia on' : 'Modo academia'}
+              </button>
               <button type="button" className="btn btn--ghost btn--sm" onClick={togglePause}>
                 {isPaused ? 'Retomar' : 'Pausar'}
               </button>

@@ -8,6 +8,7 @@ import {
   formatExercisePrescription,
   resolveTrainingLevel,
 } from '../utils/trainingIdentity'
+import { whyExerciseInWorkout } from '../utils/exerciseWhy'
 import { summarizeDayVolume } from '../utils/workoutGenerator'
 import DayVolumeSummary from './DayVolumeSummary'
 import ExerciseMedia from './ExerciseMedia'
@@ -224,6 +225,9 @@ export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
                         )}
                       </span>
                     ) : null}
+                    <p className="workout-detail__why">
+                      {whyExerciseInWorkout(ex, workout || detail)}
+                    </p>
 
                     {ex.muscles?.length > 0 && (
                       <div className="workout-detail__exercise-muscles">

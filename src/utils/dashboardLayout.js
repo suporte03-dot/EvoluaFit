@@ -1,4 +1,4 @@
-export const LAYOUT_VERSION = 3
+export const LAYOUT_VERSION = 4
 export const LOCKED_WIDGET_ID = 'today-workout'
 
 export const DEFAULT_PINNED = [
@@ -88,7 +88,7 @@ export function normalizeSize(size, supported = ['small', 'medium', 'large']) {
 
 export function normalizeLayout(raw, registryIds = []) {
   const input = raw && typeof raw === 'object' ? raw : {}
-  if ((Number(input.version) || 1) < 3 && (input.presetId === 'default' || !input.presetId)) {
+  if ((Number(input.version) || 1) < 4 && (input.presetId === 'default' || !input.presetId)) {
     return createDefaultLayout()
   }
 

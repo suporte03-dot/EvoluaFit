@@ -19,7 +19,7 @@ import { generateWorkoutPlan as buildPlan, planToWorkouts } from '../utils/worko
 import { generateCoachInsights } from '../utils/coachInsights'
 import { formatSignedDelta } from '../utils/bodyEvolutionMetrics'
 import { parseAppVoiceCommand, describeBuildSlots } from '../utils/voiceIntents'
-import { detectMissedWorkouts } from '../utils/adaptiveWeek'
+import { buildCatchUpWorkout, detectMissedWorkouts } from '../utils/adaptiveWeek'
 import { resolveCanonicalNextWorkout } from '../utils/trainingIdentity'
 
 // Futuro: import { supabase } from '../lib/supabaseClient'
@@ -406,6 +406,30 @@ export function getContextualRecommendations(context = {}) {
       suggestion: null,
     })
     return cards
+  }
+
+  const missed = detectMissedWorkouts(workouts, new Date(), { history })
+  if (missed.count >= 2) {
+    const catchUp = buildCatchUpWorkout(missed.items)
+    if (catchUp) {
+      cards.push({
+        id: 'rec-catchup',
+        title: 'Recuperar a semana em uma sessão',
+        reason: missed.sentence,
+        impact: `Prévia: ${(catchUp.exercises || []).slice(0, 4).map((ex) => ex.name).join(', ')}.`,
+        action: 'start_workout',
+        suggestion: { type: 'workout', data: catchUp },
+      })
+    }
+  } else if (missed.count === 1 && missed.items[0]) {
+    cards.push({
+      id: 'rec-missed-one',
+      title: `Encaixar: ${missed.items[0].name}`,
+      reason: 'Há um treino atrasado. Melhor concluir hoje do que acumular dois.',
+      impact: 'Mantém a semana viva sem precisar reorganizar tudo.',
+      action: 'start_workout',
+      suggestion: { type: 'workout', data: missed.items[0] },
+    })
   }
 
   if (planWorkout && ['ready', 'partial', 'returning', 'no_workout_today'].includes(canonical.situation)) {

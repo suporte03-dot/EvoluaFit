@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
 import { planToWorkouts } from '../utils/workoutGenerator'
 import { getSplitStyleLabel } from '../data/workoutTemplates'
-import { classifyWorkoutDay } from '../utils/trainingIdentity'
+import { classifyWorkoutDay, displayWorkoutName } from '../utils/trainingIdentity'
 import { IconCalendar, IconDumbbell } from './dashboard/icons'
 import DayVolumeSummary from './DayVolumeSummary'
 import WorkoutDetailModal from './WorkoutDetailModal'
@@ -172,7 +172,7 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan, onG
                       {day.workoutType || type.label}
                     </span>
                   </div>
-                  <h4 className="plan-day__name">{day.workoutName || day.name}</h4>
+                  <h4 className="plan-day__name">{displayWorkoutName(day.workoutName || day.name)}</h4>
                   <p className="plan-day__weekday">{weekdayForDay(day.day)}</p>
                 </div>
                 <span className="plan-day__chevron" aria-hidden="true">

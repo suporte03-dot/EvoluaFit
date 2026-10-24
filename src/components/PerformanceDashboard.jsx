@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useProgress } from '../context/ProgressContext'
+import { useBodyEvolution } from '../hooks/useBodyEvolution'
 import SectionTitle from './SectionTitle'
 import EmptyState from './EmptyState'
 import { scrollToSection } from '../utils/scrollToSection'
@@ -77,6 +78,7 @@ function SummaryCard({ label, value, hint }) {
 }
 
 export default function PerformanceDashboard() {
+  const body = useBodyEvolution()
   const {
     loadingProgress,
     progressError,
@@ -197,10 +199,15 @@ export default function PerformanceDashboard() {
           <EmptyState
             className="empty-state--premium"
             icon="📈"
-            title="Ainda sem histórico"
-            description="Conclua seu primeiro treino para começar a acompanhar sua evolução."
-            ctaLabel="Ver meus treinos"
-            ctaSection="treinos"
+            title="Ainda sem histórico de treinos"
+            description={
+              body.hasCheckin
+                ? 'Os treinos concluídos aparecem aqui. Seus check-ins e fotos ficam no Espelho Evolutivo.'
+                : 'Conclua seu primeiro treino para começar a acompanhar sua evolução. Fotos e medidas ficam no Espelho Evolutivo.'
+            }
+            ctaLabel={body.hasCheckin ? 'Abrir Espelho Evolutivo' : 'Ver meus treinos'}
+            ctaTo={body.hasCheckin ? '/app/evolucao/espelho' : undefined}
+            ctaSection={body.hasCheckin ? undefined : 'treinos'}
           />
         </div>
       </section>

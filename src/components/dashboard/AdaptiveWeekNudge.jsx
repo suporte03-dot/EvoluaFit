@@ -6,7 +6,9 @@ export default function AdaptiveWeekNudge({ missed, onReorganize, compact = fals
   return (
     <div className={`focus-widget-body hoje-adaptive${compact ? ' hoje-adaptive--compact' : ''}`}>
       <p className="hoje-card__kicker">Treino</p>
-      <h3 className="hoje-card__title">{missed?.count ? 'Treino em atraso' : 'Semana em dia'}</h3>
+      <h3 className="hoje-card__title">
+        {missed?.isNewUser ? 'Sua semana começa hoje' : missed?.count ? 'Treino em atraso' : 'Semana em dia'}
+      </h3>
       <p className="hoje-card__body">
         {missed?.sentence || 'Nenhum treino atrasado nesta semana.'}
       </p>

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import EvoluaFitLogo from '../branding/EvoluaFitLogo'
 import LoginHero from './LoginHero'
 
@@ -28,6 +29,11 @@ export default function AuthLayout({
             ) : null}
             {children}
             {footer ? <footer className="auth-card__footer">{footer}</footer> : null}
+            <p className="auth-legal-links">
+              <Link to="/termos">Termos</Link>
+              <span aria-hidden="true">·</span>
+              <Link to="/privacidade">Privacidade</Link>
+            </p>
           </div>
         </div>
         {below || null}
@@ -53,6 +59,11 @@ export default function AuthLayout({
         {children}
 
         {footer ? <footer className="auth-card__footer">{footer}</footer> : null}
+        <p className="auth-legal-links">
+          <Link to="/termos">Termos</Link>
+          <span aria-hidden="true">·</span>
+          <Link to="/privacidade">Privacidade</Link>
+        </p>
       </div>
     </div>
   )

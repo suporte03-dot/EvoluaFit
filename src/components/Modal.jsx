@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 
 export default function Modal({
   isOpen,
@@ -15,17 +16,18 @@ export default function Modal({
     const handleKey = (e) => {
       if (e.key === 'Escape') onClose()
     }
+    const previous = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', handleKey)
     return () => {
-      document.body.style.overflow = ''
+      document.body.style.overflow = previous
       window.removeEventListener('keydown', handleKey)
     }
   }, [isOpen, onClose])
 
-  if (!isOpen) return null
+  if (!isOpen || typeof document === 'undefined') return null
 
-  return (
+  return createPortal(
     <div className={`modal-overlay modal-overlay--animated ${className ? `${className}-overlay` : ''}`} onClick={onClose} role="presentation">
       <div
         className={`modal modal--${size} modal--animated ${className}`}
@@ -52,6 +54,7 @@ export default function Modal({
         </div>
         <div className="modal__body">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }

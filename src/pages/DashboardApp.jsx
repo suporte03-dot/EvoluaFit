@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
-import { sectionFromPath } from '../data/dashboardRoutes'
+import { SECTION_TITLES, sectionFromPath } from '../data/dashboardRoutes'
+import useDocumentTitle from '../hooks/useDocumentTitle'
 import { useHashRoute } from '../hooks/useHashRoute'
 import { setSectionNavigator } from '../utils/scrollToSection'
 import { ProfileProvider } from '../context/ProfileContext'
@@ -74,6 +75,7 @@ function AppLayout() {
   const location = useLocation()
   const navigate = useNavigate()
   const pathSection = sectionFromPath(location.pathname) || 'inicio'
+  useDocumentTitle(SECTION_TITLES[pathSection] || 'App')
   const { toasts, history, workouts } = useFitness()
   const { page, id: exerciseId } = useHashRoute()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(

@@ -1,4 +1,5 @@
 const LOCKUP_SRC = `${import.meta.env.BASE_URL}branding/evoluafit-lockup.png?v=nobg`
+const LOCKUP_WEBP = `${import.meta.env.BASE_URL}branding/evoluafit-lockup.webp?v=nobg`
 const MARK_SRC = `${import.meta.env.BASE_URL}branding/evoluafit-mark.png`
 
 const SIZE_MAP = {
@@ -34,7 +35,10 @@ export default function EvoluaFitLogo({
       title="EvoluaFit"
     >
       {showText ? (
-        <img src={LOCKUP_SRC} alt="" className="evoluafit-logo__file" />
+        <picture>
+          <source srcSet={LOCKUP_WEBP} type="image/webp" />
+          <img src={LOCKUP_SRC} alt="" className="evoluafit-logo__file" />
+        </picture>
       ) : (
         <img
           src={MARK_SRC}

@@ -21,6 +21,9 @@ export default function RestTimer({
       announced.current = true
       setJustDone(true)
       onComplete?.()
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate([90, 40, 90])
+      }
       if (soundEnabled && typeof window !== 'undefined' && window.AudioContext) {
         try {
           const ctx = new window.AudioContext()

@@ -31,6 +31,16 @@ export default function BodyEvolutionPage() {
   const [photoError, setPhotoError] = useState('')
   const [savedFlash, setSavedFlash] = useState(false)
   const [viewer, setViewer] = useState(null)
+  const [slowLoad, setSlowLoad] = useState(false)
+
+  useEffect(() => {
+    if (!body.loading) {
+      setSlowLoad(false)
+      return undefined
+    }
+    const timer = window.setTimeout(() => setSlowLoad(true), 2200)
+    return () => window.clearTimeout(timer)
+  }, [body.loading])
 
   const height = toNumber(body.profile?.height) || toNumber(profile?.height)
 
@@ -62,13 +72,18 @@ export default function BodyEvolutionPage() {
     setViewer({ title: 'Foto do registro', url })
   }
 
-  if (body.loading && !body.latest) {
+  if (body.loading && !body.latest && view !== 'novo') {
     return (
       <div className="body-evo">
         <section className="body-evo-card" aria-busy="true" aria-live="polite">
           <p className="body-evo-kicker">Espelho Evolutivo</p>
           <h1>Seu Espelho Evolutivo</h1>
-          <p>Carregando seus registros…</p>
+          <p>{slowLoad ? 'Ainda sem registros? Você já pode criar o primeiro check-in.' : 'Carregando seus registros…'}</p>
+          {slowLoad ? (
+            <button type="button" className="btn btn--primary" onClick={openNew}>
+              Novo check-in
+            </button>
+          ) : null}
         </section>
         <div className="body-evo-skel">
           <span />

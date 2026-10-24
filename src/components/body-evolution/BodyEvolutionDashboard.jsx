@@ -152,7 +152,10 @@ export default function BodyEvolutionDashboard({
       {tab === 'antes' ? (
         <div className="body-dash__panel" role="tabpanel">
           {!body.canCompare ? (
-            <p>Continue registrando sua evolução para visualizar comparações.</p>
+            <>
+              <p>Com um registro, o slider mostra a foto atual. O segundo check-in libera o antes e agora.</p>
+              <BodyComparisonSlider beforeUrl={firstUrl} afterUrl={latestUrl} />
+            </>
           ) : (
             <>
               <div className="body-dash__media">
@@ -170,6 +173,7 @@ export default function BodyEvolutionDashboard({
           <h2>Linha do Tempo Corporal</h2>
           <BodyTimeline
             checkins={body.checkins}
+            photoUrl={body.photoUrl}
             onOpen={(checkin) => {
               const photo = frontPhoto(checkin)
               if (photo) onOpenPhoto(photo)

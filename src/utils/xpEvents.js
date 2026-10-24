@@ -13,6 +13,7 @@ export const XP_DELTAS = {
   session_complete: 40,
   weekly_goal: 50,
   streak_day: 5,
+  personal_record: 50,
 }
 
 export function resolveXpLevel(xp) {
@@ -103,6 +104,18 @@ export function deriveXpEvents({
       at: new Date().toISOString(),
     })
   }
+
+  ;(history || []).forEach((entry) => {
+    const prCount = Number(entry?.prCount) || 0
+    if (prCount <= 0 || !isCompletedSession(entry)) return
+    events.push({
+      id: `pr-${entry.id || entry.completedAt}`,
+      type: 'personal_record',
+      delta: XP_DELTAS.personal_record * prCount,
+      source_id: entry.id,
+      at: entry.completedAt,
+    })
+  })
 
   if (streak > 0) {
     events.push({

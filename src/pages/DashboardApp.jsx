@@ -1,6 +1,6 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
-import { Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
-import { SECTION_TITLES, sectionFromPath } from '../data/dashboardRoutes'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { Outlet, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { SECTION_TITLES, isLiveWorkoutPath, liveWorkoutPath, sectionFromPath } from '../data/dashboardRoutes'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import { useHashRoute } from '../hooks/useHashRoute'
 import { setSectionNavigator } from '../utils/scrollToSection'
@@ -14,7 +14,6 @@ import SyncStatusIndicator from '../components/SyncStatusIndicator'
 import { loadExercises } from '../services/exerciseService'
 import Header from '../components/Header'
 import Toast from '../components/Toast'
-import StartWorkoutModal from '../components/StartWorkoutModal'
 import SessionResumeBanner from '../components/SessionResumeBanner'
 import FirstRunGuide, { hasCompletedOnboarding } from '../components/FirstRunGuide'
 import MobileNav from '../components/MobileNav'
@@ -38,6 +37,41 @@ const PerformanceDashboard = lazy(() => import('../components/PerformanceDashboa
 const Goals = lazy(() => import('../components/Goals'))
 const BodyEvolutionPage = lazy(() => import('./body-evolution/BodyEvolutionPage'))
 const HowItWorks = lazy(() => import('../components/HowItWorks'))
+const LiveWorkoutPage = lazy(() => import('./live/LiveWorkoutPage'))
+
+/** Qualquer "Iniciar treino" (startWorkout/resumePendingSession) abre o modo ao vivo. */
+function LiveWorkoutRedirect() {
+  const { activeWorkout } = useFitness()
+  const location = useLocation()
+  const navigate = useNavigate()
+  const redirectedRef = useRef(null)
+
+  useEffect(() => {
+    const id = activeWorkout?.id
+    if (!id) {
+      redirectedRef.current = null
+      return
+    }
+    if (isLiveWorkoutPath(location.pathname)) {
+      redirectedRef.current = id
+      return
+    }
+    if (redirectedRef.current === id) return
+    redirectedRef.current = id
+    navigate(liveWorkoutPath(id))
+  }, [activeWorkout?.id, location.pathname, navigate])
+
+  return null
+}
+
+function LiveWorkoutRoute() {
+  const { treinoId } = useParams()
+  return (
+    <Suspense fallback={<SectionFallback label="Abrindo treino" />}>
+      <LiveWorkoutPage key={treinoId} />
+    </Suspense>
+  )
+}
 
 function SectionFallback({ label = 'Carregando' }) {
   return (
@@ -137,7 +171,6 @@ function AppLayout() {
       </div>
 
       <Toast toasts={toasts} />
-      <StartWorkoutModal />
       <MobileNav activeSection={pathSection} />
       {page === 'exercise' && exerciseId && (
         <Suspense fallback={<SectionFallback label="Carregando exercício" />}>
@@ -161,7 +194,9 @@ export default function DashboardApp() {
             <ProgressProvider>
               <SyncProvider>
                 <ProfileFitnessSync />
+                <LiveWorkoutRedirect />
                 <Routes>
+                  <Route path="treino/:treinoId/ao-vivo" element={<LiveWorkoutRoute />} />
                   <Route element={<AppLayout />}>
                     <Route index element={<HomePage />} />
                     <Route

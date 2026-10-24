@@ -846,12 +846,15 @@ export function WorkoutSessionProvider({ children }) {
   )
 
   const cancelSession = useCallback(
-    async (sessionId = activeSessionRef.current?.id) => {
+    async (sessionId = activeSessionRef.current?.id, options = {}) => {
       const session = activeSessionRef.current
       if (!user?.id || (!sessionId && !session?.client_id)) {
         return { data: null, error: { message: 'Nenhuma sessão ativa.' } }
       }
-      if (!window.confirm('Cancelar o treino em andamento? Os dados já registrados serão preservados.')) {
+      if (
+        !options.skipConfirm &&
+        !window.confirm('Cancelar o treino em andamento? Os dados já registrados serão preservados.')
+      ) {
         return { data: null, error: { code: 'ABORTED' } }
       }
 

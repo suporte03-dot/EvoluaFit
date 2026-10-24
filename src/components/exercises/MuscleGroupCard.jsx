@@ -56,7 +56,7 @@ export default function MuscleGroupCard({
 
       <span className="muscle-group-card__footer">
         <span className="muscle-group-card__badge" aria-hidden="true">
-          {count}
+          {count} {count === 1 ? 'exercício' : 'exercícios'}
         </span>
         <span className="muscle-group-card__cta" aria-hidden="true">
           <span className="muscle-group-card__cta-label">Ver</span>

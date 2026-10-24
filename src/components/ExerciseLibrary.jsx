@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { equipmentTypes as defaultEquipment, levelTypes as defaultLevels, exerciseTypes as defaultTypes } from '../data/exercisesData'
 import { GDT_FILTER_GROUPS, matchesGdtChip, countExercisesByChip, muscleGroupLabel } from '../data/exerciseMediaMap'
+import { rankBySearch } from '../utils/textSearch'
 import { useFitness } from '../context/FitnessContext'
 import { useExercises } from '../hooks/useExercises'
 import ExerciseCard from './ExerciseCard'
@@ -107,15 +108,13 @@ export default function ExerciseLibrary() {
     let list = advancedFiltered
 
     if (isSearchMode) {
-      list = list.filter((ex) => {
-        const muscleGroup = ex.muscleGroup || ex.category || ''
-        return (
-          ex.name.toLowerCase().includes(searchQuery) ||
-          muscleGroup.toLowerCase().includes(searchQuery) ||
-          (ex.equipment || '').toLowerCase().includes(searchQuery) ||
-          (ex.type || '').toLowerCase().includes(searchQuery)
-        )
-      })
+      list = rankBySearch(list, searchQuery, (ex) => [
+        ex.name,
+        ex.muscleGroup || ex.category,
+        ex.equipment,
+        ex.type,
+        ...(ex.muscles || []),
+      ])
     } else if (selectedGroup) {
       list = list.filter((ex) => matchesGdtChip(selectedGroup, ex.category || ex.muscleGroup))
     }
@@ -209,7 +208,7 @@ export default function ExerciseLibrary() {
               <span className="gdt-library-search-icon" aria-hidden="true" />
               <input
                 type="search"
-                placeholder="Buscar exercício, músculo ou equipamento..."
+                placeholder="Buscar exercício, músculo ou equipamento (funciona sem acento)"
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value)

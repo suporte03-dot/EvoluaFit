@@ -1,0 +1,233 @@
+.evoluafit-logo picture,
+.evoluafit-brand__identity picture,
+.login-hero-frame picture {
+  display: contents;
+}
+
+a.auth-split__privacy {
+  text-decoration: none;
+  color: inherit;
+}
+
+.auth-legal-links {
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+  margin: 1rem 0 0;
+  font-size: 0.78rem;
+  color: rgba(186, 198, 216, 0.85);
+}
+
+.auth-legal-links a {
+  color: inherit;
+}
+
+.auth-check--terms {
+  align-items: flex-start;
+  gap: 0.55rem;
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+.legal-page {
+  min-height: 100vh;
+  background: #070a0f;
+  color: #e8eef8;
+  padding: 1.4rem 1.1rem 3rem;
+}
+
+.legal-page__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  max-width: 720px;
+  margin: 0 auto 1.6rem;
+}
+
+.legal-page__top nav {
+  display: flex;
+  gap: 0.9rem;
+  font-size: 0.86rem;
+}
+
+.legal-page__top a {
+  color: #c5cde0;
+}
+
+.legal-page__body {
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.legal-page__body h1 {
+  margin: 0 0 0.8rem;
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+}
+
+.legal-page__body h2 {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1.05rem;
+}
+
+.legal-page__body p,
+.legal-page__body li {
+  color: #c5cde0;
+}
+
+.workout-session--prep > :not(.pre-workout) {
+  display: none;
+}
+
+.pre-workout {
+  display: grid;
+  gap: 0.85rem;
+  padding: 0.2rem 0 0.6rem;
+}
+
+.pre-workout__kicker {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted, #9bb0cf);
+}
+
+.pre-workout__title {
+  margin: 0;
+}
+
+.pre-workout__lead {
+  margin: 0;
+  color: var(--text-secondary, #c5cde0);
+}
+
+.pre-workout__set {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.pre-workout__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.pre-workout__pills button {
+  min-height: 40px;
+  padding: 0 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(8, 18, 35, 0.55);
+  color: inherit;
+  cursor: pointer;
+}
+
+.pre-workout__pills button.is-active {
+  border-color: #7657ff;
+  background: rgba(118, 87, 255, 0.18);
+}
+
+.pre-workout__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.workout-session--gym .btn,
+.workout-session--gym .set-checklist__complete,
+.workout-session--gym .rest-timer__time {
+  min-height: 52px;
+  font-size: 1.05rem;
+}
+
+.workout-session--gym .rest-timer__time {
+  font-size: 2.4rem;
+}
+
+.exercise-session-card__why,
+.exercise-session-card__next,
+.workout-detail__why {
+  margin: 0.35rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--text-secondary, #c5cde0);
+}
+
+.exercise-session-card__feel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.7rem 0 0.2rem;
+}
+
+.exercise-session-card__feel button {
+  min-height: 36px;
+  padding: 0 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.exercise-session-card__feel button.is-active {
+  border-color: #00e58f;
+  background: rgba(0, 229, 143, 0.12);
+}
+
+.coach-rec__preview {
+  margin: 0.2rem 0 0.4rem;
+  font-size: 0.82rem;
+}
+
+.coach-rec__preview ol {
+  margin: 0.4rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.body-compare--single figure {
+  margin: 0;
+}
+
+.body-compare--single img {
+  width: 100%;
+  border-radius: 16px;
+  display: block;
+}
+
+.body-compare__pose {
+  position: absolute;
+  inset: 8% 18%;
+  pointer-events: none;
+  border: 1px dashed rgba(248, 250, 252, 0.28);
+  border-radius: 42% 42% 36% 36%;
+}
+
+.body-timeline button {
+  grid-template-columns: 56px minmax(0, 1fr);
+  align-items: center;
+}
+
+.body-timeline__thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 10px;
+  grid-row: span 3;
+}
+
+.muscle-group-card__badge,
+.exercise-library .muscle-group-card__badge {
+  min-width: 0;
+  height: auto;
+  padding: 0.28rem 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}

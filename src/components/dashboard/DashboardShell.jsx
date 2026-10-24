@@ -99,7 +99,7 @@ export default function DashboardShell() {
     }
   }, [workouts, history, profile, goals, generatedPlan, plans, metrics.weeklyWorkouts, metrics.weeklyGoal])
 
-  const missed = useMemo(() => detectMissedWorkouts(workouts), [workouts])
+  const missed = useMemo(() => detectMissedWorkouts(workouts, new Date(), { history }), [workouts, history])
   const hasPlan = Boolean(plans?.length || generatedPlan || workouts?.length)
   const bodyCheckin = {
     onboarded: Boolean(body.profile?.onboarding_completed_at || body.hasCheckin),

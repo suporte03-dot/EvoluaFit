@@ -326,6 +326,16 @@ function CoachRecommendationCard({ rec, applying, applied, onApply, onIgnore, di
         <span className="coach-rec__k">Impacto</span>
         <p className="coach-rec__body">{rec.impact}</p>
       </div>
+      {rec.suggestion?.data?.exercises?.length ? (
+        <details className="coach-rec__preview">
+          <summary>Ver prévia dos exercícios</summary>
+          <ol>
+            {rec.suggestion.data.exercises.slice(0, 6).map((ex, index) => (
+              <li key={`${ex.exerciseId || ex.name}-${index}`}>{ex.name}</li>
+            ))}
+          </ol>
+        </details>
+      ) : null}
       <div className="coach-rec__actions">
         <button
           type="button"

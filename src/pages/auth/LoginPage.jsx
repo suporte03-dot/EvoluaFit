@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import AuthLayout from '../../components/auth/AuthLayout'
+import useDocumentTitle from '../../hooks/useDocumentTitle'
 
 function IconMail({ size = 18 }) {
   return (
@@ -57,6 +58,7 @@ function readRememberedEmail() {
 }
 
 export default function LoginPage() {
+  useDocumentTitle('Entrar')
   const { signIn, signInWithGoogle } = useAuth()
   const navigate = useNavigate()
   const rememberedEmail = readRememberedEmail()

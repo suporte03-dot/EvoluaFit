@@ -1,3 +1,17 @@
+export const SECTION_TITLES = {
+  inicio: 'Hoje',
+  treinos: 'Meus treinos',
+  planilha: 'Monte seu treino',
+  exercicios: 'Grupos musculares',
+  desempenho: 'Progresso',
+  metas: 'Metas',
+  'coach-ia': 'Coach',
+  calendario: 'Calendário',
+  ajuda: 'Ajuda',
+  perfil: 'Conta',
+  espelho: 'Espelho Evolutivo',
+}
+
 export const SECTION_PATHS = {
   inicio: '/app',
   treinos: '/app/treinos',

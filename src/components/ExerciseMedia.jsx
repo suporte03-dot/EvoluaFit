@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import ExerciseIllustration from './ExerciseIllustration'
 
 function resolveMedia(exercise, failedSrc) {
   const mediaPending = Boolean(exercise?.mediaPending)
@@ -136,7 +137,7 @@ export default function ExerciseMedia({
 
       {inView && !media.src && (
         <div className="exercise-media__placeholder" aria-label={alt}>
-          <p className="exercise-media__placeholder-text">{exercise.name}</p>
+          <ExerciseIllustration exercise={exercise} />
         </div>
       )}
 

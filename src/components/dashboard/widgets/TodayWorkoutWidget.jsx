@@ -4,9 +4,10 @@ import { useFitness } from '../../../context/FitnessContext'
 import { IconChevron } from '../icons'
 import { scrollToSection } from '../../../utils/scrollToSection'
 import { workoutCardMeta, weeklyProgressSentence } from '../../../utils/todayWorkout'
-import { formatExercisePrescription } from '../../../utils/trainingIdentity'
+import { displayWorkoutName, formatExercisePrescription } from '../../../utils/trainingIdentity'
 import WorkoutDetailModal from '../../WorkoutDetailModal'
 import { formatDateShort } from '../../../utils/dateFormat'
+import { sharePlainText, todayWorkoutShareMessage } from '../../../utils/shareWorkout'
 
 function heroTone(workout, title) {
   const hay = `${title || ''} ${workout?.name || ''} ${workout?.workoutType || ''} ${(workout?.muscleGroups || []).join(' ')}`.toLowerCase()
@@ -24,7 +25,7 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
   const [detailWorkout, setDetailWorkout] = useState(null)
   const meta = workoutCardMeta(today?.workout, profile)
   const detailTarget = nextAction?.workout || today?.workout
-  const title = nextAction?.title || meta?.name || 'Treino de hoje'
+  const title = displayWorkoutName(nextAction?.title || meta?.name || 'Treino de hoje')
   const tone = heroTone(detailTarget, title)
   const preview = (detailTarget?.exercises || []).slice(0, 4)
   const weekPct =
@@ -122,6 +123,15 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
             {nextAction?.secondaryLabel || 'Ver detalhes'}
             <IconChevron size={16} />
           </button>
+          {detailTarget?.exercises?.length ? (
+            <button
+              type="button"
+              className="fit-hero__more"
+              onClick={() => sharePlainText(todayWorkoutShareMessage(detailTarget))}
+            >
+              WhatsApp
+            </button>
+          ) : null}
         </div>
       </div>
       {preview.length ? (

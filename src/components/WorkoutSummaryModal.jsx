@@ -1,5 +1,6 @@
 import { calculateSessionStats } from '../utils/performanceUtils'
 import { scrollToSection } from '../utils/scrollToSection'
+import { completedWorkoutShareMessage, sharePlainText } from '../utils/shareWorkout'
 import Modal from './Modal'
 
 function formatDatePt(iso) {
@@ -141,6 +142,22 @@ export default function WorkoutSummaryModal({ isOpen, onClose, onConfirm, sessio
           </button>
           <button type="button" className="btn btn--ghost" onClick={handlePerformance}>
             Ver desempenho
+          </button>
+          <button
+            type="button"
+            className="btn btn--ghost"
+            onClick={() =>
+              sharePlainText(
+                completedWorkoutShareMessage({
+                  name: workoutName,
+                  durationMinutes: sessionData.durationMinutes,
+                  exerciseCount: completedExercises,
+                  muscleGroups,
+                }),
+              )
+            }
+          >
+            Compartilhar
           </button>
         </div>
       </div>

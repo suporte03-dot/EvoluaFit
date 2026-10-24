@@ -21,11 +21,25 @@ export default function BodyComparisonSlider({
     return () => observer.disconnect()
   }, [mode, beforeUrl, afterUrl])
 
-  if (!beforeUrl || !afterUrl) {
+  if (!beforeUrl && !afterUrl) {
     return (
       <p className="body-compare__empty">
         Continue registrando sua evolução para visualizar comparações.
       </p>
+    )
+  }
+
+  if (!beforeUrl || !afterUrl || beforeUrl === afterUrl) {
+    const onlyUrl = afterUrl || beforeUrl
+    return (
+      <div className="body-compare body-compare--single">
+        <figure>
+          <img src={onlyUrl} alt={`Foto ${afterUrl ? afterLabel : beforeLabel}`} />
+          <figcaption>
+            Primeiro registro. Adicione outro check-in para comparar o antes e o agora.
+          </figcaption>
+        </figure>
+      </div>
     )
   }
 
@@ -62,6 +76,7 @@ export default function BodyComparisonSlider({
       ) : (
         <div className="body-compare__stage" ref={stageRef}>
           <img src={afterUrl} alt={`Foto ${afterLabel}`} className="body-compare__base" />
+          <div className="body-compare__pose" aria-hidden="true" />
           <div className="body-compare__clip" style={{ width: `${value}%` }}>
             <img
               src={beforeUrl}

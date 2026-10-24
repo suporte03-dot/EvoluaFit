@@ -85,19 +85,29 @@ export function classifyWorkoutDay(dayOrWorkout = {}) {
     return { label: 'Descanso', tone: 'rest' }
   }
   if (/core.*cardio|cardio.*mobil|hybrid/.test(hay)) return { label: 'Core + Cardio', tone: 'core' }
-  if (/legs.*leve|perna.*leve/.test(hay)) return { label: 'Legs', tone: 'legs' }
-  if (/push|empurr/.test(hay)) return { label: 'Push', tone: 'push' }
-  if (/pull|puxar/.test(hay)) return { label: 'Pull', tone: 'pull' }
+  if (/legs.*leve|perna.*leve/.test(hay)) return { label: 'Pernas leve', tone: 'legs' }
+  if (/push|empurr/.test(hay)) return { label: 'Empurrar', tone: 'push' }
+  if (/pull|puxar/.test(hay)) return { label: 'Puxar', tone: 'pull' }
   if (/legs|perna|glute|quadr|posterior|panturr|inferior|lower/.test(hay)) {
-    return { label: 'Legs', tone: 'legs' }
+    return { label: 'Pernas', tone: 'legs' }
   }
-  if (/full|corpo/.test(hay)) return { label: 'Full Body', tone: 'full' }
+  if (/full|corpo/.test(hay)) return { label: 'Corpo todo', tone: 'full' }
   if (/superior|upper/.test(hay)) return { label: 'Superiores', tone: 'push' }
   if (/mobil|along|yoga/.test(hay)) return { label: 'Mobilidade', tone: 'mobility' }
   if (/cardio|hiit|corrida|esteira|aerob/.test(hay)) return { label: 'Cardio', tone: 'cardio' }
   if (/core|abdomen|abdominal/.test(hay)) return { label: 'Core', tone: 'core' }
 
   return { label: type || name.split('—')[0] || 'Treino', tone: 'full' }
+}
+
+export function displayWorkoutName(name = '') {
+  return String(name || '')
+    .replace(/^Push\b/i, 'Empurrar')
+    .replace(/^Pull\b/i, 'Puxar')
+    .replace(/^Legs\b/i, 'Pernas')
+    .replace(/^Full body\b/i, 'Corpo todo')
+    .replace(/^Upper\b/i, 'Superiores')
+    .replace(/^Lower\b/i, 'Inferiores')
 }
 
 export function inferTrackingMode(exercise = {}) {

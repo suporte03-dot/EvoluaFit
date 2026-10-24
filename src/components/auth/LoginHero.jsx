@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import EvoluaFitLogo from '../branding/EvoluaFitLogo'
 
 function ShieldIcon() {
@@ -82,16 +83,16 @@ export default function LoginHero() {
               </span>
             </li>
           </ul>
-          <div className="auth-split__privacy">
+          <Link className="auth-split__privacy" to="/privacidade">
             <span className="auth-split__privacy-icon">
               <ShieldIcon />
             </span>
             <div>
-              <strong>Ambiente seguro</strong>
-              <p>Seus dados estão protegidos</p>
+              <strong>Seus dados protegidos</strong>
+              <p>Criptografia e privacidade no cadastro</p>
             </div>
             <span className="auth-split__privacy-arrow" aria-hidden="true">›</span>
-          </div>
+          </Link>
         </div>
         <p className="auth-split__values" aria-hidden="true">Saúde · Foco · Evolução · Sem limites</p>
       </div>
@@ -102,13 +103,18 @@ export default function LoginHero() {
           <strong>mais forte de você</strong>
         </div>
         <div className="login-hero-frame">
-          <img
-            className="login-hero-art"
-            src="/branding/evoluafit-login-athletes.png?v=loginnovo-3"
-            alt=""
-            decoding="async"
-            fetchPriority="high"
-          />
+          <picture>
+            <source srcSet="/branding/evoluafit-login-athletes.webp?v=loginnovo-4" type="image/webp" />
+            <img
+              className="login-hero-art"
+              src="/branding/evoluafit-login-athletes.png?v=loginnovo-3"
+              alt=""
+              width="720"
+              height="960"
+              decoding="async"
+              fetchPriority="high"
+            />
+          </picture>
         </div>
         <ol className="auth-split__steps" aria-hidden="true">
           <li>Treine</li>

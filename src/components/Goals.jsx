@@ -31,7 +31,7 @@ export default function Goals() {
         <SectionTitle
           tag="Metas"
           title="Metas saudáveis"
-          subtitle="Objetivos realistas de consistência e bem-estar."
+          subtitle="Objetivos realistas de consistência. XP sobe com treinos concluídos; fotos e medidas ficam no Espelho Evolutivo."
         />
 
         {syncedGoals.length === 0 ? (

@@ -570,9 +570,9 @@ html:has(.auth-split) body {
 
 .auth-split__logo.evoluafit-logo,
 .auth-split__logo {
-  --ef-mark: 40px;
-  --ef-word: clamp(1.1rem, 1.4vw, 1.35rem);
-  --ef-gap: 10px;
+  --ef-mark: 22px;
+  --ef-word: clamp(0.85rem, 1.1vw, 1.05rem);
+  --ef-gap: 8px;
 }
 
 .auth-split__hero {
@@ -1456,10 +1456,10 @@ html:has(.auth-split) body {
 
   .auth-split__logo.evoluafit-logo,
   .auth-split__logo {
-    --ef-mark: clamp(38px, 3.8vw, 54px);
-    --ef-word: clamp(1.35rem, 2.15vw, 2rem);
-    --ef-gap: 11px;
-    transform: scale(0.9);
+    --ef-mark: clamp(20px, 2vw, 28px);
+    --ef-word: clamp(0.9rem, 1.2vw, 1.15rem);
+    --ef-gap: 8px;
+    transform: scale(0.72);
     transform-origin: left top;
   }
 
@@ -2086,8 +2086,8 @@ html:has(.auth-split) body {
   }
 
   .auth-split__logo .evoluafit-logo__file {
-    width: calc(19 * var(--mk));
-    max-width: 380px;
+    width: calc(10 * var(--mk));
+    max-width: 190px;
     height: auto;
   }
 

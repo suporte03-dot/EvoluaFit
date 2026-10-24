@@ -233,6 +233,68 @@ export function IconClose(props) {
   )
 }
 
+export function IconMore(props) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="5.5" r="1.2" fill="currentColor" />
+      <circle cx="12" cy="12" r="1.2" fill="currentColor" />
+      <circle cx="12" cy="18.5" r="1.2" fill="currentColor" />
+    </Icon>
+  )
+}
+
+export function IconPlus(props) {
+  return (
+    <Icon {...props}>
+      <path d="M12 5v14M5 12h14" />
+    </Icon>
+  )
+}
+
+export function IconTick(props) {
+  return (
+    <Icon {...props}>
+      <path d="M5.5 12.5 10 17l8.5-9.5" />
+    </Icon>
+  )
+}
+
+export function IconPlay(props) {
+  return (
+    <Icon {...props}>
+      <path d="M8 5.5v13l10.5-6.5L8 5.5Z" />
+    </Icon>
+  )
+}
+
+export function IconTrophy(props) {
+  return (
+    <Icon {...props}>
+      <path d="M8 4.5h8v5a4 4 0 0 1-8 0v-5Z" />
+      <path d="M8 6.5H5a2.5 2.5 0 0 0 3 3.8M16 6.5h3a2.5 2.5 0 0 1-3 3.8" />
+      <path d="M12 13.5v3.5M8.5 20h7M9.5 17h5" />
+    </Icon>
+  )
+}
+
+export function IconShare(props) {
+  return (
+    <Icon {...props}>
+      <path d="M12 15V4M8 7.5 12 3.5l4 4" />
+      <path d="M6.5 11H5.5A1.5 1.5 0 0 0 4 12.5v6A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5v-6a1.5 1.5 0 0 0-1.5-1.5h-1" />
+    </Icon>
+  )
+}
+
+export function IconInfo(props) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 11v5.5M12 7.8h.01" />
+    </Icon>
+  )
+}
+
 export function IconHelp(props) {
   return (
     <Icon {...props}>

@@ -20,6 +20,8 @@ export function buildHistoryEntry(workoutId, sessionData) {
     notes: sessionData.notes || '',
     partial: Boolean(sessionData.partial),
     noSession: Boolean(sessionData.noSession),
+    volume: Number(sessionData.volume) || 0,
+    prCount: Number(sessionData.prCount) || 0,
   }
 }
 

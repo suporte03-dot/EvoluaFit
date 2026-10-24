@@ -57,6 +57,14 @@ export function isDedicatedAppRoute(pathname) {
   return section === 'perfil' || section === 'espelho'
 }
 
+export function liveWorkoutPath(workoutId) {
+  return `/app/treino/${encodeURIComponent(workoutId)}/ao-vivo`
+}
+
+export function isLiveWorkoutPath(pathname) {
+  return /^\/app\/treino\/[^/]+\/ao-vivo\/?$/.test(pathname || '')
+}
+
 export function isDashboardHomePath(pathname) {
   return sectionFromPath(pathname) === 'inicio'
 }

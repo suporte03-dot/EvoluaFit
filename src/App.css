@@ -5161,6 +5161,14 @@ main {
   object-position: center top;
 }
 
+.exercise-media--gif .exercise-media__image,
+.exercise-media--gif.exercise-media--fit-cover .exercise-media__image,
+.exercise-media--gif.exercise-media--fit-contain .exercise-media__image {
+  object-fit: contain;
+  object-position: center;
+  background: #fff;
+}
+
 .exercise-media--4-3 {
   aspect-ratio: 4 / 3;
 }

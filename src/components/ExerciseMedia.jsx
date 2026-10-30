@@ -13,8 +13,14 @@ function resolveMedia(exercise, failedSrc) {
     return { kind: 'fallback', src: fallbackSrc, pending: true }
   }
 
+  const gifUrl = exercise.gif || (/\.gif(\?|$)/i.test(primaryUrl || '') ? primaryUrl : null)
+
   if (!mediaPending && mediaType === 'video' && primaryUrl && failedSrc !== primaryUrl) {
     return { kind: 'video', src: primaryUrl, poster: thumbUrl || undefined }
+  }
+
+  if (!mediaPending && gifUrl && failedSrc !== gifUrl) {
+    return { kind: 'gif', src: gifUrl }
   }
 
   if (!mediaPending && (mediaType === 'gif' || mediaType === 'image') && primaryUrl && failedSrc !== primaryUrl) {
@@ -104,7 +110,7 @@ export default function ExerciseMedia({
   return (
     <div
       ref={containerRef}
-      className={`exercise-media exercise-media--photo exercise-media--fit-${fit} ${ratioClass}${compact ? ' exercise-media--compact' : ''}${square ? ' exercise-media--square-fill' : ''} ${className}`.trim()}
+      className={`exercise-media exercise-media--photo exercise-media--fit-${fit} ${ratioClass}${compact ? ' exercise-media--compact' : ''}${square ? ' exercise-media--square-fill' : ''}${media.kind === 'gif' ? ' exercise-media--gif' : ''} ${className}`.trim()}
       style={square ? undefined : { aspectRatio }}
     >
       {!inView && <div className="exercise-media__skeleton" aria-hidden="true" />}
@@ -124,7 +130,7 @@ export default function ExerciseMedia({
         />
       )}
 
-      {inView && (media.kind === 'image' || media.kind === 'fallback') && media.src && (
+      {inView && (media.kind === 'gif' || media.kind === 'image' || media.kind === 'fallback') && media.src && (
         <img
           className="exercise-media__image"
           src={media.src}

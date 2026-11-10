@@ -4,6 +4,7 @@
  * Regenerar: node scripts/build-exercise-gif-map.mjs
  */
 import { canonicalGifId } from './exerciseGifAliases.js'
+import { LOCAL_EXERCISE_GIFS } from './exerciseLocalGifs.js'
 
 /** @type {Record<string, string>} */
 export const EXERCISE_GIF_MAP = {
@@ -407,6 +408,8 @@ export function getExerciseGifUrl(id) {
 export function getLocalExerciseGifPath(id, base) {
   const canonical = canonicalGifId(id)
   const root = base ?? (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) ?? '/'
+  const local = LOCAL_EXERCISE_GIFS[id] || LOCAL_EXERCISE_GIFS[canonical]
+  if (local) return `${root}${String(local).replace(/^\//, '')}`
   if (!getExerciseGifUrl(id) && !EXERCISE_GIF_MAP[canonical] && !EXERCISE_GIF_MAP[id]) return null
   const remote = EXERCISE_GIF_MAP[canonical] || EXERCISE_GIF_MAP[id]
   if (remote && String(remote).toLowerCase().endsWith('.gif')) {

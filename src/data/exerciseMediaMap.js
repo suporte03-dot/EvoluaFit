@@ -3,7 +3,8 @@
  * Prioridade: URL validada (exerciseGifMap) → fallback por grupo muscular.
  * Nunca exibe mídia incoerente com o exercício.
  */
-import { getExerciseGifUrl } from './exerciseGifMap.js'
+import { EXERCISE_GIF_MAP, getExerciseGifUrl, getLocalExerciseGifPath } from './exerciseGifMap.js'
+import { canonicalGifId } from './exerciseGifAliases.js'
 import { getPeitoLocalMediaUrl } from './peitoLocalMedia.js'
 import { getCostasLocalMediaUrl } from './costasLocalMedia.js'
 import { getBicepsLocalMediaUrl } from './bicepsLocalMedia.js'
@@ -444,6 +445,27 @@ export function resolveExerciseMedia(id, category, type, base) {
     getTrapezioLocalMediaUrl(id, root)
 
   const localUrl = resolveSafeMediaUrl(id, localCandidate, group)
+  const localGifPath = getLocalExerciseGifPath(id, root)
+  const remoteGif = getExerciseGifUrl(id)
+  const gifCandidate = localGifPath || remoteGif
+  const gifUrl =
+    (gifCandidate && (resolveSafeMediaUrl(id, gifCandidate, group) || getValidatedMediaUrl(id, gifCandidate))) ||
+    (gifCandidate?.toLowerCase().endsWith('.gif') ? gifCandidate : null)
+
+  if (gifUrl) {
+    return {
+      mediaType: 'gif',
+      mediaUrl: gifUrl,
+      image: localUrl,
+      gif: gifUrl,
+      thumbnail: localUrl || gifUrl,
+      fallbackImage,
+      fallbackSvg: fallbackImage,
+      poseKey: EXERCISE_POSE_MAP[id] || fallbackKey,
+      mediaPending: false,
+      hasVerifiedMedia: true,
+    }
+  }
 
   if (localUrl) {
     return {
@@ -476,7 +498,8 @@ export function resolveExerciseMedia(id, category, type, base) {
     }
   }
 
-  const remoteCandidate = getExerciseGifUrl(id)
+  const remoteCandidate =
+    getExerciseGifUrl(id) || EXERCISE_GIF_MAP[canonicalGifId(id)] || EXERCISE_GIF_MAP[id] || null
   const remoteUrl = resolveSafeMediaUrl(id, remoteCandidate, group) || getValidatedMediaUrl(id, remoteCandidate)
   const mediaPending = !remoteUrl
   const isGif = remoteUrl?.endsWith('.gif')

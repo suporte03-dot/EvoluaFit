@@ -46,7 +46,6 @@ function createExercise({
   const primaryImage = image || media.image || null
   const fallbackImage = media.fallbackImage
 
-  // Confiar em resolveExerciseMedia (inclui mídia local de Peito) — não sobrescrever com GIF remoto
   const hasOverride = Boolean(resolvedVideo || resolvedGif || primaryImage)
   const pending = Boolean(media.mediaPending && !hasOverride)
 

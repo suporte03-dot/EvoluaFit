@@ -55,7 +55,7 @@ export default function Goals() {
               }
             />
             <div className="goals-empty__picks" role="group" aria-label="Opções rápidas de consistência">
-              {[3, 4, 5].map((target) => (
+              {[3, 4, 5, 6].map((target) => (
                 <button
                   key={target}
                   type="button"

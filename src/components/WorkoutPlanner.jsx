@@ -277,7 +277,7 @@ export default function WorkoutPlanner() {
       <div className="container">
         <SectionTitle
           tag="Monte seu treino"
-          title={plan && !wizardOpen ? 'Sua rotina' : 'Monte o treino da semana'}
+          title="Monte seu treino"
           subtitle={
             plan && !wizardOpen
               ? 'Rotina ativa nesta conta. Ajuste a divisão da semana ou gere uma nova planilha.'

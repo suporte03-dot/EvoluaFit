@@ -1,6 +1,7 @@
 import { getExerciseById } from '../data/exercisesData'
 import { useFitness } from '../context/FitnessContext'
 import { clearHashRoute } from '../hooks/useHashRoute'
+import { displayWorkoutName, formatRestLabel } from '../utils/trainingIdentity'
 import ExerciseMedia from './ExerciseMedia'
 
 export default function ExerciseDetailPage({ exerciseId }) {
@@ -35,7 +36,7 @@ export default function ExerciseDetailPage({ exerciseId }) {
 
         <div className="exercise-detail__header">
           <div>
-            <span className="exercise-detail__type">{exercise.type}</span>
+            <span className="exercise-detail__type">{displayWorkoutName(exercise.type)}</span>
             <h1 id="exercise-detail-title" className="exercise-detail__title">
               {exercise.name}
             </h1>
@@ -66,7 +67,7 @@ export default function ExerciseDetailPage({ exerciseId }) {
           </div>
           <div className="exercise-detail__meta-item">
             <span className="exercise-detail__meta-label">Descanso</span>
-            <strong>{exercise.rest}</strong>
+            <strong>{formatRestLabel(exercise.rest)}</strong>
           </div>
         </div>
 

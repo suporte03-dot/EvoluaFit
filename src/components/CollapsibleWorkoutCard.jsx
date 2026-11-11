@@ -1,7 +1,7 @@
 import { useId, useState } from 'react'
 import { inferWorkoutType } from '../utils/workoutSession'
 import { formatDateShort } from '../utils/dateFormat'
-import { formatExercisePrescription } from '../utils/trainingIdentity'
+import { displayWorkoutName, formatExercisePrescription, formatRestLabel } from '../utils/trainingIdentity'
 import DayVolumeSummary from './DayVolumeSummary'
 
 const statusClass = {
@@ -15,9 +15,9 @@ const statusClass = {
 
 function workoutTypeClass(type) {
   const t = String(type || '').toLowerCase()
-  if (t.includes('push')) return 'push'
-  if (t.includes('pull')) return 'pull'
-  if (t.includes('leg')) return 'legs'
+  if (t.includes('push') || t.includes('empurr')) return 'push'
+  if (t.includes('pull') || t.includes('puxar')) return 'pull'
+  if (t.includes('leg') || t.includes('perna')) return 'legs'
   if (t.includes('full')) return 'full'
   if (t.includes('cardio')) return 'cardio'
   if (t.includes('mobil')) return 'mobility'
@@ -27,10 +27,8 @@ function workoutTypeClass(type) {
 }
 
 function formatExerciseRest(ex) {
-  if (ex.rest != null && ex.rest !== '') {
-    return typeof ex.rest === 'number' ? `${ex.rest}s` : String(ex.rest)
-  }
-  if (ex.restSeconds != null) return `${ex.restSeconds}s`
+  if (ex.rest != null && ex.rest !== '') return formatRestLabel(ex.rest)
+  if (ex.restSeconds != null) return formatRestLabel(ex.restSeconds)
   return null
 }
 
@@ -110,7 +108,7 @@ export default function CollapsibleWorkoutCard({
               </button>
             </div>
           ) : (
-            <h3 className="workout-card__name">{workout.name}</h3>
+            <h3 className="workout-card__name">{displayWorkoutName(workout.name)}</h3>
           )}
           <button
             type="button"

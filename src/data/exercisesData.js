@@ -263,7 +263,7 @@ export const exercises = [
     muscles: ['Panturrilha'],
     benefits: ['Fortalece tornozelos', 'Estética das pernas'],
     execution: ['Suba na ponta dos pés', 'Pause no topo', 'Desça com amplitude completa'],
-    commonMistakes: ['Bounce na descida', 'Amplitude parcial'],
+    commonMistakes: ['Impulso na descida', 'Amplitude parcial'],
     sets: '4',
     reps: '15 a 20',
     rest: '45 segundos',

@@ -21,7 +21,7 @@ function goToModule(item, navigate) {
 export default function ModuleHelpGuide() {
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
-  const [openId, setOpenId] = useState(null)
+  const [openId, setOpenId] = useState(MODULE_HELP[0]?.id || null)
   const [faqOpenId, setFaqOpenId] = useState(null)
   const [showAll, setShowAll] = useState(false)
 

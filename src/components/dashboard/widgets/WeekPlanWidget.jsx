@@ -36,11 +36,22 @@ export default function WeekPlanWidget({ generatedPlan, workouts = [], today }) 
     const type = name ? classifyWorkoutDay(scheduled || planDay || { name }) : { label: 'Folga', tone: 'rest' }
     const done = isDone(scheduled?.status)
     const isToday = key === todayKey
+    const rest = !name
+    const missed = !done && !rest && key < todayKey
     const isNext = Boolean(
-      today?.workout &&
+      !done &&
+        !missed &&
+        today?.workout &&
         (today.workout.id === scheduled?.id || today.workout.name === name) &&
         ['ready', 'partial', 'returning', 'no_workout_today'].includes(today.situation),
     )
+
+    let state = 'Aberto'
+    if (rest) state = 'Folga'
+    else if (done) state = 'Feito'
+    else if (isToday) state = 'Hoje'
+    else if (missed) state = 'Atrasado'
+    else if (isNext) state = 'Próximo'
 
     return {
       label,
@@ -49,7 +60,9 @@ export default function WeekPlanWidget({ generatedPlan, workouts = [], today }) 
       done,
       isToday,
       isNext,
-      rest: !name,
+      missed,
+      rest,
+      state,
     }
   })
 
@@ -62,13 +75,11 @@ export default function WeekPlanWidget({ generatedPlan, workouts = [], today }) 
             key={day.key}
             className={`week-plan__day${day.done ? ' is-done' : ''}${day.isToday ? ' is-today' : ''}${
               day.isNext ? ' is-next' : ''
-            }${day.rest ? ' is-rest' : ''}`}
+            }${day.missed ? ' is-missed' : ''}${day.rest ? ' is-rest' : ''}`}
           >
             <span className="week-plan__wd">{day.label}</span>
             <strong>{day.type.label}</strong>
-            <span className="week-plan__state">
-              {day.done ? 'Feito' : day.isNext ? 'Próximo' : day.rest ? 'Folga' : 'Aberto'}
-            </span>
+            <span className="week-plan__state">{day.state}</span>
           </li>
         ))}
       </ol>

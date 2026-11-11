@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { getExerciseProgressStats } from '../utils/progressStorage'
 import { getTargetSets, isExerciseComplete } from '../utils/workoutSession'
-import { formatExercisePrescription, inferTrackingMode } from '../utils/trainingIdentity'
+import { formatExercisePrescription, formatRestLabel, inferTrackingMode } from '../utils/trainingIdentity'
 import { FEEL_OPTIONS, lastExerciseFeel, nextLoadSuggestion, recordExerciseFeel } from '../utils/progression'
 import { whyExerciseInWorkout } from '../utils/exerciseWhy'
 import ExerciseMedia from './ExerciseMedia'
@@ -56,7 +56,7 @@ export default function ExerciseSessionCard({
           <div>
             <strong className="exercise-session-card__name">{exercise.name}</strong>
             <p className="exercise-session-card__meta">
-              {formatExercisePrescription(exercise)} · Descanso {exercise.restSeconds || 60}s
+              {formatExercisePrescription(exercise)} · Descanso {formatRestLabel(exercise.restSeconds || exercise.rest || 60)}
               {lastHint && tracking === 'reps'
                 ? ` · Última carga: ${lastHint}${/kg/i.test(String(lastHint)) ? '' : ' kg'}`
                 : ''}

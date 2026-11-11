@@ -1,11 +1,11 @@
-import { exercises, parseSets, parseRestSeconds, getExerciseById } from '../data/exercisesData'
+import { exercises, parseSets, parseRestSeconds, getExerciseById } from '../data/exercisesData.js'
 import {
   getSplitTemplate,
   getSplitStyleLabel,
   levelConfig,
   objectiveLabels,
   PROFESSIONAL_DISCLAIMER,
-} from '../data/workoutTemplates'
+} from '../data/workoutTemplates.js'
 
 /** Cotas base por tipo de treino (ajustadas por nível/tempo em buildDayQuotas) */
 const DAY_QUOTAS = {
@@ -86,7 +86,7 @@ const ADVANCED_PUSH_VOLUME = {
 
 /** Ordem preferencial de ângulos/papéis por grupo (diversidade no Push) */
 const ROLE_PRIORITY = {
-  Peitoral: ['chest_upper', 'chest_flat', 'chest_lower', 'chest_isolation'],
+  Peitoral: ['chest_flat', 'chest_upper', 'chest_lower', 'chest_isolation'],
   Ombros: ['shoulder_press', 'shoulder_lateral', 'shoulder_rear', 'shoulder_front', 'shoulder_other'],
   Tríceps: ['tri_long', 'tri_pushdown', 'tri_other'],
 }
@@ -180,8 +180,8 @@ function inferDayType(name = '', focus = []) {
   if (/legs.*leve|perna.*leve|legs light/.test(n)) return 'LegsLight'
   if (/upper/.test(n)) return 'Superiores'
   if (/lower/.test(n)) return 'Inferiores'
-  if (/push/.test(n)) return 'Push'
-  if (/pull/.test(n)) return 'Pull'
+  if (/push|empurr/.test(n)) return 'Push'
+  if (/pull|puxar/.test(n)) return 'Pull'
   if (/legs|perna/.test(n)) return 'Legs'
   if (/superior/.test(n)) return 'Superiores'
   if (/inferior/.test(n)) return 'Inferiores'
@@ -313,10 +313,9 @@ export function inferMovementRole(exercise) {
   )
 
   if (cat === 'Peitoral') {
+    if (/pec.?deck|crucifix|crossover|voador|fly|pullover|isol/.test(hay)) return 'chest_isolation'
     if (/inclin/.test(hay)) return 'chest_upper'
     if (/declin|paralela|mergulho|dip/.test(hay)) return 'chest_lower'
-    if (/crucifix|peck|crossover|voador|fly|pullover|isol/.test(hay)) return 'chest_isolation'
-    if (/maquina|smith|pec deck/.test(hay) && /supino|press|peito/.test(hay)) return 'chest_isolation'
     if (/reto|horizontal|supino|press|banco/.test(hay)) return 'chest_flat'
     return 'chest_flat'
   }
@@ -960,6 +959,36 @@ function applyAdvancedPushVolume(entries, level, dayType) {
   return next
 }
 
+export function isStrengthCompound(exercise) {
+  if (!exercise) return false
+  const role = inferMovementRole(exercise)
+  if (['chest_flat', 'chest_upper', 'chest_lower', 'shoulder_press'].includes(role)) return true
+  const hay = normalizeText([exercise.id, exercise.name, exercise.category, exercise.muscleGroup].join(' '))
+  if (
+    /crucifix|elevacao|rosca|panturrilha|pallof|voador|fly|encolhimento|prancha|along|mobilidade|abdominal|infra|pulley|triceps|isometr|pec.?deck/.test(
+      hay,
+    )
+  ) {
+    return false
+  }
+  return /agachamento|terra|hip.?thrust|leg.?press|remada curvada|barra fixa|pull.?up|desenvolvimento|stiff|afundo/.test(
+    hay,
+  )
+}
+
+export function estimateSessionMinutes(exercises = [], options = {}) {
+  const workSec = options.workSecondsPerSet ?? 40
+  if (!exercises.length) return options.fallback ?? 45
+  let total = 0
+  for (const ex of exercises) {
+    const sets = Math.max(1, parseSets(ex.sets) || Number(ex.sets) || 3)
+    const restRaw = ex.restSeconds ?? ex.rest
+    const rest = Number(restRaw) > 0 ? Number(restRaw) : parseRestSeconds(restRaw) || 90
+    total += sets * workSec + Math.max(sets - 1, 0) * rest
+  }
+  return Math.max(20, Math.round(total / 60))
+}
+
 function isTimedPrescription(exercise) {
   const hay = `${exercise?.id || ''} ${exercise?.name || ''} ${exercise?.type || ''} ${exercise?.category || ''} ${exercise?.reps || ''}`
     .toLowerCase()
@@ -970,7 +999,7 @@ function isTimedPrescription(exercise) {
   )
 }
 
-function buildSetsRepsRest(exercise, level, goal, dayType) {
+export function buildSetsRepsRest(exercise, level, goal, dayType) {
   const config = levelConfig[level] || levelConfig.Intermediário
   const timed = isTimedPrescription(exercise)
   let sets = clamp(Math.round(parseSets(exercise.sets) * config.setsMultiplier), config.setsMin, config.setsMax)
@@ -1014,11 +1043,17 @@ function buildSetsRepsRest(exercise, level, goal, dayType) {
       intensityBias = 1
       break
     case 'forca':
-      reps = level === 'Iniciante' ? '6-8' : '4-6'
-      rest = clamp(rest + 30, 90, 150)
-      sets = clamp(sets + (level === 'Iniciante' ? 0 : 1), config.setsMin, config.setsMax)
+      if (isStrengthCompound(exercise)) {
+        reps = level === 'Iniciante' ? '6-8' : '4-6'
+        rest = clamp(rest + 30, 90, 150)
+        sets = clamp(sets + (level === 'Iniciante' ? 0 : 1), config.setsMin, config.setsMax)
+        observation = observation || 'Carga desafiadora com execução limpa; não force além da técnica.'
+      } else {
+        reps = exercise.reps || (level === 'Iniciante' ? '10-12' : '8-12')
+        rest = clamp(rest, 60, 90)
+        observation = observation || 'Isolador: mantenha o controle; não use faixa de composto.'
+      }
       intensityBias = 1
-      observation = observation || 'Carga desafiadora com execução limpa; não force além da técnica.'
       break
     case 'condicionamento':
       reps = level === 'Iniciante' ? '12-15' : '12-20'
@@ -1195,11 +1230,10 @@ export function generateWorkoutPlan(input = {}) {
     const intensity = resolveIntensity(level, goal, dayType, Math.round(avgBias))
     const muscleGroups = focusGroups.length ? focusGroups : normalizeFocus(dayTemplate.focus)
     const workoutType = workoutTypeLabel(dayType, dayTemplate.name)
-    const estimatedDuration = recovery
-      ? Math.min(minutesPerWorkout, Math.max(25, minutesPerWorkout - 10))
-      : minutesPerWorkout
-
     const cleanExercises = exerciseEntries.map(({ _intensityBias, ...ex }) => ex)
+    const estimatedDuration = recovery
+      ? Math.max(20, estimateSessionMinutes(cleanExercises, { fallback: 25 }))
+      : estimateSessionMinutes(cleanExercises, { fallback: minutesPerWorkout })
     const volumeSummary = summarizeDayVolume(cleanExercises, workoutType || dayTemplate.name)
 
     return {
@@ -1344,7 +1378,10 @@ export function planToWorkouts(plan, referenceDate = new Date()) {
       volumeSummary,
       volumeParts: day.volumeParts || summarizeDayVolume(exercises, day.workoutType || day.workoutName).parts,
       status: 'Pendente',
-      estimatedMinutes: day.estimatedDuration || day.estimatedMinutes || plan.minutesPerWorkout || plan.duration,
+      estimatedMinutes:
+        day.estimatedDuration ||
+        day.estimatedMinutes ||
+        estimateSessionMinutes(exercises, { fallback: plan.minutesPerWorkout || plan.duration || 45 }),
       intensity: day.intensity,
       createdAt: new Date().toISOString(),
     }

@@ -3,6 +3,13 @@ import { exercises as localExercises, DEFAULT_SAFETY_TIPS } from '../data/exerci
 import { resolveExerciseMedia } from '../data/exerciseMediaMap.js'
 import { normalizeMuscleGroup, logMediaIssuesOnce, resolveSafeMediaUrl } from '../utils/exerciseValidation.js'
 import { setExerciseCache } from '../data/exerciseCache.js'
+import {
+  isBrokenMediaUrl,
+  shouldDropRemoteExercise,
+  dedupeExerciseList,
+} from '../utils/exerciseRemoteFilter.js'
+
+export { isBrokenMediaUrl, shouldDropRemoteExercise, dedupeExerciseList }
 
 function normalizeArray(value) {
   if (!value) return []
@@ -55,7 +62,7 @@ export function mapSupabaseExercise(row, localIndex = indexLocalExercises()) {
   const mediaKey = slug || local?.id || String(row.id)
 
   const media = resolveExerciseMedia(mediaKey, category, type)
-  const remoteCandidate = row.media_url || null
+  const remoteCandidate = isBrokenMediaUrl(row.media_url) ? null : row.media_url || null
   const safeRemote = resolveSafeMediaUrl(mediaKey, remoteCandidate, category)
 
   let mediaPending = media.mediaPending
@@ -145,7 +152,9 @@ export async function fetchExercisesFromSupabase() {
   if (error) return { data: null, error }
 
   const localIndex = indexLocalExercises()
-  const mapped = (data || []).map((row) => mapSupabaseExercise(row, localIndex))
+  const mapped = (data || [])
+    .filter((row) => !shouldDropRemoteExercise(row, localIndex))
+    .map((row) => mapSupabaseExercise(row, localIndex))
   return { data: mapped, error: null, localIndex }
 }
 
@@ -168,7 +177,7 @@ export async function loadExercises() {
       seen.add(key)
       return true
     })
-    const merged = [...data, ...extras]
+    const merged = dedupeExerciseList([...data, ...extras])
     setExerciseCache(merged)
     return { exercises: merged, source: 'supabase+local', error: null }
   }

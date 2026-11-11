@@ -1,6 +1,9 @@
 import { displayGoalLabel } from './profileIdentity'
 import { isCompletedSession } from './completedSession'
 import { resolveTodayWorkout } from './todayWorkout'
+import { displayWorkoutName, formatRestLabel } from './workoutLabels.js'
+
+export { displayWorkoutName, formatRestLabel }
 
 const LEVELS = ['Iniciante', 'Intermediário', 'Avançado']
 
@@ -100,16 +103,6 @@ export function classifyWorkoutDay(dayOrWorkout = {}) {
   return { label: type || name.split('—')[0] || 'Treino', tone: 'full' }
 }
 
-export function displayWorkoutName(name = '') {
-  return String(name || '')
-    .replace(/^Push\b/i, 'Empurrar')
-    .replace(/^Pull\b/i, 'Puxar')
-    .replace(/^Legs\b/i, 'Pernas')
-    .replace(/^Full body\b/i, 'Corpo todo')
-    .replace(/^Upper\b/i, 'Superiores')
-    .replace(/^Lower\b/i, 'Inferiores')
-}
-
 export function inferTrackingMode(exercise = {}) {
   const hay = normalizeText(
     [exercise.id, exercise.exerciseId, exercise.name, exercise.type, exercise.category, exercise.muscleGroup, exercise.reps]
@@ -182,7 +175,7 @@ export function lastCompletedResult({ history = [], workouts = [] } = {}) {
 
   const volume = last.totalVolume || last.total_volume || last.volume
   const sets = last.completedSets || last.completed_sets
-  const name = last.name || last.workout_name || last.workoutName || 'Treino'
+  const name = displayWorkoutName(last.name || last.workout_name || last.workoutName || 'Treino')
   return {
     name,
     date: last.completedAt || last.completed_at || last.date || null,

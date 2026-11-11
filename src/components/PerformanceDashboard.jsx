@@ -205,9 +205,9 @@ export default function PerformanceDashboard() {
                 ? 'Os treinos concluídos aparecem aqui. Seus check-ins e fotos ficam no Espelho Evolutivo.'
                 : 'Conclua seu primeiro treino para começar a acompanhar sua evolução. Fotos e medidas ficam no Espelho Evolutivo.'
             }
-            ctaLabel={body.hasCheckin ? 'Abrir Espelho Evolutivo' : 'Ver meus treinos'}
-            ctaTo={body.hasCheckin ? '/app/evolucao/espelho' : undefined}
-            ctaSection={body.hasCheckin ? undefined : 'treinos'}
+            ctaLabel="Iniciar treino"
+            ctaTo="/app"
+            ctaSection="inicio"
           />
         </div>
       </section>

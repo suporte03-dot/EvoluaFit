@@ -558,7 +558,7 @@ export const pernasExerciseDefs = [
   ex({
     id: 'aducao-quadril-cabo',
     name: 'Adução do quadril no cabo',
-    category: 'Glúteos',
+    category: 'Pernas',
     muscles: ['Adutores'],
     benefits: ['Isolamento dos adutores', 'Tensão constante'],
     execution: [
@@ -576,7 +576,7 @@ export const pernasExerciseDefs = [
   ex({
     id: 'aducao-quadril-alavanca',
     name: 'Adução do quadril na alavanca',
-    category: 'Glúteos',
+    category: 'Pernas',
     muscles: ['Adutores'],
     benefits: ['Máquina multi-hip', 'Fácil progressão'],
     execution: ['Pad interno na coxa; aduza a perna contra a alavanca.'],

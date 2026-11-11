@@ -2258,6 +2258,11 @@ html:has(.app--saas) body {
   background: rgba(117, 82, 255, 0.1);
 }
 
+.week-plan__day.is-missed {
+  border-color: rgba(232, 164, 92, 0.4);
+  background: rgba(232, 164, 92, 0.1);
+}
+
 .last-result__title {
   margin: 0 0 0.3rem;
   font-size: 1.05rem;

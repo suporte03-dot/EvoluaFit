@@ -1,4 +1,5 @@
-import { getExerciseById, getExercisesByIds } from './exercisesData'
+import { getExerciseById, getExercisesByIds } from './exercisesData.js'
+import { displayWorkoutName } from '../utils/workoutLabels.js'
 
 export const splitTemplates = {
   2: [
@@ -6,9 +7,9 @@ export const splitTemplates = {
     { day: 2, name: 'Full Body B', focus: ['Ombros', 'Pernas', 'Glúteos', 'Bíceps', 'Tríceps'] },
   ],
   3: [
-    { day: 1, name: 'Push', focus: ['Peitoral', 'Ombros', 'Tríceps'] },
-    { day: 2, name: 'Pull', focus: ['Costas', 'Bíceps', 'Trapézio', 'Lombar'] },
-    { day: 3, name: 'Legs', focus: ['Pernas', 'Glúteos', 'Panturrilha', 'Abdômen'] },
+    { day: 1, name: 'Empurrar', focus: ['Peitoral', 'Ombros', 'Tríceps'] },
+    { day: 2, name: 'Puxar', focus: ['Costas', 'Bíceps', 'Trapézio', 'Lombar'] },
+    { day: 3, name: 'Pernas', focus: ['Pernas', 'Glúteos', 'Panturrilha', 'Abdômen'] },
   ],
   '3_beginner': [
     { day: 1, name: 'Full Body A', focus: ['Peitoral', 'Costas', 'Pernas', 'Abdômen'] },
@@ -16,34 +17,34 @@ export const splitTemplates = {
     { day: 3, name: 'Full Body C', focus: ['Peitoral', 'Costas', 'Glúteos', 'Tríceps'] },
   ],
   4: [
-    { day: 1, name: 'Upper A', focus: ['Peitoral', 'Costas', 'Ombros'] },
-    { day: 2, name: 'Lower A', focus: ['Pernas', 'Glúteos', 'Panturrilha'] },
-    { day: 3, name: 'Upper B', focus: ['Peitoral', 'Costas', 'Bíceps', 'Tríceps'] },
-    { day: 4, name: 'Lower B', focus: ['Pernas', 'Glúteos', 'Abdômen'] },
+    { day: 1, name: 'Superiores A', focus: ['Peitoral', 'Costas', 'Ombros'] },
+    { day: 2, name: 'Inferiores A', focus: ['Pernas', 'Glúteos', 'Panturrilha'] },
+    { day: 3, name: 'Superiores B', focus: ['Peitoral', 'Costas', 'Bíceps', 'Tríceps'] },
+    { day: 4, name: 'Inferiores B', focus: ['Pernas', 'Glúteos', 'Abdômen'] },
   ],
   5: [
-    { day: 1, name: 'Push', focus: ['Peitoral', 'Ombros', 'Tríceps'] },
-    { day: 2, name: 'Pull', focus: ['Costas', 'Bíceps', 'Trapézio', 'Lombar'] },
-    { day: 3, name: 'Legs', focus: ['Pernas', 'Glúteos', 'Panturrilha', 'Abdômen'] },
-    { day: 4, name: 'Upper', focus: ['Peitoral', 'Costas', 'Ombros', 'Bíceps'] },
+    { day: 1, name: 'Empurrar', focus: ['Peitoral', 'Ombros', 'Tríceps'] },
+    { day: 2, name: 'Puxar', focus: ['Costas', 'Bíceps', 'Trapézio', 'Lombar'] },
+    { day: 3, name: 'Pernas', focus: ['Pernas', 'Glúteos', 'Panturrilha', 'Abdômen'] },
+    { day: 4, name: 'Superiores', focus: ['Peitoral', 'Costas', 'Ombros', 'Bíceps'] },
     { day: 5, name: 'Core + Cardio + Mobilidade', focus: ['Abdômen', 'Cardio', 'Mobilidade'] },
   ],
   6: [
-    { day: 1, name: 'Push A', focus: ['Peitoral', 'Ombros', 'Tríceps'] },
-    { day: 2, name: 'Pull A', focus: ['Costas', 'Bíceps', 'Trapézio'] },
-    { day: 3, name: 'Legs A', focus: ['Pernas', 'Glúteos', 'Panturrilha'] },
-    { day: 4, name: 'Push B', focus: ['Peitoral', 'Ombros', 'Tríceps'] },
-    { day: 5, name: 'Pull B', focus: ['Costas', 'Bíceps', 'Trapézio', 'Lombar'] },
-    { day: 6, name: 'Legs B', focus: ['Pernas', 'Glúteos', 'Panturrilha', 'Abdômen', 'Mobilidade'] },
+    { day: 1, name: 'Empurrar A', focus: ['Peitoral', 'Ombros', 'Tríceps'] },
+    { day: 2, name: 'Puxar A', focus: ['Costas', 'Bíceps', 'Trapézio'] },
+    { day: 3, name: 'Pernas A', focus: ['Pernas', 'Glúteos', 'Panturrilha'] },
+    { day: 4, name: 'Empurrar B', focus: ['Peitoral', 'Ombros', 'Tríceps'] },
+    { day: 5, name: 'Puxar B', focus: ['Costas', 'Bíceps', 'Trapézio', 'Lombar'] },
+    { day: 6, name: 'Pernas B', focus: ['Pernas', 'Glúteos', 'Panturrilha', 'Abdômen', 'Mobilidade'] },
   ],
   7: [
-    { day: 1, name: 'Push A', focus: ['Peitoral', 'Ombros', 'Tríceps'] },
-    { day: 2, name: 'Pull A', focus: ['Costas', 'Bíceps', 'Trapézio'] },
-    { day: 3, name: 'Legs A', focus: ['Pernas', 'Glúteos', 'Panturrilha'] },
+    { day: 1, name: 'Empurrar A', focus: ['Peitoral', 'Ombros', 'Tríceps'] },
+    { day: 2, name: 'Puxar A', focus: ['Costas', 'Bíceps', 'Trapézio'] },
+    { day: 3, name: 'Pernas A', focus: ['Pernas', 'Glúteos', 'Panturrilha'] },
     { day: 4, name: 'Mobilidade / Recuperação ativa', focus: ['Mobilidade', 'Alongamento', 'Abdômen'] },
-    { day: 5, name: 'Push B', focus: ['Peitoral', 'Ombros', 'Tríceps'] },
-    { day: 6, name: 'Pull B', focus: ['Costas', 'Bíceps', 'Trapézio', 'Lombar'] },
-    { day: 7, name: 'Legs leve ou Core + Cardio', focus: ['Pernas', 'Glúteos', 'Abdômen', 'Cardio'] },
+    { day: 5, name: 'Empurrar B', focus: ['Peitoral', 'Ombros', 'Tríceps'] },
+    { day: 6, name: 'Puxar B', focus: ['Costas', 'Bíceps', 'Trapézio', 'Lombar'] },
+    { day: 7, name: 'Pernas leve ou Core + Cardio', focus: ['Pernas', 'Glúteos', 'Abdômen', 'Cardio'] },
   ],
 }
 
@@ -64,7 +65,7 @@ export const SPLIT_STYLES = [
   },
   {
     id: 'ppl',
-    label: 'Push · Pull · Legs',
+    label: 'Empurrar · Puxar · Pernas',
     desc: 'Empurrar, puxar e pernas em dias separados.',
     minDays: 3,
     maxDays: 6,
@@ -93,11 +94,11 @@ export const SPLIT_STYLES = [
 ]
 
 const SPLIT_PARTS = {
-  push: { name: 'Push', focus: ['Peitoral', 'Ombros', 'Tríceps'] },
-  pull: { name: 'Pull', focus: ['Costas', 'Bíceps', 'Trapézio', 'Lombar'] },
-  legs: { name: 'Legs', focus: ['Pernas', 'Glúteos', 'Panturrilha', 'Abdômen'] },
-  upper: { name: 'Upper', focus: ['Peitoral', 'Costas', 'Ombros', 'Bíceps', 'Tríceps'] },
-  lower: { name: 'Lower', focus: ['Pernas', 'Glúteos', 'Panturrilha', 'Abdômen'] },
+  push: { name: 'Empurrar', focus: ['Peitoral', 'Ombros', 'Tríceps'] },
+  pull: { name: 'Puxar', focus: ['Costas', 'Bíceps', 'Trapézio', 'Lombar'] },
+  legs: { name: 'Pernas', focus: ['Pernas', 'Glúteos', 'Panturrilha', 'Abdômen'] },
+  upper: { name: 'Superiores', focus: ['Peitoral', 'Costas', 'Ombros', 'Bíceps', 'Tríceps'] },
+  lower: { name: 'Inferiores', focus: ['Pernas', 'Glúteos', 'Panturrilha', 'Abdômen'] },
   abcA: { name: 'A — Peito e tríceps', focus: ['Peitoral', 'Tríceps'] },
   abcB: { name: 'B — Costas e bíceps', focus: ['Costas', 'Bíceps', 'Trapézio'] },
   abcC: { name: 'C — Pernas', focus: ['Pernas', 'Glúteos', 'Panturrilha'] },
@@ -559,8 +560,8 @@ export const workoutTemplates = [
 ]
 
 const nameToTemplateMatchers = [
-  { pattern: /push/i, id: 'tpl-push-a' },
-  { pattern: /pull/i, id: 'tpl-pull-a' },
+  { pattern: /push|empurr/i, id: 'tpl-push-a' },
+  { pattern: /pull|puxar/i, id: 'tpl-pull-a' },
   { pattern: /leg|perna/i, id: 'tpl-legs-a' },
   { pattern: /full\s*body\s*b/i, id: 'tpl-full-body-b' },
   { pattern: /full\s*body/i, id: 'tpl-full-body-a' },
@@ -696,11 +697,14 @@ export function enrichWorkoutDetail(workout, extras = {}) {
   const exercises = userExercises?.length
     ? userExercises
     : resolveTemplateExercises(template?.exercises || [])
+  const equipmentFromExercises = [
+    ...new Set((exercises || []).map((ex) => ex.equipment).filter((item) => item && item !== '—')),
+  ]
 
   return {
     id: workout.id,
-    name: workout.name,
-    type,
+    name: displayWorkoutName(workout.name),
+    type: displayWorkoutName(type),
     goal: workout.goal || planGoal || template?.goal || 'Saúde geral',
     level: workout.level || planLevel || template?.level || 'Intermediário',
     duration: workout.estimatedMinutes || template?.duration || 45,
@@ -710,7 +714,9 @@ export function enrichWorkoutDetail(workout, extras = {}) {
       template?.secondaryMuscleGroups ||
       workout.muscleGroups?.slice(1) ||
       [],
-    equipment: template?.equipment || ['Conforme disponível'],
+    equipment: equipmentFromExercises.length
+      ? equipmentFromExercises
+      : template?.equipment || ['Conforme disponível'],
     benefits,
     precautions,
     exercises,

@@ -70,6 +70,16 @@ export function formatRelativePast(input) {
   return formatDateShort(d)
 }
 
+export function isSameCalendarDay(input, ref = new Date()) {
+  const d = toDate(input)
+  if (!d) return false
+  return (
+    d.getFullYear() === ref.getFullYear() &&
+    d.getMonth() === ref.getMonth() &&
+    d.getDate() === ref.getDate()
+  )
+}
+
 export function formatLastUpdate(input) {
   const rel = formatRelativePast(input)
   if (!rel) return '—'

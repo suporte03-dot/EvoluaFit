@@ -192,10 +192,10 @@ export default function ExerciseLibrary() {
         <header className="el-header">
           <p className="el-header__eyebrow">
             <span className="el-header__marker" aria-hidden="true" />
-            Módulos
+            Grupos musculares
           </p>
           <h2 className="el-header__title">
-            Módulos por <span className="el-header__gradient">grupo muscular</span>
+            Biblioteca por <span className="el-header__gradient">grupo muscular</span>
           </h2>
           <p className="el-header__lead">
             Peito, costas, pernas e os demais grupos — um módulo para cada.

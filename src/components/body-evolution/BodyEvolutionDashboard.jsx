@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { formatDateShort, formatLastUpdate } from '../../utils/dateFormat'
+import { formatLastUpdate } from '../../utils/dateFormat'
 import { avatarFactorsFromMeasures, formatSignedDelta } from '../../utils/bodyEvolutionMetrics'
 import BodyAvatar2D from './BodyAvatar2D'
 import BodyComparisonSlider from './BodyComparisonSlider'
@@ -129,7 +129,7 @@ export default function BodyEvolutionDashboard({
           <BodyProgressSummary
             measures={body.latestMeasures}
             diffs={body.summary.diffs}
-            dateLabel={`Hoje · ${formatDateShort(lastUpdate)}`}
+            dateLabel={formatLastUpdate(lastUpdate)}
           />
           {body.summary.regions.length ? (
             <div className="body-regions">
@@ -153,8 +153,12 @@ export default function BodyEvolutionDashboard({
         <div className="body-dash__panel" role="tabpanel">
           {!body.canCompare ? (
             <>
-              <p>Com um registro, o slider mostra a foto atual. O segundo check-in libera o antes e agora.</p>
-              <BodyComparisonSlider beforeUrl={firstUrl} afterUrl={latestUrl} />
+              <p>Com um registro, esta é a foto atual. O segundo check-in libera o antes e agora.</p>
+              {latestUrl ? (
+                <img src={latestUrl} alt="Foto atual do Espelho Evolutivo" />
+              ) : (
+                <p>Ainda não há foto neste registro.</p>
+              )}
             </>
           ) : (
             <>

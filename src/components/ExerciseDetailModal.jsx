@@ -1,6 +1,9 @@
+import { useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import ExerciseMedia from './ExerciseMedia'
 import { useFitness } from '../context/FitnessContext'
 import { muscleGroupLabel } from '../data/exerciseMediaMap'
+import { displayWorkoutName, formatRestLabel } from '../utils/trainingIdentity'
 
 function levelClass(level = 'iniciante') {
   return level
@@ -10,13 +13,39 @@ function levelClass(level = 'iniciante') {
     .replace(/\s+/g, '-')
 }
 
+function hasProfessionalDisclaimer(tips = []) {
+  return tips.some((tip) => /n[aã]o substitui/i.test(String(tip)))
+}
+
 export default function ExerciseDetailModal({ exercise, isOpen, onClose }) {
   const { addExerciseToPlan } = useFitness()
+  const closeRef = useRef(null)
+  const lastFocusRef = useRef(null)
 
-  if (!isOpen || !exercise) return null
+  useEffect(() => {
+    if (!isOpen) return undefined
+    lastFocusRef.current = document.activeElement
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const onKey = (event) => {
+      if (event.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    const frame = window.requestAnimationFrame(() => closeRef.current?.focus())
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', onKey)
+      window.cancelAnimationFrame(frame)
+      if (lastFocusRef.current && typeof lastFocusRef.current.focus === 'function') {
+        lastFocusRef.current.focus()
+      }
+    }
+  }, [isOpen, onClose])
 
-  const handleBackdrop = (e) => {
-    if (e.target === e.currentTarget) onClose()
+  if (!isOpen || !exercise || typeof document === 'undefined') return null
+
+  const handleBackdrop = (event) => {
+    if (event.target === event.currentTarget) onClose()
   }
 
   const handleAdd = () => {
@@ -29,8 +58,9 @@ export default function ExerciseDetailModal({ exercise, isOpen, onClose }) {
   const executionSteps = exercise.executionSteps || exercise.execution || []
   const category = exercise.muscleGroup || exercise.category
   const secondary = (exercise.secondaryMuscles || exercise.muscles?.slice(1) || []).filter(Boolean)
+  const showDisclaimer = !hasProfessionalDisclaimer(safetyTips)
 
-  return (
+  return createPortal(
     <div
       className="exercise-modal-overlay"
       role="dialog"
@@ -39,7 +69,13 @@ export default function ExerciseDetailModal({ exercise, isOpen, onClose }) {
       onClick={handleBackdrop}
     >
       <div className="exercise-modal glass-card">
-        <button type="button" className="exercise-modal__close" onClick={onClose} aria-label="Fechar">
+        <button
+          ref={closeRef}
+          type="button"
+          className="exercise-modal__close"
+          onClick={onClose}
+          aria-label="Fechar"
+        >
           ✕
         </button>
 
@@ -66,7 +102,7 @@ export default function ExerciseDetailModal({ exercise, isOpen, onClose }) {
             </span>
           ))}
           <span className="equipment-tag">{exercise.equipment}</span>
-          {exercise.type && <span className="exercise-type-tag">{exercise.type}</span>}
+          {exercise.type ? <span className="exercise-type-tag">{displayWorkoutName(exercise.type)}</span> : null}
         </div>
 
         {secondary.length > 0 && (
@@ -137,14 +173,16 @@ export default function ExerciseDetailModal({ exercise, isOpen, onClose }) {
           </div>
           <div className="exercise-modal__meta-item">
             <span className="exercise-modal__meta-label">Descanso</span>
-            <strong>{exercise.rest}</strong>
+            <strong>{formatRestLabel(exercise.rest ?? exercise.restSeconds)}</strong>
           </div>
         </div>
 
-        <p className="exercise-modal__disclaimer">
-          Este conteúdo é informativo e não substitui orientação profissional. Respeite seus limites. Em caso
-          de dor, interrompa o exercício e procure orientação especializada.
-        </p>
+        {showDisclaimer ? (
+          <p className="exercise-modal__disclaimer">
+            Este conteúdo é informativo e não substitui orientação profissional. Respeite seus limites. Em caso
+            de dor, interrompa o exercício e procure orientação especializada.
+          </p>
+        ) : null}
 
         <div className="exercise-modal__footer exercise-modal__actions">
           <button type="button" className="btn btn--primary" onClick={handleAdd}>
@@ -152,6 +190,7 @@ export default function ExerciseDetailModal({ exercise, isOpen, onClose }) {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }

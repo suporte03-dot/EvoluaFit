@@ -87,6 +87,7 @@ const ADVANCED_PUSH_VOLUME = {
 /** Ordem preferencial de ângulos/papéis por grupo (diversidade no Push) */
 const ROLE_PRIORITY = {
   Peitoral: ['chest_flat', 'chest_upper', 'chest_lower', 'chest_isolation'],
+  Costas: ['back_vertical', 'back_horizontal', 'back_unilateral', 'back_pullover'],
   Ombros: ['shoulder_press', 'shoulder_lateral', 'shoulder_rear', 'shoulder_front', 'shoulder_other'],
   Tríceps: ['tri_long', 'tri_pushdown', 'tri_other'],
 }
@@ -340,6 +341,16 @@ export function inferMovementRole(exercise) {
     return 'tri_other'
   }
 
+  if (cat === 'Costas') {
+    if (/terra|stiff|romeno/.test(hay)) return 'back_hinge'
+    if (/pullover/.test(hay) || (/pulldown/.test(hay) && /corda/.test(hay))) return 'back_pullover'
+    if (/unilateral|serrote|um braco|um joelho|renegada|torsao/.test(hay)) return 'back_unilateral'
+    if (/prancha/.test(hay) && /remada/.test(hay)) return 'back_unilateral'
+    if (/puxada|pulldown|barra fixa|pull.?up/.test(hay)) return 'back_vertical'
+    if (/remada/.test(hay)) return 'back_horizontal'
+    return 'back_horizontal'
+  }
+
   return 'general'
 }
 
@@ -358,6 +369,11 @@ function roleLabel(role) {
     tri_long: 'Cabeça longa',
     tri_pushdown: 'Pushdown/corda',
     tri_other: 'Tríceps',
+    back_vertical: 'Puxada vertical',
+    back_horizontal: 'Remada',
+    back_unilateral: 'Unilateral',
+    back_pullover: 'Pullover',
+    back_hinge: 'Dobradiça',
   }
   return map[role] || ''
 }

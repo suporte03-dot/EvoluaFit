@@ -12,6 +12,9 @@ import {
   shouldDropRemoteExercise,
   dedupeExerciseList,
 } from '../src/utils/exerciseRemoteFilter.js'
+import { costasExerciseDefs } from '../src/data/costasExercises.js'
+import { LOCAL_EXERCISE_GIFS } from '../src/data/exerciseLocalGifs.js'
+import { canonicalGifId } from '../src/data/exerciseGifAliases.js'
 
 test('formatRestLabel uses minutes and seconds', () => {
   assert.equal(formatRestLabel(145), '2 min 25 s')
@@ -66,6 +69,22 @@ test('session minutes follow sets and rest, not the profile cap', () => {
   )
   assert.equal(minutes, 27)
   assert.notEqual(minutes, 30)
+})
+
+test('costas pulldown is vertical and row is horizontal', () => {
+  assert.equal(inferMovementRole({ category: 'Costas', name: 'Puxada frontal' }), 'back_vertical')
+  assert.equal(inferMovementRole({ category: 'Costas', name: 'Remada curvada com barra' }), 'back_horizontal')
+  assert.equal(inferMovementRole({ category: 'Costas', name: 'Barra fixa' }), 'back_vertical')
+  assert.equal(inferMovementRole({ category: 'Costas', name: 'Serrote / remada unilateral' }), 'back_unilateral')
+})
+
+test('most costas exercises keep their own gif instead of sharing triangle pulldown', () => {
+  assert.equal(canonicalGifId('barra-fixa'), 'barra-fixa')
+  assert.equal(canonicalGifId('remada-unilateral'), 'remada-unilateral')
+  assert.notEqual(LOCAL_EXERCISE_GIFS['barra-fixa'], LOCAL_EXERCISE_GIFS['puxada-triangulo'])
+  assert.notEqual(LOCAL_EXERCISE_GIFS['remada-curvada'], LOCAL_EXERCISE_GIFS['remada-baixa-cabo'])
+  const withOwnGif = costasExerciseDefs.filter((ex) => LOCAL_EXERCISE_GIFS[ex.id])
+  assert.ok(withOwnGif.length >= 50, `expected >= 50 unique costas GIFs, got ${withOwnGif.length}`)
 })
 
 test('broken supabase media host is dropped', () => {

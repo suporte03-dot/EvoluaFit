@@ -13,6 +13,8 @@ import {
   dedupeExerciseList,
 } from '../src/utils/exerciseRemoteFilter.js'
 import { costasExerciseDefs } from '../src/data/costasExercises.js'
+import { pernasExerciseDefs } from '../src/data/pernasExercises.js'
+import { PERNAS_LOCAL_MEDIA } from '../src/data/pernasLocalMedia.js'
 import { LOCAL_EXERCISE_GIFS } from '../src/data/exerciseLocalGifs.js'
 import { canonicalGifId } from '../src/data/exerciseGifAliases.js'
 
@@ -85,6 +87,31 @@ test('most costas exercises keep their own gif instead of sharing triangle pulld
   assert.notEqual(LOCAL_EXERCISE_GIFS['remada-curvada'], LOCAL_EXERCISE_GIFS['remada-baixa-cabo'])
   const withOwnGif = costasExerciseDefs.filter((ex) => LOCAL_EXERCISE_GIFS[ex.id])
   assert.ok(withOwnGif.length >= 50, `expected >= 50 unique costas GIFs, got ${withOwnGif.length}`)
+})
+
+test('pernas variants keep their own image instead of sharing the squat gif', () => {
+  const uniqueIds = [
+    'agachamento-no-smith',
+    'agachamento-sissy',
+    'agachamento-zercher',
+    'agachamento-maquina-hack',
+    'agachamento-hack-barra',
+    'agachamento-goblet-haltere',
+    'afundo-lateral-barra',
+  ]
+  for (const id of uniqueIds) {
+    assert.equal(canonicalGifId(id), id)
+  }
+  const paths = uniqueIds.map((id) => PERNAS_LOCAL_MEDIA[id])
+  assert.equal(new Set(paths).size, paths.length)
+  const missing = pernasExerciseDefs.filter((ex) => !PERNAS_LOCAL_MEDIA[ex.id])
+  assert.equal(missing.length, 0, `missing local media: ${missing.map((ex) => ex.id).join(', ')}`)
+  assert.match(pernasExerciseDefs.find((ex) => ex.id === 'passada-lateral').name, /barra/i)
+  assert.match(pernasExerciseDefs.find((ex) => ex.id === 'afundo-banco-halteres').name, /subida/i)
+  assert.match(
+    pernasExerciseDefs.find((ex) => ex.id === 'agachamento-pliometrico-halteres').name,
+    /afundo/i,
+  )
 })
 
 test('broken supabase media host is dropped', () => {

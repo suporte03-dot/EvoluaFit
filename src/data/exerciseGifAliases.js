@@ -125,29 +125,7 @@ export const GIF_ALIASES = {
   'desenvolvimento-cubano-sentado': 'desenvolvimento',
   'circulos-braco-pesos': 'elevacao-lateral',
 
-  // Pernas
-  'agachamento-barra': 'agachamento',
-  'agachamento-no-smith': 'agachamento',
-  'agachamento-no-landmine': 'agachamento-goblet',
-  'agachamento-maquina-hack': 'agachamento',
-  'agachamento-hack-barra': 'agachamento',
-  'agachamento-hack-invertido': 'agachamento',
-  'agachamento-com-trava': 'agachamento',
-  'agachamento-kettlebell': 'agachamento-goblet',
-  'agachamento-goblet-haltere': 'agachamento-goblet',
-  'agachamento-sumo-halteres': 'agachamento-goblet',
-  'agachamento-sissy': 'agachamento',
-  'agachamento-zercher': 'agachamento',
-  'agachamento-jefferson': 'agachamento',
-  'agachamento-halteres-banco': 'agachamento-goblet',
-  'agachamento-salto-halteres': 'agachamento',
-  'agachamento-pliometrico-halteres': 'agachamento',
-  'agachamento-frontal-barra-banco': 'agachamento-frontal',
-  'agachamento-frontal-barra-smith': 'agachamento-frontal',
-  'agachamento-frontal-cabo': 'agachamento-frontal',
-  'agachamento-frontal-polia': 'agachamento-frontal',
-  'agachamento-frontal-kettlebell': 'agachamento-frontal',
-  'afundo-lateral-barra': 'passada-lateral',
+  // Pernas — cada id usa a própria ilustração local; sem alias de agachamento/afundo
 }
 
 export function canonicalGifId(id) {

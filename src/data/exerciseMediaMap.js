@@ -272,7 +272,7 @@ export const EXERCISE_POSE_MAP = {
   'agachamento-jefferson': 'squat',
   'agachamento-halteres-banco': 'goblet-squat',
   'agachamento-salto-halteres': 'squat',
-  'agachamento-pliometrico-halteres': 'squat',
+  'agachamento-pliometrico-halteres': 'lunge',
   'agachamento-unilateral-cruzado-barra': 'lunge',
   'agachamento-unilateral-cruzado-haltere': 'lunge',
   'agachamento-bulgaro-barra': 'lunge',

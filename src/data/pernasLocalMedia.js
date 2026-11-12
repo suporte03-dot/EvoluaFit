@@ -28,7 +28,7 @@ export const PERNAS_LOCAL_MEDIA = {
   'agachamento-halteres-banco': 'media/exercises/pernas/agachamento-com-halteres-no-banco.png',
   'agachamento-salto-halteres': 'media/exercises/pernas/agachamento-com-salto-e-halteres.png',
   'agachamento-pliometrico-halteres':
-    'media/exercises/pernas/agachamento-em-pliometrico-com-halteres.png',
+    'media/exercises/pernas/afundo-com-haltere-a-frente.png',
   'agachamento-unilateral-cruzado-barra':
     'media/exercises/pernas/agachamento-unilateral-cruzado-com-barra.png',
   'agachamento-unilateral-cruzado-haltere':

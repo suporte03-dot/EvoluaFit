@@ -37,7 +37,6 @@ export const EXERCISE_GIF_MAP = {
   "stiff": "https://static.exercisedb.dev/media/rR0LJzx.gif",
   "cadeira-flexora": "https://static.exercisedb.dev/media/17lJ1kr.gif",
   "afundo": "https://wger.de/media/exercise-images/984/5c7ffe68-e7b2-47f3-a22a-f9cc28640432.png",
-  "passada-lateral": "https://static.exercisedb.dev/media/H6ybluc.gif",
   "hip-thrust": "https://static.exercisedb.dev/media/qKBpF7I.gif",
   "ponte-gluteos": "https://static.exercisedb.dev/media/9c6T1YX.gif",
   "panturrilha": "https://static.exercisedb.dev/media/0jp9Rlz.gif",
@@ -241,12 +240,6 @@ export const EXERCISE_MEDIA_META = {
     "type": "image",
     "source": "manual"
   },
-  "passada-lateral": {
-    "query": "dumbbell lateral lunge",
-    "url": "https://static.exercisedb.dev/media/H6ybluc.gif",
-    "type": "gif",
-    "source": "exercisedb:H6ybluc"
-  },
   "hip-thrust": {
     "query": "barbell hip thrust",
     "url": "https://static.exercisedb.dev/media/qKBpF7I.gif",
@@ -422,5 +415,5 @@ export function hasRealMedia(id) {
   return Boolean(EXERCISE_GIF_MAP[id])
 }
 
-export const REAL_MEDIA_COUNT = 55
-export const TOTAL_EXERCISES = 55
+export const REAL_MEDIA_COUNT = 54
+export const TOTAL_EXERCISES = 54

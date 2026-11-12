@@ -20,7 +20,7 @@ const accentFixes = [
   [/adu..o/gi, 'aducao'],
   [/b.lgaro/gi, 'bulgaro'],
   [/sum./gi, 'sumo'],
-  [/pli../gi, 'pliometrico'],
+  [/pli../gi, 'plie'],
   [/m.quina/gi, 'maquina'],
 ]
 

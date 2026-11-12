@@ -13,7 +13,8 @@ function resolveMedia(exercise, failedSrc) {
     return { kind: 'fallback', src: fallbackSrc, pending: true }
   }
 
-  const gifUrl = exercise.gif || (/\.gif(\?|$)/i.test(primaryUrl || '') ? primaryUrl : null)
+  const gifUrl =
+    exercise.gif || (/\.(gif|webp)(\?|$)/i.test(primaryUrl || '') ? primaryUrl : null)
 
   if (!mediaPending && mediaType === 'video' && primaryUrl && failedSrc !== primaryUrl) {
     return { kind: 'video', src: primaryUrl, poster: thumbUrl || undefined }

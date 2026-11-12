@@ -107,3 +107,25 @@ test('broken supabase media host is dropped', () => {
   assert.equal(kept.length, 1)
   assert.equal(kept[0].id, 'crucifixo')
 })
+
+test('local costas gif wins over a supabase row with the same name', () => {
+  const kept = dedupeExerciseList([
+    {
+      id: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+      name: 'Remada curvada com barra',
+      hasVerifiedMedia: true,
+      gif: 'https://static.exercisedb.dev/media/7vG5o25.gif',
+      mediaUrl: 'https://static.exercisedb.dev/media/7vG5o25.gif',
+    },
+    {
+      id: 'remada-curvada',
+      name: 'Remada curvada com barra',
+      hasVerifiedMedia: true,
+      gif: '/media/exercises/gifs/remada-curvada.gif',
+      mediaUrl: '/media/exercises/gifs/remada-curvada.gif',
+    },
+  ])
+  assert.equal(kept.length, 1)
+  assert.equal(kept[0].id, 'remada-curvada')
+  assert.match(kept[0].gif, /remada-curvada\.gif$/)
+})

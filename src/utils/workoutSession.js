@@ -3,7 +3,9 @@ import { getExerciseById, parseRestSeconds, parseSets } from '../data/exercisesD
 const REST_CANDIDATES = [45, 60, 90, 120]
 
 export function enrichExerciseMedia(exercise) {
-  const full = exercise?.exerciseId ? getExerciseById(exercise.exerciseId) : null
+  const full =
+    (exercise?.exerciseId ? getExerciseById(exercise.exerciseId) : null) ||
+    (exercise?.id ? getExerciseById(exercise.id) : null)
   if (!full) return exercise
   return {
     ...full,
@@ -15,6 +17,13 @@ export function enrichExerciseMedia(exercise) {
     equipment: exercise.equipment || full.equipment,
     execution: exercise.execution || full.execution,
     shortInstruction: exercise.shortInstruction || full.shortInstruction,
+    mediaType: full.mediaType || exercise.mediaType,
+    mediaUrl: full.mediaUrl || exercise.mediaUrl,
+    gif: full.gif || exercise.gif,
+    image: full.image || exercise.image,
+    thumbnail: full.thumbnail || exercise.thumbnail,
+    mediaPending: full.mediaPending,
+    hasVerifiedMedia: full.hasVerifiedMedia,
   }
 }
 

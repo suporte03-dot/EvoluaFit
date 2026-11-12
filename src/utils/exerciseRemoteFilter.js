@@ -24,10 +24,23 @@ export function shouldDropRemoteExercise(row, localIndex) {
   if (isBrokenMediaUrl(row.media_url || row.mediaUrl)) return true
   const folded = foldExerciseName(row.name)
   const slug = row.slug ? String(row.slug) : ''
-  const localHit = (slug && localIndex?.get(slug)) || localIndex?.get(String(row.id || ''))
+  const localHit =
+    (slug && localIndex?.get(slug)) ||
+    localIndex?.get(String(row.id || '')) ||
+    (folded && localIndex?.get(folded))
   if (localHit) return false
   if (STALE_REMOTE_NAMES.has(folded) && isUuidLike(row.id)) return true
   return false
+}
+
+function mediaScore(ex = {}) {
+  const url = String(ex.gif || ex.mediaUrl || ex.image || '')
+  let score = 0
+  if (/\/media\/exercises\/gifs\//i.test(url)) score += 4
+  if (ex.hasVerifiedMedia) score += 2
+  if (!isUuidLike(ex.id)) score += 1
+  if (url.toLowerCase().endsWith('.gif') || url.toLowerCase().endsWith('.webp')) score += 1
+  return score
 }
 
 export function dedupeExerciseList(list = []) {
@@ -39,8 +52,7 @@ export function dedupeExerciseList(list = []) {
     if (seen.has(key)) continue
     const rival = kept.find((item) => foldExerciseName(item.name) === foldExerciseName(ex.name))
     if (rival) {
-      const preferNew = ex.hasVerifiedMedia && !rival.hasVerifiedMedia
-      if (preferNew) {
+      if (mediaScore(ex) > mediaScore(rival)) {
         kept[kept.indexOf(rival)] = ex
         seen.add(key)
       }

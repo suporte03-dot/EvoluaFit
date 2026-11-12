@@ -92,5 +92,7 @@ export const LOCAL_EXERCISE_GIFS = {
   "remada-unilateral-cabo": "media/exercises/gifs/remada-unilateral-cabo.gif",
   "remada-unilateral": "media/exercises/gifs/remada-unilateral.gif",
   "remada-cabo-unilateral-torsao": "media/exercises/gifs/remada-cabo-unilateral-torsao.gif",
-  "puxada-neutra": "media/exercises/gifs/puxada-neutra.gif"
+  "puxada-neutra": "media/exercises/gifs/puxada-neutra.gif",
+  "levantamento-terra-romeno": "media/exercises/gifs/levantamento-terra-romeno.webp",
+  "puxada-em-pe-com-torsao": "media/exercises/gifs/puxada-em-pe-com-torsao.webp"
 }

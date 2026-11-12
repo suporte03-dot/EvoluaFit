@@ -7,6 +7,7 @@ import {
   isBrokenMediaUrl,
   shouldDropRemoteExercise,
   dedupeExerciseList,
+  foldExerciseName,
 } from '../utils/exerciseRemoteFilter.js'
 
 export { isBrokenMediaUrl, shouldDropRemoteExercise, dedupeExerciseList }
@@ -39,6 +40,8 @@ function indexLocalExercises() {
   for (const ex of localExercises) {
     byId.set(String(ex.id), ex)
     if (ex.slug) byId.set(String(ex.slug), ex)
+    const folded = foldExerciseName(ex.name)
+    if (folded && !byId.has(folded)) byId.set(folded, ex)
   }
   return byId
 }
@@ -51,15 +54,17 @@ function indexLocalExercises() {
  */
 export function mapSupabaseExercise(row, localIndex = indexLocalExercises()) {
   const slug = row.slug ? String(row.slug) : null
+  const folded = foldExerciseName(row.name)
   const local =
     (slug && localIndex.get(slug)) ||
     localIndex.get(String(row.id)) ||
+    (folded && localIndex.get(folded)) ||
     null
 
   const rawCategory = row.muscle_group || row.muscleGroup || local?.category || 'Outros'
   const category = normalizeMuscleGroup(rawCategory)
   const type = row.type || local?.type || 'Funcional'
-  const mediaKey = slug || local?.id || String(row.id)
+  const mediaKey = local?.id || slug || String(row.id)
 
   const media = resolveExerciseMedia(mediaKey, category, type)
   const remoteCandidate = isBrokenMediaUrl(row.media_url) ? null : row.media_url || null
@@ -170,14 +175,14 @@ export async function loadExercises() {
   const { data, error } = await fetchExercisesFromSupabase()
 
   if (!error && data?.length) {
-    const seen = new Set(data.map((ex) => String(ex.id)))
-    const extras = localExercises.filter((ex) => {
+    const seen = new Set(localExercises.map((ex) => String(ex.id)))
+    const extras = data.filter((ex) => {
       const key = String(ex.id)
       if (seen.has(key)) return false
       seen.add(key)
       return true
     })
-    const merged = dedupeExerciseList([...data, ...extras])
+    const merged = dedupeExerciseList([...localExercises, ...extras])
     setExerciseCache(merged)
     return { exercises: merged, source: 'supabase+local', error: null }
   }

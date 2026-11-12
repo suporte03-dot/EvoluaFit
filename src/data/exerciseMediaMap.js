@@ -464,9 +464,10 @@ export function resolveExerciseMedia(id, category, type, base) {
   const localGifPath = getLocalExerciseGifPath(id, root)
   const remoteGif = getExerciseGifUrl(id)
   const gifCandidate = localGifPath || remoteGif
+  const animated = /\.(gif|webp)(\?|$)/i.test(String(gifCandidate || ''))
   const gifUrl =
     (gifCandidate && (resolveSafeMediaUrl(id, gifCandidate, group) || getValidatedMediaUrl(id, gifCandidate))) ||
-    (gifCandidate?.toLowerCase().endsWith('.gif') ? gifCandidate : null)
+    (animated ? gifCandidate : null)
 
   if (gifUrl) {
     return {

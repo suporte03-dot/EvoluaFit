@@ -105,25 +105,9 @@ export const GIF_ALIASES = {
   'triceps-deitado-barra-w': 'triceps-pulley',
   'triceps-testa-declinado': 'triceps-pulley',
 
-  // Ombros
+  // Ombros — cada id usa o próprio GIF local; sem alias de press/elevação
   'desenvolvimento-banco-halteres': 'desenvolvimento',
-  'desenvolvimento-alternada-em-pe': 'desenvolvimento',
-  'desenvolvimento-unilateral-halter': 'desenvolvimento',
-  'desenvolvimento-barra-sentado': 'desenvolvimento',
-  'desenvolvimento-halteres-z': 'desenvolvimento',
-  'desenvolvimento-deitado': 'desenvolvimento',
-  'desenvolvimento-maquina': 'desenvolvimento',
-  'desenvolvimento-maquina-martelo': 'desenvolvimento',
-  'desenvolvimento-maquina-reversa': 'desenvolvimento',
-  'desenvolvimento-cabo': 'desenvolvimento',
-  'desenvolvimento-cabo-ajoelhado': 'desenvolvimento',
-  'desenvolvimento-rotacao-alternada': 'desenvolvimento-arnold',
   'desenvolvimento-arnold-completo': 'desenvolvimento-arnold',
-  'desenvolvimento-arnold-metade': 'desenvolvimento-arnold',
-  'desenvolvimento-arnold-um-braco': 'desenvolvimento-arnold',
-  'desenvolvimento-cubano': 'desenvolvimento',
-  'desenvolvimento-cubano-sentado': 'desenvolvimento',
-  'circulos-braco-pesos': 'elevacao-lateral',
 
   // Pernas — cada id usa a própria ilustração local; sem alias de agachamento/afundo
 }

@@ -39,6 +39,7 @@ function createExercise({
   video,
   gif,
   image,
+  hiddenFromLibrary = false,
 }) {
   const media = resolveExerciseMedia(id, category, type)
   const resolvedVideo = video ?? null
@@ -71,6 +72,7 @@ function createExercise({
   return {
     id,
     name,
+    hiddenFromLibrary: Boolean(hiddenFromLibrary),
     type,
     category: displayGroup,
     muscleGroup: displayGroup,
@@ -211,12 +213,12 @@ export const exercises = [
   }),
   createExercise({
     id: 'cadeira-flexora',
-    name: 'Cadeira flexora',
+    name: 'Mesa flexora',
     type: 'Inferiores',
     category: 'Pernas',
     muscles: ['Posterior de coxa'],
     benefits: ['Isolamento seguro do posterior', 'Boa para joelho sensível'],
-    execution: ['Ajuste a máquina', 'Flexione joelhos', 'Desça com controle'],
+    execution: ['Deite na mesa; flexione os joelhos e desça com controle.'],
     commonMistakes: ['Levantar o quadril', 'Amplitude parcial'],
     sets: '3',
     reps: '12 a 15',
@@ -425,7 +427,8 @@ export const exercises = [
   }),
   createExercise({
     id: 'step-up',
-    name: 'Step-up na caixa',
+    hiddenFromLibrary: true,
+    name: 'Afundo no banco com halteres',
     type: 'Funcional',
     category: 'Pernas',
     muscles: ['Quadríceps', 'Glúteos'],

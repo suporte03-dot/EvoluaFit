@@ -272,7 +272,7 @@ export const EXERCISE_POSE_MAP = {
   'agachamento-jefferson': 'squat',
   'agachamento-halteres-banco': 'goblet-squat',
   'agachamento-salto-halteres': 'squat',
-  'agachamento-pliometrico-halteres': 'lunge',
+  'agachamento-pliometrico-halteres': 'squat',
   'agachamento-unilateral-cruzado-barra': 'lunge',
   'agachamento-unilateral-cruzado-haltere': 'lunge',
   'agachamento-bulgaro-barra': 'lunge',
@@ -434,8 +434,9 @@ export function muscleGroupLabel(category) {
 }
 
 export function countExercisesByChip(exercises, chipId) {
-  if (chipId === 'Todos') return exercises.length
-  return exercises.filter((ex) => matchesGdtChip(chipId, ex.category || ex.muscleGroup)).length
+  const visible = exercises.filter((ex) => !ex.hiddenFromLibrary)
+  if (chipId === 'Todos') return visible.length
+  return visible.filter((ex) => matchesGdtChip(chipId, ex.category || ex.muscleGroup)).length
 }
 
 /**

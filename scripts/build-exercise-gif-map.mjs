@@ -53,7 +53,6 @@ const SEARCH_NAMES = {
   burpee: 'burpee',
   'kettlebell-swing': 'kettlebell swing',
   'farmer-walk': 'farmers walk',
-  'step-up': 'dumbbell step-up',
   'battle-rope': 'battle ropes',
   'aquecimento-leve': 'walking',
   'esteira-moderada': 'running treadmill',
@@ -120,7 +119,6 @@ const EXERCISEDB_IDS = {
   burpee: '0JtKWum',
   'kettlebell-swing': 'UHJlbu3',
   'farmer-walk': 'qPEzJjA',
-  'step-up': 'dG7tG5y',
   'mobilidade-quadril-90': '0L2KwtI',
 }
 

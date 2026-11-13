@@ -90,7 +90,11 @@ const ROLE_PRIORITY = {
   Costas: ['back_vertical', 'back_horizontal', 'back_unilateral', 'back_pullover'],
   Ombros: ['shoulder_press', 'shoulder_lateral', 'shoulder_rear', 'shoulder_front', 'shoulder_other'],
   Tríceps: ['tri_long', 'tri_pushdown', 'tri_other'],
+  Pernas: ['leg_squat', 'leg_hinge', 'leg_unilateral', 'leg_press', 'leg_quad_iso', 'leg_ham_iso', 'leg_adductor'],
+  Glúteos: ['glute_thrust', 'glute_lateral', 'glute_bridge'],
 }
+
+const UNIQUE_ROLE_GROUPS = new Set(['Pernas', 'Glúteos', 'Panturrilha'])
 
 /** Aliases → categoria oficial do catálogo */
 const CATEGORY_ALIASES = {
@@ -351,6 +355,28 @@ export function inferMovementRole(exercise) {
     return 'back_horizontal'
   }
 
+  if (cat === 'Pernas') {
+    if (/aducao|adutor/.test(hay)) return 'leg_adductor'
+    if (/extensor/.test(hay)) return 'leg_quad_iso'
+    if (/flexora|mesa flexora|leg curl/.test(hay)) return 'leg_ham_iso'
+    if (/stiff|terra|romeno|hinge/.test(hay)) return 'leg_hinge'
+    if (/leg.?press/.test(hay)) return 'leg_press'
+    if (
+      /afundo|avanco|passada|bulgaro|búlgaro|unilateral|step.?up|subida|cruzado/.test(hay)
+    ) {
+      return 'leg_unilateral'
+    }
+    return 'leg_squat'
+  }
+
+  if (cat === 'Glúteos') {
+    if (/hip.?thrust|elevacao pelvica|elevação pélvica/.test(hay)) return 'glute_thrust'
+    if (/lateral|passada|abduc|abdut/.test(hay)) return 'glute_lateral'
+    return 'glute_bridge'
+  }
+
+  if (cat === 'Panturrilha') return 'calf_raise'
+
   return 'general'
 }
 
@@ -374,6 +400,17 @@ function roleLabel(role) {
     back_unilateral: 'Unilateral',
     back_pullover: 'Pullover',
     back_hinge: 'Dobradiça',
+    leg_squat: 'Agachamento',
+    leg_hinge: 'Posterior/stiff',
+    leg_unilateral: 'Afundo/avanço',
+    leg_press: 'Leg press',
+    leg_quad_iso: 'Extensora',
+    leg_ham_iso: 'Flexora',
+    leg_adductor: 'Adução',
+    glute_thrust: 'Hip thrust',
+    glute_lateral: 'Passada lateral',
+    glute_bridge: 'Ponte',
+    calf_raise: 'Panturrilha',
   }
   return map[role] || ''
 }
@@ -442,6 +479,7 @@ function buildPool(options) {
   const { level, equipment, restrictions, location } = options
   let pool = exercises.filter(
     (ex) =>
+      !ex.hiddenFromLibrary &&
       matchesEquipment(ex, equipment, location) &&
       matchesLevel(ex, level) &&
       !isRestricted(ex, restrictions),
@@ -634,11 +672,13 @@ function pickByQuotas(pool, quotas, maxExercises, usedIds, allowReuse = false, r
     if (selected.length >= maxExercises) return false
     if (selected.find((s) => s.id === ex.id)) return false
     if (!allowReuse && usedIds.has(ex.id) && !SCARCE_GROUPS.has(group)) return false
+    const role = inferMovementRole(ex)
+    const roles = usedRolesByGroup[group] || (usedRolesByGroup[group] = new Set())
+    if (UNIQUE_ROLE_GROUPS.has(group) && role !== 'general' && roles.has(role)) return false
     selected.push(ex)
     counts[group] = (counts[group] || 0) + 1
     usedIds.add(ex.id)
-    const roles = usedRolesByGroup[group] || (usedRolesByGroup[group] = new Set())
-    roles.add(inferMovementRole(ex))
+    roles.add(role)
     return true
   }
 
@@ -668,7 +708,16 @@ function pickByQuotas(pool, quotas, maxExercises, usedIds, allowReuse = false, r
       let candidates = candidatesFor(group)
       if (!candidates.length) candidates = candidatesFor(group, true)
       if (!candidates.length) break
-      const pick = pickDiverseCandidate(candidates, group, usedRolesByGroup[group] || new Set())
+      const usedRoles = usedRolesByGroup[group] || new Set()
+      if (UNIQUE_ROLE_GROUPS.has(group)) {
+        const unused = candidates.filter((ex) => {
+          const role = inferMovementRole(ex)
+          return role === 'general' || !usedRoles.has(role)
+        })
+        if (unused.length) candidates = unused
+        else break
+      }
+      const pick = pickDiverseCandidate(candidates, group, usedRoles)
       if (!pick || !tryAdd(pick, group)) break
     }
   }
@@ -698,29 +747,42 @@ function fillRemaining(pool, selected, focusGroups, maxExercises, usedIds, dayTy
     return true
   }
 
+  const usedRoles = new Set(selected.map((ex) => inferMovementRole(ex)))
+  const canTake = (ex) => {
+    if (!isAllowed(ex)) return false
+    const role = inferMovementRole(ex)
+    const group = normalizeCategory(ex.category)
+    if (UNIQUE_ROLE_GROUPS.has(group) && role !== 'general' && usedRoles.has(role)) return false
+    return true
+  }
+
   const preferred = shuffle(
     pool.filter(
       (ex) =>
         focusGroups.includes(normalizeCategory(ex.category)) &&
         !usedIds.has(ex.id) &&
-        isAllowed(ex),
+        canTake(ex),
     ),
   )
 
   for (const ex of preferred) {
     if (selected.length >= maxExercises) break
+    if (!canTake(ex)) continue
     selected.push(ex)
     usedIds.add(ex.id)
+    usedRoles.add(inferMovementRole(ex))
   }
 
   if (selected.length < maxExercises) {
     const reuse = shuffle(
-      pool.filter((ex) => focusGroups.includes(normalizeCategory(ex.category)) && isAllowed(ex)),
+      pool.filter((ex) => focusGroups.includes(normalizeCategory(ex.category)) && canTake(ex)),
     )
     for (const ex of reuse) {
       if (selected.length >= maxExercises) break
+      if (!canTake(ex)) continue
       selected.push(ex)
       usedIds.add(ex.id)
+      usedRoles.add(inferMovementRole(ex))
     }
   }
 
@@ -730,14 +792,21 @@ function fillRemaining(pool, selected, focusGroups, maxExercises, usedIds, dayTy
 function emergencyFallback(focusGroups, maxExercises, usedIds, restrictions = [], dayType = 'FullBody') {
   const selected = []
   const byFocus = exercises.filter(
-    (ex) => focusGroups.includes(normalizeCategory(ex.category)) && !isRestricted(ex, restrictions),
+    (ex) =>
+      !ex.hiddenFromLibrary &&
+      focusGroups.includes(normalizeCategory(ex.category)) &&
+      !isRestricted(ex, restrictions),
   )
-  const any = exercises.filter((ex) => !isRestricted(ex, restrictions))
+  const any = exercises.filter((ex) => !ex.hiddenFromLibrary && !isRestricted(ex, restrictions))
   const target = Math.max(3, maxExercises)
+  const usedRoles = new Set()
 
   for (const ex of [...shuffle(byFocus), ...shuffle(any)]) {
     if (selected.length >= target) break
     if (selected.find((s) => s.id === ex.id)) continue
+    const role = inferMovementRole(ex)
+    const group = normalizeCategory(ex.category)
+    if (UNIQUE_ROLE_GROUPS.has(group) && role !== 'general' && usedRoles.has(role)) continue
     const cat = normalizeCategory(ex.category)
     if (dayType === 'Pull' && cat === 'Peitoral') continue
     if (dayType === 'Push' && ['Costas', 'Bíceps'].includes(cat) && selected.length > 0) continue
@@ -752,6 +821,7 @@ function emergencyFallback(focusGroups, maxExercises, usedIds, restrictions = []
     }
     selected.push(ex)
     usedIds.add(ex.id)
+    usedRoles.add(role)
   }
   return selected
 }
@@ -805,11 +875,16 @@ export function pickExercisesForDay(dayTemplate, options, usedIds = new Set()) {
   // Sempre completar até a meta (antes só preenchia se < 3–4 — causa de Advanced sub-gerar)
   if (selected.length < options.maxExercises) {
     const more = pickByQuotas(pool, scopedQuotas, options.maxExercises, usedIds, true, requiredGroups)
+    const usedRoles = new Set(selected.map((ex) => inferMovementRole(ex)))
     for (const ex of more) {
       if (selected.length >= options.maxExercises) break
       if (selected.find((s) => s.id === ex.id)) continue
+      const role = inferMovementRole(ex)
+      const group = normalizeCategory(ex.category)
+      if (UNIQUE_ROLE_GROUPS.has(group) && role !== 'general' && usedRoles.has(role)) continue
       selected.push(ex)
       usedIds.add(ex.id)
+      usedRoles.add(role)
     }
   }
 
@@ -829,13 +904,17 @@ export function pickExercisesForDay(dayTemplate, options, usedIds = new Set()) {
     )
     const merged = []
     const seen = new Set()
+    const usedRoles = new Set()
     for (const ex of [...selected, ...repaired]) {
       if (seen.has(ex.id)) continue
       const cat = normalizeCategory(ex.category)
+      const role = inferMovementRole(ex)
       if (dayType === 'Pull' && cat === 'Peitoral') continue
       if (dayType === 'Push' && ['Costas', 'Bíceps'].includes(cat) && merged.length > 0) continue
+      if (UNIQUE_ROLE_GROUPS.has(cat) && role !== 'general' && usedRoles.has(role)) continue
       merged.push(ex)
       seen.add(ex.id)
+      usedRoles.add(role)
       if (merged.length >= options.maxExercises) break
     }
     selected = merged
@@ -978,7 +1057,13 @@ function applyAdvancedPushVolume(entries, level, dayType) {
 export function isStrengthCompound(exercise) {
   if (!exercise) return false
   const role = inferMovementRole(exercise)
-  if (['chest_flat', 'chest_upper', 'chest_lower', 'shoulder_press'].includes(role)) return true
+  if (
+    ['chest_flat', 'chest_upper', 'chest_lower', 'shoulder_press', 'leg_squat', 'leg_press', 'leg_hinge', 'glute_thrust'].includes(
+      role,
+    )
+  ) {
+    return true
+  }
   const hay = normalizeText([exercise.id, exercise.name, exercise.category, exercise.muscleGroup].join(' '))
   if (
     /crucifix|elevacao|rosca|panturrilha|pallof|voador|fly|encolhimento|prancha|along|mobilidade|abdominal|infra|pulley|triceps|isometr|pec.?deck/.test(

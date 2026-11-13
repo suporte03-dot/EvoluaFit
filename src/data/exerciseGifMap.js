@@ -51,7 +51,6 @@ export const EXERCISE_GIF_MAP = {
   "burpee": "https://static.exercisedb.dev/media/0JtKWum.gif",
   "kettlebell-swing": "https://static.exercisedb.dev/media/UHJlbu3.gif",
   "farmer-walk": "https://static.exercisedb.dev/media/qPEzJjA.gif",
-  "step-up": "https://static.exercisedb.dev/media/dG7tG5y.gif",
   "battle-rope": "https://wger.de/media/exercise-images/1634/9a4704d3-1b25-43e3-b244-3885f4d3db87.png",
   "aquecimento-leve": "https://wger.de/media/exercise-images/113/Walking-lunges-1.png",
   "esteira-moderada": "https://wger.de/media/exercise-images/1615/7792295c-83b6-4ea8-9353-ce02f0ad2559.jpg",
@@ -324,12 +323,6 @@ export const EXERCISE_MEDIA_META = {
     "type": "gif",
     "source": "exercisedb:qPEzJjA"
   },
-  "step-up": {
-    "query": "dumbbell step-up",
-    "url": "https://static.exercisedb.dev/media/dG7tG5y.gif",
-    "type": "gif",
-    "source": "exercisedb:dG7tG5y"
-  },
   "battle-rope": {
     "query": "battle ropes",
     "url": "https://wger.de/media/exercise-images/1634/9a4704d3-1b25-43e3-b244-3885f4d3db87.png",
@@ -415,5 +408,5 @@ export function hasRealMedia(id) {
   return Boolean(EXERCISE_GIF_MAP[id])
 }
 
-export const REAL_MEDIA_COUNT = 54
-export const TOTAL_EXERCISES = 54
+export const REAL_MEDIA_COUNT = 53
+export const TOTAL_EXERCISES = 53

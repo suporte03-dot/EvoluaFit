@@ -6,6 +6,7 @@ import {
   inferMovementRole,
   isStrengthCompound,
   buildSetsRepsRest,
+  pickExercisesForDay,
 } from '../src/utils/workoutGenerator.js'
 import {
   isBrokenMediaUrl,
@@ -106,12 +107,42 @@ test('pernas variants keep their own image instead of sharing the squat gif', ()
   assert.equal(new Set(paths).size, paths.length)
   const missing = pernasExerciseDefs.filter((ex) => !PERNAS_LOCAL_MEDIA[ex.id])
   assert.equal(missing.length, 0, `missing local media: ${missing.map((ex) => ex.id).join(', ')}`)
-  assert.match(pernasExerciseDefs.find((ex) => ex.id === 'passada-lateral').name, /barra/i)
-  assert.match(pernasExerciseDefs.find((ex) => ex.id === 'afundo-banco-halteres').name, /subida/i)
+  assert.match(pernasExerciseDefs.find((ex) => ex.id === 'passada-lateral').name, /lateral com barra/i)
+  assert.match(pernasExerciseDefs.find((ex) => ex.id === 'afundo-banco-halteres').name, /banco/i)
   assert.match(
     pernasExerciseDefs.find((ex) => ex.id === 'agachamento-pliometrico-halteres').name,
-    /afundo/i,
+    /pli[eé]/i,
   )
+  assert.equal(PERNAS_LOCAL_MEDIA['step-up'], PERNAS_LOCAL_MEDIA['afundo-banco-halteres'])
+  assert.equal(pernasExerciseDefs.find((ex) => ex.id === 'agachamento-barra').hiddenFromLibrary, true)
+  assert.equal(pernasExerciseDefs.find((ex) => ex.id === 'agachamento-goblet-haltere').hiddenFromLibrary, true)
+})
+
+test('pernas roles stay distinct so a legs day does not stack squats', () => {
+  assert.equal(inferMovementRole({ category: 'Pernas', name: 'Agachamento no Smith' }), 'leg_squat')
+  assert.equal(inferMovementRole({ category: 'Pernas', name: 'Stiff com halteres' }), 'leg_hinge')
+  assert.equal(inferMovementRole({ category: 'Pernas', name: 'Afundo com barra' }), 'leg_unilateral')
+  assert.equal(inferMovementRole({ category: 'Pernas', name: 'Cadeira extensora' }), 'leg_quad_iso')
+  assert.equal(inferMovementRole({ category: 'Pernas', name: 'Mesa flexora' }), 'leg_ham_iso')
+  assert.equal(inferMovementRole({ category: 'Glúteos', name: 'Hip thrust' }), 'glute_thrust')
+
+  const { selected } = pickExercisesForDay(
+    { name: 'Pernas A', focus: ['Pernas', 'Glúteos', 'Panturrilha'] },
+    {
+      level: 'Intermediário',
+      equipment: ['Academia completa'],
+      restrictions: [],
+      maxExercises: 6,
+      location: 'Academia',
+      minutesPerWorkout: 55,
+    },
+  )
+  const ids = selected.map((ex) => ex.id)
+  assert.equal(new Set(ids).size, ids.length)
+  const pernasRoles = selected
+    .filter((ex) => (ex.category || ex.muscleGroup) === 'Pernas')
+    .map((ex) => inferMovementRole(ex))
+  assert.equal(new Set(pernasRoles).size, pernasRoles.length)
 })
 
 test('broken supabase media host is dropped', () => {

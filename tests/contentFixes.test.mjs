@@ -12,6 +12,8 @@ import {
   isBrokenMediaUrl,
   shouldDropRemoteExercise,
   dedupeExerciseList,
+  mergeLocalAndRemoteExercises,
+  collapseSharedLibraryMedia,
 } from '../src/utils/exerciseRemoteFilter.js'
 import { costasExerciseDefs } from '../src/data/costasExercises.js'
 import { ombrosExerciseDefs } from '../src/data/ombrosExercises.js'
@@ -213,6 +215,64 @@ test('broken supabase media host is dropped', () => {
   ])
   assert.equal(kept.length, 1)
   assert.equal(kept[0].id, 'crucifixo')
+})
+
+test('library merge drops supabase extras in groups the local catalog already covers', () => {
+  const local = [
+    {
+      id: 'desenvolvimento',
+      name: 'Desenvolvimento de ombro no banco com halteres',
+      category: 'Ombros',
+      gif: '/media/exercises/gifs/desenvolvimento.gif',
+      hasVerifiedMedia: true,
+    },
+    {
+      id: 'elevacao-lateral',
+      name: 'Elevação lateral de braços com halteres',
+      category: 'Ombros',
+      gif: '/media/exercises/gifs/elevacao-lateral.gif',
+      hasVerifiedMedia: true,
+    },
+  ]
+  const remote = [
+    {
+      id: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+      name: 'Desenvolvimento com halteres',
+      category: 'Ombros',
+      gif: 'https://static.exercisedb.dev/media/znQUdHY.gif',
+      mediaUrl: 'https://static.exercisedb.dev/media/znQUdHY.gif',
+    },
+    {
+      id: 'bbbbbbbb-cccc-dddd-eeee-ffffffffffff',
+      name: 'Shoulder press machine',
+      category: 'Ombros',
+      gif: 'https://static.exercisedb.dev/media/znQUdHY.gif',
+      mediaUrl: 'https://static.exercisedb.dev/media/znQUdHY.gif',
+    },
+  ]
+  const merged = mergeLocalAndRemoteExercises(local, remote)
+  assert.equal(merged.length, 2)
+  assert.deepEqual(
+    merged.map((ex) => ex.id).sort(),
+    ['desenvolvimento', 'elevacao-lateral'],
+  )
+})
+
+test('library keeps the visible card when a hidden duplicate shares the name', () => {
+  const kept = dedupeExerciseList([
+    { id: 'afundo', name: 'Afundo com halteres', hiddenFromLibrary: true, gif: '/x.png' },
+    { id: 'afundo-halteres', name: 'Afundo com halteres', hiddenFromLibrary: false, gif: '/y.png' },
+  ])
+  assert.equal(kept.map((ex) => ex.id).sort().join(','), 'afundo,afundo-halteres')
+})
+
+test('library hides a second card that reuses the same gif', () => {
+  const list = collapseSharedLibraryMedia([
+    { id: 'a', name: 'Press A', gif: '/media/exercises/gifs/desenvolvimento.gif' },
+    { id: 'b', name: 'Press B', gif: '/media/exercises/gifs/desenvolvimento.gif' },
+    { id: 'c', name: 'Lateral', gif: '/media/exercises/gifs/elevacao-lateral.gif' },
+  ])
+  assert.equal(list.map((ex) => ex.id).join(','), 'a,c')
 })
 
 test('local costas gif wins over a supabase row with the same name', () => {

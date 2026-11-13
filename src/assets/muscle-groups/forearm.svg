@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" fill="none" aria-hidden="true">
+  <path d="M48 18 C56 16 66 18 72 26 L88 70 C92 82 90 96 82 108 L74 122 C70 128 62 128 58 122 L42 96 C36 86 34 74 38 62 L48 30 Z" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round" fill="currentColor" fill-opacity="0.12"/>
+  <path d="M54 40 C60 52 68 68 74 84" stroke="currentColor" stroke-width="1.6" opacity="0.55"/>
+  <path d="M50 52 C58 64 66 78 70 92" stroke="currentColor" stroke-width="1.4" opacity="0.4"/>
+  <path d="M62 118 C66 124 74 126 80 122" stroke="currentColor" stroke-width="1.6" opacity="0.5" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,59 @@
+/** Coach-page icons — same stroke language as dashboard icons. */
+
+import {
+  IconCalendar,
+  IconBolt,
+  IconFlame,
+  IconShield,
+  IconDumbbell,
+  IconTrend,
+  IconSpark,
+  IconChart,
+} from '../dashboard/icons'
+
+const base = {
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.75,
+  strokeLinecap: 'round',
+  strokeLinejoin: 'round',
+}
+
+function Icon({ children, size = 20, className = '', label, ...rest }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      className={className}
+      aria-hidden={label ? undefined : true}
+      role={label ? 'img' : undefined}
+      aria-label={label}
+      {...base}
+      {...rest}
+    >
+      {children}
+    </svg>
+  )
+}
+
+export function IconTarget(props) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="8" />
+      <circle cx="12" cy="12" r="4.5" />
+      <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
+    </Icon>
+  )
+}
+
+export {
+  IconCalendar,
+  IconBolt,
+  IconFlame,
+  IconShield,
+  IconDumbbell,
+  IconTrend,
+  IconSpark,
+  IconChart,
+}

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" fill="none" aria-hidden="true">
+  <path d="M50 16 H70 V34 C70 38 66 42 60 42 C54 42 50 38 50 34 Z" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.12"/>
+  <path d="M28 48 C36 40 48 36 60 36 C72 36 84 40 92 48 L98 64 C100 72 96 80 88 84 L72 90 H48 L32 84 C24 80 20 72 22 64 Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" fill="currentColor" fill-opacity="0.12"/>
+  <path d="M60 42 V88" stroke="currentColor" stroke-width="1.6" opacity="0.6"/>
+  <path d="M40 58 C50 52 70 52 80 58" stroke="currentColor" stroke-width="1.6" opacity="0.5"/>
+  <path d="M44 96 H76 C82 96 86 102 86 108 V118 C86 124 80 128 74 128 H46 C40 128 34 124 34 118 V108 C34 102 38 96 44 96 Z" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.1"/>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" fill="none" aria-hidden="true">
+  <path d="M44 16 H56 V48 C56 58 52 70 48 86 C46 96 48 110 54 122 H40 C36 108 36 96 38 86 C42 70 44 58 44 48 Z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.16"/>
+  <path d="M64 16 H76 V48 C76 58 80 70 84 86 C86 96 86 108 82 122 H68 C74 110 76 96 74 86 C70 70 64 58 64 48 Z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.16"/>
+  <path d="M46 52 C50 60 52 70 50 82" stroke="currentColor" stroke-width="1.5" opacity="0.55"/>
+  <path d="M74 52 C70 60 68 70 70 82" stroke="currentColor" stroke-width="1.5" opacity="0.55"/>
+  <ellipse cx="50" cy="64" rx="8" ry="14" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.12"/>
+  <ellipse cx="70" cy="64" rx="8" ry="14" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.12"/>
+</svg>

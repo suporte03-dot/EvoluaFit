@@ -1,0 +1,61 @@
+import { useEffect, useState } from 'react'
+import { curiosities } from '../data/siteData'
+import SectionTitle from './SectionTitle'
+import SectionReveal from './SectionReveal'
+
+function Curiosities({ onSelectCuriosity }) {
+  const [highlighted, setHighlighted] = useState(0)
+
+  const showNext = () => {
+    setHighlighted((current) => (current + 1) % curiosities.length)
+  }
+
+  useEffect(() => {
+    const card = document.querySelector('.curiosities__card--active')
+    card?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [highlighted])
+
+  return (
+    <section id="curiosidades" className="section curiosities">
+      <div className="container">
+        <SectionReveal>
+          <SectionTitle
+            label="Curiosidades"
+            title="Você Sabia?"
+            subtitle="Curiosidades rápidas para quem gosta de entender o esporte além do placar."
+          />
+        </SectionReveal>
+
+        <div className="curiosities__grid">
+          {curiosities.map((item, index) => (
+            <SectionReveal key={item.id}>
+              <article
+                className={`curiosities__card card card--clickable ${highlighted === index ? 'curiosities__card--active' : ''}`}
+                style={{ '--delay': `${index * 0.05}s` }}
+                onClick={() => onSelectCuriosity?.(item)}
+                onKeyDown={(e) => e.key === 'Enter' && onSelectCuriosity?.(item)}
+                role="button"
+                tabIndex={0}
+              >
+                <span className="curiosities__icon" aria-hidden="true">{item.icon}</span>
+                <span className="curiosities__sport">{item.sport}</span>
+                <h3 className="curiosities__question">{item.question}</h3>
+                <p className="curiosities__answer">{item.answer}</p>
+              </article>
+            </SectionReveal>
+          ))}
+        </div>
+
+        <SectionReveal>
+          <div className="curiosities__action">
+            <button type="button" className="btn btn--accent" onClick={showNext}>
+              Ver outra curiosidade
+            </button>
+          </div>
+        </SectionReveal>
+      </div>
+    </section>
+  )
+}
+
+export default Curiosities

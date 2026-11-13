@@ -1,0 +1,160 @@
+import { writeFileSync } from 'node:fs'
+
+const jsx = `import athletesMark from '../../assets/branding/evoluafit-athletes-mark.png'
+
+const SIZE_MAP = {
+  small: 'small',
+  medium: 'medium',
+  large: 'large',
+}
+
+/**
+ * EvoluaFit brand mark — hexagonal athletes symbol + neon wordmark.
+ * Horizontal composition only: [symbol] [EvoluaFit]
+ */
+export default function EvoluaFitLogo({
+  size = 'medium',
+  compact = false,
+  showWordmark = true,
+  className = '',
+}) {
+  const sizeKey = SIZE_MAP[size] || 'medium'
+  const showText = Boolean(showWordmark) && !compact
+
+  return (
+    <span
+      className={[
+        'evoluafit-logo',
+        \`evoluafit-logo--\${sizeKey}\`,
+        compact ? 'evoluafit-logo--compact' : '',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      aria-label="EvoluaFit"
+      title={compact || !showText ? 'EvoluaFit' : undefined}
+    >
+      <img
+        src={athletesMark}
+        alt=""
+        className="evoluafit-logo__mark"
+        draggable={false}
+        decoding="async"
+      />
+      {showText ? (
+        <span className="evoluafit-logo__wordmark" aria-hidden="true">
+          EvoluaFit
+        </span>
+      ) : null}
+    </span>
+  )
+}
+`
+
+const css = `/* EvoluaFit brand — neon athletes mark + wordmark */
+
+.evoluafit-logo {
+  --ef-mark: 64px;
+  --ef-word: clamp(1.45rem, 2vw, 2.4rem);
+  --ef-gap: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ef-gap);
+  min-width: 0;
+  max-width: 100%;
+  line-height: 1;
+  color: inherit;
+  text-decoration: none;
+  vertical-align: middle;
+}
+
+.evoluafit-logo--small {
+  --ef-mark: 32px;
+  --ef-word: clamp(1.05rem, 1.4vw, 1.25rem);
+  --ef-gap: 10px;
+}
+
+.evoluafit-logo--medium {
+  --ef-mark: 42px;
+  --ef-word: clamp(1.28rem, 1.7vw, 1.7rem);
+  --ef-gap: 12px;
+}
+
+.evoluafit-logo--large {
+  --ef-mark: 64px;
+  --ef-word: clamp(1.45rem, 2vw, 2.4rem);
+  --ef-gap: 14px;
+}
+
+.evoluafit-logo__mark {
+  display: block;
+  width: var(--ef-mark);
+  height: var(--ef-mark);
+  flex-shrink: 0;
+  object-fit: contain;
+  object-position: center;
+  filter:
+    drop-shadow(0 0 8px rgba(34, 211, 238, 0.5))
+    drop-shadow(0 0 18px rgba(20, 184, 166, 0.22));
+  pointer-events: none;
+  user-select: none;
+}
+
+.evoluafit-logo__wordmark {
+  display: inline-block;
+  min-width: 0;
+  font-family: var(--font-brand, 'Manrope', 'Sora', system-ui, sans-serif);
+  font-size: var(--ef-word);
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: #9ffcff;
+  text-shadow:
+    0 0 6px rgba(34, 211, 238, 0.75),
+    0 0 16px rgba(20, 184, 166, 0.45);
+  -webkit-font-smoothing: antialiased;
+}
+
+.evoluafit-logo--compact {
+  gap: 0;
+}
+
+.dash-sidebar__brand .evoluafit-logo {
+  --ef-mark: 42px;
+  --ef-word: 1.35rem;
+  --ef-gap: 12px;
+}
+
+.dash-sidebar--collapsed .dash-sidebar__brand .evoluafit-logo {
+  --ef-mark: 40px;
+}
+
+.header__brand.evoluafit-logo,
+.header__brand .evoluafit-logo {
+  --ef-mark: 44px;
+  --ef-word: clamp(1.2rem, 4.2vw, 1.55rem);
+  --ef-gap: 10px;
+  height: auto;
+  max-width: min(280px, calc(100vw - 7.5rem));
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .app--saas .header--saas-mobile .evoluafit-logo {
+    --ef-mark: 36px;
+    --ef-word: 1.2rem;
+    --ef-gap: 8px;
+  }
+}
+
+@media (max-width: 380px) {
+  .app--saas .header--saas-mobile .evoluafit-logo__wordmark {
+    font-size: 1.05rem;
+  }
+}
+`
+
+writeFileSync('src/components/branding/EvoluaFitLogo.jsx', jsx)
+writeFileSync('src/styles/evoluafit-logo.css', css)
+console.log('ok')

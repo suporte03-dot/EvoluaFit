@@ -1,0 +1,155 @@
+/* EvoluaFit — PERFORMANCE ELECTRIC
+   Azul elétrico (ação) + Violeta (assinatura) + Lime (progresso).
+   Coral/vermelho NÃO é branding — só --danger. */
+
+:root {
+  /* Master palette */
+  --bg-primary: #070a0f;
+  --bg-secondary: #0d1219;
+  --surface-primary: #121923;
+  --surface-elevated: #182230;
+  --border-subtle: #243142;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #9da9b8;
+  --text-muted: #6b7788;
+
+  --brand-primary: #3578ff;
+  --brand-primary-hover: #4b88ff;
+  --brand-primary-active: #2868e8;
+  --brand-secondary: #7657ff;
+  --progress-positive: #b8f23a;
+  --danger: #ff4d5d;
+
+  --gradient-brand: linear-gradient(135deg, #3578ff 0%, #7657ff 100%);
+
+  /* Compat aliases (legado → Performance Electric) */
+  --app-bg: var(--bg-primary);
+  --surface-secondary: var(--surface-elevated);
+  --accent-primary: var(--brand-primary);
+  --accent-lime: var(--progress-positive);
+  --accent-red: var(--danger);
+  --accent-blue: var(--brand-primary);
+  --accent-orange: var(--brand-primary);
+  --accent-green: var(--progress-positive);
+  --accent-purple: var(--brand-secondary);
+  --accent-cyan: #5b8cff;
+
+  --border-accent: rgba(53, 120, 255, 0.45);
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 16px;
+  --shadow-card: 0 16px 40px rgba(0, 0, 0, 0.35);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --motion-fast: 160ms;
+  --motion-base: 220ms;
+
+  --bg-main: var(--bg-primary);
+  --bg-section: var(--bg-secondary);
+  --bg-card: var(--surface-primary);
+  --bg-card-soft: var(--surface-elevated);
+  --primary: var(--brand-primary);
+  --primary-soft: rgba(53, 120, 255, 0.14);
+  --primary-border: rgba(53, 120, 255, 0.5);
+  --secondary: var(--brand-secondary);
+  --secondary-soft: rgba(118, 87, 255, 0.14);
+  --coach: var(--brand-secondary);
+  --coach-soft: rgba(118, 87, 255, 0.16);
+  --energy: var(--progress-positive);
+  --energy-soft: rgba(184, 242, 58, 0.14);
+  --performance: #5b8cff;
+  --performance-soft: rgba(91, 140, 255, 0.14);
+  --danger-soft: rgba(255, 77, 93, 0.14);
+  --text-main: var(--text-primary);
+  --border-soft: var(--border-subtle);
+
+  --gradient-primary: var(--gradient-brand);
+  --gradient-coach: var(--gradient-brand);
+  --glow-primary: 0 0 20px rgba(53, 120, 255, 0.22);
+  --glow-secondary: 0 0 18px rgba(118, 87, 255, 0.16);
+  --glow-coach: 0 0 18px rgba(118, 87, 255, 0.18);
+  --glow-energy: 0 0 16px rgba(184, 242, 58, 0.16);
+
+  --type-push: var(--brand-primary);
+  --type-push-soft: var(--primary-soft);
+  --type-pull: var(--brand-secondary);
+  --type-pull-soft: var(--secondary-soft);
+  --type-legs: var(--progress-positive);
+  --type-legs-soft: var(--energy-soft);
+  --type-full: var(--performance);
+  --type-full-soft: var(--performance-soft);
+  --type-core: #8b9cff;
+  --type-core-soft: rgba(139, 156, 255, 0.16);
+  --type-cardio: var(--brand-primary);
+  --type-cardio-soft: var(--primary-soft);
+  --type-mobility: var(--brand-secondary);
+  --type-mobility-soft: var(--secondary-soft);
+  --type-rest: var(--text-muted);
+  --type-rest-soft: rgba(107, 119, 136, 0.14);
+
+  --color-bg: var(--bg-main);
+  --color-surface: var(--bg-section);
+  --color-surface-soft: var(--bg-card-soft);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-coach: var(--coach);
+  --color-energy: var(--energy);
+  --color-danger: var(--danger);
+  --color-text: var(--text-main);
+  --color-muted: var(--text-muted);
+  --color-perf: var(--performance);
+
+  --fn-week: var(--energy);
+  --fn-month: var(--performance);
+  --fn-next: var(--primary);
+  --fn-muscle: var(--secondary);
+  --fn-streak: var(--energy);
+  --fn-avgtime: var(--performance);
+  --fn-volume: var(--primary);
+  --fn-goals: var(--energy);
+
+  --bg-deep: #05070b;
+  --graphite: var(--bg-section);
+  --green: var(--progress-positive);
+  --green-secondary: #9ad628;
+  --accent: var(--primary);
+  --blue: var(--brand-primary);
+  --blue-deep: #1a2740;
+  --cyan: var(--performance);
+  --purple: var(--brand-secondary);
+  --orange: var(--brand-primary);
+  --red: var(--danger);
+  --snow: var(--text-main);
+  --gray: var(--text-muted);
+
+  --bg-page: var(--bg-main);
+  --bg-glass: rgba(13, 18, 25, 0.88);
+  --bg-glass-soft: rgba(18, 25, 35, 0.72);
+  --border: var(--border-soft);
+  --border-strong: var(--primary-border);
+
+  --radius: var(--radius-md);
+  --font-heading: 'Outfit', system-ui, sans-serif;
+  --font-brand: 'Outfit', system-ui, sans-serif;
+  --font: 'Figtree', system-ui, sans-serif;
+  --header-h: 96px;
+  --header-banner-h: 0px;
+  --container: 1140px;
+  --shadow: var(--shadow-card);
+  --glow-green: var(--glow-energy);
+  --glow-cyan: var(--glow-secondary);
+
+  --dash-orange: var(--primary);
+  --dash-orange-soft: var(--primary-soft);
+  --dash-module-green: var(--primary);
+  --dash-module-blue: var(--performance);
+  --dash-module-purple: var(--coach);
+  --dash-module-cyan: var(--secondary);
+}

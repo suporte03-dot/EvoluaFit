@@ -1,0 +1,175 @@
+/**
+ * Catálogo reformulado da biblioteca — grupo Lombar.
+ * Ilustrações anatômicas locais em public/media/exercises/lombar/.
+ */
+
+const SAFETY = [
+  'Não hiperextenda a coluna no topo do movimento — suba até a linha do corpo.',
+  'Priorize controle; carga leve ou peso corporal no início.',
+  'Pare imediatamente se sentir dor irradiada para as pernas.',
+  'Este conteúdo é informativo e não substitui orientação de um profissional. Em caso de dor, lesão ou desconforto, interrompa o exercício e procure orientação especializada.',
+]
+
+const base = {
+  type: 'Core',
+  category: 'Lombar',
+  safetyTips: SAFETY,
+  rest: '45 a 75 segundos',
+  restrictions: ['lombar'],
+}
+
+/** Definições brutas (sem createExercise) */
+export const lombarExerciseDefs = [
+  // ——— ID legado ———
+  {
+    ...base,
+    id: 'bird-dog',
+    name: 'Bird dog',
+    muscles: ['Core', 'Glúteos', 'Lombar'],
+    benefits: ['Estabilidade lombar', 'Coordenação contralateral'],
+    execution: [
+      'Quatro apoios, coluna neutra.',
+      'Estenda braço e perna opostos sem girar o quadril.',
+      'Retorne e troque o lado.',
+    ],
+    commonMistakes: ['Rotação do quadril', 'Arquear a lombar'],
+    sets: '3',
+    reps: '10 cada lado',
+    equipment: 'Colchonete',
+    level: 'Iniciante',
+  },
+
+  {
+    ...base,
+    id: 'superman',
+    name: 'Superman',
+    muscles: ['Lombar', 'Glúteos', 'Posterior'],
+    benefits: ['Ativa eretores da espinha', 'Sem equipamento'],
+    execution: [
+      'Deitado de bruços, braços à frente.',
+      'Eleve braços e pernas juntos, contraindo a lombar e os glúteos.',
+      'Desça controlando; não force a cervical.',
+    ],
+    commonMistakes: ['Olhar para cima demais', 'Amplitude forçada'],
+    sets: '3',
+    reps: '10 a 15',
+    equipment: 'Peso corporal',
+    level: 'Iniciante',
+  },
+  {
+    ...base,
+    id: 'hiperextensao-chao',
+    name: 'Hiperextensão no chão',
+    muscles: ['Lombar', 'Glúteos', 'Posterior'],
+    benefits: ['Extensão de tronco no solo', 'Bom para iniciantes'],
+    execution: [
+      'De bruços, mãos junto às têmporas.',
+      'Eleve o tronco e as pernas, pivotando no quadril.',
+      'Desça com controle.',
+    ],
+    commonMistakes: ['Puxar o pescoço', 'Subir demais (hiperextensão)'],
+    sets: '3',
+    reps: '10 a 15',
+    equipment: 'Peso corporal',
+    level: 'Iniciante',
+  },
+  {
+    ...base,
+    id: 'hiperextensao',
+    name: 'Hiperextensão (banco 45°)',
+    muscles: ['Lombar', 'Glúteos', 'Posterior'],
+    benefits: ['Clássico para cadeia posterior', 'Fácil progressão'],
+    execution: [
+      'Ajuste o banco; quadril apoiado, tornozelos fixos.',
+      'Desça o tronco com coluna neutra e suba até alinhar o corpo.',
+      'Braços cruzados no peito.',
+    ],
+    commonMistakes: ['Subir além da linha reta', 'Usar impulso'],
+    sets: '3 a 4',
+    reps: '10 a 15',
+    equipment: 'Máquina',
+    level: 'Iniciante',
+  },
+  {
+    ...base,
+    id: 'extensao-lombar-peso',
+    name: 'Extensão lombar com peso',
+    muscles: ['Lombar', 'Glúteos', 'Posterior'],
+    benefits: ['Progressão de carga na hiperextensão', 'Força da cadeia posterior'],
+    execution: [
+      'No banco 45°, segure uma anilha no peito.',
+      'Desça e suba com controle; não force o topo.',
+    ],
+    commonMistakes: ['Carga alta demais', 'Arredondar a coluna na descida'],
+    sets: '3',
+    reps: '8 a 12',
+    equipment: 'Peso livre',
+    level: 'Intermediário',
+  },
+  {
+    ...base,
+    id: 'hiperextensao-torcao',
+    name: 'Hiperextensão com torção',
+    muscles: ['Lombar', 'Oblíquos', 'Glúteos'],
+    benefits: ['Extensão + rotação controlada', 'Trabalha oblíquos junto'],
+    execution: [
+      'No banco 45°, ao subir faça leve torção do tronco.',
+      'Alterne os lados; amplitude curta e controlada.',
+    ],
+    commonMistakes: ['Torsão agressiva', 'Carga excessiva'],
+    sets: '3',
+    reps: '8 a 12 por lado',
+    equipment: 'Máquina',
+    level: 'Intermediário',
+  },
+  {
+    ...base,
+    id: 'hiperextensao-banco-plano',
+    name: 'Hiperextensão no banco plano',
+    muscles: ['Lombar', 'Glúteos', 'Posterior'],
+    benefits: ['Variante em banco reto', 'Útil quando não há banco 45°'],
+    execution: [
+      'Deite de bruços no banco com o tronco para fora da borda.',
+      'Mãos na cabeça; eleve o tronco até alinhar com as pernas.',
+      'Desça controlando.',
+    ],
+    commonMistakes: ['Descer demais', 'Fixação insuficiente das pernas'],
+    sets: '3',
+    reps: '10 a 15',
+    equipment: 'Peso livre',
+    level: 'Intermediário',
+  },
+  {
+    ...base,
+    id: 'hiperextensao-sapo',
+    name: 'Hiperextensão invertida de sapo',
+    muscles: ['Lombar', 'Glúteos', 'Posterior'],
+    benefits: ['Variante com apoio no banco', 'Ênfase em glúteo + lombar'],
+    execution: [
+      'Ajoelhado, tronco apoiado no banco (posição de sapo invertida).',
+      'Estenda o quadril contraindo glúteos e lombar.',
+      'Retorne com controle.',
+    ],
+    commonMistakes: ['Arquear demais a cervical', 'Amplitude forçada'],
+    sets: '3',
+    reps: '10 a 15',
+    equipment: 'Peso livre',
+    level: 'Intermediário',
+  },
+  {
+    ...base,
+    id: 'extensao-lombar-sentada',
+    name: 'Extensão lombar sentada',
+    muscles: ['Lombar'],
+    benefits: ['Trajetória guiada na máquina', 'Bom isolamento dos eretores'],
+    execution: [
+      'Ajuste o assento e o apoio nas costas.',
+      'Estenda o tronco contra a resistência e retorne controlando.',
+    ],
+    commonMistakes: ['Amplitude excessiva', 'Assento mal ajustado'],
+    sets: '3',
+    reps: '10 a 15',
+    equipment: 'Máquina',
+    level: 'Iniciante',
+  },
+]

@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none" aria-hidden="true">
+  <defs>
+    <radialGradient id="coachOrbCore" cx="50%" cy="42%" r="55%">
+      <stop offset="0%" stop-color="#E8FFFF" stop-opacity="0.98"/>
+      <stop offset="28%" stop-color="#5EEFFF" stop-opacity="0.7"/>
+      <stop offset="55%" stop-color="#00D9FF" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#031423" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="coachOrbHalo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00D9FF" stop-opacity="0.4"/>
+      <stop offset="55%" stop-color="#00D9FF" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#00D9FF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="coachOrbRing" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#B8FBFF"/>
+      <stop offset="45%" stop-color="#00D9FF"/>
+      <stop offset="100%" stop-color="#067A8A"/>
+    </linearGradient>
+    <filter id="coachOrbGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="2.6" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <circle cx="120" cy="120" r="108" fill="url(#coachOrbHalo)"/>
+  <circle cx="120" cy="120" r="78" fill="url(#coachOrbCore)"/>
+
+  <g stroke="url(#coachOrbRing)" stroke-width="1.15" opacity="0.5">
+    <circle cx="120" cy="120" r="96"/>
+    <circle cx="120" cy="120" r="72"/>
+    <circle cx="120" cy="120" r="48"/>
+    <circle cx="120" cy="120" r="24"/>
+  </g>
+
+  <g stroke="#5EEFFF" stroke-opacity="0.28" stroke-width="1">
+    <path d="M120 18v204M18 120h204"/>
+    <path d="M42 42l156 156M198 42L42 198"/>
+  </g>
+
+  <g filter="url(#coachOrbGlow)" stroke="#B8FBFF" stroke-width="1.5" opacity="0.9">
+    <ellipse cx="120" cy="120" rx="90" ry="34" transform="rotate(-18 120 120)"/>
+    <ellipse cx="120" cy="120" rx="76" ry="28" transform="rotate(42 120 120)"/>
+    <ellipse cx="120" cy="120" rx="58" ry="20" transform="rotate(78 120 120)"/>
+  </g>
+
+  <!-- node network -->
+  <g fill="#5EEFFF" opacity="0.85">
+    <circle cx="120" cy="120" r="8" fill="#E6FFFF" filter="url(#coachOrbGlow)"/>
+    <circle cx="176" cy="72" r="5" filter="url(#coachOrbGlow)"/>
+    <circle cx="68" cy="164" r="3.6" opacity="0.8"/>
+    <circle cx="168" cy="158" r="2.8" opacity="0.7"/>
+    <circle cx="74" cy="78" r="2.4" opacity="0.65"/>
+    <circle cx="152" cy="52" r="2" opacity="0.55"/>
+    <circle cx="196" cy="118" r="2.2" opacity="0.6"/>
+    <circle cx="52" cy="122" r="1.8" opacity="0.5"/>
+  </g>
+  <g stroke="#5EEFFF" stroke-width="1.5" stroke-linecap="round" opacity="0.75" filter="url(#coachOrbGlow)">
+    <path d="M120 120 L176 72"/>
+    <path d="M120 120 L68 164" opacity="0.55"/>
+    <path d="M176 72 L152 52" opacity="0.45"/>
+    <path d="M120 120 L168 158" opacity="0.4"/>
+  </g>
+</svg>

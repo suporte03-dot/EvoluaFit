@@ -14,6 +14,7 @@ import {
   dedupeExerciseList,
 } from '../src/utils/exerciseRemoteFilter.js'
 import { costasExerciseDefs } from '../src/data/costasExercises.js'
+import { ombrosExerciseDefs } from '../src/data/ombrosExercises.js'
 import { pernasExerciseDefs } from '../src/data/pernasExercises.js'
 import { PERNAS_LOCAL_MEDIA } from '../src/data/pernasLocalMedia.js'
 import { LOCAL_EXERCISE_GIFS } from '../src/data/exerciseLocalGifs.js'
@@ -143,6 +144,54 @@ test('pernas roles stay distinct so a legs day does not stack squats', () => {
     .filter((ex) => (ex.category || ex.muscleGroup) === 'Pernas')
     .map((ex) => inferMovementRole(ex))
   assert.equal(new Set(pernasRoles).size, pernasRoles.length)
+})
+
+test('ombros variants keep their own gif instead of sharing the overhead press', () => {
+  assert.equal(canonicalGifId('desenvolvimento-militar-barra'), 'desenvolvimento-militar-barra')
+  assert.equal(canonicalGifId('elevacao-lateral-maquina'), 'elevacao-lateral-maquina')
+  assert.equal(canonicalGifId('desenvolvimento-arnold-metade'), 'desenvolvimento-arnold-metade')
+  assert.notEqual(LOCAL_EXERCISE_GIFS['desenvolvimento'], LOCAL_EXERCISE_GIFS['desenvolvimento-arnold'])
+  assert.notEqual(LOCAL_EXERCISE_GIFS['desenvolvimento'], LOCAL_EXERCISE_GIFS['elevacao-lateral'])
+  assert.notEqual(LOCAL_EXERCISE_GIFS['elevacao-lateral'], LOCAL_EXERCISE_GIFS['elevacao-frontal-halteres'])
+  const visible = ombrosExerciseDefs.filter((ex) => !ex.hiddenFromLibrary)
+  const withOwnGif = visible.filter((ex) => LOCAL_EXERCISE_GIFS[ex.id])
+  assert.ok(withOwnGif.length >= 50, `expected >= 50 unique ombros GIFs, got ${withOwnGif.length}`)
+  const gifPaths = withOwnGif.map((ex) => LOCAL_EXERCISE_GIFS[ex.id])
+  assert.equal(new Set(gifPaths).size, gifPaths.length)
+  assert.match(ombrosExerciseDefs.find((ex) => ex.id === 'desenvolvimento').name, /banco/i)
+  assert.match(ombrosExerciseDefs.find((ex) => ex.id === 'elevacao-lateral').name, /lateral de braços/i)
+  assert.equal(ombrosExerciseDefs.find((ex) => ex.id === 'desenvolvimento-banco-halteres').hiddenFromLibrary, true)
+  assert.equal(ombrosExerciseDefs.find((ex) => ex.id === 'desenvolvimento-arnold-completo').hiddenFromLibrary, true)
+})
+
+test('ombros roles stay distinct so a push/shoulders day does not stack presses', () => {
+  assert.equal(inferMovementRole({ category: 'Ombros', name: 'Desenvolvimento militar com barra' }), 'shoulder_press')
+  assert.equal(inferMovementRole({ category: 'Ombros', name: 'Elevação lateral de braços com halteres' }), 'shoulder_lateral')
+  assert.equal(
+    inferMovementRole({ category: 'Ombros', name: 'Elevação frontal com halteres' }),
+    'shoulder_front',
+  )
+  assert.equal(
+    inferMovementRole({ category: 'Ombros', name: 'Crucifixo inverso unilateral com cabo' }),
+    'shoulder_rear',
+  )
+
+  const { selected } = pickExercisesForDay(
+    { name: 'Empurrar A', focus: ['Peitoral', 'Ombros', 'Tríceps'] },
+    {
+      level: 'Intermediário',
+      equipment: ['Academia completa'],
+      restrictions: [],
+      maxExercises: 7,
+      location: 'Academia',
+      minutesPerWorkout: 55,
+    },
+  )
+  const ombrosRoles = selected
+    .filter((ex) => (ex.category || ex.muscleGroup) === 'Ombros')
+    .map((ex) => inferMovementRole(ex))
+  assert.ok(ombrosRoles.length >= 1, 'push day should include at least one shoulder move')
+  assert.equal(new Set(ombrosRoles).size, ombrosRoles.length)
 })
 
 test('broken supabase media host is dropped', () => {

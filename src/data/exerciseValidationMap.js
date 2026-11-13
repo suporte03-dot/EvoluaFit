@@ -150,18 +150,18 @@ export const exerciseMediaMap = {
     invalidKeywords: ['bench-press', 'supino', 'curl'],
   },
   desenvolvimento: {
-    expectedNames: ['Desenvolvimento com halteres'],
+    expectedNames: ['Desenvolvimento de ombro no banco com halteres', 'Desenvolvimento com halteres'],
     expectedMediaKeywords: ['ombro', 'halteres', 'desenvolvimento', 'banco'],
     muscleGroup: 'Ombros',
     equipment: ['Halteres'],
     invalidKeywords: ['lateral-raise', 'cALkHHX', 'fly', 'rosca'],
   },
   'elevacao-lateral': {
-    expectedNames: ['Elevação lateral'],
-    expectedMediaKeywords: ['lateral', 'cALkHHX', 'raise'],
+    expectedNames: ['Elevação lateral de braços com halteres', 'Elevação lateral'],
+    expectedMediaKeywords: ['lateral', 'cALkHHX', 'raise', 'elevacao-lateral'],
     muscleGroup: 'Ombros',
     equipment: ['Halteres'],
-    invalidKeywords: ['press', 'znQUdHY', 'arnold'],
+    invalidKeywords: ['znQUdHY', 'arnold'],
   },
   'face-pull': {
     expectedNames: ['Face pull'],

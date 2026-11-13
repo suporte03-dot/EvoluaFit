@@ -94,7 +94,7 @@ const ROLE_PRIORITY = {
   Glúteos: ['glute_thrust', 'glute_lateral', 'glute_bridge'],
 }
 
-const UNIQUE_ROLE_GROUPS = new Set(['Pernas', 'Glúteos', 'Panturrilha'])
+const UNIQUE_ROLE_GROUPS = new Set(['Pernas', 'Glúteos', 'Panturrilha', 'Ombros'])
 
 /** Aliases → categoria oficial do catálogo */
 const CATEGORY_ALIASES = {

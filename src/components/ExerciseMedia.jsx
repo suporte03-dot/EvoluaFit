@@ -55,6 +55,37 @@ function resolveMedia(exercise, failedSrc) {
   return { kind: null, src: null, pending: mediaPending }
 }
 
+/** Primeiro quadro do GIF, parado. */
+function GifStill({ src, alt, onError }) {
+  const canvasRef = useRef(null)
+  const onErrorRef = useRef(onError)
+  onErrorRef.current = onError
+
+  useEffect(() => {
+    let cancelled = false
+    const img = new Image()
+    img.decoding = 'async'
+    img.onload = () => {
+      const canvas = canvasRef.current
+      if (cancelled || !canvas) return
+      canvas.width = img.naturalWidth || 1
+      canvas.height = img.naturalHeight || 1
+      canvas.getContext('2d')?.drawImage(img, 0, 0)
+    }
+    img.onerror = () => {
+      if (!cancelled) onErrorRef.current?.()
+    }
+    img.src = src
+    return () => {
+      cancelled = true
+      img.onload = null
+      img.onerror = null
+    }
+  }, [src])
+
+  return <canvas ref={canvasRef} className="exercise-media__image exercise-media__still" role="img" aria-label={alt} />
+}
+
 export default function ExerciseMedia({
   exercise,
   className = '',
@@ -64,6 +95,7 @@ export default function ExerciseMedia({
   square = false,
   fit = 'cover',
   showPendingBadge = false,
+  animate = true,
 }) {
   const containerRef = useRef(null)
   const [inView, setInView] = useState(!lazy)
@@ -121,7 +153,7 @@ export default function ExerciseMedia({
           className="exercise-media__video"
           src={media.src}
           poster={media.poster}
-          autoPlay
+          autoPlay={animate}
           loop
           muted
           playsInline
@@ -131,16 +163,22 @@ export default function ExerciseMedia({
         />
       )}
 
-      {inView && (media.kind === 'gif' || media.kind === 'image' || media.kind === 'fallback') && media.src && (
-        <img
-          className="exercise-media__image"
-          src={media.src}
-          alt={alt}
-          loading={lazy ? 'lazy' : 'eager'}
-          decoding="async"
-          onError={handleError}
-        />
+      {inView && media.kind === 'gif' && media.src && !animate && (
+        <GifStill src={media.src} alt={alt} onError={handleError} />
       )}
+
+      {inView &&
+        ((media.kind === 'gif' && animate) || media.kind === 'image' || media.kind === 'fallback') &&
+        media.src && (
+          <img
+            className="exercise-media__image"
+            src={media.src}
+            alt={alt}
+            loading={lazy ? 'lazy' : 'eager'}
+            decoding="async"
+            onError={handleError}
+          />
+        )}
 
       {inView && !media.src && (
         <div className="exercise-media__placeholder" aria-label={alt}>

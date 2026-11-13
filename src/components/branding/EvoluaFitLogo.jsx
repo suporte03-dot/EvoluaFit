@@ -16,6 +16,7 @@ export default function EvoluaFitLogo({
   compact = false,
   showWordmark = true,
   className = '',
+  alt = '',
 }) {
   const markPx = SIZE_MAP[size] || SIZE_MAP.medium
   const sizeName = SIZE_MAP[size] ? size : 'medium'
@@ -37,7 +38,7 @@ export default function EvoluaFitLogo({
       {showText ? (
         <picture>
           <source srcSet={LOCKUP_WEBP} type="image/webp" />
-          <img src={LOCKUP_SRC} alt="" className="evoluafit-logo__file" />
+          <img src={LOCKUP_SRC} alt={alt} className="evoluafit-logo__file" />
         </picture>
       ) : (
         <img

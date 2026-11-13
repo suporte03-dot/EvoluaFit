@@ -8,9 +8,10 @@ import {
   shouldDropRemoteExercise,
   dedupeExerciseList,
   foldExerciseName,
+  mergeLocalAndRemoteExercises,
 } from '../utils/exerciseRemoteFilter.js'
 
-export { isBrokenMediaUrl, shouldDropRemoteExercise, dedupeExerciseList }
+export { isBrokenMediaUrl, shouldDropRemoteExercise, dedupeExerciseList, mergeLocalAndRemoteExercises }
 
 function normalizeArray(value) {
   if (!value) return []
@@ -171,18 +172,10 @@ export async function fetchExercisesFromSupabase() {
  */
 export async function loadExercises() {
   logMediaIssuesOnce()
-  const localIndex = indexLocalExercises()
   const { data, error } = await fetchExercisesFromSupabase()
 
   if (!error && data?.length) {
-    const seen = new Set(localExercises.map((ex) => String(ex.id)))
-    const extras = data.filter((ex) => {
-      const key = String(ex.id)
-      if (seen.has(key)) return false
-      seen.add(key)
-      return true
-    })
-    const merged = dedupeExerciseList([...localExercises, ...extras])
+    const merged = mergeLocalAndRemoteExercises(localExercises, data)
     setExerciseCache(merged)
     return { exercises: merged, source: 'supabase+local', error: null }
   }
@@ -191,9 +184,10 @@ export async function loadExercises() {
     console.warn('[EvoluaFit] Supabase indisponível, usando exercícios locais.', error.message || error)
   }
 
-  setExerciseCache(localExercises)
+  const localOnly = mergeLocalAndRemoteExercises(localExercises, [])
+  setExerciseCache(localOnly)
   return {
-    exercises: localExercises,
+    exercises: localOnly,
     source: 'local',
     error: error || null,
     fallback: Boolean(error),

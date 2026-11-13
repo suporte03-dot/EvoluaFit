@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { equipmentTypes as defaultEquipment, levelTypes as defaultLevels, exerciseTypes as defaultTypes } from '../data/exercisesData'
 import { GDT_FILTER_GROUPS, matchesGdtChip, countExercisesByChip, muscleGroupLabel } from '../data/exerciseMediaMap'
+import { collapseSharedLibraryMedia } from '../utils/exerciseRemoteFilter'
 import { rankBySearch } from '../utils/textSearch'
 import { useFitness } from '../context/FitnessContext'
 import { useExercises } from '../hooks/useExercises'
@@ -120,7 +121,7 @@ export default function ExerciseLibrary() {
       list = list.filter((ex) => matchesGdtChip(selectedGroup, ex.category || ex.muscleGroup))
     }
 
-    return list
+    return collapseSharedLibraryMedia(list)
   }, [advancedFiltered, isSearchMode, searchQuery, selectedGroup])
 
   useEffect(() => {

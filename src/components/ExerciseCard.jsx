@@ -30,7 +30,7 @@ export default function ExerciseCard({ exercise, onAdd, onClick, variant = 'defa
           onClick={handleOpen}
           aria-label={`Ver exercício: ${exercise.name}`}
         >
-          <ExerciseMedia exercise={exercise} square lazy fit="contain" showPendingBadge />
+          <ExerciseMedia exercise={exercise} square lazy fit="contain" showPendingBadge animate={false} />
         </button>
 
         <div className="gdt-exercise-card__body">
@@ -66,7 +66,7 @@ export default function ExerciseCard({ exercise, onAdd, onClick, variant = 'defa
   return (
     <article className="exercise-card glass-card exercise-card--interactive">
       <button type="button" className="exercise-card__media-btn" onClick={handleOpen} aria-label={`Ver detalhes de ${exercise.name}`}>
-        <ExerciseMedia exercise={exercise} aspectRatio="16/9" compact fit="contain" showPendingBadge />
+        <ExerciseMedia exercise={exercise} aspectRatio="16/9" compact fit="contain" showPendingBadge animate={false} />
       </button>
 
       <div className="exercise-card__header">

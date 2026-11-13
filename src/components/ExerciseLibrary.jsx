@@ -95,6 +95,7 @@ export default function ExerciseLibrary() {
 
   const advancedFiltered = useMemo(() => {
     return exercises.filter((ex) => {
+      if (ex.hiddenFromLibrary) return false
       const muscleGroup = ex.muscleGroup || ex.category || ''
       const matchEquip = equipment === 'Todos' || ex.equipment === equipment
       const matchLevel = level === 'Todos' || ex.level === level

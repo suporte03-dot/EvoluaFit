@@ -6,6 +6,23 @@ import {
   objectiveLabels,
   PROFESSIONAL_DISCLAIMER,
 } from '../data/workoutTemplates.js'
+import {
+  KIND_ORDER,
+  KINDS,
+  RULES_VERSION,
+  checkWeeklyVolume,
+  classifyExercise,
+  deriveWorkoutTags,
+  durationLimit,
+  entryGroup,
+  entryKind,
+  estimateWorkoutMinutes,
+  fitToDuration,
+  mainExerciseIndex,
+  parseSetCount,
+  prescribeExercise,
+  setsRange,
+} from './prescription/index.js'
 
 /** Cotas base por tipo de treino (ajustadas por nível/tempo em buildDayQuotas) */
 const DAY_QUOTAS = {
@@ -72,16 +89,6 @@ const LEVEL_CAPS = {
   Iniciante: { min: 3, max: 6 },
   Intermediário: { min: 4, max: 8 },
   Avançado: { min: 4, max: 10 },
-}
-
-/**
- * Metas de volume (séries totais) por grupo — Push avançado profissional.
- * Cotas de exercícios: Peito 4 · Ombros 3 · Tríceps 2–3
- */
-const ADVANCED_PUSH_VOLUME = {
-  Peitoral: { min: 14, max: 16 },
-  Ombros: { min: 10, max: 12 },
-  Tríceps: { min: 9, max: 10 },
 }
 
 /** Ordem preferencial de ângulos/papéis por grupo (diversidade no Push) */
@@ -430,9 +437,9 @@ export function summarizeDayVolume(exercises = [], dayTypeOrName = '') {
 
   const hay = normalizeText(dayTypeOrName)
   let order = Object.keys(totals)
-  if (/push|peito|ombro|triceps/.test(hay) || (totals.Peitoral && totals.Tríceps)) {
+  if (/push|empurr|peito|ombro|triceps/.test(hay) || (totals.Peitoral && totals.Tríceps)) {
     order = ['Peitoral', 'Ombros', 'Tríceps'].filter((g) => totals[g])
-  } else if (/pull|costas|biceps/.test(hay) || totals.Costas) {
+  } else if (/pull|puxar|costas|biceps/.test(hay) || totals.Costas) {
     order = ['Costas', 'Bíceps', 'Trapézio', 'Lombar'].filter((g) => totals[g])
   } else if (/legs|perna|glute/.test(hay) || totals.Pernas || totals.Glúteos) {
     order = ['Pernas', 'Glúteos', 'Panturrilha', 'Abdômen'].filter((g) => totals[g])
@@ -1000,199 +1007,138 @@ function getDayMaxExercises(dayType, level, duration, goal) {
   return max
 }
 
-/**
- * Distribui séries totais do grupo entre os exercícios (alvo min–max).
- */
-function distributeGroupSets(entries, group, minSets, maxSets) {
-  const groupIdxs = entries
-    .map((ex, i) => (normalizeCategory(ex.muscleGroup) === group ? i : -1))
-    .filter((i) => i >= 0)
-  if (!groupIdxs.length) return entries
-
-  const n = groupIdxs.length
-  const target = clamp(Math.round((minSets + maxSets) / 2), minSets, maxSets)
-  const next = [...entries]
-
-  // Distribuição quase uniforme, compostos (índice 0) podem ficar com +1
-  const base = Math.floor(target / n)
-  let rem = target - base * n
-  groupIdxs.forEach((idx) => {
-    const sets = clamp(base + (rem > 0 ? 1 : 0), 3, 5)
-    if (rem > 0) rem -= 1
-    next[idx] = { ...next[idx], sets }
-  })
-
-  let total = groupIdxs.reduce((s, i) => s + next[i].sets, 0)
-  let guard = 0
-  while (total < minSets && guard < 24) {
-    const i = groupIdxs[guard % groupIdxs.length]
-    if (next[i].sets < 5) {
-      next[i] = { ...next[i], sets: next[i].sets + 1 }
-      total += 1
-    }
-    guard += 1
-  }
-  guard = 0
-  while (total > maxSets && guard < 24) {
-    const i = groupIdxs[groupIdxs.length - 1 - (guard % groupIdxs.length)]
-    if (next[i].sets > 3) {
-      next[i] = { ...next[i], sets: next[i].sets - 1 }
-      total -= 1
-    }
-    guard += 1
-  }
-
-  return next
-}
-
-function applyAdvancedPushVolume(entries, level, dayType) {
-  if (level !== 'Avançado' || dayType !== 'Push') return entries
-  let next = entries
-  for (const [group, range] of Object.entries(ADVANCED_PUSH_VOLUME)) {
-    next = distributeGroupSets(next, group, range.min, range.max)
-  }
-  return next
-}
-
 export function isStrengthCompound(exercise) {
   if (!exercise) return false
-  const role = inferMovementRole(exercise)
-  if (
-    ['chest_flat', 'chest_upper', 'chest_lower', 'shoulder_press', 'leg_squat', 'leg_press', 'leg_hinge', 'glute_thrust'].includes(
-      role,
-    )
-  ) {
-    return true
-  }
-  const hay = normalizeText([exercise.id, exercise.name, exercise.category, exercise.muscleGroup].join(' '))
-  if (
-    /crucifix|elevacao|rosca|panturrilha|pallof|voador|fly|encolhimento|prancha|along|mobilidade|abdominal|infra|pulley|triceps|isometr|pec.?deck/.test(
-      hay,
-    )
-  ) {
-    return false
-  }
-  return /agachamento|terra|hip.?thrust|leg.?press|remada curvada|barra fixa|pull.?up|desenvolvimento|stiff|afundo/.test(
-    hay,
-  )
+  return classifyExercise(exercise).kind === KINDS.composto
 }
 
 export function estimateSessionMinutes(exercises = [], options = {}) {
-  const workSec = options.workSecondsPerSet ?? 40
   if (!exercises.length) return options.fallback ?? 45
-  let total = 0
-  for (const ex of exercises) {
-    const sets = Math.max(1, parseSets(ex.sets) || Number(ex.sets) || 3)
-    const restRaw = ex.restSeconds ?? ex.rest
-    const rest = Number(restRaw) > 0 ? Number(restRaw) : parseRestSeconds(restRaw) || 90
-    total += sets * workSec + Math.max(sets - 1, 0) * rest
-  }
-  return Math.max(20, Math.round(total / 60))
+  return estimateWorkoutMinutes(exercises)
 }
 
-function isTimedPrescription(exercise) {
-  const hay = `${exercise?.id || ''} ${exercise?.name || ''} ${exercise?.type || ''} ${exercise?.category || ''} ${exercise?.reps || ''}`
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-  return /prancha|isometr|segundos|minutos|esteira|bicicleta-leve|aquecimento|desaquecimento|alongamento|mobilidade/.test(
-    hay,
-  )
+function goalIntensityBias(goal) {
+  if (goal === 'forca' || goal === 'hipertrofia') return 1
+  if (goal === 'saude' || goal === 'mobilidade') return -1
+  return 0
 }
 
+/** Séries × repetições × descanso — delega ao motor de prescrição. */
 export function buildSetsRepsRest(exercise, level, goal, dayType) {
-  const config = levelConfig[level] || levelConfig.Intermediário
-  const timed = isTimedPrescription(exercise)
-  let sets = clamp(Math.round(parseSets(exercise.sets) * config.setsMultiplier), config.setsMin, config.setsMax)
-  let rest = clamp(parseRestSeconds(exercise.rest) + config.restBonus, config.restMin, config.restMax)
-  let reps = exercise.reps || config.defaultReps
-  let observation = ''
-  let intensityBias = 0
+  const recovery = isRecoveryDay(dayType)
+  const prescription = prescribeExercise(exercise, { level, goal, recovery })
+  let intensityBias = goalIntensityBias(goal)
+  if (recovery || prescription.timed) intensityBias = -1
+  return {
+    sets: prescription.sets,
+    reps: prescription.reps,
+    rest: prescription.rest,
+    observation: prescription.observation,
+    intensityBias,
+    kind: prescription.kind,
+    principal: prescription.principal,
+  }
+}
 
-  if (timed) {
-    sets = clamp(parseSets(exercise.sets) || 2, 1, 4)
-    reps = exercise.reps || (String(exercise.category).toLowerCase() === 'cardio' ? '8-12 min' : '30-45s')
-    rest = clamp(parseRestSeconds(exercise.rest) || 45, 20, 90)
-    observation = observation || 'Mantenha o tempo contínuo, com técnica estável.'
-    return { sets, reps, rest, observation, intensityBias: -1 }
+/** Compostos primeiro (o principal do grupo do dia na frente), depois isolados, core etc. */
+function sortByKind(entries) {
+  const sorted = entries
+    .map((ex, index) => ({ ex, index, rank: KIND_ORDER.indexOf(entryKind(ex).kind) }))
+    .sort((a, b) => a.rank - b.rank || a.index - b.index)
+    .map((item) => item.ex)
+  const first = sorted[0]
+  if (!first || entryKind(first).kind !== KINDS.composto) return sorted
+  const leadGroup = entryGroup(first)
+  const principalIdx = sorted.findIndex((ex) => entryKind(ex).principal && entryGroup(ex) === leadGroup)
+  if (principalIdx > 0) sorted.unshift(...sorted.splice(principalIdx, 1))
+  return sorted
+}
+
+/**
+ * Ajusta séries para o volume semanal ficar na faixa do nível,
+ * sem passar da duração escolhida. Devolve avisos quando o tempo limita.
+ */
+function balanceWeeklyVolume(weeklyPlan, { level, minutes }) {
+  const plan = { weeklyPlan: weeklyPlan.map((day) => ({ ...day, exercises: day.exercises.map((ex) => ({ ...ex })) })) }
+  const limit = durationLimit(minutes)
+  const kindPriority = { isolado: 0, composto: 1 }
+
+  const candidates = (group) => {
+    const out = []
+    plan.weeklyPlan.forEach((day, dayIdx) => {
+      day.exercises.forEach((ex, exIdx) => {
+        const { kind, principal } = entryKind(ex)
+        if (entryGroup(ex) !== group) return
+        if (kind !== KINDS.isolado && kind !== KINDS.composto) return
+        out.push({ dayIdx, exIdx, kind, principal })
+      })
+    })
+    return out
   }
 
-  if (level === 'Iniciante') {
-    sets = clamp(sets, 2, 3)
-    reps = '10-15'
-    rest = clamp(rest, 60, 90)
-    observation = 'Foque na técnica e amplitude controlada.'
-  } else if (level === 'Intermediário') {
-    sets = clamp(sets, 3, 4)
-    reps = reps || '8-12'
-    rest = clamp(rest, 60, 120)
-  } else {
-    sets = clamp(sets, 3, 5)
-    rest = clamp(rest, 60, 150)
-    if (!observation && Math.random() < 0.18 && !isRecoveryDay(dayType)) {
-      observation =
-        Math.random() < 0.5
-          ? 'Opcional: bi-set com o próximo exercício do mesmo grupo (apenas se a técnica estiver estável).'
-          : 'Opcional: drop set na última série (reduza a carga ~20% e continue com controle).'
+  for (let guard = 0; guard < 120; guard += 1) {
+    const { above } = checkWeeklyVolume(plan, level)
+    if (!above.length) break
+    const setsOf = ({ dayIdx, exIdx }) => parseSetCount(plan.weeklyPlan[dayIdx].exercises[exIdx].sets)
+    const pick = candidates(above[0].group)
+      .filter((c) => setsOf(c) > 2)
+      .sort(
+        (a, b) =>
+          Number(a.principal) - Number(b.principal) ||
+          (kindPriority[a.kind] ?? 2) - (kindPriority[b.kind] ?? 2) ||
+          setsOf(b) - setsOf(a),
+      )[0]
+    if (pick) {
+      const ex = plan.weeklyPlan[pick.dayIdx].exercises[pick.exIdx]
+      ex.sets = parseSetCount(ex.sets) - 1
+      continue
     }
+    const removable = candidates(above[0].group)
+      .filter(({ dayIdx, exIdx }) => {
+        const day = plan.weeklyPlan[dayIdx]
+        const sameGroup = day.exercises.filter((e) => entryGroup(e) === above[0].group).length
+        return sameGroup > 1 && exIdx !== mainExerciseIndex(day.exercises)
+      })
+      .sort((a, b) => (kindPriority[a.kind] ?? 2) - (kindPriority[b.kind] ?? 2) || b.exIdx - a.exIdx)[0]
+    if (!removable) break
+    plan.weeklyPlan[removable.dayIdx].exercises.splice(removable.exIdx, 1)
   }
 
-  switch (goal) {
-    case 'hipertrofia':
-      reps = level === 'Iniciante' ? '10-12' : '8-12'
-      rest = clamp(rest, 60, level === 'Avançado' ? 120 : 90)
-      intensityBias = 1
+  for (let guard = 0; guard < 120; guard += 1) {
+    const { below } = checkWeeklyVolume(plan, level)
+    if (!below.length) break
+    let grown = false
+    for (const item of below) {
+      const pick = candidates(item.group)
+        .filter(({ dayIdx, exIdx, kind, principal }) => {
+          const day = plan.weeklyPlan[dayIdx]
+          const ex = day.exercises[exIdx]
+          const [, max] = setsRange(kind, principal, level)
+          if (parseSetCount(ex.sets) >= max) return false
+          const trial = day.exercises.map((e, i) => (i === exIdx ? { ...e, sets: parseSetCount(e.sets) + 1 } : e))
+          return estimateWorkoutMinutes(trial) <= limit
+        })
+        .sort((a, b) => (kindPriority[b.kind] ?? 2) - (kindPriority[a.kind] ?? 2))[0]
+      if (!pick) continue
+      const ex = plan.weeklyPlan[pick.dayIdx].exercises[pick.exIdx]
+      ex.sets = parseSetCount(ex.sets) + 1
+      grown = true
       break
-    case 'forca':
-      if (isStrengthCompound(exercise)) {
-        reps = level === 'Iniciante' ? '6-8' : '4-6'
-        rest = clamp(rest + 30, 90, 150)
-        sets = clamp(sets + (level === 'Iniciante' ? 0 : 1), config.setsMin, config.setsMax)
-        observation = observation || 'Carga desafiadora com execução limpa; não force além da técnica.'
-      } else {
-        reps = exercise.reps || (level === 'Iniciante' ? '10-12' : '8-12')
-        rest = clamp(rest, 60, 90)
-        observation = observation || 'Isolador: mantenha o controle; não use faixa de composto.'
-      }
-      intensityBias = 1
-      break
-    case 'condicionamento':
-      reps = level === 'Iniciante' ? '12-15' : '12-20'
-      rest = clamp(rest - 15, 45, 75)
-      intensityBias = 0
-      break
-    case 'emagrecimento':
-      reps = '12-15'
-      rest = clamp(rest - 10, 45, 75)
-      intensityBias = 0
-      observation =
-        observation || 'Mantenha ritmo constante; priorize consistência, sem promessas de perda de peso.'
-      break
-    case 'mobilidade':
-      if (['Mobilidade', 'Alongamento', 'Abdômen'].includes(normalizeCategory(exercise.category))) {
-        reps = '30-60s'
-        sets = clamp(sets, 2, 3)
-        rest = 45
-      }
-      observation = observation || 'Movimento suave, sem forçar amplitude dolorosa.'
-      intensityBias = -1
-      break
-    case 'saude':
-    default:
-      reps = exercise.reps || '10-12'
-      rest = clamp(Math.max(60, rest), 60, 90)
-      intensityBias = -1
-      observation = observation || 'Priorize conforto e boa forma em todas as séries.'
-      break
+    }
+    if (!grown) break
   }
 
-  if (isRecoveryDay(dayType)) {
-    sets = clamp(sets, 2, 3)
-    rest = Math.min(rest, 60)
-    intensityBias = -1
-  }
-
-  return { sets, reps, rest, observation, intensityBias }
+  const { below, above, range } = checkWeeklyVolume(plan, level)
+  const warnings = [
+    ...below.map(
+      (item) =>
+        `${item.group}: ${Math.round(item.sets)} séries por semana, abaixo da faixa do nível (${range[0]}-${range[1]}). A duração escolhida limita o volume.`,
+    ),
+    ...above.map(
+      (item) => `${item.group}: ${Math.round(item.sets)} séries por semana, acima da faixa do nível (${range[0]}-${range[1]}).`,
+    ),
+  ]
+  return { weeklyPlan: plan.weeklyPlan, warnings }
 }
 
 function buildSafetyTip(exercise, restrictions, dayType) {
@@ -1228,7 +1174,12 @@ function resolveIntensity(level, goal, dayType, intensityBias = 0) {
 }
 
 function buildExerciseEntry(exercise, level, goal, dayType, restrictions) {
-  const { sets, reps, rest, observation, intensityBias } = buildSetsRepsRest(exercise, level, goal, dayType)
+  const { sets, reps, rest, observation, intensityBias, kind, principal } = buildSetsRepsRest(
+    exercise,
+    level,
+    goal,
+    dayType,
+  )
   const full = getExerciseById(exercise.id) || exercise
   const safetyTip = buildSafetyTip(exercise, restrictions, dayType)
   const movementType = inferMovementRole(full)
@@ -1248,6 +1199,8 @@ function buildExerciseEntry(exercise, level, goal, dayType, restrictions) {
     reps,
     rest,
     restSeconds: rest,
+    kind,
+    principal,
     observation: obs,
     safetyTip,
     load: '',
@@ -1261,11 +1214,11 @@ function buildExerciseEntry(exercise, level, goal, dayType, restrictions) {
 
 function workoutTypeLabel(dayType, name) {
   const map = {
-    Push: 'Push',
-    Pull: 'Pull',
-    Legs: 'Legs',
-    LegsLight: 'Legs (leve)',
-    FullBody: 'Full Body',
+    Push: 'Empurrar',
+    Pull: 'Puxar',
+    Legs: 'Pernas',
+    LegsLight: 'Pernas (leve)',
+    FullBody: 'Corpo inteiro',
     Superiores: 'Superiores',
     Inferiores: 'Inferiores',
     Core: 'Core',
@@ -1300,7 +1253,7 @@ export function generateWorkoutPlan(input = {}) {
   const usedIds = new Set()
   let usedFallback = false
 
-  const weeklyPlan = template.map((dayTemplate) => {
+  const draftPlan = template.map((dayTemplate) => {
     const dayTypePreview = inferDayType(dayTemplate.name, dayTemplate.focus)
     const recovery = isRecoveryDay(dayTypePreview, dayTemplate.name)
     const dayMax = recovery
@@ -1322,34 +1275,46 @@ export function generateWorkoutPlan(input = {}) {
     )
     if (dayFallback) usedFallback = true
 
-    let exerciseEntries = selected.map((ex) => buildExerciseEntry(ex, level, goal, dayType, restrictions))
-    exerciseEntries = applyAdvancedPushVolume(exerciseEntries, level, dayType)
+    const exerciseEntries = sortByKind(
+      selected.map((ex) => buildExerciseEntry(ex, level, goal, dayType, restrictions)),
+    )
 
     const avgBias =
       exerciseEntries.reduce((sum, ex) => sum + (ex._intensityBias || 0), 0) /
       Math.max(exerciseEntries.length, 1)
     const intensity = resolveIntensity(level, goal, dayType, Math.round(avgBias))
-    const muscleGroups = focusGroups.length ? focusGroups : normalizeFocus(dayTemplate.focus)
     const workoutType = workoutTypeLabel(dayType, dayTemplate.name)
-    const cleanExercises = exerciseEntries.map(({ _intensityBias, ...ex }) => ex)
-    const estimatedDuration = recovery
-      ? Math.max(20, estimateSessionMinutes(cleanExercises, { fallback: 25 }))
-      : estimateSessionMinutes(cleanExercises, { fallback: minutesPerWorkout })
-    const volumeSummary = summarizeDayVolume(cleanExercises, workoutType || dayTemplate.name)
+    const cleanExercises = fitToDuration(
+      exerciseEntries.map(({ _intensityBias, ...ex }) => ex),
+      minutesPerWorkout,
+    ).exercises
+    const muscleGroups = deriveWorkoutTags(cleanExercises)
 
     return {
       day: dayTemplate.day,
       workoutName: dayTemplate.name,
       workoutType,
-      muscleGroups,
-      estimatedDuration,
+      muscleGroups: muscleGroups.length ? muscleGroups : normalizeFocus(dayTemplate.focus),
       intensity,
       exercises: cleanExercises,
+      name: dayTemplate.name,
+    }
+  })
+
+  const balanced = balanceWeeklyVolume(draftPlan, { level, minutes: minutesPerWorkout })
+  const weeklyPlan = balanced.weeklyPlan.map((day) => {
+    const minutes = estimateWorkoutMinutes(day.exercises)
+    const volumeSummary = summarizeDayVolume(day.exercises, day.workoutType || day.workoutName)
+    const tags = deriveWorkoutTags(day.exercises)
+    const muscleGroups = tags.length ? tags : day.muscleGroups
+    return {
+      ...day,
+      muscleGroups,
+      focus: muscleGroups,
+      estimatedDuration: minutes,
+      estimatedMinutes: minutes,
       volumeSummary: volumeSummary.text,
       volumeParts: volumeSummary.parts,
-      name: dayTemplate.name,
-      focus: muscleGroups,
-      estimatedMinutes: estimatedDuration,
     }
   })
 
@@ -1407,8 +1372,49 @@ export function generateWorkoutPlan(input = {}) {
     schedule: weeklyPlan,
     usedFallback,
     safetyNotes,
+    volumeWarnings: balanced.warnings,
+    rulesVersion: RULES_VERSION,
+    startDate: localDateKey(input.startDate ? new Date(input.startDate) : new Date()),
     disclaimer: PROFESSIONAL_DISCLAIMER,
   }
+}
+
+export function localDateKey(date = new Date()) {
+  const d = new Date(date)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+function parseDateKey(key) {
+  const [y, m, d] = String(key).split('-').map(Number)
+  if (!y || !m || !d) return null
+  return new Date(y, m - 1, d, 12, 0, 0, 0)
+}
+
+/** Distribuição dos dias da planilha a partir do dia de início (0 = início). */
+const START_OFFSETS = {
+  1: [0],
+  2: [0, 3],
+  3: [0, 2, 4],
+  4: [0, 1, 3, 4],
+  5: [0, 1, 2, 4, 5],
+  6: [0, 1, 2, 3, 4, 5],
+  7: [0, 1, 2, 3, 4, 5, 6],
+}
+
+/** Início da semana corrente da planilha (repete a cada 7 dias a partir de startDate). */
+function currentCycleStart(startDate, referenceDate) {
+  const start = parseDateKey(startDate)
+  if (!start) return null
+  const ref = new Date(referenceDate)
+  ref.setHours(12, 0, 0, 0)
+  const diffDays = Math.floor((ref - start) / 86400000)
+  if (diffDays <= 0) return start
+  const cycle = new Date(start)
+  cycle.setDate(start.getDate() + Math.floor(diffDays / 7) * 7)
+  return cycle
 }
 
 function startOfMonday(ref = new Date()) {
@@ -1425,13 +1431,16 @@ function startOfMonday(ref = new Date()) {
 export function planToWorkouts(plan, referenceDate = new Date()) {
   const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
   const days = plan.weeklyPlan || plan.schedule || []
+  const cycleStart = plan.startDate ? currentCycleStart(plan.startDate, referenceDate) : null
+  const offsets = START_OFFSETS[days.length] || days.map((_, i) => i)
   const monday = startOfMonday(referenceDate)
   const stamp = Date.now()
 
   return days.map((day, index) => {
     const dayNum = Number(day.day ?? day.dayNumber ?? index + 1)
-    const workoutDate = new Date(monday)
-    workoutDate.setDate(monday.getDate() + Math.max(0, dayNum - 1))
+    const workoutDate = new Date(cycleStart || monday)
+    if (cycleStart) workoutDate.setDate(cycleStart.getDate() + (offsets[index] ?? index))
+    else workoutDate.setDate(monday.getDate() + Math.max(0, dayNum - 1))
 
     const muscleGroups = day.muscleGroups || day.focus || []
     const exercises = (day.exercises || []).map((ex) => {
@@ -1444,6 +1453,7 @@ export function planToWorkouts(plan, referenceDate = new Date()) {
         reps: ex.reps,
         restSeconds: ex.restSeconds ?? ex.rest ?? 60,
         rest: ex.rest ?? ex.restSeconds ?? 60,
+        ...(ex.kind ? { kind: ex.kind, principal: Boolean(ex.principal) } : {}),
         equipment: ex.equipment,
         observation: ex.observation,
         safetyTip: ex.safetyTip,
@@ -1471,7 +1481,7 @@ export function planToWorkouts(plan, referenceDate = new Date()) {
       planId: plan.id,
       name: day.workoutName || day.name,
       workoutType: day.workoutType,
-      date: workoutDate.toISOString().split('T')[0],
+      date: localDateKey(workoutDate),
       dayLabel: dayNames[workoutDate.getDay()],
       dayNumber: day.day,
       muscleGroups,
@@ -1479,10 +1489,7 @@ export function planToWorkouts(plan, referenceDate = new Date()) {
       volumeSummary,
       volumeParts: day.volumeParts || summarizeDayVolume(exercises, day.workoutType || day.workoutName).parts,
       status: 'Pendente',
-      estimatedMinutes:
-        day.estimatedDuration ||
-        day.estimatedMinutes ||
-        estimateSessionMinutes(exercises, { fallback: plan.minutesPerWorkout || plan.duration || 45 }),
+      estimatedMinutes: estimateSessionMinutes(exercises, { fallback: plan.minutesPerWorkout || plan.duration || 45 }),
       intensity: day.intensity,
       createdAt: new Date().toISOString(),
     }

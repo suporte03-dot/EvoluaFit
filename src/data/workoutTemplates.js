@@ -3,8 +3,8 @@ import { displayWorkoutName } from '../utils/workoutLabels.js'
 
 export const splitTemplates = {
   2: [
-    { day: 1, name: 'Full Body A', focus: ['Peitoral', 'Costas', 'Pernas', 'Abdômen'] },
-    { day: 2, name: 'Full Body B', focus: ['Ombros', 'Pernas', 'Glúteos', 'Bíceps', 'Tríceps'] },
+    { day: 1, name: 'Corpo inteiro A', focus: ['Peitoral', 'Costas', 'Pernas', 'Abdômen'] },
+    { day: 2, name: 'Corpo inteiro B', focus: ['Ombros', 'Pernas', 'Glúteos', 'Bíceps', 'Tríceps'] },
   ],
   3: [
     { day: 1, name: 'Empurrar', focus: ['Peitoral', 'Ombros', 'Tríceps'] },
@@ -12,14 +12,14 @@ export const splitTemplates = {
     { day: 3, name: 'Pernas', focus: ['Pernas', 'Glúteos', 'Panturrilha', 'Abdômen'] },
   ],
   '3_beginner': [
-    { day: 1, name: 'Full Body A', focus: ['Peitoral', 'Costas', 'Pernas', 'Abdômen'] },
-    { day: 2, name: 'Full Body B', focus: ['Ombros', 'Pernas', 'Glúteos', 'Bíceps'] },
-    { day: 3, name: 'Full Body C', focus: ['Peitoral', 'Costas', 'Glúteos', 'Tríceps'] },
+    { day: 1, name: 'Corpo inteiro A', focus: ['Peitoral', 'Costas', 'Pernas', 'Abdômen'] },
+    { day: 2, name: 'Corpo inteiro B', focus: ['Ombros', 'Pernas', 'Glúteos', 'Bíceps'] },
+    { day: 3, name: 'Corpo inteiro C', focus: ['Peitoral', 'Costas', 'Glúteos', 'Tríceps'] },
   ],
   4: [
     { day: 1, name: 'Superiores A', focus: ['Peitoral', 'Costas', 'Ombros'] },
     { day: 2, name: 'Inferiores A', focus: ['Pernas', 'Glúteos', 'Panturrilha'] },
-    { day: 3, name: 'Superiores B', focus: ['Peitoral', 'Costas', 'Bíceps', 'Tríceps'] },
+    { day: 3, name: 'Superiores B', focus: ['Peitoral', 'Costas', 'Ombros', 'Bíceps', 'Tríceps'] },
     { day: 4, name: 'Inferiores B', focus: ['Pernas', 'Glúteos', 'Abdômen'] },
   ],
   5: [
@@ -128,10 +128,10 @@ function repeatPattern(parts, days) {
 
 function buildFullBodySplit(days) {
   const variants = [
-    { name: 'Full Body A', focus: ['Peitoral', 'Costas', 'Pernas', 'Abdômen'] },
-    { name: 'Full Body B', focus: ['Ombros', 'Pernas', 'Glúteos', 'Bíceps'] },
-    { name: 'Full Body C', focus: ['Peitoral', 'Costas', 'Glúteos', 'Tríceps'] },
-    { name: 'Full Body D', focus: ['Ombros', 'Pernas', 'Abdômen', 'Mobilidade'] },
+    { name: 'Corpo inteiro A', focus: ['Peitoral', 'Costas', 'Pernas', 'Abdômen'] },
+    { name: 'Corpo inteiro B', focus: ['Ombros', 'Pernas', 'Glúteos', 'Bíceps'] },
+    { name: 'Corpo inteiro C', focus: ['Peitoral', 'Costas', 'Glúteos', 'Tríceps'] },
+    { name: 'Corpo inteiro D', focus: ['Ombros', 'Pernas', 'Abdômen', 'Mobilidade'] },
   ]
   return numberedDays(variants.slice(0, days))
 }
@@ -196,7 +196,7 @@ export function getSplitTemplate(daysPerWeek, level = 'Intermediário', goal = '
   if (goal === 'mobilidade' && days <= 3) {
     return [
       { day: 1, name: 'Mobilidade + Core A', focus: ['Mobilidade', 'Alongamento', 'Abdômen'] },
-      { day: 2, name: 'Full Body controlado', focus: ['Peitoral', 'Costas', 'Pernas', 'Abdômen'] },
+      { day: 2, name: 'Corpo inteiro controlado', focus: ['Peitoral', 'Costas', 'Pernas', 'Abdômen'] },
       ...(days === 3
         ? [{ day: 3, name: 'Mobilidade + Cardio leve', focus: ['Mobilidade', 'Cardio', 'Alongamento'] }]
         : []),

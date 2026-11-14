@@ -15,6 +15,7 @@ import {
   getMobileAgenda,
   getTrainingStatusByDate,
   markRestDay,
+  mergeSessionsIntoCalendar,
   statusLabel,
   syncPlanToCalendar,
   todayKey,
@@ -23,6 +24,8 @@ import {
   wouldCreateSevenIntenseDays,
 } from '../utils/calendarUtils'
 import { formatDateLong } from '../utils/dateFormat'
+import { displayWorkoutName, displayWorkoutType } from '../utils/workoutLabels'
+import { workoutDisplayMinutes } from '../utils/workoutDuration'
 
 const FILTERS = [
   { id: 'all', label: 'Todos' },
@@ -34,7 +37,7 @@ const FILTERS = [
   { id: 'month', label: 'Este mês' },
 ]
 
-const WORKOUT_TYPES = ['Push', 'Pull', 'Legs', 'Full Body', 'Cardio', 'Mobilidade', 'Core', 'Outro']
+const WORKOUT_TYPES = ['Empurrar', 'Puxar', 'Pernas', 'Corpo inteiro', 'Cardio', 'Mobilidade', 'Core', 'Outro']
 
 const MUSCLE_OPTIONS = [
   'Peito',
@@ -54,7 +57,7 @@ const emptyAddForm = (date) => ({
   source: 'quick',
   workoutId: '',
   workoutName: '',
-  workoutType: 'Full Body',
+  workoutType: 'Corpo inteiro',
   muscleGroups: [],
   duration: 45,
   notes: '',
@@ -138,32 +141,14 @@ export default function TrainingCalendar() {
     [workouts, filter],
   )
 
-  const calendarWorkouts = useMemo(() => {
-    const completedFromSessions = (sessionHistory || [])
-      .filter((s) => s.status === 'completed' || (!s.status && s.completedAt))
-      .map((s) => ({
-        id: `session-${s.id}`,
-        name: s.name,
-        date: String(s.completedAt || '').split('T')[0],
-        status: 'Realizado',
-        completedAt: s.completedAt,
-      }))
-      .filter((s) => s.date)
-
-    const byDate = new Map()
-    ;[...(filteredWorkouts || []), ...completedFromSessions].forEach((w) => {
-      if (!w?.date) return
-      const prev = byDate.get(w.date)
-      if (!prev) {
-        byDate.set(w.date, w)
-        return
-      }
-      if (prev.status !== 'Realizado' && w.status === 'Realizado') {
-        byDate.set(w.date, { ...prev, ...w, status: 'Realizado' })
-      }
-    })
-    return [...byDate.values()]
-  }, [filteredWorkouts, sessionHistory])
+  const calendarWorkouts = useMemo(
+    () => mergeSessionsIntoCalendar(filteredWorkouts, sessionHistory),
+    [filteredWorkouts, sessionHistory],
+  )
+  const allCalendarWorkouts = useMemo(
+    () => mergeSessionsIntoCalendar(workouts, sessionHistory),
+    [workouts, sessionHistory],
+  )
 
   const monthCells = useMemo(
     () => getCurrentMonthDays(year, month, calendarWorkouts, new Date()),
@@ -178,8 +163,12 @@ export default function TrainingCalendar() {
   }, [goals, profile])
 
   const summary = useMemo(
-    () => getCalendarSummary(workouts, new Date(), { weekGoal }),
-    [workouts, weekGoal],
+    () =>
+      getCalendarSummary(allCalendarWorkouts, new Date(), {
+        weekGoal,
+        monthDate: new Date(year, month, 1),
+      }),
+    [allCalendarWorkouts, weekGoal, year, month],
   )
   const mobileAgenda = useMemo(() => getMobileAgenda(workouts, new Date()), [workouts])
 
@@ -234,7 +223,7 @@ export default function TrainingCalendar() {
       source: 'edit',
       workoutId: workout.id,
       workoutName: workout.name,
-      workoutType: workout.workoutType || 'Outro',
+      workoutType: workout.workoutType ? displayWorkoutType(workout.workoutType) : 'Outro',
       muscleGroups: workout.muscleGroups || [],
       duration: workout.estimatedMinutes || 45,
       notes: workout.notes || '',
@@ -263,7 +252,7 @@ export default function TrainingCalendar() {
       source: 'saved',
       workoutId: w.id,
       workoutName: w.name,
-      workoutType: w.workoutType || prev.workoutType,
+      workoutType: w.workoutType ? displayWorkoutType(w.workoutType) : prev.workoutType,
       muscleGroups: w.muscleGroups || [],
       duration: w.estimatedMinutes || 45,
       exercises: (w.exercises || []).map((ex) => ({ ...ex })),
@@ -278,7 +267,7 @@ export default function TrainingCalendar() {
       ...prev,
       source: 'plan',
       workoutName: day.name,
-      workoutType: day.name?.split('—')[0]?.trim() || 'Treino',
+      workoutType: displayWorkoutType(day.name?.split('—')[0]?.trim()) || 'Treino',
       muscleGroups: day.focus || [],
       duration: day.estimatedMinutes || 45,
       exercises: (day.exercises || []).map((ex) => ({ ...ex })),
@@ -509,7 +498,7 @@ export default function TrainingCalendar() {
                     .filter(Boolean)
                     .join(' ')}
                   onClick={() => openDay(cell.date)}
-                  title={cell.primary?.name || (cell.isRestOnly ? 'Descanso' : undefined)}
+                  title={cell.primary?.name ? displayWorkoutName(cell.primary.name) : cell.isRestOnly ? 'Descanso' : undefined}
                 >
                   <span className="cal-day__num">{cell.day}</span>
                   {status && (
@@ -528,7 +517,7 @@ export default function TrainingCalendar() {
             <span><i className="dot dot--planned" /> Planejado</span>
             <span><i className="dot dot--pending" /> Pendente</span>
             <span><i className="dot dot--rest" /> Descanso</span>
-            <span><i className="dot dot--missed" /> Atrasado</span>
+            <span><i className="dot dot--missed" /> Não realizado</span>
             <span><i className="dot dot--skipped" /> Pulado</span>
           </div>
         </div>
@@ -599,7 +588,7 @@ export default function TrainingCalendar() {
                         .filter(Boolean)
                         .join(' ')}
                       onClick={() => openDay(cell.date)}
-                      title={cell.primary?.name || (cell.isRestOnly ? 'Descanso' : undefined)}
+                      title={cell.primary?.name ? displayWorkoutName(cell.primary.name) : cell.isRestOnly ? 'Descanso' : undefined}
                     >
                       <span className="cal-day__num">{cell.day}</span>
                       {status && (
@@ -630,12 +619,13 @@ export default function TrainingCalendar() {
                 <div><span>Realizados</span><strong>{summary.completed}</strong></div>
                 <div><span>Descanso</span><strong>{summary.rest}</strong></div>
                 <div><span>Pendentes</span><strong>{summary.pending}</strong></div>
+                <div><span>Não realizados</span><strong>{summary.missed}</strong></div>
                 <div><span>Sequência</span><strong>{summary.streak || '—'}</strong></div>
               </div>
             )}
             <p className="cal-side-panel__next">
               <span>Próximo</span>
-              <strong>{summary.nextWorkout ? summary.nextWorkout.name : 'Marque o próximo treino'}</strong>
+              <strong>{summary.nextWorkout ? displayWorkoutName(summary.nextWorkout.name) : 'Marque o próximo treino'}</strong>
             </p>
             <h4 className="cal-side-panel__filters-title">Filtros</h4>
             <div className="cal-filters cal-filters--stack" role="tablist" aria-label="Filtros do calendário">
@@ -667,11 +657,12 @@ export default function TrainingCalendar() {
             <div><span>Realizados</span><strong>{summary.completed}</strong></div>
             <div><span>Descanso</span><strong>{summary.rest}</strong></div>
             <div><span>Pendentes</span><strong>{summary.pending}</strong></div>
+            <div><span>Não realizados</span><strong>{summary.missed}</strong></div>
             <div><span>Sequência</span><strong>{summary.streak || '—'}</strong></div>
           </div>
           <p className="cal-side-panel__next" style={{ margin: '1rem 0' }}>
             <span>Próximo</span>
-            <strong>{summary.nextWorkout ? summary.nextWorkout.name : 'Marque o próximo treino'}</strong>
+            <strong>{summary.nextWorkout ? displayWorkoutName(summary.nextWorkout.name) : 'Marque o próximo treino'}</strong>
           </p>
           <div className="cal-filters" role="tablist" aria-label="Filtros do calendário">
             {FILTERS.map((f) => (
@@ -721,10 +712,10 @@ export default function TrainingCalendar() {
                 <article key={w.id} className={`cal-day-card cal-day-card--${st}`}>
                   <header className="cal-day-card__head">
                     <div>
-                      <h4>{w.name}</h4>
+                      <h4>{displayWorkoutName(w.name)}</h4>
                       <span className={`status-badge status--${st}`}>{statusLabel(st)}</span>
                     </div>
-                    <span className="cal-day-card__type">{w.workoutType || 'Treino'}</span>
+                    <span className="cal-day-card__type">{displayWorkoutType(w.workoutType) || 'Treino'}</span>
                   </header>
                   <ul className="cal-day-meta">
                     <li>
@@ -732,7 +723,7 @@ export default function TrainingCalendar() {
                       {(w.muscleGroups || []).length ? w.muscleGroups.join(', ') : '—'}
                     </li>
                     <li>
-                      <strong>Duração:</strong> {w.estimatedMinutes || 0} min
+                      <strong>Duração:</strong> {workoutDisplayMinutes(w, 0)} min
                     </li>
                     <li>
                       <strong>Exercícios:</strong> {(w.exercises || []).length}
@@ -845,7 +836,7 @@ export default function TrainingCalendar() {
                 <option value="">Escolha…</option>
                 {savedWorkouts.map((w) => (
                   <option key={w.id} value={w.id}>
-                    {w.name}
+                    {displayWorkoutName(w.name)}
                   </option>
                 ))}
               </select>
@@ -861,7 +852,7 @@ export default function TrainingCalendar() {
                 </option>
                 {planSource.schedule.map((day, idx) => (
                   <option key={`${day.day}-${idx}`} value={idx}>
-                    {day.name}
+                    {displayWorkoutName(day.name)}
                   </option>
                 ))}
               </select>
@@ -874,7 +865,7 @@ export default function TrainingCalendar() {
               type="text"
               value={addForm.workoutName}
               onChange={(e) => setAddForm((p) => ({ ...p, workoutName: e.target.value }))}
-              placeholder="Ex.: Push — Peito e Tríceps"
+              placeholder="Ex.: Empurrar — Peito e Tríceps"
               required
             />
           </label>
@@ -1017,10 +1008,10 @@ function MobileDayBlock({ title, block, highlight, compact, onOpen, onStart, onA
             <span className="cal-mobile-card__empty">Sem treino · toque para planejar</span>
           ) : (
             <>
-              <span className="cal-mobile-card__name">{primary?.name}</span>
+              <span className="cal-mobile-card__name">{displayWorkoutName(primary?.name)}</span>
               <span className={`status-badge status--${status}`}>{statusLabel(status)}</span>
-              {primary?.estimatedMinutes > 0 && (
-                <span className="cal-mobile-card__meta">{primary.estimatedMinutes} min</span>
+              {workoutDisplayMinutes(primary, 0) > 0 && (
+                <span className="cal-mobile-card__meta">{workoutDisplayMinutes(primary, 0)} min</span>
               )}
             </>
           )}

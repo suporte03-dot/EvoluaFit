@@ -4,6 +4,7 @@ import { IconChevron } from './icons'
 import dumbbellsImage from '../../assets/dashboard/dumbbells-green.png'
 import { getWeeklyProgress } from '../../utils/todayWorkout'
 import { formatDateShort } from '../../utils/dateFormat'
+import { displayWorkoutName } from '../../utils/workoutLabels'
 
 function isPending(status) {
   const s = String(status || '').toLowerCase()
@@ -59,7 +60,7 @@ export default function TrainingOverviewCard({ workouts = [], history = [], prof
                 <li>
                   <span>Próximo</span>
                   <strong>
-                    {nextWorkout.name?.split('—')[0]?.trim() || nextWorkout.name}
+                    {displayWorkoutName(nextWorkout.name?.split('—')[0]?.trim() || nextWorkout.name)}
                     {nextWorkout.date ? ` · ${formatDateShort(nextWorkout.date)}` : ''}
                   </strong>
                 </li>

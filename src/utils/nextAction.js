@@ -3,6 +3,8 @@
  * Priority: resume → start → one workout to weekly goal → log weight → build plan.
  */
 
+import { displayWorkoutName } from './workoutLabels.js'
+
 export function getNextAction({
   today = {},
   weekly = {},
@@ -136,7 +138,7 @@ export function getNextAction({
       kind: 'navigate',
       title: workout ? 'Nada agendado para hoje' : 'Escolha o próximo passo',
       description: workout
-        ? `Próximo na rotina: ${workout.name}.`
+        ? `Próximo na rotina: ${displayWorkoutName(workout.name)}.`
         : 'Abra o calendário ou ajuste a rotina.',
       primaryLabel: workout ? 'Ver próximo treino' : 'Abrir calendário',
       secondaryLabel: 'Ajustar treino',

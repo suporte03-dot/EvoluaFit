@@ -1,5 +1,6 @@
 import { getExerciseById, getExercisesByIds } from './exercisesData.js'
 import { displayWorkoutName } from '../utils/workoutLabels.js'
+import { workoutDisplayMinutes } from '../utils/workoutDuration.js'
 
 export const splitTemplates = {
   2: [
@@ -707,7 +708,7 @@ export function enrichWorkoutDetail(workout, extras = {}) {
     type: displayWorkoutName(type),
     goal: workout.goal || planGoal || template?.goal || 'Saúde geral',
     level: workout.level || planLevel || template?.level || 'Intermediário',
-    duration: workout.estimatedMinutes || template?.duration || 45,
+    duration: workoutDisplayMinutes(workout, template?.duration || 45),
     frequency: template?.frequency || 'Conforme sua planilha',
     mainMuscleGroup: template?.mainMuscleGroup || workout.muscleGroups?.[0] || 'Corpo inteiro',
     secondaryMuscleGroups:

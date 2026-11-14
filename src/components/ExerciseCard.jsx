@@ -1,6 +1,7 @@
 import ExerciseMedia from './ExerciseMedia'
 import { navigateToExercise } from '../hooks/useHashRoute'
 import { muscleGroupLabel } from '../data/exerciseMediaMap'
+import { displayWorkoutType } from '../utils/workoutLabels'
 
 function levelClass(level = 'iniciante') {
   return level
@@ -80,7 +81,7 @@ export default function ExerciseCard({ exercise, onAdd, onClick, variant = 'defa
 
       <div className="exercise-card__tags">
         <span className="muscle-tag">{muscle}</span>
-        <span className="exercise-type-tag">{exercise.type}</span>
+        <span className="exercise-type-tag">{displayWorkoutType(exercise.type)}</span>
         <span className="equipment-tag">{exercise.equipment}</span>
       </div>
 

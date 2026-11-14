@@ -1,5 +1,5 @@
 import { formatDateShort } from '../../../utils/dateFormat'
-import { lastCompletedResult } from '../../../utils/trainingIdentity'
+import { displayWorkoutName, lastCompletedResult } from '../../../utils/trainingIdentity'
 import { scrollToSection } from '../../../utils/scrollToSection'
 
 export default function LastResultWidget({ history, workouts }) {
@@ -23,7 +23,7 @@ export default function LastResultWidget({ history, workouts }) {
   return (
     <div className="last-result">
       <p className="last-result__kicker">Último resultado</p>
-      <h3 className="last-result__title">{last.name}</h3>
+      <h3 className="last-result__title">{displayWorkoutName(last.name)}</h3>
       <p className="last-result__meta">
         {last.date ? formatDateShort(last.date) : 'Sessão recente'}
         {facts.length ? ` · ${facts[0]}` : ''}

@@ -1,8 +1,12 @@
 import { scrollToSection } from '../../utils/scrollToSection'
 
-export default function CoachInsightCard({ insights }) {
+export default function CoachInsightCard({ insights, history }) {
   const item = insights?.items?.[0]
-  const body = item?.evidence || 'Seu primeiro treino cria a referência para acompanhar sua evolução.'
+  const body =
+    item?.evidence ||
+    (history?.length
+      ? 'Continue registrando cargas e séries: com mais sessões eu mostro onde ajustar.'
+      : 'Dúvida sobre execução, carga ou rotina? Pergunte ao Coach.')
 
   return (
     <div className="coach-whisper" aria-label="Coach Evolua">

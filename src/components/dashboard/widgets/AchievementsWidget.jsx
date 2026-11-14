@@ -4,10 +4,10 @@ export default function AchievementsWidget({ achievements = [], xp }) {
   return (
     <div className="focus-widget-body">
       <p className="hoje-card__kicker">Metas</p>
-      <h3 className="hoje-card__title">{xp?.levelName || 'Conquistas'}</h3>
+      <h3 className="hoje-card__title">{xp?.levelNumber ? `Jornada · Nível ${xp.levelNumber}` : 'Conquistas'}</h3>
       <p className="hoje-card__body">
         {xp
-          ? `${xp.xp.toLocaleString('pt-BR')} XP${xp.nextName ? ` · próximo: ${xp.nextName}` : ''}`
+          ? `${xp.levelName ? `${xp.levelName} · ` : ''}${xp.xp.toLocaleString('pt-BR')} XP${xp.nextName ? ` · próximo: ${xp.nextName}` : ''}`
           : 'Complete um treino para gerar XP.'}
       </p>
       {unlocked.length ? (

@@ -3,6 +3,7 @@ import { inferWorkoutType } from '../utils/workoutSession'
 import { formatDateShort } from '../utils/dateFormat'
 import { displayWorkoutName, formatExercisePrescription, formatRestLabel } from '../utils/trainingIdentity'
 import DayVolumeSummary from './DayVolumeSummary'
+import { workoutDisplayMinutes } from '../utils/workoutDuration'
 
 const statusClass = {
   Pendente: 'status--pending',
@@ -57,7 +58,7 @@ export default function CollapsibleWorkoutCard({
   const type = inferWorkoutType(workout)
   const typeTone = workoutTypeClass(type)
   const exerciseCount = workout.exercises?.length || 0
-  const duration = workout.estimatedMinutes || 45
+  const duration = workoutDisplayMinutes(workout, 45)
   const dateLabel = workout.dayLabel || formatDateShort(workout.date)
   const isEditing = editingId === workout.id
 

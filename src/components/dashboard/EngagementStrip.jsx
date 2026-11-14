@@ -4,7 +4,9 @@ export default function EngagementStrip({ xp, achievements = [], streak }) {
   return (
     <section className="hoje-card hoje-engage" aria-label="Jornada e conquistas">
       <p className="hoje-card__kicker">Jornada</p>
-      <h3 className="hoje-card__title">{xp?.levelName || 'Começando'}</h3>
+      <h3 className="hoje-card__title">
+        {xp?.levelNumber ? `Nível ${xp.levelNumber} · ${xp.levelName}` : 'Começando'}
+      </h3>
       <p className="hoje-card__body">
         Nível de produto — separado da experiência de treino do perfil.
         {streak > 0 ? ` ${streak} ${streak === 1 ? 'dia' : 'dias'} evoluindo.` : ''}

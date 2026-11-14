@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useFitness } from '../context/FitnessContext'
 import { useWorkoutPlan } from '../context/WorkoutPlanContext'
-import { generateWorkoutPlan, planToWorkouts } from '../utils/workoutGenerator'
+import { generateWorkoutPlan, planToWorkouts, summarizeDayVolume } from '../utils/workoutGenerator'
 import { exportWorkoutToExcel } from '../utils/exportWorkoutToExcel'
 import SectionTitle from './SectionTitle'
 import GeneratedPlan from './GeneratedPlan'
+import PlanUpgradeNotice from './PlanUpgradeNotice'
 import AdaptiveWeekNudge from './dashboard/AdaptiveWeekNudge'
 import { detectMissedWorkouts } from '../utils/adaptiveWeek'
 import { getSplitOptionsForDays, getSplitStyleLabel } from '../data/workoutTemplates'
@@ -235,6 +236,27 @@ export default function WorkoutPlanner() {
     addPlanWorkouts(nextWorkouts)
   }
 
+  const handleApplyUpgrade = (corrected) => {
+    const days = (corrected.weeklyPlan || corrected.schedule || []).map((day) => {
+      const volume = summarizeDayVolume(day.exercises || [], day.workoutType || day.workoutName)
+      return { ...day, volumeSummary: volume.text, volumeParts: volume.parts }
+    })
+    const next = { ...corrected, weeklyPlan: days, schedule: days, updatedAt: new Date().toISOString() }
+    const existingByDay = new Map(
+      (workouts || []).filter((w) => w.planId === next.id).map((w) => [Number(w.dayNumber), w]),
+    )
+    savePlan(next)
+    setPlan(next)
+    if (existingByDay.size) {
+      const nextWorkouts = planToWorkouts(next).map((w) => {
+        const prev = existingByDay.get(Number(w.dayNumber))
+        return prev?.date ? { ...w, date: prev.date, dayLabel: prev.dayLabel || w.dayLabel } : w
+      })
+      addPlanWorkouts(nextWorkouts, { silent: true })
+    }
+    showToast('Planilha atualizada com as novas regras.', 'success')
+  }
+
   const currentStep = STEPS.find((s) => s.id === step) || STEPS[0]
   const syncQuiet = Boolean(plan) && !workoutPlanError && saveStatus !== 'error' && !loadingWorkoutPlan
 
@@ -340,6 +362,10 @@ export default function WorkoutPlanner() {
             </p>
           ) : null}
         </div>
+
+        {plan && !wizardOpen && !loadingWorkoutPlan ? (
+          <PlanUpgradeNotice plan={plan} onApply={handleApplyUpgrade} />
+        ) : null}
 
         {wizardOpen ? (
           <>

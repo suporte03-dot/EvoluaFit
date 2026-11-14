@@ -1,14 +1,18 @@
 import { isCompletedSession } from './completedSession'
 import { musclesFromExercises } from './exerciseWhy'
+import { displayWorkoutName } from './workoutLabels.js'
+import { workoutDisplayMinutes } from './workoutDuration'
 
 function toDateKey(value) {
   if (!value) return null
   if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}/.test(value)) {
     return value.slice(0, 10)
   }
-  const d = new Date(value)
+  const d = value instanceof Date ? value : new Date(value)
   if (Number.isNaN(d.getTime())) return null
-  return d.toISOString().slice(0, 10)
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${m}-${day}`
 }
 
 function startOfWeek(ref = new Date()) {
@@ -201,7 +205,7 @@ export function situationCopy(situation, { daysSinceLast, nextWorkout } = {}) {
         label: 'Hoje',
         title: nextWorkout ? 'Nada agendado para hoje' : 'Escolha o próximo passo',
         description: nextWorkout
-          ? `Próximo na rotina: ${nextWorkout.name}.`
+          ? `Próximo na rotina: ${displayWorkoutName(nextWorkout.name)}.`
           : 'Abra Monte seu treino e defina o próximo treino.',
         primaryLabel: nextWorkout ? 'Ver próximo treino' : 'Abrir calendário',
         primarySection: nextWorkout ? 'treinos' : 'calendario',
@@ -255,10 +259,7 @@ export function situationCopy(situation, { daysSinceLast, nextWorkout } = {}) {
 export function workoutCardMeta(workout, profile = {}) {
   if (!workout) return null
   const exercises = workout.exercises || []
-  const duration =
-    workout.estimatedMinutes ||
-    workout.durationMinutes ||
-    Math.max(20, exercises.length * 8)
+  const duration = workoutDisplayMinutes(workout, Math.max(20, exercises.length * 8))
   const fromExercises = musclesFromExercises(exercises)
   return {
     name: workout.name,

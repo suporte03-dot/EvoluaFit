@@ -17,6 +17,7 @@ import {
 } from '../utils/progressStorage'
 import { appendExerciseToList, replaceExerciseInList } from '../utils/exerciseSubstitution'
 import { summarizeDayVolume } from '../utils/workoutGenerator'
+import { displayWorkoutName } from '../utils/workoutLabels'
 import DayVolumeSummary from './DayVolumeSummary'
 import ExerciseSessionCard from './ExerciseSessionCard'
 import ExerciseSubstitutionModal from './ExerciseSubstitutionModal'
@@ -567,7 +568,7 @@ export default function ActiveWorkoutModal() {
       <Modal
         isOpen={isOpen}
         onClose={handleClose}
-        title={`Modo foco — ${activeWorkout.name}`}
+        title={`Modo foco — ${displayWorkoutName(activeWorkout.name)}`}
         closeLabel="Sair do modo foco"
         size="lg"
         className="active-workout-modal active-workout-modal--focus"
@@ -598,7 +599,7 @@ export default function ActiveWorkoutModal() {
           <header className="workout-session__session-header">
             <div className="workout-session__session-titles">
               <p className="workout-session__eyebrow">Modo foco</p>
-              <h3 className="workout-session__name">{activeWorkout.name}</h3>
+              <h3 className="workout-session__name">{displayWorkoutName(activeWorkout.name)}</h3>
               <div className="workout-session__session-meta">
                 <span className="workout-session__elapsed" aria-label={`Tempo decorrido ${elapsedLabel}`}>
                   {elapsedLabel}
@@ -846,7 +847,7 @@ export default function ActiveWorkoutModal() {
         onClose={handleSummaryClose}
         onConfirm={confirmFinish}
         sessionData={pendingPayload}
-        workoutName={activeWorkout.name}
+        workoutName={displayWorkoutName(activeWorkout.name)}
         perceivedEffort={perceivedEffort}
         onPerceivedEffortChange={setPerceivedEffort}
       />

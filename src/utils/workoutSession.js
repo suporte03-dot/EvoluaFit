@@ -1,4 +1,5 @@
 import { getExerciseById, parseRestSeconds, parseSets } from '../data/exercisesData'
+import { displayWorkoutType } from './workoutLabels.js'
 
 const REST_CANDIDATES = [45, 60, 90, 120]
 
@@ -246,11 +247,11 @@ export function inferWorkoutType(workout) {
       .replace(/^Peito$/, 'Peitoral')
       .replace(/^Quadríceps$|^Posterior$/, 'Pernas'),
   )
-  if (groups.some((g) => ['Peitoral', 'Ombros', 'Tríceps'].includes(g))) return 'Push'
-  if (groups.some((g) => ['Costas', 'Bíceps', 'Trapézio', 'Lombar'].includes(g))) return 'Pull'
-  if (groups.some((g) => ['Pernas', 'Glúteos', 'Panturrilha'].includes(g))) return 'Legs'
+  if (groups.some((g) => ['Peitoral', 'Ombros', 'Tríceps'].includes(g))) return 'Empurrar'
+  if (groups.some((g) => ['Costas', 'Bíceps', 'Trapézio', 'Lombar'].includes(g))) return 'Puxar'
+  if (groups.some((g) => ['Pernas', 'Glúteos', 'Panturrilha'].includes(g))) return 'Pernas'
   if (groups.some((g) => ['Abdômen', 'Cardio', 'Mobilidade'].includes(g))) return 'Core / Condicionamento'
-  return workout?.type || 'Treino'
+  return displayWorkoutType(workout?.type) || 'Treino'
 }
 
 export function restoreSessionExercises(savedExercises) {

@@ -9,6 +9,8 @@ import WorkoutDetailModal from '../../WorkoutDetailModal'
 import { formatDateShort } from '../../../utils/dateFormat'
 import { sharePlainText, todayWorkoutShareMessage } from '../../../utils/shareWorkout'
 
+const PREVIEW_LIMIT = 4
+
 function heroTone(workout, title) {
   const hay = `${title || ''} ${workout?.name || ''} ${workout?.workoutType || ''} ${(workout?.muscleGroups || []).join(' ')}`.toLowerCase()
   if (/descanso|recuper/.test(hay)) return 'rest'
@@ -23,11 +25,13 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
   const { startWorkout, pendingSession, resumePendingSession } = useFitness()
   const navigate = useNavigate()
   const [detailWorkout, setDetailWorkout] = useState(null)
-  const meta = workoutCardMeta(today?.workout, profile)
   const detailTarget = nextAction?.workout || today?.workout
+  const meta = workoutCardMeta(detailTarget, profile)
   const title = displayWorkoutName(nextAction?.title || meta?.name || 'Treino de hoje')
   const tone = heroTone(detailTarget, title)
-  const preview = (detailTarget?.exercises || []).slice(0, 4)
+  const allExercises = detailTarget?.exercises || []
+  const preview = allExercises.slice(0, PREVIEW_LIMIT)
+  const hiddenCount = allExercises.length - preview.length
   const weekPct =
     weekly?.weeklyGoal > 0
       ? Math.min(100, Math.round((weekly.completedCount / weekly.weeklyGoal) * 100))
@@ -89,7 +93,7 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
         {nextAction?.description && meta ? <p className="fit-hero__lead">{nextAction.description}</p> : null}
         {today?.nextWorkout && today.situation === 'no_workout_today' ? (
           <p className="fit-hero__lead">
-            Próximo: {today.nextWorkout.name}
+            Próximo: {displayWorkoutName(today.nextWorkout.name)}
             {today.nextWorkout.date ? ` · ${formatDateShort(today.nextWorkout.date)}` : ''}
           </p>
         ) : null}
@@ -128,8 +132,10 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
               type="button"
               className="fit-hero__more"
               onClick={() => sharePlainText(todayWorkoutShareMessage(detailTarget))}
+              aria-label="Compartilhar treino de hoje no WhatsApp"
+              title="Compartilhar treino de hoje no WhatsApp"
             >
-              WhatsApp
+              Compartilhar no WhatsApp
             </button>
           ) : null}
         </div>
@@ -145,6 +151,16 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
               </div>
             </li>
           ))}
+          {hiddenCount > 0 ? (
+            <li className="fit-hero__preview-more">
+              <span aria-hidden="true">+</span>
+              <div>
+                <strong>
+                  +{hiddenCount} {hiddenCount === 1 ? 'exercício' : 'exercícios'}
+                </strong>
+              </div>
+            </li>
+          ) : null}
         </ol>
       ) : null}
       {detailWorkout ? (

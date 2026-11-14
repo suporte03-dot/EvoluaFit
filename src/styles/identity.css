@@ -1469,6 +1469,11 @@
   font-size: 0.75rem;
 }
 
+.fit-hero__preview-more strong {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
 .fit-hero__kicker {
   margin: 0 0 0.45rem;
   font-size: 0.68rem;
@@ -2259,8 +2264,23 @@ html:has(.app--saas) body {
 }
 
 .week-plan__day.is-missed {
-  border-color: rgba(232, 164, 92, 0.4);
-  background: rgba(232, 164, 92, 0.1);
+  border-style: dashed;
+  border-color: rgba(148, 163, 184, 0.28);
+  background: transparent;
+}
+
+.week-plan__day.is-missed strong {
+  color: var(--text-secondary);
+}
+
+.week-plan__summary {
+  margin: 0 0 0.6rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.week-plan__summary strong {
+  color: var(--text-primary);
 }
 
 .last-result__title {

@@ -73,7 +73,8 @@ test('session minutes follow sets and rest, not the profile cap', () => {
     ],
     { fallback: 30 },
   )
-  assert.equal(minutes, 27)
+  // 5 min de aquecimento + Σ séries × (40 s + descanso)
+  assert.equal(minutes, 38)
   assert.notEqual(minutes, 30)
 })
 

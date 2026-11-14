@@ -1,3 +1,5 @@
+import { displayWorkoutName } from './workoutLabels.js'
+
 function openWhatsApp(text) {
   const url = `https://wa.me/?text=${encodeURIComponent(text)}`
   window.open(url, '_blank', 'noopener,noreferrer')
@@ -18,7 +20,7 @@ export async function sharePlainText(text, title = 'EvoluaFit') {
 }
 
 export function todayWorkoutShareMessage(workout) {
-  const name = workout?.name || 'Treino de hoje'
+  const name = displayWorkoutName(workout?.name) || 'Treino de hoje'
   const names = (workout?.exercises || [])
     .map((ex) => ex.name)
     .filter(Boolean)
@@ -30,7 +32,7 @@ export function todayWorkoutShareMessage(workout) {
 export function completedWorkoutShareMessage({ name, durationMinutes, exerciseCount, muscleGroups } = {}) {
   const muscles = (muscleGroups || []).slice(0, 3).join(', ')
   const parts = [
-    `Concluí ${name || 'meu treino'} no EvoluaFit.`,
+    `Concluí ${displayWorkoutName(name) || 'meu treino'} no EvoluaFit.`,
     durationMinutes ? `${durationMinutes} min` : null,
     exerciseCount ? `${exerciseCount} exercícios` : null,
     muscles ? muscles : null,

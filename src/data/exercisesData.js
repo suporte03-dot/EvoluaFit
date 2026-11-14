@@ -10,6 +10,8 @@ import { ombrosExerciseDefs } from './ombrosExercises.js'
 import { lombarExerciseDefs } from './lombarExercises.js'
 import { pernasExerciseDefs } from './pernasExercises.js'
 import { trapezioExerciseDefs } from './trapezioExercises.js'
+import { classifyExercise } from '../utils/prescription/classify.js'
+import { EXERCISE_KIND_OVERRIDES } from './exerciseKinds.js'
 
 export const DEFAULT_SAFETY_TIPS = [
   'Priorize execução correta.',
@@ -40,7 +42,18 @@ function createExercise({
   gif,
   image,
   hiddenFromLibrary = false,
+  kind,
+  principal,
 }) {
+  const override = EXERCISE_KIND_OVERRIDES[id] || {}
+  const classification = classifyExercise({
+    id,
+    name,
+    category,
+    type,
+    kind: kind ?? override.kind,
+    principal: principal ?? override.principal,
+  })
   const media = resolveExerciseMedia(id, category, type)
   const resolvedVideo = video ?? null
   const resolvedGif = gif ?? media.gif ?? null
@@ -73,6 +86,8 @@ function createExercise({
     id,
     name,
     hiddenFromLibrary: Boolean(hiddenFromLibrary),
+    kind: classification.kind,
+    principal: classification.principal,
     type,
     category: displayGroup,
     muscleGroup: displayGroup,

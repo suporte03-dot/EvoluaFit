@@ -1,11 +1,15 @@
+import { displayWorkoutName } from './workoutLabels.js'
+
 function toDateKey(value) {
   if (!value) return null
   if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}/.test(value)) {
     return value.slice(0, 10)
   }
-  const d = new Date(value)
+  const d = value instanceof Date ? value : new Date(value)
   if (Number.isNaN(d.getTime())) return null
-  return d.toISOString().slice(0, 10)
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${m}-${day}`
 }
 
 function startOfWeek(ref = new Date()) {
@@ -97,7 +101,7 @@ export function detectMissedWorkouts(workouts = [], referenceDate = new Date(), 
   const openDays = remainingDays.filter((day) => !alreadyBooked.has(day))
   const moves = missed.map((w, index) => ({
     id: w.id,
-    name: w.name,
+    name: displayWorkoutName(w.name),
     fromDate: toDateKey(w.date),
     toDate: openDays[index] || remainingDays[index] || todayKey,
   }))
@@ -123,7 +127,7 @@ export function buildCatchUpWorkout(missedItems = [], referenceDate = new Date()
   if (!exercises.length) return null
   return {
     id: `catchup-${toDateKey(referenceDate)}`,
-    name: `Recuperação: ${first.name} + ${second.name}`,
+    name: `Recuperação: ${displayWorkoutName(first.name)} + ${displayWorkoutName(second.name)}`,
     date: toDateKey(referenceDate),
     status: 'Pendente',
     estimatedMinutes: Math.min(45, 8 * exercises.length),

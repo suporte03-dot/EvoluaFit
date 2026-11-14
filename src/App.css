@@ -2860,7 +2860,7 @@ main {
 .dot--rest,
 .dot--pulado { background: color-mix(in srgb, var(--text-muted) 55%, var(--secondary)); }
 .cal-day__marker--missed,
-.dot--missed { background: color-mix(in srgb, var(--danger) 75%, transparent); }
+.dot--missed { background: transparent; box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--text-muted) 70%, transparent); }
 
 .calendar__day--pendente,
 .calendar__day--pending,
@@ -2881,7 +2881,7 @@ main {
 .cal-day--rest { background: rgba(148, 163, 184, 0.1); }
 .calendar__day--atrasado,
 .calendar__day--missed,
-.cal-day--missed { background: var(--danger-soft); }
+.cal-day--missed { background: rgba(148, 163, 184, 0.06); }
 
 .cal-day__badge--completed { color: var(--primary); }
 .cal-day__badge--planned { color: #93c5fd; }
@@ -2889,7 +2889,7 @@ main {
 .cal-day__badge--in-progress { color: var(--energy); }
 .cal-day__badge--partial { color: #c4b5fd; }
 .cal-day__badge--rest { color: var(--text-muted); }
-.cal-day__badge--missed { color: #fca5a5; }
+.cal-day__badge--missed { color: var(--text-muted); }
 
 .calendar__dot {
   width: 5px;
@@ -2934,8 +2934,8 @@ main {
 .status--planned { background: var(--performance-soft); color: #93c5fd; }
 .status--completed { background: var(--primary-soft); color: var(--primary); }
 .status--rest { background: rgba(148, 163, 184, 0.12); color: var(--text-muted); }
-.status--missed { background: var(--danger-soft); color: #fca5a5; }
-.status--atrasado { background: var(--danger-soft); color: #fca5a5; }
+.status--missed,
+.status--atrasado { background: rgba(148, 163, 184, 0.12); color: var(--text-muted); }
 .status--descanso { background: rgba(148, 163, 184, 0.12); color: var(--secondary); }
 .status--planejado { background: var(--performance-soft); color: #93c5fd; }
 
@@ -3219,7 +3219,7 @@ main {
 .cal-mobile-card--pending,
 .cal-mobile-card--partial { border-left: 3px solid var(--orange); }
 .cal-mobile-card--rest { border-left: 3px solid var(--cyan); }
-.cal-mobile-card--missed { border-left: 3px solid rgba(239, 68, 68, 0.7); }
+.cal-mobile-card--missed { border-left: 3px solid rgba(148, 163, 184, 0.35); }
 
 .calendar-list__item {
   display: flex;

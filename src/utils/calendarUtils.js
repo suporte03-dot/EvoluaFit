@@ -4,6 +4,8 @@
  * Optional mirror key: training_calendar (kept in sync for tooling / offline reads).
  */
 
+import { workoutDisplayMinutes } from './workoutDuration.js'
+
 export const CALENDAR_STORAGE_KEY = 'training_calendar'
 
 export const MONTHS_PT = [
@@ -41,7 +43,7 @@ export const STATUS_LABEL = {
   partial: 'Parcial',
   rest: 'Descanso',
   pending: 'Pendente',
-  missed: 'Atrasado',
+  missed: 'Não realizado',
 }
 
 const LABEL_TO_CANONICAL = {
@@ -56,6 +58,8 @@ const LABEL_TO_CANONICAL = {
   pendente: 'pending',
   pending: 'pending',
   atrasado: 'missed',
+  'não realizado': 'missed',
+  'nao realizado': 'missed',
   missed: 'missed',
   pulado: 'rest',
 }
@@ -214,6 +218,37 @@ export function groupWorkoutsByDate(workouts = []) {
   return map
 }
 
+/** Junta treinos agendados com sessões concluídas do histórico (uma entrada por dia, data local). */
+export function mergeSessionsIntoCalendar(workouts = [], sessionHistory = []) {
+  const completedFromSessions = (sessionHistory || [])
+    .filter((s) => s && (s.status === 'completed' || (!s.status && s.completedAt)))
+    .map((s) => {
+      const d = s.completedAt ? new Date(s.completedAt) : null
+      return {
+        id: `session-${s.id}`,
+        name: s.name,
+        date: d && !Number.isNaN(d.getTime()) ? formatDateKey(d) : '',
+        status: 'Realizado',
+        completedAt: s.completedAt,
+      }
+    })
+    .filter((s) => s.date)
+
+  const byDate = new Map()
+  ;[...(workouts || []), ...completedFromSessions].forEach((w) => {
+    if (!w?.date) return
+    const prev = byDate.get(w.date)
+    if (!prev) {
+      byDate.set(w.date, w)
+      return
+    }
+    if (prev.status !== 'Realizado' && w.status === 'Realizado') {
+      byDate.set(w.date, { ...prev, ...w, status: 'Realizado' })
+    }
+  })
+  return [...byDate.values()]
+}
+
 function pickPrimaryEntry(entries) {
   if (!entries?.length) return null
   const priority = ['partial', 'pending', 'planned', 'missed', 'completed', 'rest']
@@ -236,7 +271,7 @@ export function workoutToCalendarEntry(workout) {
     workoutType: workout.workoutType || workout.dayLabel || inferTypeFromName(workout.name),
     muscleGroups: workout.muscleGroups || [],
     exercises: workout.exercises || [],
-    duration: workout.estimatedMinutes || workout.durationMinutes || 0,
+    duration: workoutDisplayMinutes(workout, 0),
     status,
     notes: workout.notes || '',
     completedAt: workout.completedAt || null,
@@ -246,10 +281,10 @@ export function workoutToCalendarEntry(workout) {
 
 function inferTypeFromName(name = '') {
   const n = String(name).toLowerCase()
-  if (/push/.test(n)) return 'Push'
-  if (/pull/.test(n)) return 'Pull'
-  if (/legs|perna/.test(n)) return 'Legs'
-  if (/full|corpo/.test(n)) return 'Full Body'
+  if (/push|empurr/.test(n)) return 'Empurrar'
+  if (/pull|puxar/.test(n)) return 'Puxar'
+  if (/legs|perna/.test(n)) return 'Pernas'
+  if (/full|corpo/.test(n)) return 'Corpo inteiro'
   if (/cardio/.test(n)) return 'Cardio'
   if (/mobil|along|descanso/.test(n)) return 'Mobilidade'
   return 'Treino'
@@ -468,13 +503,17 @@ export function wouldCreateSevenIntenseDays(workouts, dateKey, payload) {
  * @param {{ weekGoal?: number }} [options] — weekGoal from profile.daysPerWeek or weekly goal
  */
 export function getCalendarSummary(workouts = [], referenceDate = new Date(), options = {}) {
-  const month = referenceDate.getMonth()
-  const year = referenceDate.getFullYear()
+  const monthRef = options.monthDate instanceof Date ? options.monthDate : referenceDate
+  const month = monthRef.getMonth()
+  const year = monthRef.getFullYear()
   const today = todayKey(referenceDate)
   const week = getWeekDays(referenceDate, workouts)
   const monthCells = getCurrentMonthDays(year, month, workouts, referenceDate).filter(Boolean)
 
-  let planned = 0
+  // Contagem por dia marcado no mês exibido:
+  // planned (Planejados) = completed + pending + missed (todo dia com treino, passado ou futuro)
+  // completed (Realizados) inclui parciais; pending = hoje/futuro sem registro;
+  // missed (Não realizados) = dias passados com treino não feito; rest = dias só de descanso.
   let completed = 0
   let rest = 0
   let pending = 0
@@ -487,14 +526,15 @@ export function getCalendarSummary(workouts = [], referenceDate = new Date(), op
       cell.entries.map((e) => getTrainingStatusByDate(e, cell.date, referenceDate)),
     )
     if (statuses.has('completed')) completed += 1
-    else if (statuses.has('partial')) partial += 1
-    else if (statuses.has('rest') && cell.isRestOnly) rest += 1
+    else if (statuses.has('partial')) {
+      completed += 1
+      partial += 1
+    } else if (cell.isRestOnly) rest += 1
     else if (statuses.has('missed')) missed += 1
-    else if (statuses.has('pending')) pending += 1
-    else if (statuses.has('planned')) planned += 1
+    else if (statuses.has('pending') || statuses.has('planned')) pending += 1
   })
 
-  pending += partial
+  const planned = completed + pending + missed
 
   const streak = calculateCalendarStreak(workouts, referenceDate)
 

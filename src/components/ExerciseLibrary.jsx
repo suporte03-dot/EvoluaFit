@@ -3,6 +3,7 @@ import { equipmentTypes as defaultEquipment, levelTypes as defaultLevels, exerci
 import { GDT_FILTER_GROUPS, matchesGdtChip, countExercisesByChip, muscleGroupLabel } from '../data/exerciseMediaMap'
 import { collapseSharedLibraryMedia } from '../utils/exerciseRemoteFilter'
 import { rankBySearch } from '../utils/textSearch'
+import { displayWorkoutType } from '../utils/workoutLabels'
 import { useFitness } from '../context/FitnessContext'
 import { useExercises } from '../hooks/useExercises'
 import ExerciseCard from './ExerciseCard'
@@ -270,7 +271,7 @@ export default function ExerciseLibrary() {
                   <option value="Todos">Todos</option>
                   {exerciseTypes.map((t) => (
                     <option key={t} value={t}>
-                      {t}
+                      {displayWorkoutType(t)}
                     </option>
                   ))}
                 </select>

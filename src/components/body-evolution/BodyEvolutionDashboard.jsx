@@ -8,8 +8,8 @@ import BodyProgressSummary from './BodyProgressSummary'
 import BodyTimeline from './BodyTimeline'
 
 const TABS = [
-  { id: 'agora', label: 'Agora' },
   { id: 'antes', label: 'Antes' },
+  { id: 'agora', label: 'Agora' },
   { id: 'evolucao', label: 'Evolução' },
   { id: 'meta', label: 'Meta' },
 ]
@@ -77,11 +77,13 @@ export default function BodyEvolutionDashboard({
           {storyItems.map((item) => (
             <div key={item.id} className="body-story__item">
               {item.photo ? (
-                <img src={item.photo} alt={`Foto ${item.label}`} />
+                <>
+                  <img src={item.photo} alt={`Foto ${item.label}`} />
+                  <strong>{item.label}</strong>
+                </>
               ) : (
                 <BodyAvatar2D factors={item.factors} label={item.label} />
               )}
-              <strong>{item.label}</strong>
             </div>
           ))}
         </div>

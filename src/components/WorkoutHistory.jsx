@@ -3,6 +3,7 @@ import { useFitness } from '../context/FitnessContext'
 import { useWorkoutSession } from '../context/WorkoutSessionContext'
 import Modal from './Modal'
 import EmptyState from './EmptyState'
+import { displayWorkoutName } from '../utils/workoutLabels'
 
 export default function WorkoutHistory({ embedded = false }) {
   const { history: localHistory } = useFitness()
@@ -51,7 +52,7 @@ export default function WorkoutHistory({ embedded = false }) {
               onClick={() => setSelected(session)}
             >
               <div>
-                <strong>{session.name}</strong>
+                <strong>{displayWorkoutName(session.name)}</strong>
                 <span>
                   {new Date(session.completedAt).toLocaleDateString('pt-BR', {
                     weekday: 'long',
@@ -80,7 +81,7 @@ export default function WorkoutHistory({ embedded = false }) {
         </div>
       )}
 
-      <Modal isOpen={Boolean(selected)} onClose={() => setSelected(null)} title={selected?.name || 'Detalhes'}>
+      <Modal isOpen={Boolean(selected)} onClose={() => setSelected(null)} title={displayWorkoutName(selected?.name) || 'Detalhes'}>
         {selected && (
           <div className="history-detail">
             <p>

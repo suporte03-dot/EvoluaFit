@@ -13,6 +13,7 @@ import {
 } from '../../utils/todayWorkout'
 import WorkoutDetailModal from '../WorkoutDetailModal'
 import { formatDateShort } from '../../utils/dateFormat'
+import { displayWorkoutName } from '../../utils/workoutLabels'
 import { useAuth } from '../../context/AuthContext'
 import { useProfile } from '../../context/ProfileContext'
 
@@ -226,7 +227,7 @@ export default function DashboardHero({
           <Sparkline series={series} />
           {today?.nextWorkout && today.situation === 'no_workout_today' && (
             <p className="dash-hero__next-hint">
-              Próximo: {today.nextWorkout.name}
+              Próximo: {displayWorkoutName(today.nextWorkout.name)}
               {today.nextWorkout.date ? ` · ${formatDateShort(today.nextWorkout.date)}` : ''}
             </p>
           )}

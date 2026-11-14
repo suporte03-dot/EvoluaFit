@@ -100,7 +100,7 @@ export default function DashboardSidebar({
   const name = resolveDisplayName({ cloudName: profile?.full_name })
   const accountLabel = name || 'Conta'
   const levelLabel = xp.levelName || 'Começando'
-  const levelLine = xp.levelNumber ? `Nível ${xp.levelNumber} · ${levelLabel}` : 'Ver perfil'
+  const levelLine = xp.levelNumber ? `Jornada · Nível ${xp.levelNumber}` : 'Ver perfil'
   const trainingLevel = profile?.level ? `Treino: ${profile.level}` : null
   const initials = loadingProfile ? '··' : initialsFromName(accountLabel)
   const currentSection = sectionFromPath(location.pathname) || activeSection
@@ -234,7 +234,7 @@ export default function DashboardSidebar({
           <button
             type="button"
             className="dash-sidebar__user dash-sidebar__user--button"
-            title={loadingProfile ? 'Carregando perfil' : `${accountLabel} · ${levelLabel}${trainingLevel ? ` · ${trainingLevel}` : ''}`}
+            title={loadingProfile ? 'Carregando perfil' : `${accountLabel} · Jornada${xp.levelNumber ? ` nível ${xp.levelNumber}` : ''}: ${levelLabel}${trainingLevel ? ` · ${trainingLevel}` : ''}`}
             onClick={() => {
               onCloseMobile?.()
               navigate('/app/perfil')

@@ -1,11 +1,23 @@
+const NAME_REPLACEMENTS = [
+  [/\bFull[\s-]?body\b(?!-)/gi, 'Corpo inteiro'],
+  [/\bCorpo todo\b/gi, 'Corpo inteiro'],
+  [/\bPush\b(?!-)/gi, 'Empurrar'],
+  [/\bPull\b(?!-)/gi, 'Puxar'],
+  [/\bLegs\b(?!-)/gi, 'Pernas'],
+  [/\bUpper\b(?!-)/gi, 'Superiores'],
+  [/\bLower\b(?!-)/gi, 'Inferiores'],
+]
+
+/** Nome de treino sempre em português (traduz nomes antigos salvos em inglês). */
 export function displayWorkoutName(name = '') {
-  return String(name || '')
-    .replace(/^Push\b/i, 'Empurrar')
-    .replace(/^Pull\b/i, 'Puxar')
-    .replace(/^Legs\b/i, 'Pernas')
-    .replace(/^Full body\b/i, 'Corpo todo')
-    .replace(/^Upper\b/i, 'Superiores')
-    .replace(/^Lower\b/i, 'Inferiores')
+  let out = String(name || '')
+  for (const [pattern, replacement] of NAME_REPLACEMENTS) out = out.replace(pattern, replacement)
+  return out
+}
+
+/** Tipo de treino em português ("Pull" → "Puxar", "Legs (leve)" → "Pernas (leve)"). */
+export function displayWorkoutType(type = '') {
+  return displayWorkoutName(type)
 }
 
 /** Formata descanso numérico como "2 min 25 s"; textos com unidade passam direto. */

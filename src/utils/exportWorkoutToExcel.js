@@ -1,4 +1,6 @@
 import { getExerciseById } from '../data/exercisesData'
+import { workoutDisplayMinutes } from './workoutDuration'
+import { displayWorkoutType } from './workoutLabels'
 
 const WEEKDAY_LABELS = [
   'Segunda-feira',
@@ -69,8 +71,8 @@ export function planToExcelRows(plan) {
 
   days.forEach((day) => {
     const weekday = dayLabel(day.day)
-    const workoutType = day.workoutType || day.name || '—'
-    const duration = day.estimatedDuration || day.estimatedMinutes || plan.minutesPerWorkout || plan.duration || '—'
+    const workoutType = displayWorkoutType(day.workoutType || day.name || '—')
+    const duration = workoutDisplayMinutes(day, plan.minutesPerWorkout || plan.duration || '—')
 
     day.exercises?.forEach((exercise) => {
       const meta = resolveExerciseMeta(exercise, plan)

@@ -94,7 +94,7 @@ export function classifyWorkoutDay(dayOrWorkout = {}) {
   if (/legs|perna|glute|quadr|posterior|panturr|inferior|lower/.test(hay)) {
     return { label: 'Pernas', tone: 'legs' }
   }
-  if (/full|corpo/.test(hay)) return { label: 'Corpo todo', tone: 'full' }
+  if (/full|corpo/.test(hay)) return { label: 'Corpo inteiro', tone: 'full' }
   if (/superior|upper/.test(hay)) return { label: 'Superiores', tone: 'push' }
   if (/mobil|along|yoga/.test(hay)) return { label: 'Mobilidade', tone: 'mobility' }
   if (/cardio|hiit|corrida|esteira|aerob/.test(hay)) return { label: 'Cardio', tone: 'cardio' }

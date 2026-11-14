@@ -5,6 +5,7 @@ import { getSplitStyleLabel } from '../data/workoutTemplates'
 import { classifyWorkoutDay, displayWorkoutName, formatRestLabel } from '../utils/trainingIdentity'
 import { IconCalendar, IconDumbbell } from './dashboard/icons'
 import DayVolumeSummary from './DayVolumeSummary'
+import { workoutDisplayMinutes } from '../utils/workoutDuration'
 import WorkoutDetailModal from './WorkoutDetailModal'
 
 const WEEKDAYS = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo']
@@ -25,10 +26,7 @@ function resolveDayType(day) {
 }
 
 function estimateDuration(day) {
-  if (day?.estimatedDuration) return day.estimatedDuration
-  if (day?.estimatedMinutes) return day.estimatedMinutes
-  const count = (day?.exercises || []).length
-  return Math.max(20, count * 8)
+  return workoutDisplayMinutes(day, Math.max(20, (day?.exercises || []).length * 8))
 }
 
 function getPlanDays(plan) {
@@ -77,7 +75,7 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan, onG
           restSeconds: ex.restSeconds ?? ex.rest ?? 60,
         })),
         status: 'Pendente',
-        estimatedMinutes: day.estimatedDuration || day.estimatedMinutes,
+        estimatedMinutes: estimateDuration(day),
         intensity: day.intensity,
         workoutType: day.workoutType,
       }
@@ -256,6 +254,17 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan, onG
         <p className="plan-fallback-note">
           Alguns exercícios foram completados com sugestões alternativas compatíveis com seu perfil.
         </p>
+      )}
+
+      {plan.volumeWarnings?.length > 0 && (
+        <div className="safety-box">
+          <strong>Volume semanal</strong>
+          <ul>
+            {plan.volumeWarnings.map((note) => (
+              <li key={note}>{note}</li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {plan.safetyNotes?.length > 0 && (

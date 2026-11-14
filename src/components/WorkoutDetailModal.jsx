@@ -6,9 +6,11 @@ import { appendExerciseToList, replaceExerciseInList } from '../utils/exerciseSu
 import {
   displayMovementRole,
   formatExercisePrescription,
+  formatRestLabel,
   resolveTrainingLevel,
 } from '../utils/trainingIdentity'
 import { whyExerciseInWorkout } from '../utils/exerciseWhy'
+import { displayWorkoutType } from '../utils/workoutLabels'
 import { summarizeDayVolume } from '../utils/workoutGenerator'
 import DayVolumeSummary from './DayVolumeSummary'
 import ExerciseMedia from './ExerciseMedia'
@@ -106,7 +108,7 @@ export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
       <Modal isOpen={isOpen} onClose={onClose} title={detail.name} size="xl" className="workout-detail-modal">
         <div className="workout-detail">
           <div className="workout-detail__badges">
-            <span className="workout-detail__badge">{detail.type}</span>
+            <span className="workout-detail__badge">{displayWorkoutType(detail.type)}</span>
             {detail.status && (
               <span className={`status-badge status--${detail.status === 'Realizado' ? 'done' : 'pending'}`}>
                 {detail.status}
@@ -215,7 +217,7 @@ export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
                       <span className="muscle-tag">{ex.muscleGroup || ex.category}</span>
                     </div>
 
-                    {ex.type && <span className="exercise-type-tag">{ex.type}</span>}
+                    {ex.type && <span className="exercise-type-tag">{displayWorkoutType(ex.type)}</span>}
                     {displayMovementRole(
                       ex.movementRoleLabel || workout?.exercises?.[i]?.movementRoleLabel,
                     ) ? (
@@ -241,7 +243,7 @@ export default function WorkoutDetailModal({ workout, isOpen, onClose }) {
 
                     <div className="workout-detail__exercise-meta">
                       <span>{formatExercisePrescription(ex)}</span>
-                      <span>Descanso {ex.rest}</span>
+                      <span>Descanso {formatRestLabel(ex.restSeconds ?? ex.rest)}</span>
                     </div>
 
                     {canEdit && (

@@ -1774,6 +1774,63 @@ body:has(.dash-sidebar--open) .dash-sidebar {
   font-size: 0.8rem;
 }
 
+.plan-upgrade {
+  border-color: rgba(118, 87, 255, 0.28);
+}
+
+.plan-upgrade__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.plan-upgrade__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.plan-upgrade__preview {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+}
+
+.plan-upgrade__day ul,
+.plan-upgrade__warnings {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plan-upgrade__day-title {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.plan-upgrade__day-title span,
+.plan-upgrade__day li em,
+.plan-upgrade__warnings li {
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.8rem;
+  font-style: normal;
+}
+
+.plan-upgrade__day li {
+  display: grid;
+  gap: 0.1rem;
+  font-size: 0.84rem;
+  color: var(--text-secondary, #cbd5e1);
+}
+
 .planner-sync__error {
   display: flex;
   flex-direction: column;

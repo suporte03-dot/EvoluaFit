@@ -130,6 +130,33 @@ test('validateWorkout fixes a legacy workout and explains why', () => {
   assert.equal(legacy.exercises[1].reps, '4-6', 'input must not be mutated')
 })
 
+test('upgrade preview shows one correction per exercise and field', () => {
+  const legacy = {
+    id: 'plan-old',
+    goal: 'forca',
+    level: 'Avançado',
+    minutesPerWorkout: 30,
+    weeklyPlan: [
+      {
+        day: 1,
+        workoutName: 'Push A',
+        muscleGroups: ['Peitoral', 'Ombros', 'Tríceps', 'Mobilidade'],
+        exercises: [
+          { exerciseId: 'supino-reto', name: 'Supino reto', sets: 5, reps: '4-6', restSeconds: 145 },
+          { exerciseId: 'crucifixo', name: 'Crucifixo', sets: 5, reps: '4-6', restSeconds: 145 },
+          { exerciseId: 'triceps-um-braco', name: 'Tríceps testa unilateral', sets: 5, reps: '4-6', restSeconds: 115 },
+        ],
+      },
+    ],
+  }
+  const result = validatePlan(legacy)
+  assert.equal(result.valid, false)
+  const keys = result.corrections.map((c) => `${c.exerciseId}|${c.field}`)
+  assert.equal(new Set(keys).size, keys.length)
+  assert.ok(result.days[0].minutesAfter <= 33)
+  assert.equal(validatePlan(result.plan).valid, true, 'corrected plan must be valid')
+})
+
 test('new plans start today and keep that weekday pattern', () => {
   const plan = generateWorkoutPlan({ goal: 'saude', level: 'Intermediário', daysPerWeek: 3, duration: 45 })
   const workouts = planToWorkouts(plan)

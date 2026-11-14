@@ -85,6 +85,25 @@ function checkSets(ex, kind, principal, level) {
   }
 }
 
+/** Uma correção por exercício × campo; exercício removido leva só a remoção. */
+function mergeCorrections(list) {
+  const removed = new Set(list.filter((c) => c.field === 'exercise').map((c) => c.exerciseId || c.name))
+  const merged = new Map()
+  for (const c of list) {
+    const subject = c.exerciseId || c.name || '_'
+    if (c.field !== 'exercise' && removed.has(subject)) continue
+    const key = `${subject}|${c.field}`
+    const prev = merged.get(key)
+    if (!prev) {
+      merged.set(key, { ...c })
+      continue
+    }
+    prev.to = c.to
+    if (!prev.reason.includes(c.reason)) prev.reason = `${prev.reason} ${c.reason}`
+  }
+  return [...merged.values()].filter((c) => c.field === 'exercise' || String(c.from) !== String(c.to))
+}
+
 /**
  * @param {object} workout — { exercises, muscleGroups?, focus? }
  * @param {{ goal?: string, level?: string, minutes?: number, day?: string|number }} ctx
@@ -181,10 +200,11 @@ export function validateWorkout(workout = {}, ctx = {}) {
     warnings.push(`O composto principal sozinho já passa de ${ctx.minutes} min.`)
   }
 
+  const merged = mergeCorrections(corrections)
   return {
-    valid: corrections.length === 0,
+    valid: merged.length === 0,
     workout: corrected,
-    corrections,
+    corrections: merged,
     warnings,
     minutesBefore,
     minutesAfter,

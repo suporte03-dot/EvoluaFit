@@ -1,28 +1,31 @@
 /**
- * Coach IA — motor local/simulado (sem API keys no frontend).
+ * Coach — motor local + IA via /api/coach (chave só no servidor).
  *
- * Futuro (Supabase Edge Function / API segura):
- * - Mover geração de respostas para uma Edge Function (ex.: `coach-ai`)
- * - O React deve apenas enviar { question, contextSummary } e receber { answer, blocks, actions }
- * - NUNCA colocar chaves de OpenAI/Anthropic/etc. no bundle React
- * - Persistir histórico em tabela `coach_messages` com user_id quando auth existir
- *
- * Exemplo futuro:
- *   const { data, error } = await supabase.functions.invoke('coach-ai', {
- *     body: { question, context: summarizeContext(context) },
- *   })
+ * - Pedidos claros de planilha: o motor monta (buildPlanProposal); a IA só explica.
+ * - Perguntas livres: IA (requestCoachAI); propostas da IA passam pelo motor (buildEditProposal).
+ * - Dor/lesão: guarda local determinística (detectPainMention), sem IA.
+ * - Falha da IA: mensagem honesta + "Tentar de novo" (sem resposta genérica).
  */
 
 import { exercises, getExerciseById } from '../data/exercisesData'
-import { objectiveLabels } from '../data/workoutTemplates'
-import { generateWorkoutPlan as buildPlan, planToWorkouts } from '../utils/workoutGenerator'
+import { planToWorkouts } from '../utils/workoutGenerator'
 import { generateCoachInsights } from '../utils/coachInsights'
 import { formatSignedDelta } from '../utils/bodyEvolutionMetrics'
-import { parseAppVoiceCommand, describeBuildSlots } from '../utils/voiceIntents'
+import { parseAppVoiceCommand } from '../utils/voiceIntents'
 import { buildCatchUpWorkout, detectMissedWorkouts } from '../utils/adaptiveWeek'
 import { resolveCanonicalNextWorkout } from '../utils/trainingIdentity'
-
-// Futuro: import { supabase } from '../lib/supabaseClient'
+import { displayWorkoutName } from '../utils/workoutLabels'
+import { objectiveLabels } from '../data/workoutTemplates'
+import { buildCatalogDigest, buildCoachAIContext } from '../utils/coach/context.js'
+import {
+  buildEditProposal,
+  buildPlanProposal,
+  describeProposal,
+  proposalHasChanges,
+  summarizeProposalForAI,
+} from '../utils/coach/proposal.js'
+import { detectPainMention, painReplyText } from '../utils/coach/safety.js'
+import { requestCoachAI } from './coach/aiClient'
 
 /** Chave local exigida pelo produto (histórico do Coach). */
 export const COACH_STORAGE_KEY = 'coach_messages_local'
@@ -84,7 +87,7 @@ const PULL_MUSCLES = ['Costas', 'Bíceps']
 const LEG_MUSCLES = ['Quadríceps', 'Posterior', 'Glúteos', 'Pernas', 'Panturrilha']
 const HOME_EQUIPMENT = ['Peso corporal', 'Halteres', 'Elástico']
 
-function delay(ms = 420) {
+function delay(ms = 0) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
@@ -315,23 +318,46 @@ export function loadCoachMessages() {
   }
 }
 
+/** Propostas guardam a planilha inteira; só as mais recentes ficam no aparelho. */
+const MAX_STORED_PROPOSALS = 3
+
 function persistMessages(messages) {
-  const capped = messages.slice(0, 80)
-  localStorage.setItem(COACH_STORAGE_KEY, JSON.stringify(capped))
+  let proposals = 0
+  const capped = messages.slice(0, 80).map((msg) => {
+    if (!msg?.proposal) return msg
+    proposals += 1
+    if (proposals <= MAX_STORED_PROPOSALS) return msg
+    return { ...msg, proposal: null, proposalStatus: msg.proposalStatus === 'applied' ? 'applied' : 'expired' }
+  })
+  try {
+    localStorage.setItem(COACH_STORAGE_KEY, JSON.stringify(capped))
+  } catch {
+    // Quota cheia: mantém a conversa só em memória.
+  }
   return capped
 }
 
+/** Ordem cronológica estável: em empate de horário, pergunta antes da resposta. */
+export function sortCoachMessages(messages = []) {
+  return [...messages].sort((a, b) => {
+    const diff = new Date(a.createdAt) - new Date(b.createdAt)
+    if (diff) return diff
+    if (a.role === b.role) return 0
+    return a.role === 'user' ? -1 : 1
+  })
+}
+
 /**
- * Persiste par pergunta/resposta no formato role-based.
- * Shape: { id, role, content, createdAt, actions, relatedWorkout }
+ * Persiste par pergunta/resposta no formato role-based (mais recente primeiro).
+ * Shape: { id, role, content, createdAt, actions, relatedWorkout, proposal?, failed? }
  */
 export function saveCoachExchange(question, result) {
-  const now = new Date().toISOString()
+  const asked = Date.now()
   const userMsg = {
     id: uid('user'),
     role: 'user',
     content: question,
-    createdAt: now,
+    createdAt: new Date(asked).toISOString(),
     actions: null,
     relatedWorkout: null,
   }
@@ -339,18 +365,29 @@ export function saveCoachExchange(question, result) {
     id: uid('coach'),
     role: 'coach',
     content: result.answer,
-    createdAt: now,
+    createdAt: new Date(asked + 1).toISOString(),
     actions: result.actions || [ACTION.COPY],
     relatedWorkout: result.relatedWorkout || result.suggestion?.data || null,
     blocks: result.blocks || null,
     suggestion: result.suggestion || null,
     relatedMuscleGroup: result.relatedMuscleGroup || null,
+    proposal: result.proposal || null,
+    proposalStatus: result.proposal ? 'pending' : null,
+    failed: Boolean(result.failed),
+    retryQuestion: result.failed ? result.retryQuestion || question : null,
+    source: result.source || null,
   }
 
   const messages = loadCoachMessages()
   const next = [coachMsg, userMsg, ...messages]
   persistMessages(next)
   return { userMsg, coachMsg }
+}
+
+export function updateCoachMessage(id, patch = {}) {
+  const messages = loadCoachMessages()
+  const next = messages.map((m) => (m.id === id ? { ...m, ...patch } : m))
+  return persistMessages(next)
 }
 
 /** @deprecated use saveCoachExchange — mantido para compat */
@@ -375,18 +412,13 @@ export function clearCoachMessages() {
  * Never auto-applies; caller must confirm via apply/ignore.
  */
 export function getContextualRecommendations(context = {}) {
-  const { profile = {}, workouts = [], history = [], performance, goals = [], generatedPlan, plans } =
-    context
+  const { profile = {}, workouts = [], history = [], performance, generatedPlan, plans } = context
   const last = getLastSession(history)
   const lastMuscles = getLastSessionMuscles(history)
   const lastSplit = detectSplit(lastMuscles)
   const streak = performance?.streak ?? 0
   const days = daysSince(last?.completedAt || last?.date)
   const pending = workouts.filter((w) => w.status === 'Pendente')
-  const weeklyDays = Number(profile.daysPerWeek) || 0
-  const weeklyGoal =
-    goals.find((g) => g.type === 'weekly_workouts')?.target || (weeklyDays > 0 ? weeklyDays : 0)
-  const weeklyDone = performance?.weeklyWorkouts ?? 0
   const canonical = resolveCanonicalNextWorkout({
     workouts,
     history,
@@ -421,36 +453,25 @@ export function getContextualRecommendations(context = {}) {
         suggestion: { type: 'workout', data: catchUp },
       })
     }
-  } else if (missed.count === 1 && missed.items[0]) {
-    cards.push({
-      id: 'rec-missed-one',
-      title: `Encaixar: ${missed.items[0].name}`,
-      reason: 'Há um treino atrasado. Melhor concluir hoje do que acumular dois.',
-      impact: 'Mantém a semana viva sem precisar reorganizar tudo.',
-      action: 'start_workout',
-      suggestion: { type: 'workout', data: missed.items[0] },
-    })
+  } else if (missed.count === 1 && missed.items[0]?.id) {
+    const today = todayKeyLocal()
+    const busyToday = pending.some((w) => w.date === today && w.id !== missed.items[0].id)
+    if (!busyToday) {
+      cards.push({
+        id: 'rec-missed-one',
+        title: `Mover para hoje: ${displayWorkoutName(missed.items[0].name)}`,
+        reason: 'Há um treino atrasado e nada agendado para hoje.',
+        impact: 'O treino atrasado passa para hoje no calendário, sem acumular dois.',
+        action: 'save_workout',
+        suggestion: { type: 'reschedule', data: { id: missed.items[0].id, date: today } },
+      })
+    }
   }
 
-  if (planWorkout && ['ready', 'partial', 'returning', 'no_workout_today'].includes(canonical.situation)) {
-    const preview = (planWorkout.exercises || [])
-      .slice(0, 3)
-      .map((ex) => ex.name)
-      .filter(Boolean)
-    cards.push({
-      id: 'rec-plan-next',
-      title: `Seguir: ${planWorkout.name}`,
-      reason:
-        canonical.situation === 'no_workout_today'
-          ? 'É o próximo treino da rotina ativa, mesmo que hoje seja folga.'
-          : 'É o treino definido pela rotina ativa — o mesmo da tela Hoje.',
-      impact: preview.length
-        ? `Prévia: ${preview.join(', ')}.`
-        : `Mantém a frequência alinhada à meta de ${weeklyGoal || planWorkout.muscleGroups?.length || 0}x/semana.`,
-      action: canonical.situation === 'no_workout_today' ? 'save_workout' : 'start_workout',
-      suggestion: { type: 'workout', data: planWorkout },
-    })
-  } else if (streak >= 4 || days < 1) {
+  // O treino do dia já está em Hoje; com rotina ativa não sugerimos treinos avulsos concorrentes.
+  const freeform = !planWorkout
+
+  if (freeform && (streak >= 4 || days < 1)) {
     const workout = createQuickWorkout({
       profile,
       focus: ['Mobilidade', 'Alongamento'],
@@ -468,37 +489,29 @@ export function getContextualRecommendations(context = {}) {
       action: 'save_workout',
       suggestion: { type: 'workout', data: workout },
     })
-  } else if (pending.length) {
-    const next = planWorkout || performance?.nextWorkout || pending[0]
-    cards.push({
-      id: 'rec-pending',
-      title: `Seguir: ${next.name}`,
-      reason: 'Há treino pendente na sua planilha.',
-      impact: `Mantém a frequência alinhada à meta de ${weeklyGoal}x/semana (${weeklyDone} feitos).`,
-      action: 'start_workout',
-      suggestion: { type: 'workout', data: next },
-    })
-  } else if (lastSplit === 'push') {
+  } else if (freeform && pending.length) {
+    // Há treino pendente: ele já aparece em Hoje/Meus treinos — repetir não muda nada.
+  } else if (freeform && lastSplit === 'push') {
     const workout = createQuickWorkout({
       profile,
       focus: ['Costas', 'Bíceps'],
       minutes: profile.duration || 45,
-      name: 'Pull — costas e bíceps',
+      name: 'Puxar — costas e bíceps',
     })
     cards.push({
       id: 'rec-pull',
-      title: 'Equilibrar com Pull',
+      title: 'Equilibrar com treino de puxar',
       reason: 'Última sessão enfatizou empurrar (peito/ombros/tríceps).',
       impact: 'Balanceia volume entre empurrar e puxar na semana.',
       action: 'save_workout',
       suggestion: { type: 'workout', data: workout },
     })
-  } else if (lastSplit === 'pull') {
+  } else if (freeform && lastSplit === 'pull') {
     const workout = createQuickWorkout({
       profile,
       focus: ['Quadríceps', 'Posterior', 'Glúteos'],
       minutes: profile.duration || 45,
-      name: 'Legs — inferiores',
+      name: 'Pernas — inferiores',
     })
     cards.push({
       id: 'rec-legs',
@@ -508,16 +521,16 @@ export function getContextualRecommendations(context = {}) {
       action: 'save_workout',
       suggestion: { type: 'workout', data: workout },
     })
-  } else if (lastSplit === 'legs') {
+  } else if (freeform && lastSplit === 'legs') {
     const workout = createQuickWorkout({
       profile,
       focus: ['Peitoral', 'Ombros', 'Tríceps'],
       minutes: profile.duration || 45,
-      name: 'Push — peito e tríceps',
+      name: 'Empurrar — peito e tríceps',
     })
     cards.push({
       id: 'rec-push',
-      title: 'Retomar Push',
+      title: 'Retomar treino de empurrar',
       reason: 'Última sessão foi de inferiores.',
       impact: 'Alterna estímulos e evita repetir o mesmo grupo em sequência.',
       action: 'save_workout',
@@ -536,27 +549,18 @@ export function getContextualRecommendations(context = {}) {
     })
   }
 
-  if (weeklyDone >= weeklyGoal && weeklyGoal > 0) {
-    cards.push({
-      id: 'rec-week-done',
-      title: 'Meta semanal atingida',
-      reason: `Você já concluiu ${weeklyDone} de ${weeklyGoal} treinos nesta semana.`,
-      impact: 'Pode priorizar mobilidade ou manter leveza até a próxima semana.',
-      action: 'recovery',
-      suggestion: null,
-    })
-  }
-
-  // Soft volume note — non-alarmist
+  // Volume alto: o Aplicar pede ao Coach uma proposta de ajuste (antes/depois), não salva nada sozinho.
   const heavyPending = pending.find((w) => (w.exercises || []).length >= 8)
   if (heavyPending) {
+    const name = displayWorkoutName(heavyPending.name)
     cards.push({
       id: 'rec-volume',
       title: 'Volume alto em um dia',
-      reason: `"${heavyPending.name}" tem ${heavyPending.exercises.length} exercícios.`,
-      impact: 'Se sentir fadiga excessiva, reduza 1–2 movimentos ou aumente o descanso entre séries.',
+      reason: `"${name}" tem ${heavyPending.exercises.length} exercícios.`,
+      impact: 'Peça uma proposta com 1–2 movimentos a menos e veja o antes e depois antes de aplicar.',
       action: 'adjust',
-      suggestion: { type: 'workout', data: heavyPending },
+      prompt: `Reduza o volume do treino ${name}: remova 1 ou 2 exercícios menos importantes.`,
+      suggestion: null,
     })
   }
 
@@ -598,7 +602,7 @@ export function getCoachSummary(context = {}) {
     recommendedGroup = ''
     attention = 'Sem histórico ainda — comece com volume moderado e foque na técnica.'
   } else if (planWorkout) {
-    nextSuggestion = planWorkout.name
+    nextSuggestion = displayWorkoutName(planWorkout.name)
     recommendedGroup = (planWorkout.muscleGroups || [])[0] || recommendedGroup
     if (canonical.situation === 'completed') {
       attention = 'Sessão de hoje registrada. O próximo passo segue a rotina ativa.'
@@ -626,7 +630,7 @@ export function getCoachSummary(context = {}) {
     nextSuggestion,
     lastWorkout: last
       ? {
-          name: last.name || 'Treino anterior',
+          name: displayWorkoutName(last.name) || 'Treino anterior',
           date: last.completedAt || last.date || null,
           muscles: lastMuscles,
         }
@@ -672,11 +676,12 @@ export async function getTodaySuggestion(context = {}) {
 
   if (planWorkout && canonical.situation !== 'completed') {
     const preview = (planWorkout.exercises || []).slice(0, 4).map((ex) => ex.name).filter(Boolean)
+    const planName = displayWorkoutName(planWorkout.name)
     return makeResult({
-      title: planWorkout.name,
+      title: planName,
       reason:
         canonical.situation === 'no_workout_today'
-          ? `Nada agendado para hoje na rotina. O próximo treino é ${planWorkout.name}.`
+          ? `Nada agendado para hoje na rotina. O próximo treino é ${planName}.`
           : `Este é o treino da rotina ativa — o mesmo da tela Hoje.${preview.length ? ` Prévia: ${preview.join(', ')}.` : ''}`,
       workout: planWorkout,
       suggestion: { type: 'workout', data: planWorkout },
@@ -714,7 +719,7 @@ export async function getTodaySuggestion(context = {}) {
   }
 
   if (lastSplit === 'push') {
-    title = 'Dia de puxar (Pull)'
+    title = 'Dia de puxar'
     focus = ['Costas', 'Bíceps']
     reason = 'Como o último treino foi de empurrar (peito, ombros, tríceps), hoje faz sentido trabalhar costas e bíceps.'
   } else if (lastSplit === 'pull') {
@@ -722,13 +727,13 @@ export async function getTodaySuggestion(context = {}) {
     focus = ['Pernas', 'Glúteos']
     reason = 'Após puxar, o próximo passo natural no split é pernas — quadríceps, posterior e glúteos.'
   } else if (lastSplit === 'legs') {
-    title = 'Dia de empurrar (Push)'
+    title = 'Dia de empurrar'
     focus = ['Peitoral', 'Ombros', 'Tríceps']
     reason = 'Depois de pernas, retome o ciclo com empurrar para manter equilíbrio entre grupos.'
   } else if (pending.length) {
     const next = performance?.nextWorkout || pending[0]
     return makeResult({
-      title: `Seguir planilha: ${next.name}`,
+      title: `Seguir planilha: ${displayWorkoutName(next.name)}`,
       reason: `Você tem treino pendente na planilha. Manter a rotina ajuda a consistência sem exagerar no volume.`,
       workout: next,
       suggestion: { type: 'workout', data: next },
@@ -761,101 +766,64 @@ export async function generateWorkoutSuggestion(context = {}, options = {}) {
   return generateWorkoutPlan(context, options)
 }
 
-export async function generateWorkoutPlan(context = {}, options = {}) {
-  await delay()
+function activePlanOf(context = {}) {
+  return context.generatedPlan || context.plans?.[0] || null
+}
 
-  const { profile = {} } = context
-  const home = options.home || options.location === 'Casa' || profile.location === 'Casa'
-  const restrictions = options.restrictions?.length ? options.restrictions : profile.restrictions || []
-
-  const plan = buildPlan({
-    objective: options.objective || profile?.objective || 'saude',
-    level: options.level || profile?.level || 'Iniciante',
-    daysPerWeek: options.daysPerWeek || (profile?.daysPerWeek > 0 ? profile.daysPerWeek : 3),
-    duration: options.minutes || profile?.duration || 45,
-    location: options.location || (home ? 'Casa' : profile?.location || 'Academia'),
-    equipment: home ? HOME_EQUIPMENT : profile?.equipment || ['Academia completa'],
-    restrictions,
-  })
-
-  const summary = plan.schedule
-    .map((day) => `• **${day.name}**: ${day.exercises.map((e) => e.name).join(', ')}`)
-    .join('\n')
-
-  const firstDay = plan.schedule[0]
-  const sampleWorkout = firstDay
-    ? {
-        id: `coach-day-${Date.now()}`,
-        name: firstDay.name,
-        date: new Date().toISOString().split('T')[0],
-        muscleGroups: firstDay.focus || [],
-        status: 'Pendente',
-        estimatedMinutes: plan.duration,
-        source: 'coach-ia',
-        exercises: (firstDay.exercises || []).map((ex) => ({
-          exerciseId: ex.exerciseId || ex.id,
-          name: ex.name,
-          muscleGroup: ex.muscleGroup || ex.category,
-          sets: ex.sets || 3,
-          reps: ex.reps || '10-12',
-          restSeconds: ex.restSeconds || 75,
-          load: '',
-        })),
-        createdAt: new Date().toISOString(),
-      }
-    : null
-
-  const title = `Planilha de ${plan.daysPerWeek} dias`
-  const voiceHint = describeBuildSlots({
-    daysPerWeek: plan.daysPerWeek,
-    objective: plan.objective,
-    minutes: plan.duration,
-    location: plan.location,
-    restrictions,
-  })
-  const reason = `Montei uma divisão para ${plan.objectiveLabel}, nível ${plan.level}, com sessões de ~${plan.duration} min${
-    home ? ' adaptada para casa' : ''
-  } (${voiceHint}). Você pode salvar a planilha inteira ou iniciar o primeiro dia.`
-
-  const answer = withSafety(
-    [
-      `## ${title}`,
-      '',
-      reason,
-      '',
-      '**Divisão sugerida:**',
-      summary,
-      '',
-      sampleWorkout ? formatWorkoutBlock(sampleWorkout) : '',
-      '',
-      '**Cuidados:**',
-      formatList([
-        'Comece com cargas confortáveis e evolua aos poucos.',
-        'Inclua pelo menos 1 dia de descanso na semana.',
-        plan.disclaimer || 'Este plano é informativo e não substitui orientação profissional.',
-      ]),
-    ]
-      .filter(Boolean)
-      .join('\n'),
-  )
-
+function proposalResult(proposal, explanation, { source = 'engine', prefix = '' } = {}) {
+  const text = [prefix, explanation].filter(Boolean).join('\n\n')
   return {
-    answer,
-    blocks: buildBlocks({
-      title,
-      reason,
-      workout: sampleWorkout,
-      careNotes: [
-        'Comece com cargas confortáveis e evolua aos poucos.',
-        'Inclua pelo menos 1 dia de descanso na semana.',
-        'Pare se sentir dor e priorize a técnica.',
-      ],
-    }),
-    actions: [ACTION.SAVE, ACTION.START, ACTION.RELATED, ACTION.VARIATION, ACTION.COPY],
-    suggestion: { type: 'plan', data: plan, sampleWorkout },
-    relatedMuscleGroup: sampleWorkout?.muscleGroups?.[0] || null,
-    relatedWorkout: sampleWorkout,
+    answer: text,
+    blocks: { title: proposal.titulo, reason: explanation, workout: null, careNotes: [] },
+    actions: [ACTION.COPY],
+    suggestion: null,
+    proposal,
+    source,
+    relatedMuscleGroup: null,
+    relatedWorkout: null,
   }
+}
+
+/**
+ * Planilha nova pelo motor. A IA (se disponível) só escreve a explicação;
+ * sem IA, a explicação determinística descreve a proposta concreta.
+ */
+export async function answerPlanBuild(context = {}, slots = {}, question = '') {
+  const proposal = buildPlanProposal({
+    slots,
+    profile: context.profile || {},
+    activePlan: activePlanOf(context),
+  })
+  let explanation = describeProposal(proposal)
+  let source = 'engine'
+  try {
+    const ai = await requestCoachAI({
+      question: question || 'Explique esta planilha.',
+      mode: 'explain_proposal',
+      context: buildCoachAIContext(context),
+      proposal: summarizeProposalForAI(proposal),
+    })
+    explanation = ai.resposta.trim()
+    source = 'engine+ia'
+  } catch {
+    // Sem IA: fica a explicação do motor.
+  }
+  return proposalResult(proposal, explanation, { source })
+}
+
+export async function generateWorkoutPlan(context = {}, options = {}) {
+  return answerPlanBuild(
+    context,
+    {
+      objective: options.objective,
+      level: options.level,
+      daysPerWeek: options.daysPerWeek,
+      minutes: options.minutes,
+      location: options.location || (options.home ? 'Casa' : null),
+      restrictions: options.restrictions || [],
+    },
+    options.question || QUICK_PROMPTS.montarTreino,
+  )
 }
 
 export async function explainExercise(exerciseOrId, _context) {
@@ -938,10 +906,7 @@ export async function adjustWorkoutPlan(context = {}, request = 'trocar') {
     const planResult = await generateWorkoutPlan(context)
     return {
       ...planResult,
-      answer: withSafety(
-        'Você não tem treinos pendentes na planilha. Criei uma sugestão de planilha completa para começar.\n\n' +
-          planResult.answer.split('---')[0].trim(),
-      ),
+      answer: `Você não tem treinos pendentes na planilha. Preparei uma planilha completa para começar.\n\n${planResult.answer}`,
     }
   }
 
@@ -1376,39 +1341,128 @@ function matchIntent(question) {
   return { type: 'general' }
 }
 
+const FAILURE_DETAILS = {
+  not_authenticated: 'Entre na sua conta para conversar com o Coach.',
+  ai_not_configured: 'O Coach IA ainda não foi ativado no servidor.',
+  rate_limited: 'Muitas perguntas em pouco tempo — espere um minuto.',
+  timeout: 'A resposta demorou demais.',
+  ai_timeout: 'A resposta demorou demais.',
+  network_error: 'Verifique sua conexão.',
+}
+
+function coachFailure(question, code) {
+  const detail = FAILURE_DETAILS[code]
+  return {
+    answer: `Não consegui responder agora, tente de novo.${detail ? ` ${detail}` : ''}`,
+    blocks: null,
+    actions: [],
+    suggestion: null,
+    failed: true,
+    retryQuestion: question,
+    errorCode: code || 'unknown',
+  }
+}
+
+/** Dor/lesão: resposta local e determinística, com alternativa pelo motor quando há região. */
+function answerPain(context, pain, appIntent) {
+  const profile = context.profile || {}
+  const activePlan = activePlanOf(context)
+  const canBuild = pain.restrictions.length > 0 && Boolean(activePlan || profile.objective || profile.level)
+  const proposal = canBuild
+    ? buildPlanProposal({
+        slots: appIntent?.domain === 'build' ? appIntent.slots : {},
+        profile,
+        activePlan,
+        extraRestrictions: pain.restrictions,
+        reason: 'dor',
+      })
+    : null
+  const text = painReplyText(pain, { proposalReady: Boolean(proposal) })
+  if (proposal) {
+    proposal.titulo = `Alternativa sem sobrecarregar ${pain.regions.join(', ')}`
+    return proposalResult(proposal, `${text}\n\n${describeProposal(proposal)}`, { source: 'safety' })
+  }
+  return {
+    answer: text,
+    blocks: { title: 'Cuidado com dor ou lesão', reason: text, workout: null, careNotes: [] },
+    actions: [ACTION.COPY],
+    suggestion: null,
+    source: 'safety',
+    relatedMuscleGroup: null,
+    relatedWorkout: null,
+  }
+}
+
+function aiAnswer(ai, context) {
+  const activePlan = activePlanOf(context)
+  if (ai.proposta && activePlan) {
+    const proposal = buildEditProposal(activePlan, ai.proposta, exercises)
+    if (proposalHasChanges(proposal)) {
+      return proposalResult(proposal, ai.resposta, { source: 'ia' })
+    }
+    const notes = proposal.skipped.map((s) => `• ${s.motivo}`).join('\n')
+    return {
+      answer: `${ai.resposta}${notes ? `\n\n**Não apliquei as mudanças sugeridas:**\n${notes}` : ''}`,
+      blocks: null,
+      actions: [ACTION.COPY],
+      suggestion: null,
+      source: 'ia',
+    }
+  }
+  const noPlan = ai.proposta && !activePlan
+    ? '\n\nVocê ainda não tem planilha ativa. Peça, por exemplo: "monte um treino para 4 dias".'
+    : ''
+  return {
+    answer: `${ai.resposta}${noPlan}`,
+    blocks: null,
+    actions: [ACTION.COPY],
+    suggestion: null,
+    source: 'ia',
+  }
+}
+
 /**
- * Entrada principal do Coach (local/simulado).
- * Futuro: substituir o corpo por chamada à Edge Function segura — sem API key no React.
+ * Entrada principal do Coach.
+ * Ordem: dor/lesão (local) → montar planilha (motor) → agenda/hoje (local) → IA.
  */
 export async function askCoach(question, context = {}) {
-  await delay()
+  const q = String(question || '').trim()
+  const appIntent = parseAppVoiceCommand(q)
+  const pain = detectPainMention(q)
 
-  // Futuro (Supabase Edge Function):
-  // const { data, error } = await supabase.functions.invoke('coach-ai', {
-  //   body: { question, context: summarizeContext(context) },
-  // })
-  // if (!error && data?.answer) return data
+  if (pain.triggered) return answerPain(context, pain, appIntent)
+  if (appIntent.domain === 'build') return answerPlanBuild(context, appIntent.slots || {}, q)
+  if (appIntent.domain === 'schedule') return answerScheduleVoice(context, appIntent)
+  if (appIntent.domain === 'query' || appIntent.domain === 'train') return getTodaySuggestion(context)
 
-  const appIntent = parseAppVoiceCommand(question)
-  if (appIntent.domain === 'build') {
-    return generateWorkoutPlan(context, {
-      objective: appIntent.slots?.objective,
-      daysPerWeek: appIntent.slots?.daysPerWeek,
-      minutes: appIntent.slots?.minutes,
-      location: appIntent.slots?.location,
-      restrictions: appIntent.slots?.restrictions,
-      home: appIntent.slots?.location === 'Casa',
+  const intent = matchIntent(q)
+  if (['body_guard', 'body', 'today'].includes(intent.type)) return localAnswer(intent, context, q)
+
+  try {
+    const ai = await requestCoachAI({
+      question: q,
+      mode: 'chat',
+      context: buildCoachAIContext(context),
+      catalog: buildCatalogDigest(exercises, { location: context.profile?.location }),
     })
+    return aiAnswer(ai, context)
+  } catch (err) {
+    const failure = coachFailure(q, err?.code)
+    const local = await localAnswer(intent, context, q)
+    if (!local) return failure
+    return {
+      ...local,
+      answer: `Não consegui falar com a IA agora; segue a resposta do motor local.\n\n${local.answer}`,
+      failed: true,
+      retryQuestion: q,
+      errorCode: failure.errorCode,
+      source: 'local',
+    }
   }
-  if (appIntent.domain === 'schedule') {
-    return answerScheduleVoice(context, appIntent)
-  }
-  if (appIntent.domain === 'query' || appIntent.domain === 'train') {
-    return getTodaySuggestion(context)
-  }
+}
 
-  const intent = matchIntent(question)
-
+/** Respostas locais concretas; null quando só a IA saberia responder. */
+async function localAnswer(intent, context, question) {
   switch (intent.type) {
     case 'body_guard':
       return makeResult({
@@ -1422,17 +1476,14 @@ export async function askCoach(question, context = {}) {
     case 'today':
       return getTodaySuggestion(context)
     case 'plan':
-      return generateWorkoutSuggestion(context)
+      if (/ajust|adapt|reduz|troc|substitu|remov|tir[ae]/i.test(question)) return null
+      return answerPlanBuild(context, {}, question)
     case 'explain': {
       const pending = context.workouts?.find((w) => w.status === 'Pendente')
       const exId = pending?.exercises?.[0]?.exerciseId
       if (exId) return explainExercise(exId, context)
-      return explainExercise(exercises[0]?.id, context)
+      return null
     }
-    case 'adjust':
-      return adjustWorkoutPlan(context, 'trocar')
-    case 'swap':
-      return adjustWorkoutPlan(context, 'trocar')
     case 'home':
       return createHomeWorkoutSuggestion(context)
     case 'short':
@@ -1443,15 +1494,15 @@ export async function askCoach(question, context = {}) {
       return {
         answer: withSafety(
           [
-            '## Push, Pull e Legs (PPL)',
+            '## Empurrar, Puxar e Pernas',
             '',
             'Divisão clássica e equilibrada:',
             '',
-            '• **Push:** peito, ombros, tríceps',
-            '• **Pull:** costas, bíceps',
-            '• **Legs:** quadríceps, posterior, glúteos',
+            '• **Empurrar:** peito, ombros, tríceps',
+            '• **Puxar:** costas, bíceps',
+            '• **Pernas:** quadríceps, posterior, glúteos',
             '',
-            'Com 3 dias/semana, alterne Push → Pull → Legs com pelo menos 1 dia de descanso entre sessões do mesmo grupo. Com mais dias, repita o ciclo sem acumular fadiga excessiva.',
+            'Com 3 dias/semana, alterne Empurrar → Puxar → Pernas com pelo menos 1 dia de descanso entre sessões do mesmo grupo. Com mais dias, repita o ciclo sem acumular fadiga excessiva.',
             '',
             '**Cuidados:**',
             formatList([
@@ -1462,39 +1513,20 @@ export async function askCoach(question, context = {}) {
           ].join('\n'),
         ),
         blocks: buildBlocks({
-          title: 'Push, Pull e Legs (PPL)',
+          title: 'Empurrar, Puxar e Pernas',
           reason: 'Divisão clássica para equilibrar empurrar, puxar e pernas ao longo da semana.',
           careNotes: [
             'Não treine o mesmo grupo em dias seguidos com alto volume.',
             'Priorize técnica antes de aumentar carga.',
           ],
         }),
-        actions: [ACTION.SAVE, ACTION.COPY],
+        actions: [ACTION.COPY],
         suggestion: null,
         relatedMuscleGroup: null,
         relatedWorkout: null,
       }
-    default: {
-      const hasData = Boolean(context.profile?.objective || context.workouts?.length || context.history?.length)
-      const objective = objectiveLabels[context.profile?.objective] || ''
-      const days = Number(context.profile?.daysPerWeek) || 0
-      const profileBit = [objective, context.profile?.level, days > 0 ? `${days}x/semana` : '']
-        .filter(Boolean)
-        .join(', ')
-      return makeResult({
-        title: 'Orientação geral',
-        reason: hasData
-          ? `Entendi sua dúvida sobre "${question}".${profileBit ? ` Com seu perfil (${profileBit})` : ''} recomendo manter consistência, variar grupos musculares e ajustar carga gradualmente. Use os atalhos para montar treino, ver sugestão de hoje ou ajustar a planilha.`
-          : `Entendi sua dúvida sobre "${question}". Ainda há poucos dados locais — use os atalhos para montar um treino seguro e genérico, ou preencha o perfil para sugestões mais alinhadas à sua rotina.`,
-        workout: null,
-        careNotes: [
-          'Evite promessas de resultados rápidos — evolução é gradual.',
-          'Não treine através da dor.',
-          'Consistência moderada supera volume excessivo.',
-        ],
-        extraActions: [ACTION.COPY],
-      })
-    }
+    default:
+      return null
   }
 }
 

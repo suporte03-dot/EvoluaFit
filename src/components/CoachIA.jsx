@@ -11,7 +11,6 @@ import { markRestDay } from '../utils/calendarUtils'
 import useCoachVoice from '../hooks/useCoachVoice'
 import { cancelSpeech } from '../utils/coachVoice'
 import {
-  IconBolt,
   IconCalendar,
   IconChart,
   IconDumbbell,
@@ -23,7 +22,6 @@ import {
 import coachOrbUrl from '../assets/coach/coach-ai-orb.svg'
 import {
   askCoach,
-  adjustWorkoutPlan,
   clearCoachMessages,
   COACH_ACTIONS,
   createHomeWorkoutSuggestion,
@@ -40,8 +38,12 @@ import {
   QUICK_CHIPS,
   saveCoachExchange,
   saveCoachSuggestionToPlan,
+  sortCoachMessages,
+  updateCoachMessage,
 } from '../services/coachService'
 import { getBodyCoachSummary } from '../services/bodyEvolutionService'
+import { computePlanApplication } from '../utils/coach/proposal.js'
+import { displayWorkoutName } from '../utils/workoutLabels'
 
 const COACH_STYLE_ID = 'evoluafit-coach-page-css'
 const COACH_PAGE_CSS = `
@@ -113,6 +115,35 @@ const COACH_PAGE_CSS = `
 .coach-recs-empty p{margin:0 0 .75rem;color:var(--text-secondary,#94a3b8);font-size:.9rem;line-height:1.45}
 .coach-recs-empty__actions{display:flex;flex-wrap:wrap;gap:.5rem}
 .coach-page .coach-ia__main{margin-top:.35rem}
+.coach-page .coach-context--inline{margin:.85rem 0 .35rem}
+.coach-proposal{display:grid;gap:.65rem;margin-top:.75rem;padding:.85rem .9rem;border-radius:12px;border:1px solid rgba(167,139,250,.35);background:linear-gradient(160deg,rgba(76,29,149,.22),rgba(8,12,24,.9))}
+.coach-proposal__head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem}
+.coach-proposal__title{margin:0;font-size:.95rem;font-weight:750;color:#f1f5f9}
+.coach-proposal__badge{padding:.15rem .55rem;border-radius:999px;font-size:.7rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border:1px solid rgba(167,139,250,.45);color:#ddd6fe}
+.coach-proposal__badge.is-applied{border-color:rgba(0,229,143,.55);color:#6ee7b7}
+.coach-proposal__badge.is-ignored,.coach-proposal__badge.is-expired{border-color:rgba(148,163,184,.4);color:#94a3b8}
+.coach-proposal__k{display:block;margin-bottom:.3rem;font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(148,163,184,.95)}
+.coach-proposal__list{margin:0;padding-left:1.1rem;font-size:.82rem;line-height:1.45;color:rgba(226,232,240,.92)}
+.coach-proposal__days{display:grid;gap:.45rem}
+.coach-proposal__day{border-radius:10px;border:1px solid rgba(148,163,184,.2);background:rgba(8,18,35,.55)}
+.coach-proposal__day>summary{display:flex;justify-content:space-between;gap:.5rem;padding:.55rem .7rem;cursor:pointer;font-size:.85rem;font-weight:700;color:#e2e8f0;list-style:none}
+.coach-proposal__day>summary::-webkit-details-marker{display:none}
+.coach-proposal__min{font-weight:600;color:rgba(186,198,216,.9);white-space:nowrap}
+.coach-proposal__cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem;padding:0 .7rem .7rem}
+.coach-proposal__cols.is-single{grid-template-columns:1fr}
+.coach-proposal__rows{list-style:none;margin:0;padding:0;display:grid;gap:.25rem}
+.coach-proposal__rows li{display:flex;justify-content:space-between;gap:.5rem;padding:.3rem .45rem;border-radius:8px;font-size:.78rem;line-height:1.35;color:rgba(226,232,240,.92);background:rgba(15,23,42,.6)}
+.coach-proposal__rows li span:last-child{white-space:nowrap;color:rgba(186,198,216,.9)}
+.coach-proposal__rows li.is-novo{border-left:3px solid #00e58f}
+.coach-proposal__rows li.is-alterado{border-left:3px solid #fbbf24}
+.coach-proposal__rows li.is-removido{border-left:3px solid #f87171;opacity:.75;text-decoration:line-through}
+.coach-proposal__empty{margin:0;font-size:.78rem;color:rgba(148,163,184,.95)}
+.coach-proposal__note{padding:.55rem .7rem;border-radius:10px;border:1px solid rgba(251,191,36,.35);background:rgba(120,53,15,.18)}
+.coach-proposal__note--engine{border-color:rgba(255,138,106,.4);background:rgba(124,45,18,.18)}
+.coach-proposal__disclaimer{margin:0;font-size:.74rem;color:rgba(148,163,184,.95)}
+.coach-proposal__actions{display:flex;flex-wrap:wrap;gap:.5rem}
+.coach-ia__retry{margin-top:.6rem}
+@media (max-width:640px){.coach-proposal__cols{grid-template-columns:1fr}.coach-proposal__actions .coach-rec__btn{width:100%}}
 @media (max-width:900px){.coach-hero{grid-template-columns:1fr;padding:1rem 1.05rem}.coach-hero__art{display:none}.coach-hero__fade{display:none}.coach-recs-panel__grid{grid-template-columns:1fr}}
 @media (max-width:640px){.coach-page{--coach-page-gap:.7rem}.coach-hero{padding:1.15rem 1rem 1.25rem}.coach-hero__subtitle{max-width:none;font-size:.9rem}.coach-context__chips{flex-direction:column;align-items:stretch}.coach-context__chip{width:100%;box-sizing:border-box}.coach-notice{padding:.65rem .8rem}.coach-notice__text{font-size:.82rem}.coach-rec__actions{flex-direction:column}.coach-rec__btn{width:100%;min-height:48px}.coach-page .coach-context__chips{flex-wrap:wrap;overflow-x:visible}}
 @media (prefers-reduced-motion:reduce){.coach-orb__img,.coach-orb__glow,.coach-orb__pulse,.coach-orb__particle,.coach-rec,.coach-context__chip,.coach-rec__btn{animation:none!important;transition:none!important}.coach-rec:hover,.coach-context__chip:hover,.coach-rec__btn--apply:hover:not(:disabled){transform:none}}
@@ -192,30 +223,34 @@ function formatLastWorkout(lastWorkout) {
   return date ? `${name} · ${date}` : name
 }
 
-function CoachContextChips({ summary, profile, identity }) {
+function describeActivePlan(plan) {
+  const days = plan?.weeklyPlan || plan?.schedule || []
+  if (!days.length) return 'Nenhuma planilha ativa — peça "monte um treino para 4 dias"'
+  const names = days.map((d) => displayWorkoutName(d.workoutName || d.name)).filter(Boolean)
+  return `${days.length} dias · ${names.slice(0, 4).join(', ')}${names.length > 4 ? '…' : ''}`
+}
+
+function CoachContextChips({ summary, profile, identity, activePlan }) {
   const objective = displayGoalLabel({ objective: profile?.objective }) || summary?.objective
   const level = identity?.level || profile?.level || summary?.level
-  const days = Number(profile?.daysPerWeek || 0)
   const chips = [
-    {
-      id: 'level',
-      Icon: IconTrend,
-      label: 'Nível da rotina',
-      value: identity?.note
-        ? `${level} — ${identity.note}`
-        : level || 'Ainda não definido — complete o perfil',
-    },
     {
       id: 'goal',
       Icon: IconTarget,
       label: 'Objetivo',
-      value: objective || 'Defina um objetivo para personalizar as sugestões',
+      value: objective || 'Defina um objetivo no perfil',
     },
     {
-      id: 'freq',
+      id: 'level',
+      Icon: IconTrend,
+      label: 'Nível',
+      value: level || 'Ainda não definido — complete o perfil',
+    },
+    {
+      id: 'plan',
       Icon: IconDumbbell,
-      label: 'Frequência',
-      value: days > 0 ? `${days}× por semana` : 'Ainda não definida na planilha',
+      label: 'Planilha',
+      value: describeActivePlan(activePlan),
     },
     {
       id: 'last',
@@ -223,37 +258,14 @@ function CoachContextChips({ summary, profile, identity }) {
       label: 'Último treino',
       value: formatLastWorkout(summary?.lastWorkout),
     },
-    {
-      id: 'week',
-      Icon: IconDumbbell,
-      label: 'Treinos recentes',
-      value:
-        summary?.weeklyWorkouts > 0
-          ? `${summary.weeklyWorkouts} esta semana`
-          : 'Nenhum treino nesta semana ainda',
-    },
-    {
-      id: 'streak',
-      Icon: IconFlame,
-      label: 'Sequência',
-      value:
-        summary?.streak > 0
-          ? `${summary.streak} ${summary.streak === 1 ? 'dia' : 'dias'} seguidos`
-          : 'Comece hoje para acender a sequência',
-    },
-    {
-      id: 'suggestion',
-      Icon: IconBolt,
-      label: 'Sugestão agora',
-      value: summary?.nextSuggestion || 'Monte uma planilha para receber uma sugestão',
-    },
   ]
 
   return (
-    <section className="coach-context" aria-label="O que seu Coach sabe sobre você">
-      <h3 className="coach-page__section-title">O que seu Coach sabe sobre você</h3>
+    <section className="coach-context coach-context--inline" aria-label="O que eu sei de você">
+      <h3 className="coach-page__section-title">O que eu sei de você</h3>
       <p className="coach-context__lead">
-        Essas informações entram em cada resposta. Nada fica escondido.
+        Junto com a pergunta vão só dados de treino: perfil de treino, planilha ativa, últimas
+        sessões e metas. Nunca e-mail, fotos ou medidas.
       </p>
       <ul className="coach-context__chips">
         {chips.map(({ id, Icon, label, value }) => (
@@ -405,6 +417,164 @@ function CoachRecommendations({
   )
 }
 
+const PROPOSAL_STATUS_LABELS = {
+  pending: 'Proposta',
+  applied: 'Aplicada',
+  ignored: 'Ignorada',
+  expired: 'Expirada',
+}
+
+function ProposalRows({ rows }) {
+  return (
+    <ul className="coach-proposal__rows">
+      {rows.map((r, idx) => (
+        <li key={`${r.key}-${idx}`} className={`is-${r.status}`}>
+          <span>{r.name}</span>
+          <span>
+            {r.sets}×{r.reps}
+            {r.rest ? ` · ${r.rest}s` : ''}
+          </span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function CoachProposalCard({ proposal, status = 'pending', applying, disabled, onApply, onIgnore }) {
+  if (!proposal) {
+    return status === 'expired' || status === 'applied' ? (
+      <p className="coach-proposal__disclaimer">
+        {status === 'applied' ? 'Proposta aplicada.' : 'Proposta antiga — peça de novo ao Coach para ver o antes e depois.'}
+      </p>
+    ) : null
+  }
+  const diff = proposal.diff || []
+  const hasBefore = diff.some((d) => d.antes)
+  const changedDays = diff.filter((d) => d.changed)
+  const days = changedDays.length ? changedDays : diff
+  const corrections = proposal.corrections || []
+  const warnings = proposal.warnings || []
+
+  return (
+    <div className="coach-proposal" role="group" aria-label="Proposta de planilha">
+      <div className="coach-proposal__head">
+        <h5 className="coach-proposal__title">{proposal.titulo}</h5>
+        <span className={`coach-proposal__badge is-${status}`}>{PROPOSAL_STATUS_LABELS[status] || status}</span>
+      </div>
+
+      {proposal.applied?.length > 0 && (
+        <div>
+          <span className="coach-proposal__k">Mudanças</span>
+          <ul className="coach-proposal__list">
+            {proposal.applied.map((a, idx) => (
+              <li key={`a-${idx}`}>
+                {a.dia}: {a.descricao}
+                {a.motivo ? ` — ${a.motivo}` : ''}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {proposal.skipped?.length > 0 && (
+        <div className="coach-proposal__note">
+          <span className="coach-proposal__k">Não aplicado</span>
+          <ul className="coach-proposal__list">
+            {proposal.skipped.map((s, idx) => (
+              <li key={`s-${idx}`}>{s.motivo}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="coach-proposal__days">
+        <span className="coach-proposal__k">
+          {hasBefore ? 'Antes e depois' : 'Planilha proposta (você ainda não tem planilha ativa)'}
+        </span>
+        {days.map((d, idx) => (
+          <details key={`${d.dia}-${idx}`} className="coach-proposal__day" open={idx === 0}>
+            <summary>
+              <span>
+                {d.nomeAntes && d.nomeDepois && d.nomeAntes !== d.nomeDepois
+                  ? `${d.nomeAntes} → ${d.nomeDepois}`
+                  : d.nomeDepois || d.nomeAntes}
+              </span>
+              <span className="coach-proposal__min">
+                {d.minAntes != null && hasBefore ? `${d.minAntes} → ` : ''}
+                {d.minDepois != null ? `~${d.minDepois} min` : 'removido'}
+              </span>
+            </summary>
+            <div className={`coach-proposal__cols${hasBefore ? '' : ' is-single'}`}>
+              {hasBefore && (
+                <div>
+                  <span className="coach-proposal__k">Antes</span>
+                  {d.antes?.length ? <ProposalRows rows={d.antes} /> : <p className="coach-proposal__empty">Sem treino neste dia.</p>}
+                </div>
+              )}
+              <div>
+                <span className="coach-proposal__k">{hasBefore ? 'Depois' : 'Exercícios'}</span>
+                {d.depois?.length ? <ProposalRows rows={d.depois} /> : <p className="coach-proposal__empty">Dia removido.</p>}
+              </div>
+            </div>
+          </details>
+        ))}
+      </div>
+
+      {corrections.length > 0 && (
+        <div className="coach-proposal__note coach-proposal__note--engine">
+          <span className="coach-proposal__k">O motor corrigiu ({corrections.length})</span>
+          <ul className="coach-proposal__list">
+            {corrections.slice(0, 8).map((c, idx) => (
+              <li key={`c-${idx}`}>
+                {c.name ? `${c.name}: ` : ''}
+                {c.reason}
+              </li>
+            ))}
+            {corrections.length > 8 && <li>+{corrections.length - 8} ajuste(s) semelhantes.</li>}
+          </ul>
+        </div>
+      )}
+
+      {warnings.length > 0 && (
+        <div className="coach-proposal__note">
+          <span className="coach-proposal__k">Atenção</span>
+          <ul className="coach-proposal__list">
+            {warnings.slice(0, 4).map((w, idx) => (
+              <li key={`w-${idx}`}>{w}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <p className="coach-proposal__disclaimer">
+        Informativo — não substitui orientação profissional. Pare se sentir dor.
+      </p>
+
+      {status === 'pending' && (
+        <div className="coach-proposal__actions">
+          <button
+            type="button"
+            className="coach-rec__btn coach-rec__btn--apply"
+            onClick={onApply}
+            disabled={disabled || applying}
+            aria-busy={applying || undefined}
+          >
+            {applying ? 'Aplicando…' : 'Aplicar'}
+          </button>
+          <button
+            type="button"
+            className="coach-rec__btn coach-rec__btn--ignore"
+            onClick={onIgnore}
+            disabled={disabled || applying}
+          >
+            Ignorar
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 ensureCoachPageStyles()
 
 const MAIN_CHIP_IDS = ['hoje', 'montar', 'explicar', 'ajustar']
@@ -464,8 +634,6 @@ export default function CoachIA() {
     goals,
     showToast,
     savePlan,
-    addPlanWorkouts,
-    addWorkoutToPlan,
     addExerciseToPlan,
     startWorkout,
     generatedPlan,
@@ -486,6 +654,7 @@ export default function CoachIA() {
   const [ignoredRecs, setIgnoredRecs] = useState(() => new Set())
   const [applyingId, setApplyingId] = useState(null)
   const [appliedIds, setAppliedIds] = useState(() => new Set())
+  const [pendingQuestion, setPendingQuestion] = useState('')
   const chatEndRef = useRef(null)
   const inputRef = useRef(null)
   const loadingRef = useRef(false)
@@ -563,9 +732,8 @@ export default function CoachIA() {
       .map((ex) => ({ id: ex.exerciseId, name: ex.name }))
   }, [workouts])
 
-  const chronological = useMemo(() => {
-    return [...messages].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-  }, [messages])
+  const chronological = useMemo(() => sortCoachMessages(messages), [messages])
+  const activePlan = generatedPlan || plans?.[0] || null
 
   useEffect(() => {
     ensureCoachPageStyles()
@@ -599,25 +767,81 @@ export default function CoachIA() {
       if (!q || loadingRef.current) return
       loadingRef.current = true
       setLoading(true)
+      setPendingQuestion(q)
       try {
-        const result = await handler()
+        const result = (await handler()) || {
+          answer: 'Não consegui responder agora, tente de novo.',
+          failed: true,
+          retryQuestion: q,
+          actions: [],
+        }
         pushExchange(q, result)
         if (result?.suggestion?.autoApply) {
           applySuggestionRef.current?.(result.suggestion, 'save')
         }
-        loadingRef.current = false
-        setLoading(false)
-        markIdleRef.current?.()
         void speakCoachReplyRef.current?.(result)
       } catch {
-        showToast('Não foi possível obter resposta do Coach. Tente novamente.', 'error')
+        pushExchange(q, {
+          answer: 'Não consegui responder agora, tente de novo.',
+          failed: true,
+          retryQuestion: q,
+          actions: [],
+        })
+      } finally {
         loadingRef.current = false
         setLoading(false)
+        setPendingQuestion('')
         markIdleRef.current?.()
       }
     },
-    [pushExchange, showToast],
+    [pushExchange],
   )
+
+  const handleRetry = (msg) => {
+    const q = msg?.retryQuestion
+    if (!q) return
+    runCoach(q, () => askCoach(q, context))
+  }
+
+  const setProposalStatus = useCallback((id, proposalStatus) => {
+    setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, proposalStatus } : m)))
+    updateCoachMessage(id, { proposalStatus })
+  }, [])
+
+  const handleApplyProposal = (msg) => {
+    const proposal = msg?.proposal
+    if (!proposal?.plan || applyingId) return
+    if (proposal.kind === 'edit_plan' && proposal.basePlanId && activePlan?.id !== proposal.basePlanId) {
+      showToast('Sua planilha mudou desde esta proposta. Peça de novo ao Coach.', 'info')
+      return
+    }
+    const next = computePlanApplication({ activePlan, nextPlan: proposal.plan, workouts })
+    if (!next) {
+      showToast('Esta proposta não tem treinos para aplicar.', 'error')
+      return
+    }
+    setApplyingId(msg.id)
+    try {
+      savePlan(next.plan)
+      replaceWorkouts(next.workouts)
+      setProposalStatus(msg.id, 'applied')
+      showToast(
+        proposal.kind === 'new_plan'
+          ? 'Nova planilha aplicada. Hoje, Meus treinos e Calendário foram atualizados.'
+          : 'Planilha atualizada. Hoje, Meus treinos e Calendário foram atualizados.',
+        'success',
+      )
+    } catch {
+      showToast('Não foi possível aplicar a proposta. Nada foi alterado.', 'error')
+    } finally {
+      setApplyingId(null)
+    }
+  }
+
+  const handleIgnoreProposal = (msg) => {
+    if (!msg?.proposal) return
+    setProposalStatus(msg.id, 'ignored')
+  }
 
   const handleVoiceTranscript = useCallback(
     (transcript) => {
@@ -681,7 +905,7 @@ export default function CoachIA() {
             : null
 
   const fillAndAsk = (prompt, handler) => {
-    setInput(prompt)
+    setInput('')
     runCoach(prompt, handler)
   }
 
@@ -694,7 +918,7 @@ export default function CoachIA() {
         fillAndAsk(chip.prompt, () => generateWorkoutSuggestion(context))
         break
       case 'ajustar':
-        fillAndAsk(chip.prompt, () => adjustWorkoutPlan(context, 'trocar'))
+        fillAndAsk(chip.prompt, () => askCoach(chip.prompt, context))
         break
       case 'explicar':
         setInput(chip.prompt)
@@ -744,34 +968,39 @@ export default function CoachIA() {
       }
 
       if (payload.kind === 'plan') {
-        savePlan(payload.plan)
-        addPlanWorkouts(payload.workouts)
-        if (mode === 'start' && payload.sampleWorkout) {
-          addWorkoutToPlan(payload.sampleWorkout)
-          startWorkout(payload.sampleWorkout)
+        const next = computePlanApplication({ activePlan, nextPlan: payload.plan, workouts })
+        if (!next) {
+          showToast('Esta planilha não tem treinos para aplicar.', 'error')
+          return false
         }
-        showToast('Sugestão aplicada à planilha.', 'success')
+        savePlan(next.plan)
+        replaceWorkouts(next.workouts)
+        if (mode === 'start' && payload.sampleWorkout) startWorkout(payload.sampleWorkout)
+        showToast('Planilha aplicada.', 'success')
         return true
       }
 
-      if (payload.kind === 'workout') {
-        addWorkoutToPlan(payload.workout)
+      if (payload.kind === 'workout' || payload.kind === 'schedule') {
+        const exists = workouts.some((w) => w.id === payload.workout.id)
+        if (!exists) {
+          const entry = { ...payload.workout, exercises: (payload.workout.exercises || []).map((ex) => ({ ...ex })) }
+          replaceWorkouts([entry, ...workouts])
+        }
         if (mode === 'start') {
           startWorkout(payload.workout)
+          showToast('Treino iniciado.', 'success')
+          return true
         }
-        showToast(mode === 'start' ? 'Treino iniciado.' : 'Treino adicionado à planilha.', 'success')
+        if (exists) {
+          showToast('Esse treino já está na sua planilha.', 'info')
+          return false
+        }
+        showToast(payload.kind === 'schedule' ? 'Treino colocado na agenda.' : 'Treino adicionado à planilha.', 'success')
         return true
       }
 
       if (payload.kind === 'exercise') {
         addExerciseToPlan(payload.exercise)
-        showToast('Exercício adicionado.', 'success')
-        return true
-      }
-
-      if (payload.kind === 'schedule') {
-        addWorkoutToPlan(payload.workout)
-        showToast('Treino colocado na agenda.', 'success')
         return true
       }
 
@@ -796,7 +1025,7 @@ export default function CoachIA() {
 
       return false
     },
-    [addExerciseToPlan, addPlanWorkouts, addWorkoutToPlan, replaceWorkouts, savePlan, showToast, startWorkout, updateWorkout, workouts],
+    [activePlan, addExerciseToPlan, replaceWorkouts, savePlan, showToast, startWorkout, updateWorkout, workouts],
   )
 
   applySuggestionRef.current = applySuggestion
@@ -886,7 +1115,8 @@ export default function CoachIA() {
     }
 
     if (rec.action === 'plan') {
-      scrollToSection('planilha')
+      const prompt = QUICK_CHIPS.find((c) => c.id === 'montar')?.prompt || 'Montar treino'
+      fillAndAsk(prompt, () => generateWorkoutSuggestion(context))
       return
     }
     if (rec.action === 'short') {
@@ -902,9 +1132,8 @@ export default function CoachIA() {
       return
     }
     if (rec.action === 'adjust') {
-      fillAndAsk(QUICK_CHIPS.find((c) => c.id === 'ajustar')?.prompt || 'Ajustar', () =>
-        adjustWorkoutPlan(context, 'trocar'),
-      )
+      const prompt = rec.prompt || QUICK_CHIPS.find((c) => c.id === 'ajustar')?.prompt || 'Ajustar minha planilha'
+      fillAndAsk(prompt, () => askCoach(prompt, context))
     }
   }
 
@@ -1130,6 +1359,13 @@ export default function CoachIA() {
             </div>
           )}
 
+          <CoachContextChips
+            summary={summary}
+            profile={coachProfile}
+            identity={identity}
+            activePlan={activePlan}
+          />
+
           <div className="coach-ia__chat" aria-live="polite">
             {chronological.length === 0 && !loading && (
               <div className="coach-ia__empty coach-ia__empty--example">
@@ -1205,6 +1441,26 @@ export default function CoachIA() {
                         </div>
                       )}
                     </div>
+                    {(msg.proposal || msg.proposalStatus) && (
+                      <CoachProposalCard
+                        proposal={msg.proposal}
+                        status={msg.proposalStatus || 'pending'}
+                        applying={applyingId === msg.id}
+                        disabled={loading}
+                        onApply={() => handleApplyProposal(msg)}
+                        onIgnore={() => handleIgnoreProposal(msg)}
+                      />
+                    )}
+                    {msg.failed && msg.retryQuestion && (
+                      <button
+                        type="button"
+                        className="btn btn--ghost btn--sm coach-ia__retry"
+                        onClick={() => handleRetry(msg)}
+                        disabled={loading}
+                      >
+                        Tentar de novo
+                      </button>
+                    )}
                     <time className="coach-ia__time" dateTime={msg.createdAt}>
                       Coach · {formatTime(msg.createdAt)}
                     </time>
@@ -1232,6 +1488,14 @@ export default function CoachIA() {
               ),
             )}
 
+            {loading && pendingQuestion && (
+              <div className="coach-ia__message coach-ia__message--user">
+                <div className="coach-ia__bubble-wrap">
+                  <div className="coach-ia__bubble">{pendingQuestion}</div>
+                </div>
+              </div>
+            )}
+
             {loading && (
               <div className="coach-ia__message coach-ia__message--coach coach-ia__message--loading">
                 <span className="coach-ia__avatar" aria-hidden="true">
@@ -1247,13 +1511,13 @@ export default function CoachIA() {
           </div>
         </div>
 
-        <CoachContextChips summary={summary} profile={coachProfile} identity={identity} />
-
         <details className="coach-page__notices">
           <summary>Como funciona, segurança e privacidade</summary>
           <p className="coach-notice__text" style={{ margin: '0 0 .75rem' }}>
-            O Coach usa a rotina ativa e o histórico deste aparelho. Não há modelo externo nas
-            respostas.
+            Pedidos de planilha são montados pelo motor de prescrição do app. Perguntas livres vão
+            para um modelo de IA externo pelo servidor do EvoluaFit, só com dados de treino (sem
+            e-mail, fotos ou medidas). Toda proposta passa pelas regras do motor e só é salva quando
+            você toca em Aplicar.
           </p>
           <CoachSafetyNotice />
           <CoachPrivacyNotice voiceSupported={voiceSupported} />

@@ -47,6 +47,7 @@ export default defineConfig({
         clientsClaim: true,
         cleanupOutdatedCaches: true,
         navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api\//],
         // App shell only — no PNGs (avoids clashing with manifest icons / public assets)
         globPatterns: ['**/*.{js,css,html,svg,woff,woff2}'],
         globIgnores: [

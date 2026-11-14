@@ -44,11 +44,18 @@ const WORD_NUM = {
 
 const OBJECTIVE_PATTERNS = [
   { re: /hipertrof/, code: 'hipertrofia' },
-  { re: /forca|força/, code: 'forca' },
-  { re: /emagrec|perder peso/, code: 'emagrecimento' },
-  { re: /condicion/, code: 'condicionamento' },
+  { re: /\bforca\b|força/, code: 'forca' },
+  { re: /musculac|ganhar massa|massa muscular|ganho de massa/, code: 'hipertrofia' },
+  { re: /emagrec|perder peso|perder gordura|\bsecar\b/, code: 'emagrecimento' },
+  { re: /condicion|resistencia|\bfolego\b/, code: 'condicionamento' },
   { re: /mobilidade/, code: 'mobilidade' },
-  { re: /saude|saúde/, code: 'saude' },
+  { re: /saude|saúde|qualidade de vida/, code: 'saude' },
+]
+
+const LEVEL_PATTERNS = [
+  { re: /avancad|experiente/, level: 'Avançado' },
+  { re: /intermediari/, level: 'Intermediário' },
+  { re: /iniciante|comecando|novato|principiante/, level: 'Iniciante' },
 ]
 
 const WORKOUT_TYPE_PATTERNS = [
@@ -128,10 +135,12 @@ function extractMinutes(text) {
 
 function extractDaysPerWeek(text) {
   const n = normalizeVoiceText(text)
-  const tagged = n.match(/(\d+)\s*(vezes|x|dias)?\s*(por)?\s*semana/)
+  const tagged = n.match(/(\d+)\s*(vezes|x|dias)?\s*(na|por|a)?\s*semana/)
   if (tagged) return Math.min(7, Math.max(2, Number(tagged[1])))
-  const vezes = n.match(/(\d+)\s*(vezes|x)\b/)
-  if (vezes) return Math.min(7, Math.max(2, Number(vezes[1])))
+  const vezes = n.match(/(\d+)\s*(vezes|x|dias)\b/)
+  if (vezes && Number(vezes[1]) <= 7) return Math.min(7, Math.max(2, Number(vezes[1])))
+  const spoken = n.match(/\b(dois|duas|tres|quatro|cinco|seis|sete)\s+(vezes|dias)\b/)
+  if (spoken) return wordToNumber(spoken[1])
   if (/quatro vezes|4x/.test(n)) return 4
   if (/tres vezes|3x/.test(n)) return 3
   if (/cinco vezes|5x/.test(n)) return 5
@@ -145,6 +154,11 @@ function extractObjective(text) {
   const n = normalizeVoiceText(text)
   const hit = OBJECTIVE_PATTERNS.find((p) => p.re.test(n))
   return hit?.code || null
+}
+
+function extractLevel(text) {
+  const n = normalizeVoiceText(text)
+  return LEVEL_PATTERNS.find((p) => p.re.test(n))?.level || null
 }
 
 function extractLocation(text) {
@@ -295,6 +309,23 @@ export function parseFocusVoiceCommand(text) {
   }
 }
 
+const BUILD_VERB =
+  /\b(monte|monta|montar|cria|crie|criar|gera|gere|gerar|faca|fazer|elabore|elabora|elaborar|prepare|prepara|preparar|nova|novo)\b/
+const BUILD_TARGET = /\b(treino|treinos|planilha|rotina|divisao|plano|programa|ficha)\b/
+const BUILD_WANT = /\bquero (um |uma )?(novo |nova )?(treino|planilha|rotina|plano|ficha|divisao)\b/
+const EDIT_OR_QUESTION =
+  /\b(ajust\w*|troc\w*|substitu\w*|remov\w*|tir\w*|adicion\w*|inclu\w*|explic\w*)\b|^(como|por que|porque|pq|qual|quais|quando|onde|o que)\b/
+
+/** Pedido claro de montar uma planilha nova (o motor monta, não a IA). */
+export function isPlanBuildRequest(text) {
+  const n = normalizeVoiceText(text)
+  if (!n || EDIT_OR_QUESTION.test(n)) return false
+  if (/treino personalizado/.test(n)) return true
+  if (BUILD_WANT.test(n)) return true
+  if (BUILD_VERB.test(n) && BUILD_TARGET.test(n)) return true
+  return BUILD_TARGET.test(n) && Boolean(extractDaysPerWeek(n)) && Boolean(extractObjective(n) || extractLevel(n))
+}
+
 /**
  * Comandos do Coach / home: montar, agendar, o que treinar.
  */
@@ -331,17 +362,14 @@ export function parseAppVoiceCommand(text) {
     }
   }
 
-  const build =
-    /\b(monta|montar|cria|criar|gera|gerar|planilha|treino personalizado)\b/.test(n) ||
-    (/\btreino\b/.test(n) && (extractDaysPerWeek(n) || extractObjective(n) || extractMinutes(n)))
-
-  if (build) {
+  if (isPlanBuildRequest(n)) {
     return {
       domain: 'build',
       type: 'plan',
       slots: {
         daysPerWeek: extractDaysPerWeek(n),
         objective: extractObjective(n),
+        level: extractLevel(n),
         minutes: extractMinutes(n),
         location: extractLocation(n),
         restrictions: extractRestrictions(n),
@@ -365,6 +393,7 @@ export function describeBuildSlots(slots = {}) {
   const bits = []
   if (slots.daysPerWeek) bits.push(`${slots.daysPerWeek} vezes por semana`)
   if (slots.objective) bits.push(slots.objective)
+  if (slots.level) bits.push(String(slots.level).toLowerCase())
   if (slots.minutes) bits.push(`${slots.minutes} minutos`)
   if (slots.location) bits.push(slots.location.toLowerCase())
   if (slots.restrictions?.length) bits.push(`cuidado com ${slots.restrictions.join(', ').toLowerCase()}`)

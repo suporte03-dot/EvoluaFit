@@ -9,7 +9,7 @@ function parseInput(raw) {
 function display(value, decimals) {
   const n = Number(value) || 0
   if (!decimals || Number.isInteger(n)) return String(n)
-  return n.toFixed(decimals).replace('.', ',')
+  return String(Number(n.toFixed(Math.max(decimals, 2)))).replace('.', ',')
 }
 
 export default function Stepper({
@@ -21,17 +21,21 @@ export default function Stepper({
   min = 0,
   max = 999,
   decimals = 0,
+  snap,
+  showStepLabel = false,
   onChange,
   disabled = false,
 }) {
   const [text, setText] = useState(display(value, decimals))
+  const grain = snap || step
+  const stepText = display(step, decimals)
 
   useEffect(() => {
     setText(display(value, decimals))
   }, [value, decimals])
 
   const commit = (next) => {
-    const clamped = Math.min(max, Math.max(min, Math.round(next / step) * step))
+    const clamped = Math.min(max, Math.max(min, Math.round(next / grain) * grain))
     const rounded = Number(clamped.toFixed(2))
     onChange?.(rounded)
     setText(display(rounded, decimals))
@@ -48,9 +52,9 @@ export default function Stepper({
           className="live-stepper__btn"
           onClick={() => commit((Number(value) || 0) - step)}
           disabled={disabled || (Number(value) || 0) <= min}
-          aria-label={`Diminuir ${label.toLowerCase()} em ${display(step, decimals)}${unit ? ` ${unit}` : ''}`}
+          aria-label={`Diminuir ${label.toLowerCase()} em ${stepText}${unit ? ` ${unit}` : ''}`}
         >
-          <IconMinimize size={20} />
+          {showStepLabel ? <span className="live-stepper__step">−{stepText}</span> : <IconMinimize size={20} />}
         </button>
         <input
           id={id}
@@ -76,9 +80,9 @@ export default function Stepper({
           className="live-stepper__btn"
           onClick={() => commit((Number(value) || 0) + step)}
           disabled={disabled || (Number(value) || 0) >= max}
-          aria-label={`Aumentar ${label.toLowerCase()} em ${display(step, decimals)}${unit ? ` ${unit}` : ''}`}
+          aria-label={`Aumentar ${label.toLowerCase()} em ${stepText}${unit ? ` ${unit}` : ''}`}
         >
-          <IconPlus size={20} />
+          {showStepLabel ? <span className="live-stepper__step">+{stepText}</span> : <IconPlus size={20} />}
         </button>
       </div>
     </div>

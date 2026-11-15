@@ -2,10 +2,12 @@
  * POST /api/coach — Coach IA (Vercel Serverless, Node ESM, sem dependências).
  *
  * Env (só servidor): COACH_AI_API_KEY, COACH_AI_MODEL, COACH_AI_BASE_URL (OpenAI-compatible),
- * SUPABASE_URL + SUPABASE_ANON_KEY (ou VITE_SUPABASE_URL + VITE_SUPABASE_PUBLISHABLE_KEY).
+ * SUPABASE_URL + SUPABASE_ANON_KEY (ou VITE_SUPABASE_URL + VITE_SUPABASE_PUBLISHABLE_KEY),
+ * COACH_AI_HOURLY_LIMIT (padrão 30).
  *
- * Rate limit em memória: vale por instância da função (reinicia em cold start e não é
- * compartilhado entre instâncias). Suficiente como freio; para limite rígido use um store externo.
+ * Rate limit persistente: tabela public.coach_requests (migração 20261114_coach_rate_limit.sql),
+ * acessada via PostgREST com o token do próprio usuário (RLS). Se a tabela não existir ou o
+ * Supabase falhar, cai no limite em memória, que vale por instância da função (reinicia em cold start).
  */
 
 const MAX_BODY_CHARS = 32000
@@ -14,8 +16,11 @@ const MAX_RESPOSTA_CHARS = 4000
 const MAX_CHANGES = 12
 const RATE_PER_MINUTE = 8
 const RATE_PER_DAY = 120
+const DEFAULT_HOURLY_LIMIT = 30
+const HOUR_MS = 3600000
 const AI_TIMEOUT_MS = 25000
 const AUTH_TIMEOUT_MS = 6000
+const LIMIT_TIMEOUT_MS = 4000
 const CHANGE_TYPES = ['adicionar', 'remover', 'trocar', 'ajustar']
 const MODES = ['chat', 'explain_proposal']
 
@@ -37,7 +42,9 @@ Regras:
 const EXPLAIN_PROMPT = `Modo "explain_proposal": o motor do app já montou a proposta em "propostaDoMotor". Escreva em "resposta" 2 a 4 frases explicando a lógica da proposta para este usuário (divisão, volume, descanso, por que combina com o objetivo e nível). Não liste todos os exercícios. NÃO inclua "proposta" na resposta.`
 
 export function getConfig(env = process.env) {
+  const hourly = Number.parseInt(env.COACH_AI_HOURLY_LIMIT, 10)
   return {
+    hourlyLimit: Number.isFinite(hourly) && hourly > 0 ? hourly : DEFAULT_HOURLY_LIMIT,
     apiKey: env.COACH_AI_API_KEY || '',
     model: env.COACH_AI_MODEL || 'gpt-4o-mini',
     baseUrl: String(env.COACH_AI_BASE_URL || 'https://api.openai.com/v1').replace(/\/+$/, ''),
@@ -142,6 +149,13 @@ export function parseModelOutput(text, { allowProposal = true } = {}) {
 }
 
 const buckets = new Map()
+let warnedPersistentFallback = false
+
+function warnPersistentFallback(reason) {
+  if (warnedPersistentFallback) return
+  warnedPersistentFallback = true
+  console.warn(`[coach] persistent rate limit unavailable (${reason}); using in-memory soft limit`)
+}
 
 /** @returns {{ ok: boolean, retryAfter?: number }} */
 export function checkRateLimit(userId, now = Date.now(), store = buckets) {
@@ -206,6 +220,65 @@ async function verifyUser(token, config, fetchImpl) {
   return user?.id ? user : null
 }
 
+function parseContentRangeTotal(header) {
+  const match = String(header || '').match(/\/(\d+)\s*$/)
+  return match ? Number(match[1]) : null
+}
+
+/**
+ * Limite por hora em public.coach_requests, com o token do usuário (RLS).
+ * @returns {Promise<{ ok: true } | { ok: false, retryAfter: number } | null>} null = indisponível (usar memória).
+ */
+export async function checkPersistentLimit({ userId, token, config, fetchImpl, now = Date.now() }) {
+  const base = `${config.supabaseUrl}/rest/v1/coach_requests`
+  const headers = { apikey: config.supabaseKey, Authorization: `Bearer ${token}` }
+  try {
+    const since = new Date(now - HOUR_MS).toISOString()
+    const query = `select=created_at&user_id=eq.${encodeURIComponent(userId)}&created_at=gte.${encodeURIComponent(since)}&order=created_at.asc&limit=1`
+    const countResponse = await fetchWithTimeout(
+      `${base}?${query}`,
+      { headers: { ...headers, Prefer: 'count=exact' } },
+      LIMIT_TIMEOUT_MS,
+      fetchImpl,
+    )
+    if (!countResponse.ok) {
+      warnPersistentFallback(`REST ${countResponse.status}`)
+      return null
+    }
+    const total = parseContentRangeTotal(countResponse.headers.get('content-range'))
+    if (total == null) {
+      warnPersistentFallback('missing content-range')
+      return null
+    }
+
+    if (total >= config.hourlyLimit) {
+      const rows = await countResponse.json().catch(() => [])
+      const oldest = Date.parse(rows?.[0]?.created_at)
+      const retryAfter = Number.isFinite(oldest) ? Math.ceil((oldest + HOUR_MS - now) / 1000) : 3600
+      return { ok: false, retryAfter: Math.min(3600, Math.max(1, retryAfter)) }
+    }
+
+    const insertResponse = await fetchWithTimeout(
+      base,
+      {
+        method: 'POST',
+        headers: { ...headers, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+        body: JSON.stringify({ user_id: userId }),
+      },
+      LIMIT_TIMEOUT_MS,
+      fetchImpl,
+    )
+    if (!insertResponse.ok) {
+      warnPersistentFallback(`insert ${insertResponse.status}`)
+      return null
+    }
+    return { ok: true }
+  } catch (err) {
+    warnPersistentFallback(err?.name || 'fetch_error')
+    return null
+  }
+}
+
 async function readBody(req) {
   if (req.body !== undefined) return req.body
   let size = 0
@@ -250,8 +323,24 @@ export function createHandler({ env = process.env, fetchImpl = globalThis.fetch 
       }
       if (!user) return send(res, 401, { error: 'not_authenticated' })
 
-      const limit = checkRateLimit(user.id)
-      if (!limit.ok) return send(res, 429, { error: 'rate_limited' }, { 'Retry-After': String(limit.retryAfter || 60) })
+      const persistent = await checkPersistentLimit({ userId: user.id, token, config, fetchImpl })
+      if (persistent && !persistent.ok) {
+        return send(
+          res,
+          429,
+          {
+            error: 'rate_limited_hourly',
+            message: `Limite de ${config.hourlyLimit} perguntas por hora atingido. Tente de novo mais tarde.`,
+            limit: config.hourlyLimit,
+            retryAfter: persistent.retryAfter,
+          },
+          { 'Retry-After': String(persistent.retryAfter) },
+        )
+      }
+      if (!persistent) {
+        const limit = checkRateLimit(user.id)
+        if (!limit.ok) return send(res, 429, { error: 'rate_limited' }, { 'Retry-After': String(limit.retryAfter || 60) })
+      }
 
       const payload = checked.value
       let aiResponse

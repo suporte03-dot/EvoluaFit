@@ -118,7 +118,8 @@ a.auth-split__privacy {
 }
 
 .pre-workout__pills button {
-  min-height: 40px;
+  min-height: 44px;
+  min-width: 44px;
   padding: 0 0.85rem;
   border-radius: 999px;
   border: 1px solid rgba(148, 163, 184, 0.28);
@@ -132,10 +133,34 @@ a.auth-split__privacy {
   background: rgba(118, 87, 255, 0.18);
 }
 
+.pre-workout__preview {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid rgba(118, 87, 255, 0.28);
+  background: rgba(118, 87, 255, 0.1);
+  color: var(--text-secondary, #c5cde0);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.pre-workout__preview p {
+  margin: 0;
+}
+
+.pre-workout__advice {
+  color: #fbbf24;
+}
+
 .pre-workout__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem;
+}
+
+.pre-workout__actions .btn {
+  min-height: 44px;
 }
 
 .workout-session--gym .btn,
@@ -231,3 +256,140 @@ a.auth-split__privacy {
   font-weight: 700;
   white-space: nowrap;
 }
+
+/* Fase 3 — mapa corporal e retrospectiva */
+.body-volume-map,
+.monthly-recap {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.body-volume-map__summary,
+.body-volume-map__range,
+.monthly-recap__body,
+.monthly-recap__focus,
+.monthly-recap__flash,
+.weekly-volume-widget__delta {
+  margin: 0;
+  color: var(--text-secondary, #c5cde0);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.body-volume-map__stage {
+  display: grid;
+  grid-template-columns: minmax(120px, 160px) 1fr;
+  gap: 0.85rem;
+  align-items: start;
+}
+
+.body-volume-map__stage svg {
+  width: 100%;
+  height: auto;
+}
+
+.body-volume-map__legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.body-volume-map__legend li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.4rem 0.55rem;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  font-size: 0.82rem;
+}
+
+.body-volume-map__legend li[data-status='below'] {
+  border-color: rgba(251, 191, 36, 0.45);
+}
+
+.body-volume-map__legend li[data-status='ok'] {
+  border-color: rgba(52, 211, 153, 0.45);
+}
+
+.body-volume-map__legend li[data-status='above'] {
+  border-color: rgba(248, 113, 113, 0.45);
+}
+
+.body-volume-map__legend small {
+  color: var(--text-secondary, #94a3b8);
+  font-weight: 500;
+}
+
+.body-volume-map__keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+}
+
+.body-volume-map__keys span {
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.body-volume-map__keys span[data-status='below'] {
+  background: rgba(251, 191, 36, 0.18);
+}
+
+.body-volume-map__keys span[data-status='ok'] {
+  background: rgba(52, 211, 153, 0.18);
+}
+
+.body-volume-map__keys span[data-status='above'] {
+  background: rgba(248, 113, 113, 0.18);
+}
+
+.body-volume-map__keys span[data-status='idle'] {
+  background: rgba(148, 163, 184, 0.12);
+}
+
+.monthly-recap__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin: 0;
+}
+
+.monthly-recap__stats div {
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(8, 18, 35, 0.35);
+}
+
+.monthly-recap__stats dt {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.monthly-recap__stats dd {
+  margin: 0.2rem 0 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.monthly-recap__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.monthly-recap__actions .btn {
+  min-height: 44px;
+}
+
+@media (max-width: 560px) {
+  .body-volume-map__stage {
+    grid-template-columns: 1fr;
+  }
+}
+

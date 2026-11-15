@@ -1,0 +1,193 @@
+/* Modo ao vivo — fase 2: sugestão por série, aparelho ocupado, voz, modo foco. */
+
+.live-root .live-set__hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 10px 0 54px;
+  font-size: 0.78rem;
+  color: var(--live-text-3);
+}
+.live-root .live-set--active .live-set__hint,
+.live-root .live-set--editing .live-set__hint {
+  color: var(--live-text-2);
+}
+.live-root .live-set__use {
+  min-width: 44px;
+  min-height: 44px;
+  margin: -8px -6px -8px 0;
+  padding: 0 10px;
+  border: 0;
+  background: none;
+  color: var(--live-blue);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.live-root .live-stepper__step {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.live-root .live-exercise__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.live-root .live-busy-btn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--live-border);
+  background: var(--live-card);
+  color: var(--live-text);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.live-root .live-swapped-note {
+  margin: 4px 0 0;
+  font-size: 0.8rem;
+  color: var(--live-text-3);
+}
+
+.live-swap {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 52vh;
+  overflow-y: auto;
+}
+.live-swap__item {
+  width: 100%;
+  min-height: 64px;
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px 6px 6px;
+  border-radius: 14px;
+  border: 1px solid var(--live-border);
+  background: var(--live-card);
+  color: var(--live-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.live-swap__thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--live-card-2);
+}
+.live-swap__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.live-swap__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.live-swap__name {
+  font-weight: 700;
+  line-height: 1.25;
+}
+.live-swap__meta {
+  font-size: 0.8rem;
+  color: var(--live-text-2);
+}
+.live-swap__cta {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--live-blue);
+}
+
+.live-root .live-voice {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.live-root .live-voice__mic {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  border-radius: 14px;
+  border: 1px dashed rgba(110, 168, 254, 0.45);
+  background: transparent;
+  color: var(--live-blue);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.live-root .live-voice__mic.is-listening {
+  border-style: solid;
+  background: rgba(110, 168, 254, 0.14);
+  animation: live-voice-pulse 1.2s ease-in-out infinite;
+}
+@keyframes live-voice-pulse {
+  50% {
+    box-shadow: 0 0 0 6px rgba(110, 168, 254, 0.18);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .live-root .live-voice__mic.is-listening {
+    animation: none;
+  }
+}
+.live-root .live-voice__error {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #ffc2c6;
+}
+.live-root .live-voice__confirm {
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(110, 168, 254, 0.45);
+  background: var(--live-card-2);
+}
+.live-root .live-voice__heard {
+  margin: 0;
+  font-size: 1rem;
+}
+.live-root .live-voice__muted,
+.live-root .live-voice__transcript {
+  color: var(--live-text-3);
+  font-size: 0.8rem;
+}
+.live-root .live-voice__transcript {
+  margin: 4px 0 10px;
+  font-style: italic;
+}
+.live-root .live-voice__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-root .live-focus-note {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--live-text-3);
+}

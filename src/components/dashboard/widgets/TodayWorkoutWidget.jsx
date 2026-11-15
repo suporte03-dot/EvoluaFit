@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useFitness } from '../../../context/FitnessContext'
 import { IconChevron } from '../icons'
@@ -7,7 +7,12 @@ import { workoutCardMeta, weeklyProgressSentence } from '../../../utils/todayWor
 import { displayWorkoutName, formatExercisePrescription } from '../../../utils/trainingIdentity'
 import WorkoutDetailModal from '../../WorkoutDetailModal'
 import { formatDateShort } from '../../../utils/dateFormat'
-import { sharePlainText, todayWorkoutShareMessage } from '../../../utils/shareWorkout'
+import {
+  sharePlainText,
+  todayWorkoutShareMessage,
+  reminderWorkoutMessage,
+} from '../../../utils/shareWorkout'
+import { TIME_OPTIONS, adjustForTime } from '../../../utils/dayAdjust.js'
 
 const PREVIEW_LIMIT = 4
 
@@ -22,14 +27,24 @@ function heroTone(workout, title) {
 }
 
 export default function TodayWorkoutWidget({ profile, today, weekly, nextAction, onReorganize }) {
-  const { startWorkout, pendingSession, resumePendingSession } = useFitness()
+  const { startWorkout, pendingSession, resumePendingSession, showToast } = useFitness()
   const navigate = useNavigate()
   const [detailWorkout, setDetailWorkout] = useState(null)
+  const [timeTarget, setTimeTarget] = useState(null)
   const detailTarget = nextAction?.workout || today?.workout
-  const meta = workoutCardMeta(detailTarget, profile)
+  const canAdjustTime =
+    Boolean(detailTarget?.exercises?.length) &&
+    ['start', 'resume'].includes(nextAction?.kind) &&
+    today?.situation !== 'completed'
+  const sessionFit = useMemo(
+    () => (canAdjustTime ? adjustForTime(detailTarget, timeTarget) : null),
+    [canAdjustTime, detailTarget, timeTarget],
+  )
+  const sessionWorkout = sessionFit?.workout || detailTarget
+  const meta = workoutCardMeta(sessionWorkout, profile)
   const title = displayWorkoutName(nextAction?.title || meta?.name || 'Treino de hoje')
   const tone = heroTone(detailTarget, title)
-  const allExercises = detailTarget?.exercises || []
+  const allExercises = sessionWorkout?.exercises || []
   const preview = allExercises.slice(0, PREVIEW_LIMIT)
   const hiddenCount = allExercises.length - preview.length
   const weekPct =
@@ -51,7 +66,9 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
       return
     }
     if (nextAction?.kind === 'start' && nextAction.workout) {
-      startWorkout(nextAction.workout)
+      const payload = sessionFit?.target ? sessionWorkout : nextAction.workout
+      startWorkout(payload)
+      if (sessionFit?.summary) showToast(sessionFit.summary, 'info')
       return
     }
     if (nextAction?.kind === 'reorganize') {
@@ -119,6 +136,32 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
           </div>
         </div>
 
+        {canAdjustTime ? (
+          <div className="fit-hero__time">
+            <p className="fit-hero__time-label">Hoje eu tenho</p>
+            <div className="fit-hero__time-pills" role="group" aria-label="Tempo disponível hoje">
+              {TIME_OPTIONS.map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  className={timeTarget === value ? 'is-active' : ''}
+                  onClick={() => setTimeTarget(value)}
+                >
+                  {value} min
+                </button>
+              ))}
+              <button
+                type="button"
+                className={timeTarget == null ? 'is-active' : ''}
+                onClick={() => setTimeTarget(null)}
+              >
+                Tempo normal
+              </button>
+            </div>
+            {sessionFit?.summary ? <p className="fit-hero__time-note">{sessionFit.summary}</p> : null}
+          </div>
+        ) : null}
+
         <div className="fit-hero__actions">
           <button type="button" className="fit-hero__cta" onClick={handlePrimary}>
             {nextAction?.primaryLabel || 'Continuar'}
@@ -128,15 +171,26 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
             <IconChevron size={16} />
           </button>
           {detailTarget?.exercises?.length ? (
-            <button
-              type="button"
-              className="fit-hero__more"
-              onClick={() => sharePlainText(todayWorkoutShareMessage(detailTarget))}
-              aria-label="Compartilhar treino de hoje no WhatsApp"
-              title="Compartilhar treino de hoje no WhatsApp"
-            >
-              Compartilhar no WhatsApp
-            </button>
+            <>
+              <button
+                type="button"
+                className="fit-hero__more"
+                onClick={() => sharePlainText(todayWorkoutShareMessage(detailTarget))}
+                aria-label="Compartilhar treino de hoje no WhatsApp"
+                title="Compartilhar treino de hoje no WhatsApp"
+              >
+                Compartilhar no WhatsApp
+              </button>
+              <button
+                type="button"
+                className="fit-hero__more"
+                onClick={() => sharePlainText(reminderWorkoutMessage(detailTarget, 'hoje'))}
+                aria-label="Enviar lembrete do treino de hoje no WhatsApp"
+                title="Enviar lembrete do treino de hoje no WhatsApp"
+              >
+                Lembrete no WhatsApp
+              </button>
+            </>
           ) : null}
         </div>
       </div>

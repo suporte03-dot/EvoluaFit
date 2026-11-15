@@ -1,8 +1,11 @@
 import { useMemo } from 'react'
 import { useProgress } from '../context/ProgressContext'
 import { useBodyEvolution } from '../hooks/useBodyEvolution'
+import { useFitness } from '../context/FitnessContext'
 import SectionTitle from './SectionTitle'
 import EmptyState from './EmptyState'
+import BodyVolumeMap from './dashboard/BodyVolumeMap'
+import MonthlyRecapCard from './dashboard/MonthlyRecapCard'
 import { scrollToSection } from '../utils/scrollToSection'
 import {
   formatDatePt,
@@ -79,6 +82,7 @@ function SummaryCard({ label, value, hint }) {
 
 export default function PerformanceDashboard() {
   const body = useBodyEvolution()
+  const { history, profile, generatedPlan } = useFitness()
   const {
     loadingProgress,
     progressError,
@@ -87,6 +91,7 @@ export default function PerformanceDashboard() {
     monthlyVolume,
     weeklyGoal,
     records,
+    summaries,
     exerciseKey,
     setExerciseKey,
     exerciseOptions,
@@ -314,6 +319,22 @@ export default function PerformanceDashboard() {
               valueFormatter={(v) => formatVolume(v)}
             />
           </div>
+        </div>
+
+        <div className="evo-block chart-card glass-card">
+          <BodyVolumeMap
+            history={history}
+            plan={generatedPlan}
+            level={profile?.level || profile?.experienceLevel || 'Intermediário'}
+          />
+        </div>
+
+        <div className="evo-block chart-card glass-card">
+          <MonthlyRecapCard
+            history={history}
+            summaries={summaries}
+            displayName={profile?.displayName || profile?.name || ''}
+          />
         </div>
 
         <div className="evo-block">

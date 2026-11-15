@@ -23,10 +23,11 @@ describe('sugestão de carga', () => {
     assert.equal(parseRepRange('8-12 min'), null)
   })
 
-  test('sem histórico: primeiro registro cria a referência', () => {
+  test('sem histórico: primeira vez pede carga confortável', () => {
     const s = suggestLoad({ lastSets: [], repRange: range })
     assert.equal(s.kind, 'first')
     assert.equal(s.message, FIRST_RECORD_MESSAGE)
+    assert.match(s.message, /Primeira vez/)
   })
 
   test('todas no topo da faixa em inferiores: +2,5 kg', () => {

@@ -7,6 +7,7 @@ export const LIVE_DEFAULTS = {
   restSeconds: DEFAULT_REST_SECONDS,
   upperIncrementKg: DEFAULT_UPPER_INCREMENT_KG,
   sound: false,
+  keepScreenOn: true,
 }
 
 export function loadLiveSettings() {
@@ -16,6 +17,7 @@ export function loadLiveSettings() {
       restSeconds: Math.min(300, Math.max(30, Number(saved.restSeconds) || LIVE_DEFAULTS.restSeconds)),
       upperIncrementKg: clampUpperIncrement(saved.upperIncrementKg ?? LIVE_DEFAULTS.upperIncrementKg),
       sound: Boolean(saved.sound),
+      keepScreenOn: saved.keepScreenOn !== false,
     }
   } catch {
     return { ...LIVE_DEFAULTS }

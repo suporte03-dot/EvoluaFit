@@ -1,12 +1,13 @@
-export default function WeeklyVolumeWidget({ volumeDelta }) {
+import BodyVolumeMap from '../BodyVolumeMap'
+
+export default function WeeklyVolumeWidget({ volumeDelta, history, generatedPlan, profile }) {
+  const level = profile?.level || profile?.experienceLevel || 'Intermediário'
   return (
-    <div className="focus-widget-body">
-      <p className="hoje-card__kicker">Evolução</p>
-      <h3 className="hoje-card__title">Volume semanal</h3>
-      <p className="hoje-card__body">
-        {volumeDelta?.sentence ||
-          'A comparação com a semana anterior aparece quando houver volume real nos dois períodos.'}
-      </p>
+    <div className="focus-widget-body weekly-volume-widget">
+      <BodyVolumeMap history={history} plan={generatedPlan} level={level} />
+      {volumeDelta?.sentence ? (
+        <p className="hoje-card__body weekly-volume-widget__delta">{volumeDelta.sentence}</p>
+      ) : null}
     </div>
   )
 }

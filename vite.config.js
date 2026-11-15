@@ -95,6 +95,21 @@ export default defineConfig({
             },
           },
           {
+            // GIFs/PNGs dos exercícios (alguns MB cada): cache conforme vistos no treino ao vivo,
+            // para continuarem aparecendo sem conexão. Limite baixo para não lotar o aparelho.
+            urlPattern: ({ url }) => url.origin === self.location.origin && url.pathname.startsWith('/media/exercises/'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'evoluafit-exercise-media',
+              expiration: {
+                maxEntries: 60,
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+                purgeOnQuotaError: true,
+              },
+              cacheableResponse: { statuses: [200] },
+            },
+          },
+          {
             urlPattern: ({ request, url }) =>
               request.destination === 'image' &&
               url.origin === self.location.origin &&

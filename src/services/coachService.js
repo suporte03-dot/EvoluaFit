@@ -1345,6 +1345,7 @@ const FAILURE_DETAILS = {
   not_authenticated: 'Entre na sua conta para conversar com o Coach.',
   ai_not_configured: 'O Coach IA ainda não foi ativado no servidor.',
   rate_limited: 'Muitas perguntas em pouco tempo — espere um minuto.',
+  rate_limited_hourly: 'Limite de perguntas por hora atingido — tente de novo mais tarde.',
   timeout: 'A resposta demorou demais.',
   ai_timeout: 'A resposta demorou demais.',
   network_error: 'Verifique sua conexão.',

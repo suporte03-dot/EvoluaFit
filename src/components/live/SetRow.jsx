@@ -10,7 +10,21 @@ function previousLabel(previous) {
  * state: 'done' | 'active' | 'editing' | 'pending'
  * Na linha ativa, KG/REPS mostram o rascunho controlado pelos steppers.
  */
-export default function SetRow({ set, previous, state, draft, onEdit, onComplete }) {
+function SetHint({ hint, onUse, setNumber }) {
+  if (!hint) return null
+  return (
+    <div className="live-set__hint">
+      <span>{hint}</span>
+      {onUse ? (
+        <button type="button" className="live-set__use" onClick={onUse} aria-label={`Usar sugestão na série ${setNumber}: ${hint.replace('Sugestão: ', '')}`}>
+          usar
+        </button>
+      ) : null}
+    </div>
+  )
+}
+
+export default function SetRow({ set, previous, state, draft, onEdit, onComplete, hint = '', onUseHint = null }) {
   const weight = state === 'active' || state === 'editing' ? draft?.weight : set.weight
   const reps = state === 'active' || state === 'editing' ? draft?.reps : set.reps
   const hasValues = state !== 'pending' || set.completed
@@ -65,6 +79,7 @@ export default function SetRow({ set, previous, state, draft, onEdit, onComplete
           )}
         </span>
       </div>
+      <SetHint hint={hint} onUse={onUseHint} setNumber={set.setNumber} />
     </li>
   )
 }

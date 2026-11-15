@@ -13,7 +13,8 @@ import { generateCoachInsights } from '../../utils/coachInsights'
 import { deriveXpEvents } from '../../utils/xpEvents'
 import { unlockAchievements } from '../../utils/achievements'
 import { getChallengeProgress } from '../../utils/challenges'
-import { detectMissedWorkouts } from '../../utils/adaptiveWeek'
+import { applyReorganizedWeek, detectMissedWorkouts } from '../../utils/adaptiveWeek'
+import { planElasticWeek } from '../../utils/elasticWeek.js'
 import { scrollToSection } from '../../utils/scrollToSection'
 import FocusWorkspace from './focus/FocusWorkspace'
 
@@ -28,6 +29,7 @@ export default function DashboardShell() {
     generatedPlan,
     pendingSession,
     updateWorkout,
+    replaceWorkouts,
     showToast,
   } = useFitness()
   const { homeProgressMetrics, loadingProgress, summaries, records } = useProgress()
@@ -100,6 +102,14 @@ export default function DashboardShell() {
   }, [workouts, history, profile, goals, generatedPlan, plans, metrics.weeklyWorkouts, metrics.weeklyGoal])
 
   const missed = useMemo(() => detectMissedWorkouts(workouts, new Date(), { history }), [workouts, history])
+  const elasticPlan = useMemo(
+    () =>
+      planElasticWeek({
+        workouts,
+        planStart: generatedPlan?.startDate,
+      }),
+    [workouts, generatedPlan?.startDate],
+  )
   const hasPlan = Boolean(plans?.length || generatedPlan || workouts?.length)
   const bodyCheckin = {
     onboarded: Boolean(body.profile?.onboarding_completed_at || body.hasCheckin),
@@ -153,7 +163,21 @@ export default function DashboardShell() {
     [pinned, history, workouts],
   )
 
-  const handleReorganize = () => {
+  const handleApplyElasticWeek = (plan) => {
+    const proposal = plan || elasticPlan
+    if (!proposal?.moves?.length) {
+      showToast('Nada a mover nesta semana.', 'info')
+      return
+    }
+    replaceWorkouts(applyReorganizedWeek(workouts, proposal), 'Semana reorganizada nos dias que restam.')
+  }
+
+  const handleReorganize = (opts) => {
+    if (opts?.preview) return
+    if (elasticPlan.needed || elasticPlan.dropped?.length) {
+      handleApplyElasticWeek(elasticPlan)
+      return
+    }
     if (!missed.moves?.length) {
       scrollToSection('planilha')
       return
@@ -175,6 +199,8 @@ export default function DashboardShell() {
     volumeDelta,
     nextAction,
     onReorganize: handleReorganize,
+    onApplyElasticWeek: handleApplyElasticWeek,
+    elasticPlan,
     score,
     insights,
     missed,

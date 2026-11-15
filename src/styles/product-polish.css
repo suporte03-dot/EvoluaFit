@@ -118,7 +118,8 @@ a.auth-split__privacy {
 }
 
 .pre-workout__pills button {
-  min-height: 40px;
+  min-height: 44px;
+  min-width: 44px;
   padding: 0 0.85rem;
   border-radius: 999px;
   border: 1px solid rgba(148, 163, 184, 0.28);
@@ -132,10 +133,34 @@ a.auth-split__privacy {
   background: rgba(118, 87, 255, 0.18);
 }
 
+.pre-workout__preview {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid rgba(118, 87, 255, 0.28);
+  background: rgba(118, 87, 255, 0.1);
+  color: var(--text-secondary, #c5cde0);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.pre-workout__preview p {
+  margin: 0;
+}
+
+.pre-workout__advice {
+  color: #fbbf24;
+}
+
 .pre-workout__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem;
+}
+
+.pre-workout__actions .btn {
+  min-height: 44px;
 }
 
 .workout-session--gym .btn,

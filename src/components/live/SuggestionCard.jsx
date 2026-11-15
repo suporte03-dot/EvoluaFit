@@ -13,7 +13,7 @@ export default function SuggestionCard({ suggestion }) {
         <p className="live-suggestion__kicker">Sugestão de hoje</p>
         <p className="live-suggestion__text">{suggestion.message}</p>
         {isFirst ? (
-          <p className="live-suggestion__hint">Escolha uma carga que permita completar a faixa com boa técnica.</p>
+          <p className="live-suggestion__hint">Uma carga que permita completar a faixa com boa técnica. O próximo treino usa este registro.</p>
         ) : null}
       </div>
     </section>

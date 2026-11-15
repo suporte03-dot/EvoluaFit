@@ -17,6 +17,9 @@ import LiveSheet from '../../components/live/LiveSheet'
 import RestTimer from '../../components/live/RestTimer'
 import PRCelebration from '../../components/live/PRCelebration'
 import WorkoutSummary from '../../components/live/WorkoutSummary'
+import VoiceSetButton from '../../components/live/VoiceSetButton'
+import SwapExerciseList from '../../components/live/SwapExerciseList'
+import { useOnlineStatus, useWakeLock, useWarmExerciseMedia } from '../../components/live/useFocusMode'
 import PreWorkoutCheck, { adaptWorkoutForCheck } from '../../components/PreWorkoutCheck'
 import { whyExerciseInWorkout } from '../../utils/exerciseWhy'
 import {
@@ -43,7 +46,15 @@ import {
   normalizeBeginnerReps,
   parseRepRange,
   suggestLoad,
+  suggestSetTarget,
 } from '../../utils/liveWorkout/loadSuggestion.js'
+import {
+  applySwap,
+  buildSwapEntry,
+  findSwapAlternatives,
+  resolvePrescriptionContext,
+} from '../../utils/liveWorkout/swapExercise.js'
+import { classifyExercise, catalogFor, prescribeExercise } from '../../utils/prescription/index.js'
 import {
   bestLoadBySession,
   findRecord,
@@ -73,6 +84,7 @@ import { loadLiveSettings, saveLiveSettings } from '../../utils/liveWorkout/sett
 import { coachRecommendation, nextScoreBand, xpGainForSession } from '../../utils/liveWorkout/sessionSummary.js'
 import { renderStoryImage, shareStoryImage } from '../../utils/liveWorkout/storyImage.js'
 import '../../styles/live-workout.css'
+import '../../components/live/live-phase2.css'
 
 const REST_OPTIONS = [60, 90, 120, 180]
 const UPPER_INCREMENTS = [1, 1.5, 2]
@@ -127,7 +139,7 @@ function withSlot(exercise, index, patch) {
 }
 
 function syncCopy({ syncStatus, pendingCount, isLikelyOnline }) {
-  if (!isLikelyOnline || syncStatus === 'offline') return { label: 'Offline · salvo no aparelho', tone: 'offline' }
+  if (!isLikelyOnline || syncStatus === 'offline') return { label: 'Offline — salvando no aparelho', tone: 'offline' }
   if (syncStatus === 'syncing') return { label: 'Sincronizando...', tone: 'pending' }
   if (syncStatus === 'error') return { label: 'Sincronização pendente', tone: 'pending' }
   if (pendingCount > 0) return { label: `${pendingCount} pendente${pendingCount === 1 ? '' : 's'}`, tone: 'pending' }
@@ -339,6 +351,20 @@ export default function LiveWorkoutPage() {
   const exerciseDone = Boolean(current) && activeIndex === -1
   const allDone = exercises.length > 0 && exercises.every((ex) => ex.setSlots.every((s) => s.completed))
 
+  const online = useOnlineStatus()
+  const screenLocked = useWakeLock(status === 'ready' && settings.keepScreenOn)
+  const nextPending = exercises.find((ex, i) => i !== exIdx && ex.setSlots.some((s) => !s.completed)) || null
+  useWarmExerciseMedia(status === 'ready' ? nextPending : null)
+
+  const swapAlternatives = useMemo(() => {
+    if (sheet !== 'swap' || !current) return []
+    return findSwapAlternatives(current, {
+      equipment: profile?.equipment,
+      location: profile?.location,
+      sessionExercises: exercises,
+    })
+  }, [sheet, current, profile?.equipment, profile?.location, exercises])
+
   const exerciseHistory = useMemo(() => {
     if (!current) return { entries: [], lastSets: [], record: null, repRange: null, suggestion: null }
     const entries = entriesForExercise(historyRef.current, current)
@@ -353,6 +379,7 @@ export default function LiveWorkoutPage() {
         lastSets,
         repRange,
         lowerBody: isLowerBodyExercise(current),
+        compound: classifyExercise(catalogFor(current) || current).kind === 'composto',
         upperIncrementKg: settings.upperIncrementKg,
       }),
     }
@@ -376,8 +403,9 @@ export default function LiveWorkoutPage() {
     }
     const { suggestion, lastSets, repRange } = exerciseHistory
     const prevHist = previousForSet(lastSets, activeIndex + 1)
-    const weight = suggestion?.loadKg ?? prevHist?.weight ?? 0
-    const reps = suggestion?.kind === 'increase' ? repRange?.min : prevHist?.reps || repRange?.max
+    const target = suggestSetTarget(suggestion, { previous: prevHist, repRange })
+    const weight = target?.loadKg ?? prevHist?.weight ?? 0
+    const reps = target?.reps || prevHist?.reps || repRange?.max
     setDraft({ weight: weight || 0, reps: reps || 10 })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exIdx, activeIndex, editingIndex, exerciseHistory])
@@ -386,7 +414,11 @@ export default function LiveWorkoutPage() {
     (natural) => {
       setRest(null)
       if (natural) {
-        navigator.vibrate?.([220, 120, 220])
+        try {
+          navigator.vibrate?.([200, 100, 200])
+        } catch {
+          /* vibração bloqueada (iOS não suporta) */
+        }
         if (settings.sound) playBeep()
         setAnnouncement('Descanso concluído. Próxima série pronta.')
       } else {
@@ -436,10 +468,12 @@ export default function LiveWorkoutPage() {
     return nextEx ? nextEx.name : ''
   }
 
-  const completeSet = () => {
+  const completeSet = () => commitActiveSet(draft)
+
+  const commitActiveSet = (values) => {
     if (!current || activeIndex < 0) return
-    const weight = num(draft.weight)
-    const reps = Math.round(num(draft.reps))
+    const weight = num(values.weight)
+    const reps = Math.round(num(values.reps))
     if (reps <= 0) {
       showToast('Informe as repetições da série.', 'info')
       return
@@ -489,10 +523,12 @@ export default function LiveWorkoutPage() {
     }
   }
 
-  const saveEdit = () => {
+  const saveEdit = () => commitEdit(draft)
+
+  const commitEdit = (values) => {
     if (editingIndex == null || !current) return
-    const weight = num(draft.weight)
-    const reps = Math.round(num(draft.reps))
+    const weight = num(values.weight)
+    const reps = Math.round(num(values.reps))
     if (reps <= 0) {
       showToast('Informe as repetições da série.', 'info')
       return
@@ -524,6 +560,23 @@ export default function LiveWorkoutPage() {
       setExIdx(target)
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
+  }
+
+  const swapExercise = (alternative) => {
+    if (!current || !alternative) return
+    const ctx = resolvePrescriptionContext({ workout, plans, generatedPlan, profile })
+    const prescription = ctx ? prescribeExercise(alternative, ctx) : null
+    const entry = buildSwapEntry(current, alternative, prescription)
+    const [replacement] = prepareExercises({ exercises: [entry] }, profile?.level)
+    if (!replacement) return
+    const result = applySwap(exercises, exIdx, replacement)
+    setSheet(null)
+    setEditingIndex(null)
+    setExercises(result.exercises)
+    setExIdx(result.index)
+    setAnnouncement(`Exercício trocado por ${alternative.name} nesta sessão.`)
+    showToast(`Trocado por ${alternative.name} só neste treino.`, 'info')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const leaveToHome = () => {
@@ -767,7 +820,7 @@ export default function LiveWorkoutPage() {
   }
 
   const elapsedSec = Math.max(0, Math.floor((now - startedAt) / 1000))
-  const syncInfo = syncCopy(sync)
+  const syncInfo = syncCopy({ ...sync, isLikelyOnline: Boolean(sync?.isLikelyOnline) && online })
   const restSec = current?.liveRestSeconds || settings.restSeconds
   const muscles = current?.muscles?.length ? current.muscles.join(' · ') : current?.muscleGroup || current?.category || ''
 
@@ -783,7 +836,7 @@ export default function LiveWorkoutPage() {
     <div className="live-root live-page">
       <LiveHeader
         elapsedSec={elapsedSec}
-        syncLabel={status === 'ready' ? syncInfo.label : ''}
+        syncLabel={status === 'ready' || !online ? syncInfo.label : ''}
         syncTone={syncInfo.tone}
         onExit={handleExit}
         onMore={() => setSheet('more')}
@@ -855,6 +908,16 @@ export default function LiveWorkoutPage() {
                 {slots.length} {slots.length === 1 ? 'série' : 'séries'}
                 {current.reps ? ` · ${current.reps} reps` : ''} · descanso {restSec} s
               </p>
+              {current.swappedFrom?.name ? (
+                <p className="live-swapped-note">No lugar de {current.swappedFrom.name} (só neste treino)</p>
+              ) : null}
+              {!exerciseDone && editingIndex == null ? (
+                <div className="live-exercise__actions">
+                  <button type="button" className="live-busy-btn" onClick={() => setSheet('swap')}>
+                    Aparelho ocupado
+                  </button>
+                </div>
+              ) : null}
             </section>
 
             <SuggestionCard suggestion={exerciseHistory.suggestion} />
@@ -867,16 +930,38 @@ export default function LiveWorkoutPage() {
               draft={draft}
               onEdit={(index) => setEditingIndex(index)}
               onComplete={completeSet}
+              suggestion={exerciseHistory.suggestion}
+              repRange={exerciseHistory.repRange}
+              onUseSuggestion={(target) => {
+                setDraft({ weight: target.loadKg, reps: target.reps || draft.reps })
+                setAnnouncement(`Sugestão aplicada: ${formatLoad(target.loadKg)} quilos, ${target.reps} repetições.`)
+              }}
             />
 
             {editingIndex != null || activeIndex >= 0 ? (
               <section className="live-card live-steppers" aria-label={editingIndex != null ? `Editando série ${editingIndex + 1}` : `Série ${activeIndex + 1}`}>
+                <VoiceSetButton
+                  key={exIdx}
+                  currentWeight={num(draft.weight)}
+                  setLabel={`série ${(editingIndex ?? activeIndex) + 1}`}
+                  onApply={(values) => {
+                    setDraft((d) => ({ weight: values.weight, reps: values.reps ?? d.reps }))
+                    setAnnouncement('Valores ditados preenchidos. Confira e conclua a série.')
+                  }}
+                  onApplyAndSave={(values) => {
+                    setDraft({ weight: values.weight, reps: values.reps })
+                    if (editingIndex != null) commitEdit(values)
+                    else commitActiveSet(values)
+                  }}
+                />
                 <Stepper
                   id="live-kg"
                   label="Carga"
                   unit="kg"
                   value={draft.weight}
                   step={2.5}
+                  snap={0.25}
+                  showStepLabel
                   decimals={1}
                   max={500}
                   onChange={(weight) => setDraft((d) => ({ ...d, weight }))}
@@ -926,6 +1011,17 @@ export default function LiveWorkoutPage() {
       {activePR ? (
         <PRCelebration pr={activePR} onShare={() => sharePR(activePR)} onContinue={() => setActivePR(null)} />
       ) : null}
+
+      <LiveSheet open={sheet === 'swap'} title={current ? `Aparelho ocupado · ${current.name}` : 'Aparelho ocupado'} onClose={() => setSheet(null)}>
+        {sheet === 'swap' && current ? (
+          <SwapExerciseList
+            alternatives={swapAlternatives}
+            doneSets={slots.filter((s) => s.completed).length}
+            onPick={swapExercise}
+            onCancel={() => setSheet(null)}
+          />
+        ) : null}
+      </LiveSheet>
 
       <LiveSheet open={sheet === 'tips'} title={current ? `Dicas · ${current.name}` : 'Dicas'} onClose={() => setSheet(null)}>
         {current ? <p className="live-sheet__text">{whyExerciseInWorkout(current, workout)}</p> : null}
@@ -1010,6 +1106,25 @@ export default function LiveWorkoutPage() {
             <span />
           </span>
         </button>
+        {typeof navigator !== 'undefined' && navigator.wakeLock ? (
+          <>
+            <button
+              type="button"
+              className="live-toggle"
+              role="switch"
+              aria-checked={settings.keepScreenOn}
+              onClick={() => updateSettings({ keepScreenOn: !settings.keepScreenOn })}
+            >
+              <span>Tela sempre ligada no treino</span>
+              <span className={`live-toggle__track${settings.keepScreenOn ? ' is-on' : ''}`} aria-hidden="true">
+                <span />
+              </span>
+            </button>
+            {settings.keepScreenOn ? (
+              <p className="live-focus-note">{screenLocked ? 'Tela ligada enquanto o treino estiver aberto.' : 'A tela fica ligada quando o app estiver em primeiro plano.'}</p>
+            ) : null}
+          </>
+        ) : null}
         {completedSetCount(exercises) > 0 && !allDone ? (
           <button type="button" className="live-btn live-btn--ghost live-btn--block" onClick={finishWorkout}>
             Finalizar agora

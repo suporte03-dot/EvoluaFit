@@ -108,7 +108,13 @@ export const WIDGET_REGISTRY = [
     supportedSizes: ['medium', 'large'],
     presentation: 'card',
     Component: AdaptiveWeekNudge,
-    mapProps: (ctx) => ({ missed: ctx.missed, onReorganize: ctx.onReorganize, allowEmpty: true }),
+    mapProps: (ctx) => ({
+      missed: ctx.missed,
+      elasticPlan: ctx.elasticPlan,
+      onReorganize: ctx.onReorganize,
+      onApplyElasticWeek: ctx.onApplyElasticWeek,
+      allowEmpty: true,
+    }),
   },
   {
     id: 'challenge',

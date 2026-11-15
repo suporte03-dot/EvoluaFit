@@ -5,6 +5,11 @@
 import { exercises as catalog } from '../../data/exercisesData.js'
 import { classifyExercise, normalizeGroup } from './classify.js'
 import { catalogFor } from './entry.js'
+import {
+  isLowerBodyExercise,
+  parseRepRange as parseLiveRepRange,
+  suggestLoad,
+} from '../liveWorkout/loadSuggestion.js'
 
 export * from './classify.js'
 export * from './rules.js'
@@ -38,9 +43,18 @@ export function alternativesFor(exercise, { equipment = [], limit = 5, exclude =
 }
 
 /**
- * Próxima carga sugerida por série (fase 2). Ainda não implementado.
- * @returns {null}
+ * Próxima carga sugerida a partir das séries da última sessão do exercício.
+ * Regras em utils/liveWorkout/loadSuggestion.js (fonte única).
+ * @param {object} exercise
+ * @param {{ lastSets?: {weight:number, reps:number}[], reps?: string, upperIncrementKg?: number }} opts
  */
-export function suggestNextLoad() {
-  return null
+export function suggestNextLoad(exercise = {}, { lastSets = [], reps, upperIncrementKg } = {}) {
+  const source = catalogFor(exercise) || exercise
+  return suggestLoad({
+    lastSets,
+    repRange: parseLiveRepRange(reps ?? exercise.reps),
+    lowerBody: isLowerBodyExercise({ ...source, ...exercise }),
+    compound: classifyExercise(source).kind === 'composto',
+    upperIncrementKg,
+  })
 }

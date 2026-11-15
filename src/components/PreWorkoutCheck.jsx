@@ -1,58 +1,70 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { adaptWorkoutForCheck } from '../utils/preWorkoutAdapt.js'
+import {
+  PAIN_REGIONS,
+  TIME_OPTIONS,
+  adjustDayWorkout,
+} from '../utils/dayAdjust.js'
+
+export { adaptWorkoutForCheck }
 
 const SLEEP = [
-  { id: 'good', label: 'Dormi bem' },
-  { id: 'ok', label: 'Mais ou menos' },
-  { id: 'poor', label: 'Dormi pouco' },
+  { id: 'poor', label: 'Ruim' },
+  { id: 'ok', label: 'Ok' },
+  { id: 'good', label: 'Bom' },
 ]
 
-const TIME = [
-  { id: 30, label: '30 min' },
-  { id: 45, label: '45 min' },
-  { id: 60, label: '60 min' },
+const ENERGY = [
+  { id: 'low', label: 'Baixa' },
+  { id: 'ok', label: 'Ok' },
+  { id: 'high', label: 'Alta' },
 ]
 
-export function adaptWorkoutForCheck(workout, check) {
-  if (!workout) return workout
-  const exercises = [...(workout.exercises || [])]
-  let next = exercises
-  const minutes = Number(check?.minutes) || workout.estimatedMinutes || 45
+const PAIN = [
+  { id: 'none', label: 'Nenhuma' },
+  { id: 'leve', label: 'Leve' },
+  { id: 'region', label: 'Em alguma região' },
+]
 
-  if (minutes <= 30 && next.length > 5) {
-    next = next.slice(0, 5)
-  } else if (minutes <= 45 && next.length > 7) {
-    next = next.slice(0, 7)
-  }
-
-  if (check?.pain && check.painGroup) {
-    const group = String(check.painGroup).toLowerCase()
-    const filtered = next.filter((ex) => {
-      const hay = `${ex.muscleGroup || ''} ${ex.category || ''} ${ex.name || ''}`.toLowerCase()
-      return !hay.includes(group)
-    })
-    if (filtered.length >= 3) next = filtered
-  }
-
-  return {
-    ...workout,
-    exercises: next,
-    estimatedMinutes: minutes,
-    preWorkoutCheck: check,
-  }
-}
-
-export default function PreWorkoutCheck({ workout, onConfirm, onSkip }) {
+export default function PreWorkoutCheck({ workout, onConfirm, onSkip, profile }) {
   const [sleep, setSleep] = useState('ok')
-  const [pain, setPain] = useState(false)
-  const [painGroup, setPainGroup] = useState('')
-  const [minutes, setMinutes] = useState(workout?.estimatedMinutes > 50 ? 60 : 45)
+  const [energy, setEnergy] = useState('ok')
+  const [painMode, setPainMode] = useState('none')
+  const [painRegion, setPainRegion] = useState('')
+  const [minutes, setMinutes] = useState(
+    () => (Number(workout?.sessionTimeTarget) > 0 ? Number(workout.sessionTimeTarget) : null),
+  )
+
+  const check = useMemo(
+    () => ({
+      sleep,
+      energy,
+      pain: painMode !== 'none',
+      painGroup: painMode === 'region' ? painRegion : painMode === 'leve' ? 'leve' : '',
+      painRegion: painMode === 'region' ? painRegion : painMode === 'leve' ? 'leve' : '',
+      minutes: minutes || undefined,
+    }),
+    [sleep, energy, painMode, painRegion, minutes],
+  )
+
+  const preview = useMemo(
+    () =>
+      adjustDayWorkout(workout, check, {
+        level: profile?.level,
+        goal: profile?.goal || profile?.objetivo,
+      }),
+    [workout, check, profile],
+  )
+
+  const canConfirm = painMode !== 'region' || Boolean(painRegion)
 
   const submit = (skip) => {
     if (skip) {
       onSkip?.()
       return
     }
-    onConfirm?.({ sleep, pain, painGroup: pain ? painGroup : '', minutes })
+    if (!canConfirm) return
+    onConfirm?.(check)
   }
 
   return (
@@ -60,12 +72,12 @@ export default function PreWorkoutCheck({ workout, onConfirm, onSkip }) {
       <p className="pre-workout__kicker">Antes de começar</p>
       <h3 className="pre-workout__title">Como você está hoje?</h3>
       <p className="pre-workout__lead">
-        Três respostas rápidas. O treino encaixa no tempo e evita grupo com dor.
+        Três respostas rápidas. O ajuste vale só para esta sessão — a planilha fica como está.
       </p>
 
       <fieldset className="pre-workout__set">
         <legend>Sono</legend>
-        <div className="pre-workout__pills">
+        <div className="pre-workout__pills" role="group" aria-label="Sono">
           {SLEEP.map((item) => (
             <button
               key={item.id}
@@ -80,36 +92,14 @@ export default function PreWorkoutCheck({ workout, onConfirm, onSkip }) {
       </fieldset>
 
       <fieldset className="pre-workout__set">
-        <legend>Dor agora</legend>
-        <div className="pre-workout__pills">
-          <button type="button" className={!pain ? 'is-active' : ''} onClick={() => setPain(false)}>
-            Sem dor
-          </button>
-          <button type="button" className={pain ? 'is-active' : ''} onClick={() => setPain(true)}>
-            Tenho dor
-          </button>
-        </div>
-        {pain ? (
-          <label className="form-field">
-            <span>Onde</span>
-            <input
-              value={painGroup}
-              onChange={(e) => setPainGroup(e.target.value)}
-              placeholder="ex: ombro, joelho, lombar"
-            />
-          </label>
-        ) : null}
-      </fieldset>
-
-      <fieldset className="pre-workout__set">
-        <legend>Tempo disponível</legend>
-        <div className="pre-workout__pills">
-          {TIME.map((item) => (
+        <legend>Energia</legend>
+        <div className="pre-workout__pills" role="group" aria-label="Energia">
+          {ENERGY.map((item) => (
             <button
               key={item.id}
               type="button"
-              className={minutes === item.id ? 'is-active' : ''}
-              onClick={() => setMinutes(item.id)}
+              className={energy === item.id ? 'is-active' : ''}
+              onClick={() => setEnergy(item.id)}
             >
               {item.label}
             </button>
@@ -117,8 +107,80 @@ export default function PreWorkoutCheck({ workout, onConfirm, onSkip }) {
         </div>
       </fieldset>
 
+      <fieldset className="pre-workout__set">
+        <legend>Dor</legend>
+        <div className="pre-workout__pills" role="group" aria-label="Dor">
+          {PAIN.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className={painMode === item.id ? 'is-active' : ''}
+              onClick={() => {
+                setPainMode(item.id)
+                if (item.id !== 'region') setPainRegion('')
+              }}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+        {painMode === 'region' ? (
+          <div className="pre-workout__pills" role="group" aria-label="Região com dor">
+            {PAIN_REGIONS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={painRegion === item.id ? 'is-active' : ''}
+                onClick={() => setPainRegion(item.id)}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
+      </fieldset>
+
+      <fieldset className="pre-workout__set">
+        <legend>Tempo disponível</legend>
+        <div className="pre-workout__pills" role="group" aria-label="Tempo disponível">
+          {TIME_OPTIONS.map((value) => (
+            <button
+              key={value}
+              type="button"
+              className={minutes === value ? 'is-active' : ''}
+              onClick={() => setMinutes(value)}
+            >
+              {value} min
+            </button>
+          ))}
+          <button
+            type="button"
+            className={minutes == null ? 'is-active' : ''}
+            onClick={() => setMinutes(null)}
+          >
+            Tempo normal
+          </button>
+        </div>
+      </fieldset>
+
+      {preview.summary || preview.messages?.length || preview.professionalAdvice ? (
+        <div className="pre-workout__preview" role="status">
+          {preview.summary ? <p>{preview.summary}</p> : null}
+          {(preview.messages || []).map((msg) => (
+            <p key={msg}>{msg}</p>
+          ))}
+          {preview.note ? <p>{preview.note}</p> : null}
+          {preview.professionalAdvice ? <p className="pre-workout__advice">{preview.professionalAdvice}</p> : null}
+        </div>
+      ) : null}
+
       <div className="pre-workout__actions">
-        <button type="button" className="btn btn--primary" onClick={() => submit(false)}>
+        <button
+          type="button"
+          className="btn btn--primary"
+          disabled={!canConfirm}
+          onClick={() => submit(false)}
+        >
           Ajustar e começar
         </button>
         <button type="button" className="btn btn--ghost" onClick={() => submit(true)}>

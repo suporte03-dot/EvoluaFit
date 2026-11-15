@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import BodyCameraGuide from './BodyCameraGuide'
 
 const EMPTY = { file: null, preview: null }
 
@@ -13,10 +14,12 @@ export default function BodyPhotoUploader({
   uploading = false,
   existingUrl = null,
   onRemoveExisting,
+  pose = 'front',
 }) {
   const inputId = useId()
   const inputRef = useRef(null)
   const [localError, setLocalError] = useState('')
+  const [cameraOpen, setCameraOpen] = useState(false)
   const preview = value?.preview || existingUrl || null
   const filled = Boolean(value?.file || existingUrl)
 
@@ -80,6 +83,14 @@ export default function BodyPhotoUploader({
         >
           {filled ? 'Substituir' : 'Escolher foto'}
         </button>
+        <button
+          type="button"
+          className="btn btn--ghost btn--sm"
+          onClick={() => setCameraOpen(true)}
+          disabled={disabled || uploading}
+        >
+          Câmera com guia
+        </button>
         {value?.file ? (
           <button type="button" className="btn btn--ghost btn--sm" onClick={clear} disabled={disabled}>
             Remover
@@ -101,6 +112,19 @@ export default function BodyPhotoUploader({
         <p className="body-uploader__error" role="alert">
           {localError || error}
         </p>
+      ) : null}
+      {cameraOpen ? (
+        <BodyCameraGuide
+          pose={pose}
+          disabled={disabled || uploading}
+          onClose={() => setCameraOpen(false)}
+          onCapture={(next) => {
+            if (value?.preview) URL.revokeObjectURL(value.preview)
+            onChange(next)
+            setCameraOpen(false)
+            setLocalError('')
+          }}
+        />
       ) : null}
     </div>
   )

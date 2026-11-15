@@ -7,7 +7,11 @@ import { workoutCardMeta, weeklyProgressSentence } from '../../../utils/todayWor
 import { displayWorkoutName, formatExercisePrescription } from '../../../utils/trainingIdentity'
 import WorkoutDetailModal from '../../WorkoutDetailModal'
 import { formatDateShort } from '../../../utils/dateFormat'
-import { sharePlainText, todayWorkoutShareMessage } from '../../../utils/shareWorkout'
+import {
+  sharePlainText,
+  todayWorkoutShareMessage,
+  reminderWorkoutMessage,
+} from '../../../utils/shareWorkout'
 import { TIME_OPTIONS, adjustForTime } from '../../../utils/dayAdjust.js'
 
 const PREVIEW_LIMIT = 4
@@ -167,15 +171,26 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
             <IconChevron size={16} />
           </button>
           {detailTarget?.exercises?.length ? (
-            <button
-              type="button"
-              className="fit-hero__more"
-              onClick={() => sharePlainText(todayWorkoutShareMessage(detailTarget))}
-              aria-label="Compartilhar treino de hoje no WhatsApp"
-              title="Compartilhar treino de hoje no WhatsApp"
-            >
-              Compartilhar no WhatsApp
-            </button>
+            <>
+              <button
+                type="button"
+                className="fit-hero__more"
+                onClick={() => sharePlainText(todayWorkoutShareMessage(detailTarget))}
+                aria-label="Compartilhar treino de hoje no WhatsApp"
+                title="Compartilhar treino de hoje no WhatsApp"
+              >
+                Compartilhar no WhatsApp
+              </button>
+              <button
+                type="button"
+                className="fit-hero__more"
+                onClick={() => sharePlainText(reminderWorkoutMessage(detailTarget, 'hoje'))}
+                aria-label="Enviar lembrete do treino de hoje no WhatsApp"
+                title="Enviar lembrete do treino de hoje no WhatsApp"
+              >
+                Lembrete no WhatsApp
+              </button>
+            </>
           ) : null}
         </div>
       </div>

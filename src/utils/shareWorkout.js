@@ -39,3 +39,18 @@ export function completedWorkoutShareMessage({ name, durationMinutes, exerciseCo
   ].filter(Boolean)
   return `${parts.join(' · ')}. evoluafit.tec.br`
 }
+
+export function reminderWorkoutMessage(workout, whenLabel = 'hoje') {
+  const name = displayWorkoutName(workout?.name) || 'seu treino'
+  return `Lembrete EvoluaFit: ${whenLabel} é ${name}. Quando for treinar, abra o app: evoluafit.tec.br/app`
+}
+
+/** Mensagem curta para registrar uma série pelo WhatsApp (lembrete pessoal). */
+export function whatsappSetLogMessage({ exerciseName, reps, weightKg } = {}) {
+  const bits = ['Registro EvoluaFit']
+  if (exerciseName) bits.push(String(exerciseName))
+  if (reps != null && weightKg != null) bits.push(`${reps} reps × ${weightKg} kg`)
+  else if (reps != null) bits.push(`${reps} reps`)
+  bits.push('— anotei para lançar no app.')
+  return bits.join(': ')
+}

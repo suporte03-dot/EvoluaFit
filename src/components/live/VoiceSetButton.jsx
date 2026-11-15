@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { formatLoad } from '../../utils/liveWorkout/loadSuggestion.js'
 import { parseVoiceAlternatives } from '../../utils/liveWorkout/voiceParser.js'
+import { sharePlainText, whatsappSetLogMessage } from '../../utils/shareWorkout.js'
 
 function getRecognition() {
   if (typeof window === 'undefined') return null
@@ -28,7 +29,14 @@ function MicIcon({ size = 20 }) {
  * Microfone para registrar a série falando ("8 com 22,5"). Nada é salvo sem confirmação.
  * Some quando o navegador não oferece Web Speech API.
  */
-export default function VoiceSetButton({ currentWeight, setLabel, onApply, onApplyAndSave, disabled = false }) {
+export default function VoiceSetButton({
+  currentWeight,
+  setLabel,
+  exerciseName = '',
+  onApply,
+  onApplyAndSave,
+  disabled = false,
+}) {
   const [Recognition] = useState(getRecognition)
   const [phase, setPhase] = useState('idle')
   const [result, setResult] = useState(null)
@@ -152,6 +160,21 @@ export default function VoiceSetButton({ currentWeight, setLabel, onApply, onApp
               }}
             >
               Só preencher
+            </button>
+            <button
+              type="button"
+              className="live-btn live-btn--ghost"
+              onClick={() =>
+                sharePlainText(
+                  whatsappSetLogMessage({
+                    exerciseName,
+                    reps: values.reps,
+                    weightKg: values.weight,
+                  }),
+                )
+              }
+            >
+              Registrar no WhatsApp
             </button>
             <button type="button" className="live-link" onClick={close}>
               Cancelar

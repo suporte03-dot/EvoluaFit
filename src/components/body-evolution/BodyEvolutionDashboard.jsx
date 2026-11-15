@@ -164,10 +164,23 @@ export default function BodyEvolutionDashboard({
             </>
           ) : (
             <>
-              <div className="body-dash__media">
-                <BodyAvatar2D factors={beforeFactors} label="Antes" />
-                <BodyAvatar2D factors={nowFactors} label="Agora" />
+              <div className="body-dash__media body-dash__media--mannequins">
+                <BodyAvatar2D
+                  factors={beforeFactors}
+                  label="Antes"
+                  caption="Manequim proporcional ao primeiro registro"
+                  tone="before"
+                />
+                <BodyAvatar2D
+                  factors={nowFactors}
+                  label="Agora"
+                  caption="Manequim proporcional ao registro atual"
+                  tone="now"
+                />
               </div>
+              <p className="body-dash__mannequin-note">
+                Os manequins usam só as medidas que você informou — não inventam proporções.
+              </p>
               <BodyComparisonSlider beforeUrl={firstUrl} afterUrl={latestUrl} />
             </>
           )}

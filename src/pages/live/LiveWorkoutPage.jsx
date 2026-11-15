@@ -944,6 +944,7 @@ export default function LiveWorkoutPage() {
                   key={exIdx}
                   currentWeight={num(draft.weight)}
                   setLabel={`série ${(editingIndex ?? activeIndex) + 1}`}
+                  exerciseName={current?.name || ''}
                   onApply={(values) => {
                     setDraft((d) => ({ weight: values.weight, reps: values.reps ?? d.reps }))
                     setAnnouncement('Valores ditados preenchidos. Confira e conclua a série.')

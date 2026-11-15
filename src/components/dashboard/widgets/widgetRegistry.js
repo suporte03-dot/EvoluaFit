@@ -83,12 +83,18 @@ export const WIDGET_REGISTRY = [
   },
   {
     id: 'weekly-volume',
-    title: 'Volume semanal',
+    title: 'Mapa do corpo',
     category: 'evolucao',
-    defaultSize: 'small',
-    supportedSizes: ['small', 'medium'],
+    defaultSize: 'medium',
+    supportedSizes: ['small', 'medium', 'large'],
     presentation: 'card',
     Component: WeeklyVolumeWidget,
+    mapProps: (ctx) => ({
+      volumeDelta: ctx.volumeDelta,
+      history: ctx.history,
+      generatedPlan: ctx.generatedPlan,
+      profile: ctx.profile,
+    }),
   },
   {
     id: 'coach-insight',

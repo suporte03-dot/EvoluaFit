@@ -122,6 +122,7 @@ export default function BodyCheckInForm({
                 label={type.label}
                 hint={type.hint}
                 required={type.required}
+                pose={type.id}
                 value={photos[type.id]}
                 onChange={(next) => updatePhoto(type.id, next)}
                 disabled={saving}

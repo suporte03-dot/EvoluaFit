@@ -16,8 +16,10 @@ import {
 import { buildCatalogDigest, buildCoachAIContext } from '../src/utils/coach/context.js'
 import { detectPainMention, painReplyText } from '../src/utils/coach/safety.js'
 import {
+  checkPersistentLimit,
   checkRateLimit,
   createHandler,
+  getConfig,
   parseModelOutput,
   validateCoachRequest,
 } from '../api/coach.js'
@@ -278,6 +280,31 @@ test('api/coach: parse da saída do modelo', () => {
   assert.equal(noProposal.proposta, null)
 })
 
+test('api/coach: COACH_AI_HOURLY_LIMIT e checkPersistentLimit', async () => {
+  assert.equal(getConfig({}).hourlyLimit, 30)
+  assert.equal(getConfig({ COACH_AI_HOURLY_LIMIT: '12' }).hourlyLimit, 12)
+  assert.equal(getConfig({ COACH_AI_HOURLY_LIMIT: '0' }).hourlyLimit, 30)
+
+  const under = await checkPersistentLimit({
+    userId: 'u',
+    token: 'tok',
+    config: { supabaseUrl: 'https://x.supabase.co', supabaseKey: 'anon', hourlyLimit: 5 },
+    fetchImpl: async (url, options = {}) => {
+      if ((options.method || 'GET') === 'POST') return new Response(null, { status: 201 })
+      return new Response(JSON.stringify([]), { status: 200, headers: { 'Content-Range': '*/0' } })
+    },
+  })
+  assert.deepEqual(under, { ok: true })
+
+  const missing = await checkPersistentLimit({
+    userId: 'u',
+    token: 'tok',
+    config: { supabaseUrl: 'https://x.supabase.co', supabaseKey: 'anon', hourlyLimit: 5 },
+    fetchImpl: async () => new Response('{}', { status: 404 }),
+  })
+  assert.equal(missing, null)
+})
+
 test('api/coach: 405, 503 sem chave, 401 sem token, rate limit', async () => {
   const noFetch = () => {
     throw new Error('rede não deveria ser chamada')
@@ -318,6 +345,9 @@ test('api/coach: fluxo completo com fetch simulado', async () => {
       assert.equal(options.headers.Authorization, 'Bearer tok')
       return new Response(JSON.stringify({ id: 'user-flow' }), { status: 200 })
     }
+    if (url.includes('/rest/v1/coach_requests')) {
+      return new Response(JSON.stringify({ code: '42P01', message: 'relation does not exist' }), { status: 404 })
+    }
     const body = JSON.parse(options.body)
     assert.equal(body.response_format.type, 'json_object')
     assert.ok(body.messages[0].content.includes('português'))
@@ -334,5 +364,105 @@ test('api/coach: fluxo completo com fetch simulado', async () => {
   await handler({ method: 'POST', headers: { authorization: 'Bearer tok' }, body: { question: 'Quantas séries?' } }, res)
   assert.equal(res.statusCode, 200)
   assert.deepEqual(res.body, { resposta: 'Faça 3 séries.', proposta: null })
-  assert.equal(calls[1], 'https://llm.test/v1/chat/completions')
+  assert.equal(calls.at(-1), 'https://llm.test/v1/chat/completions')
+})
+
+const LIMIT_ENV = {
+  COACH_AI_API_KEY: 'k',
+  COACH_AI_BASE_URL: 'https://llm.test/v1',
+  SUPABASE_URL: 'https://x.supabase.co',
+  SUPABASE_ANON_KEY: 'anon',
+  COACH_AI_HOURLY_LIMIT: '5',
+}
+
+function limitFetch({ userId, onRest }) {
+  const calls = []
+  const fetchImpl = async (url, options = {}) => {
+    calls.push({ url, method: options.method || 'GET', options })
+    if (url.endsWith('/auth/v1/user')) return new Response(JSON.stringify({ id: userId }), { status: 200 })
+    if (url.includes('/rest/v1/coach_requests')) return onRest(url, options)
+    return new Response(JSON.stringify({ choices: [{ message: { content: '{"resposta":"Ok."}' } }] }), { status: 200 })
+  }
+  return { calls, fetchImpl }
+}
+
+function askCoach(handler) {
+  const res = mockRes()
+  return handler({ method: 'POST', headers: { authorization: 'Bearer tok' }, body: { question: 'Oi?' } }, res).then(() => res)
+}
+
+test('api/coach: limite persistente permite abaixo do limite e registra a pergunta', async () => {
+  const { calls, fetchImpl } = limitFetch({
+    userId: 'user-under',
+    onRest: (url, options) => {
+      if (options.method === 'POST') return new Response(null, { status: 201 })
+      return new Response(JSON.stringify([{ created_at: new Date().toISOString() }]), {
+        status: 206,
+        headers: { 'Content-Range': '0-0/4' },
+      })
+    },
+  })
+  const res = await askCoach(createHandler({ env: LIMIT_ENV, fetchImpl }))
+  assert.equal(res.statusCode, 200)
+
+  const count = calls.find((c) => c.url.includes('/rest/v1/coach_requests') && c.method === 'GET')
+  assert.ok(count.url.includes('user_id=eq.user-under'))
+  assert.ok(count.url.includes('created_at=gte.'))
+  assert.equal(count.options.headers.Prefer, 'count=exact')
+  assert.equal(count.options.headers.Authorization, 'Bearer tok')
+  assert.equal(count.options.headers.apikey, 'anon')
+
+  const insert = calls.find((c) => c.url.includes('/rest/v1/coach_requests') && c.method === 'POST')
+  assert.deepEqual(JSON.parse(insert.options.body), { user_id: 'user-under' })
+  assert.equal(calls.at(-1).url, 'https://llm.test/v1/chat/completions')
+})
+
+test('api/coach: limite persistente devolve 429 acima do limite sem chamar a IA', async () => {
+  const oldest = new Date(Date.now() - 50 * 60000).toISOString()
+  const { calls, fetchImpl } = limitFetch({
+    userId: 'user-over',
+    onRest: (url, options) => {
+      if (options.method === 'POST') throw new Error('não deveria inserir acima do limite')
+      return new Response(JSON.stringify([{ created_at: oldest }]), { status: 206, headers: { 'Content-Range': '0-0/5' } })
+    },
+  })
+  const res = await askCoach(createHandler({ env: LIMIT_ENV, fetchImpl }))
+  assert.equal(res.statusCode, 429)
+  assert.equal(res.body.error, 'rate_limited_hourly')
+  assert.equal(res.body.limit, 5)
+  const retryAfter = Number(res.headers['retry-after'])
+  assert.ok(retryAfter > 0 && retryAfter <= 600, `retry-after ${retryAfter}`)
+  assert.ok(!calls.some((c) => c.url.startsWith('https://llm.test')))
+})
+
+test('api/coach: sem a tabela cai no limite em memória', async () => {
+  const { calls, fetchImpl } = limitFetch({
+    userId: 'user-fallback',
+    onRest: () => new Response(JSON.stringify({ code: '42P01', message: 'relation does not exist' }), { status: 404 }),
+  })
+  const handler = createHandler({ env: LIMIT_ENV, fetchImpl })
+  const statuses = []
+  for (let i = 0; i < 10; i += 1) statuses.push((await askCoach(handler)).statusCode)
+  assert.deepEqual(statuses.slice(0, 8), Array(8).fill(200))
+  assert.deepEqual(statuses.slice(8), [429, 429])
+  assert.ok(!calls.some((c) => c.method === 'POST' && c.url.includes('/rest/v1/coach_requests')))
+
+  const network = limitFetch({
+    userId: 'user-network',
+    onRest: () => {
+      throw new TypeError('fetch failed')
+    },
+  })
+  const res = await askCoach(createHandler({ env: LIMIT_ENV, fetchImpl: network.fetchImpl }))
+  assert.equal(res.statusCode, 200)
+
+  const insertFail = limitFetch({
+    userId: 'user-insert-fail',
+    onRest: (url, options) => {
+      if (options.method === 'POST') return new Response(null, { status: 500 })
+      return new Response(JSON.stringify([]), { status: 200, headers: { 'Content-Range': '*/0' } })
+    },
+  })
+  const soft = await askCoach(createHandler({ env: LIMIT_ENV, fetchImpl: insertFail.fetchImpl }))
+  assert.equal(soft.statusCode, 200)
 })

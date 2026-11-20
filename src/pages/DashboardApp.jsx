@@ -14,6 +14,7 @@ import SyncStatusIndicator from '../components/SyncStatusIndicator'
 import { loadExercises } from '../services/exerciseService'
 import Header from '../components/Header'
 import Toast from '../components/Toast'
+import AddToWorkoutModal from '../components/AddToWorkoutModal'
 import SessionResumeBanner from '../components/SessionResumeBanner'
 import FirstRunGuide, { hasCompletedOnboarding } from '../components/FirstRunGuide'
 import MobileNav from '../components/MobileNav'
@@ -110,7 +111,17 @@ function AppLayout() {
   const navigate = useNavigate()
   const pathSection = sectionFromPath(location.pathname) || 'inicio'
   useDocumentTitle(SECTION_TITLES[pathSection] || 'App')
-  const { toasts, history, workouts } = useFitness()
+  const {
+    toasts,
+    history,
+    workouts,
+    plans,
+    generatedPlan,
+    libraryAddRequest,
+    libraryAddBusy,
+    confirmLibraryAdd,
+    cancelLibraryAdd,
+  } = useFitness()
   const { page, id: exerciseId } = useHashRoute()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     () => typeof window !== 'undefined' && window.innerWidth <= 1100,
@@ -171,6 +182,16 @@ function AppLayout() {
       </div>
 
       <Toast toasts={toasts} />
+      <AddToWorkoutModal
+        exercise={libraryAddRequest?.exercise || null}
+        workouts={workouts}
+        generatedPlan={generatedPlan}
+        history={history}
+        plans={plans}
+        busy={libraryAddBusy}
+        onConfirm={(workoutId) => confirmLibraryAdd(workoutId)}
+        onCancel={cancelLibraryAdd}
+      />
       <MobileNav activeSection={pathSection} />
       {page === 'exercise' && exerciseId && (
         <Suspense fallback={<SectionFallback label="Carregando exercício" />}>

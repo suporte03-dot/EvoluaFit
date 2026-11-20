@@ -1,5 +1,6 @@
 import { useFitness } from '../context/FitnessContext'
 import { useWorkoutSession } from '../context/WorkoutSessionContext'
+import { displayWorkoutName } from '../utils/workoutLabels'
 
 export default function SessionResumeBanner() {
   const { pendingSession, activeWorkout, resumePendingSession, discardPendingSession, startWorkout } =
@@ -13,10 +14,11 @@ export default function SessionResumeBanner() {
 
   if (!hasLocal && !hasRemote) return null
 
-  const name =
+  const name = displayWorkoutName(
     pendingSession?.workoutName ||
-    activeSession?.workout_name ||
-    'Treino em andamento'
+      activeSession?.workout_name ||
+      'Treino em andamento',
+  )
 
   const setsDone = (pendingSession?.sessionExercises || []).reduce(
     (sum, ex) => sum + (ex.completedSets || 0),

@@ -6,6 +6,7 @@ import {
   KINDS,
   alternativesFor,
   catalogFor,
+  durationLimit,
   entryKind,
   estimateWorkoutMinutes,
   fitToDuration,
@@ -101,6 +102,7 @@ export function adjustForTime(workout, minutes, options = {}) {
   const planOriginal = workout.sessionOriginalExercises || (options.useCurrent ? null : original)
   if (!target || !original.length) {
     const { sessionMinutes: _m, sessionTimeTarget: _t, ...rest } = workout
+    const minutes = estimateWorkoutMinutes(original)
     return {
       workout: {
         ...rest,
@@ -108,16 +110,25 @@ export function adjustForTime(workout, minutes, options = {}) {
         ...(planOriginal ? { sessionOriginalExercises: planOriginal } : {}),
       },
       changes: [],
-      minutes: estimateWorkoutMinutes(original),
+      minutes,
       summary: '',
       target: null,
+      fits: true,
+      originalMinutes: originalMinutesOf(workout),
     }
   }
   const fitted = fitToDuration(original, target)
+  const limit = durationLimit(target)
+  const fits = fitted.minutes <= limit
   const described = describeChanges(fitted.changes)
-  const summary = fitted.changes.length
-    ? `${described} para caber em ${target} min.`
-    : `O treino já cabe em ${target} min.`
+  let summary = ''
+  if (!fits) {
+    summary = `A versão mais curta ainda fica em ~${fitted.minutes} min (meta ${target} min). Escolha outro tempo ou comece esta versão.`
+  } else if (fitted.changes.length) {
+    summary = `${described} para caber em ${target} min. Prévia: ~${fitted.minutes} min.`
+  } else {
+    summary = `O treino já cabe em ${target} min (~${fitted.minutes} min).`
+  }
   return {
     workout: {
       ...workout,
@@ -131,6 +142,8 @@ export function adjustForTime(workout, minutes, options = {}) {
     minutes: fitted.minutes,
     summary,
     target,
+    fits,
+    originalMinutes: originalMinutesOf(workout),
   }
 }
 
@@ -323,15 +336,16 @@ export function adjustDayWorkout(workout, check = {}, ctx = {}) {
     { useCurrent: true },
   )
   const changes = [...readiness.changes, ...time.changes]
+  const sessionMinutes = estimateWorkoutMinutes(time.workout?.exercises || [])
   const described = describeChanges(changes)
   const summary = described
-    ? `${described}${time.target ? ` para caber em ${time.target} min` : ''}.`
+    ? `${described}${time.target ? ` para caber em ${time.target} min` : ''}. Prévia: ~${sessionMinutes} min.`
     : time.summary
   return {
     workout: {
       ...time.workout,
       estimatedMinutes: workout.estimatedMinutes,
-      sessionMinutes: estimateWorkoutMinutes(time.workout?.exercises || []),
+      sessionMinutes,
     },
     changes,
     messages: readiness.messages,
@@ -341,5 +355,8 @@ export function adjustDayWorkout(workout, check = {}, ctx = {}) {
     region: readiness.region,
     professionalAdvice: readiness.professionalAdvice,
     originalMinutes: originalMinutesOf(workout),
+    sessionMinutes,
+    fits: time.fits !== false,
+    target: time.target,
   }
 }

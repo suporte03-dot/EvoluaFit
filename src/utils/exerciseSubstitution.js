@@ -1,5 +1,5 @@
-import { exercises, getExerciseById, getExerciseMuscleGroup, parseRestSeconds, parseSets } from '../data/exercisesData'
-import { normalizeMuscleGroup } from '../data/exerciseValidationMap'
+import { exercises, getExerciseById, getExerciseMuscleGroup, parseRestSeconds, parseSets } from '../data/exercisesData.js'
+import { normalizeMuscleGroup } from '../data/exerciseValidationMap.js'
 
 const LEVEL_RANK = { Iniciante: 1, Intermediário: 2, Avançado: 3 }
 
@@ -129,8 +129,16 @@ export function replaceExerciseInList(exercisesList, index, catalogExercise, kee
   return exercisesList.map((ex, i) => (i === index ? { ...ex, ...next, setsLog: [], completedSets: 0 } : ex))
 }
 
+function scoreCatalogExercise(ex, userLevel, availableEquipment) {
+  let score = equipmentScore(ex.equipment, '', availableEquipment)
+  if (ex.level === userLevel) score += 1
+  return score
+}
+
 /**
  * Lista exercícios do catálogo do mesmo grupo muscular (para adicionar ao treino).
+ * Primários = grupo PRINCIPAL (`category` / `getExerciseMuscleGroup`).
+ * Secundários = grupo aparece em `muscles` depois do primeiro → seção à parte.
  */
 export function findExercisesByMuscleGroup(muscleGroup, options = {}) {
   const {
@@ -139,41 +147,56 @@ export function findExercisesByMuscleGroup(muscleGroup, options = {}) {
     availableEquipment = [],
     excludeIds = [],
     limit = 12,
+    secondaryLimit = 8,
   } = options
 
   const group = normalizeGroup(muscleGroup)
   if (!group) {
-    return { alternatives: [], emptyMessage: 'Selecione um grupo muscular.' }
+    return {
+      alternatives: [],
+      secondaryAlternatives: [],
+      emptyMessage: 'Selecione um grupo muscular.',
+    }
   }
 
   const excluded = new Set((excludeIds || []).filter(Boolean))
+  const primary = []
+  const secondary = []
 
-  const scored = exercises
-    .filter((ex) => {
-      if (excluded.has(ex.id)) return false
-      const g = normalizeGroup(getExerciseMuscleGroup(ex))
-      if (g !== group) {
-        const muscles = (ex.muscles || []).map(normalizeGroup)
-        if (!muscles.includes(group)) return false
-      }
-      if (!levelOk(ex.level, userLevel)) return false
-      if (!respectsRestrictions(ex, restrictions)) return false
-      return true
-    })
-    .map((ex) => {
-      let score = equipmentScore(ex.equipment, '', availableEquipment)
-      if (ex.level === userLevel) score += 1
-      return { ex, score }
-    })
-    .sort((a, b) => b.score - a.score)
-    .slice(0, limit)
-    .map(({ ex }) => ex)
+  for (const ex of exercises) {
+    if (excluded.has(ex.id)) continue
+    if (!levelOk(ex.level, userLevel)) continue
+    if (!respectsRestrictions(ex, restrictions)) continue
 
-  if (!scored.length) {
-    return { alternatives: [], emptyMessage: 'Nenhum exercício encontrado para este grupo.' }
+    const primaryGroup = normalizeGroup(getExerciseMuscleGroup(ex))
+    const muscles = (ex.muscles || []).map(normalizeGroup).filter(Boolean)
+    const score = scoreCatalogExercise(ex, userLevel, availableEquipment)
+
+    if (primaryGroup === group) {
+      primary.push({ ex, score })
+      continue
+    }
+    // Secundário: aparece em muscles, mas NÃO é o grupo principal
+    if (muscles.slice(1).includes(group) || (muscles.includes(group) && primaryGroup !== group)) {
+      secondary.push({ ex, score })
+    }
   }
 
-  return { alternatives: scored, emptyMessage: null }
+  primary.sort((a, b) => b.score - a.score)
+  secondary.sort((a, b) => b.score - a.score)
+
+  const alternatives = primary.slice(0, limit).map(({ ex }) => ex)
+  const secondaryAlternatives = secondary.slice(0, secondaryLimit).map(({ ex }) => ex)
+
+  if (!alternatives.length && !secondaryAlternatives.length) {
+    return {
+      alternatives: [],
+      secondaryAlternatives: [],
+      emptyMessage: 'Nenhum exercício encontrado para este grupo.',
+    }
+  }
+
+  return { alternatives, secondaryAlternatives, emptyMessage: null }
 }
 
 /** Adiciona exercício do catálogo ao final da lista do treino. */

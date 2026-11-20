@@ -1,16 +1,7 @@
 import { getExerciseById } from '../data/exercisesData'
 import { workoutDisplayMinutes } from './workoutDuration'
 import { displayWorkoutType } from './workoutLabels'
-
-const WEEKDAY_LABELS = [
-  'Segunda-feira',
-  'Terça-feira',
-  'Quarta-feira',
-  'Quinta-feira',
-  'Sexta-feira',
-  'Sábado',
-  'Domingo',
-]
+import { planWeekdayLong } from './planWeekday.js'
 
 const HEADERS = [
   'Dia',
@@ -31,8 +22,7 @@ const HEADERS = [
 const COLUMN_WIDTHS = [18, 22, 18, 14, 16, 16, 28, 8, 12, 10, 16, 40, 40]
 
 function dayLabel(dayNumber) {
-  const index = Math.max(0, (dayNumber || 1) - 1) % WEEKDAY_LABELS.length
-  return WEEKDAY_LABELS[index]
+  return planWeekdayLong(dayNumber)
 }
 
 function resolveExerciseMeta(exercise, plan) {

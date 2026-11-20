@@ -23,6 +23,7 @@ import {
   prescribeExercise,
   setsRange,
 } from './prescription/index.js'
+import { planWeekdayShort } from './planWeekday.js'
 
 /** Cotas base por tipo de treino (ajustadas por nível/tempo em buildDayQuotas) */
 const DAY_QUOTAS = {
@@ -325,6 +326,7 @@ export function inferMovementRole(exercise) {
   )
 
   if (cat === 'Peitoral') {
+    if (/unilateral|um braco|single.?arm|um lado|alternad/.test(hay)) return 'chest_unilateral'
     if (/pec.?deck|crucifix|crossover|voador|fly|pullover|isol/.test(hay)) return 'chest_isolation'
     if (/inclin/.test(hay)) return 'chest_upper'
     if (/declin|paralela|mergulho|dip/.test(hay)) return 'chest_lower'
@@ -363,6 +365,7 @@ export function inferMovementRole(exercise) {
   }
 
   if (cat === 'Pernas') {
+    if (/salto|pliom|jump|box.?jump|hop/.test(hay)) return 'leg_plyo'
     if (/aducao|adutor/.test(hay)) return 'leg_adductor'
     if (/extensor/.test(hay)) return 'leg_quad_iso'
     if (/flexora|mesa flexora|leg curl/.test(hay)) return 'leg_ham_iso'
@@ -652,12 +655,85 @@ function buildScopedQuotas(dayType, focusGroups, maxExercises, minutes = 45, lev
 /** Grupos com poucos itens no catálogo — podem repetir entre dias A/B */
 const SCARCE_GROUPS = new Set(['Panturrilha', 'Trapézio', 'Lombar', 'Alongamento'])
 
+/** Papéis fracos demais para serem o ÚNICO exercício de um dia de Força. */
+const WEAK_SOLE_ROLES = new Set([
+  'chest_unilateral',
+  'chest_isolation',
+  'back_unilateral',
+  'back_pullover',
+  'leg_unilateral',
+  'leg_plyo',
+  'leg_quad_iso',
+  'leg_ham_iso',
+  'leg_adductor',
+  'shoulder_lateral',
+  'shoulder_front',
+  'shoulder_rear',
+  'shoulder_other',
+])
+
+const BASIC_COMPOUND_ROLES = {
+  Peitoral: ['chest_flat', 'chest_upper'],
+  Costas: ['back_vertical', 'back_horizontal'],
+  Pernas: ['leg_squat', 'leg_press', 'leg_hinge'],
+  Ombros: ['shoulder_press'],
+  Glúteos: ['glute_thrust', 'glute_bridge'],
+}
+
+/** Nome/equipamento de compostos básicos preferidos (sem IDs fixos). */
+function looksLikeBasicCompound(exercise, group) {
+  const hay = normalizeText(exercise?.name || '')
+  const eq = normalizeText(exercise?.equipment || '')
+  if (group === 'Peitoral') {
+    return /supino/.test(hay) && !/unilateral|alternad|um braco/.test(hay) && /barra|halter|maquina|smith|banco/.test(`${hay} ${eq}`)
+  }
+  if (group === 'Costas') {
+    return (/barra fixa|pull.?up|chin|puxada|remada/.test(hay) && !/unilateral|serrote|um braco/.test(hay))
+  }
+  if (group === 'Pernas') {
+    return (
+      (/agachamento/.test(hay) && !/salto|pliom|jump|hack.?unilateral/.test(hay)) ||
+      /leg.?press|terra|stiff|romeno/.test(hay)
+    )
+  }
+  if (group === 'Ombros') {
+    return /desenvolvimento|militar|arnold|overhead/.test(hay) && !/unilateral|alternad/.test(hay)
+  }
+  return false
+}
+
+export function isWeakSoleExercise(exercise) {
+  if (!exercise) return true
+  const role = inferMovementRole(exercise)
+  if (WEAK_SOLE_ROLES.has(role)) return true
+  const hay = normalizeText(exercise.name || '')
+  if (/salto|pliom|jump|unilateral|um braco|alternad|serrote/.test(hay)) return true
+  return false
+}
+
 /**
  * Escolhe candidatos priorizando papéis/ângulos ainda não cobertos no grupo.
+ * Com `preferBasics`, prioriza compostos básicos (Força / pouco tempo).
  */
-function pickDiverseCandidate(candidates, group, usedRoles) {
+function pickDiverseCandidate(candidates, group, usedRoles, { preferBasics = false } = {}) {
+  if (!candidates.length) return null
   const priority = ROLE_PRIORITY[group] || []
-  if (!priority.length || !candidates.length) return candidates[0] || null
+
+  if (preferBasics) {
+    const basicRoles = BASIC_COMPOUND_ROLES[group] || priority.slice(0, 2)
+    const named = candidates.filter((ex) => looksLikeBasicCompound(ex, group))
+    for (const role of basicRoles) {
+      if (usedRoles.has(role)) continue
+      const fromNamed = named.find((ex) => inferMovementRole(ex) === role)
+      if (fromNamed) return fromNamed
+      const match = candidates.find(
+        (ex) => inferMovementRole(ex) === role && !isWeakSoleExercise(ex),
+      )
+      if (match) return match
+    }
+    const anyStrong = candidates.find((ex) => !isWeakSoleExercise(ex))
+    if (anyStrong) return anyStrong
+  }
 
   for (const role of priority) {
     if (usedRoles.has(role)) continue
@@ -665,20 +741,29 @@ function pickDiverseCandidate(candidates, group, usedRoles) {
     if (match) return match
   }
 
-  // Sem papel novo: evita repetir o mesmo papel se houver alternativa
   const unused = candidates.find((ex) => !usedRoles.has(inferMovementRole(ex)))
   return unused || candidates[0]
 }
 
-function pickByQuotas(pool, quotas, maxExercises, usedIds, allowReuse = false, requiredGroups = []) {
+function pickByQuotas(
+  pool,
+  quotas,
+  maxExercises,
+  usedIds,
+  allowReuse = false,
+  requiredGroups = [],
+  { preferBasics = false } = {},
+) {
   const selected = []
   const counts = Object.fromEntries(Object.keys(quotas).map((k) => [k, 0]))
   const usedRolesByGroup = Object.fromEntries(Object.keys(quotas).map((k) => [k, new Set()]))
+  const soleSlot = maxExercises <= 2
 
   const tryAdd = (ex, group) => {
     if (selected.length >= maxExercises) return false
     if (selected.find((s) => s.id === ex.id)) return false
     if (!allowReuse && usedIds.has(ex.id) && !SCARCE_GROUPS.has(group)) return false
+    if (preferBasics && soleSlot && selected.length === 0 && isWeakSoleExercise(ex)) return false
     const role = inferMovementRole(ex)
     const roles = usedRolesByGroup[group] || (usedRolesByGroup[group] = new Set())
     if (UNIQUE_ROLE_GROUPS.has(group) && role !== 'general' && roles.has(role)) return false
@@ -689,22 +774,28 @@ function pickByQuotas(pool, quotas, maxExercises, usedIds, allowReuse = false, r
     return true
   }
 
-  const candidatesFor = (group, ignoreUsed = false) =>
-    shuffle(
-      pool.filter(
-        (ex) =>
-          normalizeCategory(ex.category) === group &&
-          (ignoreUsed || allowReuse || !usedIds.has(ex.id) || SCARCE_GROUPS.has(group)) &&
-          !selected.find((s) => s.id === ex.id),
-      ),
+  const candidatesFor = (group, ignoreUsed = false) => {
+    let list = pool.filter(
+      (ex) =>
+        normalizeCategory(ex.category) === group &&
+        (ignoreUsed || allowReuse || !usedIds.has(ex.id) || SCARCE_GROUPS.has(group)) &&
+        !selected.find((s) => s.id === ex.id),
     )
+    if (preferBasics && soleSlot) {
+      const strong = list.filter((ex) => !isWeakSoleExercise(ex))
+      if (strong.length) list = strong
+    }
+    return shuffle(list)
+  }
 
   // 1) Garantir 1 de cada grupo obrigatório (com diversidade de papel)
   for (const group of requiredGroups) {
     if (selected.length >= maxExercises) break
     if ((counts[group] || 0) >= 1) continue
     const candidates = candidatesFor(group)
-    const pick = pickDiverseCandidate(candidates, group, usedRolesByGroup[group] || new Set())
+    const pick = pickDiverseCandidate(candidates, group, usedRolesByGroup[group] || new Set(), {
+      preferBasics,
+    })
     if (pick) tryAdd(pick, group)
   }
 
@@ -724,7 +815,7 @@ function pickByQuotas(pool, quotas, maxExercises, usedIds, allowReuse = false, r
         if (unused.length) candidates = unused
         else break
       }
-      const pick = pickDiverseCandidate(candidates, group, usedRoles)
+      const pick = pickDiverseCandidate(candidates, group, usedRoles, { preferBasics })
       if (!pick || !tryAdd(pick, group)) break
     }
   }
@@ -864,7 +955,9 @@ export function pickExercisesForDay(dayTemplate, options, usedIds = new Set()) {
   const dayType = inferDayType(dayTemplate.name, focusGroups)
   const minutes = options.minutesPerWorkout || options.duration || 45
   const level = options.level || 'Intermediário'
+  const goal = normalizeGoal(options.goal ?? options.objective ?? 'saude')
   const restrictions = options.restrictions || []
+  const preferBasics = goal === 'forca' || Number(minutes) <= 30 || options.maxExercises <= 2
   const effectiveFocus = expandFocusForQuotas(dayType, focusGroups, level, restrictions)
   const scopedQuotas = buildScopedQuotas(
     dayType,
@@ -875,13 +968,30 @@ export function pickExercisesForDay(dayTemplate, options, usedIds = new Set()) {
     restrictions,
   )
   const requiredGroups = REQUIRED_GROUPS[dayType] || []
+  const quotaOpts = { preferBasics }
 
   const pool = buildPool(options)
-  let selected = pickByQuotas(pool, scopedQuotas, options.maxExercises, usedIds, false, requiredGroups)
+  let selected = pickByQuotas(
+    pool,
+    scopedQuotas,
+    options.maxExercises,
+    usedIds,
+    false,
+    requiredGroups,
+    quotaOpts,
+  )
 
   // Sempre completar até a meta (antes só preenchia se < 3–4 — causa de Advanced sub-gerar)
   if (selected.length < options.maxExercises) {
-    const more = pickByQuotas(pool, scopedQuotas, options.maxExercises, usedIds, true, requiredGroups)
+    const more = pickByQuotas(
+      pool,
+      scopedQuotas,
+      options.maxExercises,
+      usedIds,
+      true,
+      requiredGroups,
+      quotaOpts,
+    )
     const usedRoles = new Set(selected.map((ex) => inferMovementRole(ex)))
     for (const ex of more) {
       if (selected.length >= options.maxExercises) break
@@ -956,6 +1066,28 @@ export function pickExercisesForDay(dayTemplate, options, usedIds = new Set()) {
       }
       selected.push(candidate)
       usedIds.add(candidate.id)
+    }
+  }
+
+  // Força / pouco tempo: nunca deixar pliometria ou unilateral como único exercício.
+  if (preferBasics && selected.length === 1 && isWeakSoleExercise(selected[0])) {
+    const focus = effectiveFocus.length ? effectiveFocus : focusGroups
+    const mainGroup = focus[0] || normalizeCategory(selected[0].category)
+    const replacement = pickDiverseCandidate(
+      pool.filter(
+        (ex) =>
+          normalizeCategory(ex.category) === mainGroup &&
+          ex.id !== selected[0].id &&
+          !isWeakSoleExercise(ex),
+      ),
+      mainGroup,
+      new Set(),
+      { preferBasics: true },
+    )
+    if (replacement) {
+      usedIds.delete(selected[0].id)
+      selected = [replacement]
+      usedIds.add(replacement.id)
     }
   }
 
@@ -1132,7 +1264,7 @@ function balanceWeeklyVolume(weeklyPlan, { level, minutes }) {
   const warnings = [
     ...below.map(
       (item) =>
-        `${item.group}: ${Math.round(item.sets)} séries por semana, abaixo da faixa do nível (${range[0]}-${range[1]}). A duração escolhida limita o volume.`,
+        `${item.group}: ${Math.round(item.sets)} séries efetivas/semana (diretas + 0,5 das secundárias em compostos), abaixo da faixa do nível (${range[0]}-${range[1]}). A duração escolhida limita o volume.`,
     ),
     ...above.map(
       (item) => `${item.group}: ${Math.round(item.sets)} séries por semana, acima da faixa do nível (${range[0]}-${range[1]}).`,
@@ -1264,6 +1396,7 @@ export function generateWorkoutPlan(input = {}) {
       dayTemplate,
       {
         level,
+        goal,
         equipment,
         restrictions,
         maxExercises: dayMax,
@@ -1429,7 +1562,6 @@ function startOfMonday(ref = new Date()) {
  * Converte o plano gerado em treinos da semana corrente (dia 1 = segunda).
  */
 export function planToWorkouts(plan, referenceDate = new Date()) {
-  const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
   const days = plan.weeklyPlan || plan.schedule || []
   const cycleStart = plan.startDate ? currentCycleStart(plan.startDate, referenceDate) : null
   const offsets = START_OFFSETS[days.length] || days.map((_, i) => i)
@@ -1482,7 +1614,8 @@ export function planToWorkouts(plan, referenceDate = new Date()) {
       name: day.workoutName || day.name,
       workoutType: day.workoutType,
       date: localDateKey(workoutDate),
-      dayLabel: dayNames[workoutDate.getDay()],
+      // Sempre ordinal do plano (Dia 1 = Seg), igual a Monte seu treino / Excel.
+      dayLabel: planWeekdayShort(dayNum),
       dayNumber: day.day,
       muscleGroups,
       exercises,

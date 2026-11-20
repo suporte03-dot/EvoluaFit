@@ -4,6 +4,15 @@ import SectionTitle from './SectionTitle'
 import EmptyState from './EmptyState'
 import WorkoutDetailModal from './WorkoutDetailModal'
 import CollapsibleWorkoutCard from './CollapsibleWorkoutCard'
+import ExerciseSubstitutionModal from './ExerciseSubstitutionModal'
+import CompleteWorkoutModal from './CompleteWorkoutModal'
+import { appendExerciseToList } from '../utils/exerciseSubstitution.js'
+import {
+  applyCompleteSuggestions,
+  planCompleteDay,
+} from '../utils/completeWorkout.js'
+import { summarizeDayVolume } from '../utils/workoutGenerator.js'
+import { muscleGroups as catalogGroups } from '../data/exercisesData.js'
 
 function isDoneWorkout(workout) {
   const status = String(workout?.status || '').toLowerCase()
@@ -50,16 +59,29 @@ export default function MyWorkouts() {
     generatedPlan,
     startWorkout,
     updateWorkout,
+    updatePlanDay,
     deleteWorkout,
     duplicateWorkout,
     showToast,
+    profile,
   } = useFitness()
   const [editingId, setEditingId] = useState(null)
   const [editName, setEditName] = useState('')
   const [detailWorkout, setDetailWorkout] = useState(null)
+  const [addWorkout, setAddWorkout] = useState(null)
+  const [completeWorkout, setCompleteWorkout] = useState(null)
   const [openId, setOpenId] = useState(null)
   const [isTreinosOpen, setIsTreinosOpen] = useState(true)
   const groups = useMemo(() => groupWorkouts(workouts, generatedPlan), [workouts, generatedPlan])
+
+  const persistExercises = (workout, nextExercises) => {
+    const volumeSummary = summarizeDayVolume(nextExercises, workout.workoutType || workout.name).text
+    if (workout.planId && workout.dayNumber != null) {
+      updatePlanDay(workout.planId, workout.dayNumber, { exercises: nextExercises, volumeSummary })
+    } else {
+      updateWorkout(workout.id, { exercises: nextExercises, volumeSummary })
+    }
+  }
 
   const toggleOpen = (id) => {
     setOpenId((current) => (current === id ? null : id))
@@ -175,6 +197,8 @@ export default function MyWorkouts() {
                               onSaveEdit={saveEdit}
                               onStartWorkout={startWorkout}
                               onViewWorkout={setDetailWorkout}
+                              onAddExercise={setAddWorkout}
+                              onCompleteWorkout={setCompleteWorkout}
                               onEdit={startEdit}
                               onDuplicate={duplicateWorkout}
                               onComplete={markDone}
@@ -194,6 +218,39 @@ export default function MyWorkouts() {
         workout={detailWorkout ? workouts.find((w) => w.id === detailWorkout.id) || detailWorkout : null}
         isOpen={Boolean(detailWorkout)}
         onClose={() => setDetailWorkout(null)}
+      />
+      <ExerciseSubstitutionModal
+        isOpen={Boolean(addWorkout)}
+        mode="add"
+        onClose={() => setAddWorkout(null)}
+        defaultMuscleGroup={addWorkout?.muscleGroups?.[0] || catalogGroups[0]}
+        muscleGroupOptions={catalogGroups}
+        excludeIds={(addWorkout?.exercises || []).map((ex) => ex.exerciseId || ex.id)}
+        onSelect={(catalogEx) => {
+          const next = appendExerciseToList(addWorkout.exercises || [], catalogEx, {
+            sets: 3,
+            reps: '8-12',
+          })
+          persistExercises(addWorkout, next)
+          setAddWorkout(null)
+          showToast('Exercício adicionado ao treino!')
+        }}
+      />
+      <CompleteWorkoutModal
+        isOpen={Boolean(completeWorkout)}
+        onClose={() => setCompleteWorkout(null)}
+        workout={completeWorkout}
+        plan={generatedPlan}
+        profile={profile}
+        onApply={(indexes) => {
+          const preview = planCompleteDay(completeWorkout, generatedPlan, {
+            level: generatedPlan?.level || profile?.level,
+          })
+          const updated = applyCompleteSuggestions(completeWorkout, preview.suggestions, indexes)
+          persistExercises(completeWorkout, updated.exercises)
+          setCompleteWorkout(null)
+          showToast('Treino completado.')
+        }}
       />
     </section>
   )

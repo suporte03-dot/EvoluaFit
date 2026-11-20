@@ -82,13 +82,32 @@ export function classifyWorkoutDay(dayOrWorkout = {}) {
     dayOrWorkout.workoutName || dayOrWorkout.name || dayOrWorkout.workoutType || '',
   )
   const type = String(dayOrWorkout.workoutType || '')
-  const hay = normalizeText(`${name} ${type}`)
+  const groups = [
+    ...(dayOrWorkout.muscleGroups || []),
+    ...(dayOrWorkout.focus || []),
+  ]
+    .map((g) => normalizeText(g))
+    .filter(Boolean)
+  const hay = normalizeText(`${name} ${type} ${groups.join(' ')}`)
 
   if (/descanso|recuper/.test(hay) && !/mobil|cardio|along/.test(hay)) {
     return { label: 'Descanso', tone: 'rest' }
   }
   if (/core.*cardio|cardio.*mobil|hybrid/.test(hay)) return { label: 'Core + Cardio', tone: 'core' }
   if (/legs.*leve|perna.*leve/.test(hay)) return { label: 'Pernas leve', tone: 'legs' }
+  // Braços / grupos isolados antes de Push/Pull genéricos
+  if (/brac|biceps|triceps/.test(hay) && !/peito|peitoral|costas|push|pull|empurr|puxar/.test(hay)) {
+    return { label: 'Braços', tone: 'push' }
+  }
+  if (/^ombro|ombros/.test(hay) && !/peito|peitoral|push|empurr|brac/.test(hay)) {
+    return { label: 'Ombros', tone: 'push' }
+  }
+  if (/peito|peitoral/.test(hay) && !/triceps|push|empurr|full|corpo/.test(hay)) {
+    return { label: 'Peito', tone: 'push' }
+  }
+  if (/costas/.test(hay) && !/biceps|pull|puxar|full|corpo/.test(hay)) {
+    return { label: 'Costas', tone: 'pull' }
+  }
   if (/push|empurr/.test(hay)) return { label: 'Empurrar', tone: 'push' }
   if (/pull|puxar/.test(hay)) return { label: 'Puxar', tone: 'pull' }
   if (/legs|perna|glute|quadr|posterior|panturr|inferior|lower/.test(hay)) {

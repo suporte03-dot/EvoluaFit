@@ -4,6 +4,7 @@ import { formatDateShort } from '../utils/dateFormat'
 import { displayWorkoutName, formatExercisePrescription, formatRestLabel } from '../utils/trainingIdentity'
 import DayVolumeSummary from './DayVolumeSummary'
 import { workoutDisplayMinutes } from '../utils/workoutDuration'
+import { displayPlanWeekday } from '../utils/planWeekday.js'
 
 const statusClass = {
   Pendente: 'status--pending',
@@ -43,6 +44,8 @@ export default function CollapsibleWorkoutCard({
   onToggle,
   onStartWorkout,
   onViewWorkout,
+  onAddExercise,
+  onCompleteWorkout,
   onEdit,
   onDuplicate,
   onComplete,
@@ -59,7 +62,10 @@ export default function CollapsibleWorkoutCard({
   const typeTone = workoutTypeClass(type)
   const exerciseCount = workout.exercises?.length || 0
   const duration = workoutDisplayMinutes(workout, 45)
-  const dateLabel = workout.dayLabel || formatDateShort(workout.date)
+  const dateLabel =
+    workout.dayNumber != null || workout.day != null
+      ? displayPlanWeekday(workout, { short: true })
+      : workout.dayLabel || formatDateShort(workout.date)
   const isEditing = editingId === workout.id
 
   const handleToggle = () => {
@@ -154,6 +160,26 @@ export default function CollapsibleWorkoutCard({
           disabled={workout.status === 'Realizado'}
         >
           Iniciar treino
+        </button>
+        <button
+          type="button"
+          className="btn btn--outline btn--sm"
+          onClick={(e) => {
+            e.stopPropagation()
+            onAddExercise?.(workout)
+          }}
+        >
+          + Adicionar exercício
+        </button>
+        <button
+          type="button"
+          className="btn btn--outline btn--sm"
+          onClick={(e) => {
+            e.stopPropagation()
+            onCompleteWorkout?.(workout)
+          }}
+        >
+          Completar treino
         </button>
       </div>
 

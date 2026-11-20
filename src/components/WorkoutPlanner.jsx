@@ -9,6 +9,7 @@ import PlanUpgradeNotice from './PlanUpgradeNotice'
 import AdaptiveWeekNudge from './dashboard/AdaptiveWeekNudge'
 import { detectMissedWorkouts } from '../utils/adaptiveWeek'
 import { getSplitOptionsForDays, getSplitStyleLabel } from '../data/workoutTemplates'
+import { describeTimeBudget } from '../utils/timeBudget.js'
 
 const PLANNER_DRAFT_KEY = 'evoluafit-planner-draft'
 
@@ -154,6 +155,17 @@ export default function WorkoutPlanner() {
   )
   const splitOptions = useMemo(() => getSplitOptionsForDays(form.daysPerWeek), [form.daysPerWeek])
   const splitLabel = useMemo(() => getSplitStyleLabel(form.splitStyle), [form.splitStyle])
+  const timeBudget = useMemo(
+    () =>
+      describeTimeBudget({
+        minutes: form.duration,
+        goal: form.objective,
+        level: form.level,
+        daysPerWeek: form.daysPerWeek,
+        splitStyle: form.splitStyle,
+      }),
+    [form.duration, form.objective, form.level, form.daysPerWeek, form.splitStyle],
+  )
 
   const canGoNext = () => {
     if (step === 3 && !form.equipment.length) return false
@@ -170,22 +182,18 @@ export default function WorkoutPlanner() {
 
   const goBack = () => setStep((s) => Math.max(1, s - 1))
 
-  const handleGenerate = (e) => {
-    e.preventDefault()
-    if (!form.equipment.length) {
-      showToast('Selecione ao menos um equipamento.', 'info')
-      setStep(3)
-      return
-    }
+  const runGenerate = (overrides = {}) => {
     setGenerating(true)
     const generated = generateWorkoutPlan({
       ...form,
+      ...overrides,
       restrictions: noRestrictions ? [] : form.restrictions,
     })
-    // Micro-feedback: brief pulse before revealing plan
     window.setTimeout(() => {
       setPlan(generated)
       savePlan(generated)
+      const material = planToWorkouts(generated)
+      addPlanWorkouts(material, { replaceAll: true, silent: true })
       setGenerating(false)
       setJustGenerated(true)
       setWizardOpen(false)
@@ -193,6 +201,32 @@ export default function WorkoutPlanner() {
       window.setTimeout(() => setJustGenerated(false), 900)
       showToast('Planilha gerada com sucesso!', 'success')
     }, 280)
+  }
+
+  const handleGenerate = (e) => {
+    e.preventDefault()
+    if (!form.equipment.length) {
+      showToast('Selecione ao menos um equipamento.', 'info')
+      setStep(3)
+      return
+    }
+    if (generatedPlan?.manualEdited || workouts.some((w) => w.planId === generatedPlan?.id)) {
+      const ok = window.confirm(
+        'Gerar uma nova planilha substitui a rotina ativa e as edições manuais. Continuar?',
+      )
+      if (!ok) return
+    }
+    runGenerate()
+  }
+
+  const handleRegenerateWithDuration = (minutes) => {
+    const next = Math.min(90, Math.max(20, Number(minutes) || form.duration))
+    update('duration', next)
+    const ok = window.confirm(
+      `Regenerar mantendo objetivo, nível, dias e divisão, só com ${next} min por treino?`,
+    )
+    if (!ok) return
+    runGenerate({ duration: next, minutesPerWorkout: next })
   }
 
   const handleDownloadExcel = async () => {
@@ -511,6 +545,19 @@ export default function WorkoutPlanner() {
                       ))}
                     </div>
                   </div>
+
+                  <div className="planner-time-budget" role="status">
+                    <p className="planner-time-budget__msg">{timeBudget.message}</p>
+                    {timeBudget.showUseRecommended ? (
+                      <button
+                        type="button"
+                        className="btn btn--outline btn--sm"
+                        onClick={() => update('duration', timeBudget.recommendedMinutes)}
+                      >
+                        Usar recomendado ({timeBudget.recommendedMinutes} min)
+                      </button>
+                    ) : null}
+                  </div>
                 </div>
               )}
 
@@ -671,6 +718,7 @@ export default function WorkoutPlanner() {
               onDownloadExcel={handleDownloadExcel}
               onSaveToPlan={handleSaveToMyPlan}
               onGenerateNew={openWizard}
+              onRegenerateWithDuration={handleRegenerateWithDuration}
             />
           </div>
         )}

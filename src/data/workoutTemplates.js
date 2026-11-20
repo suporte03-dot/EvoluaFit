@@ -277,6 +277,26 @@ export const workoutBenefitsByType = {
     'Estimula grandes grupos musculares com gasto energético elevado.',
     'Contribui para estabilidade de quadril e joelho.',
   ],
+  Peito: [
+    'Foco no peitoral com padrões de empurrar horizontais.',
+    'Complementa força de tronco e estabilidade do ombro.',
+    'Útil em divisões por grupo muscular.',
+  ],
+  Costas: [
+    'Fortalece a musculatura das costas e a postura.',
+    'Equilibra o trabalho de empurrar da semana.',
+    'Desenvolve padrões de puxar vertical e horizontal.',
+  ],
+  Ombros: [
+    'Desenvolve deltoides e estabilidade do ombro.',
+    'Melhora o padrão de empurrar vertical.',
+    'Complementa peito e braços na divisão semanal.',
+  ],
+  Braços: [
+    'Foco em bíceps e tríceps com volume dedicado.',
+    'Complementa dias de peito e costas sem sobrecarregar articulações.',
+    'Permite progressão isolada de braços.',
+  ],
   'Full Body': [
     'Trabalha o corpo inteiro em uma única sessão.',
     'Útil para quem tem pouco tempo disponível na semana.',
@@ -597,21 +617,76 @@ export function resolveTemplateForWorkout(workout) {
     (t) => t.name.toLowerCase() === workout.name?.toLowerCase(),
   )
   if (byName) return byName
-  const matcher = nameToTemplateMatchers.find((m) => m.pattern.test(workout.name || ''))
+  const name = workout.name || ''
+  // Dias de grupo muscular isolado não herdam template PPL/Full Body.
+  if (/^(peito|costas|ombros?|bra[cç]os?)\b/i.test(name.trim()) && !/push|pull|empurr|puxar/i.test(name)) {
+    return null
+  }
+  const matcher = nameToTemplateMatchers.find((m) => m.pattern.test(name))
   if (matcher) return getWorkoutTemplateById(matcher.id)
   return null
 }
 
+function normalizeGroupKey(value = '') {
+  return String(value)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+}
+
 function inferTypeFromWorkout(workout) {
-  const matcher = nameToTemplateMatchers.find((m) => m.pattern.test(workout.name || ''))
+  // Preferir o tipo já gravado pelo gerador (Peito, Braços, Empurrar…).
+  const stored = String(workout.workoutType || '').trim()
+  if (stored) {
+    const key = normalizeGroupKey(stored)
+    if (/brac/.test(key)) return 'Braços'
+    if (/peito|peitoral/.test(key) && !/triceps|empurr|push/.test(key)) return 'Peito'
+    if (/costas/.test(key) && !/biceps|puxar|pull/.test(key)) return 'Costas'
+    if (/ombro/.test(key) && !/empurr|push|peito/.test(key)) return 'Ombros'
+    if (/empurr|push/.test(key)) return 'Push'
+    if (/puxar|pull/.test(key)) return 'Pull'
+    if (/perna|legs/.test(key)) return 'Legs'
+    if (/corpo|full/.test(key)) return 'Full Body'
+    if (/core|abdomen/.test(key)) return 'Core/Abdômen'
+    return stored
+  }
+
+  const name = String(workout.name || '')
+  // Não usar matchers genéricos de Push/Pull em dias de grupo isolado (ex.: Braços).
+  if (/bra[cç]o/i.test(name) && !/peito|costas|push|pull|empurr|puxar/i.test(name)) return 'Braços'
+  if (/^peito$|peito\b/i.test(name) && !/tr[ií]ceps|push|empurr/i.test(name)) return 'Peito'
+  if (/costas/i.test(name) && !/b[ií]ceps|pull|puxar/i.test(name)) return 'Costas'
+  if (/ombro/i.test(name) && !/push|empurr|peito/i.test(name)) return 'Ombros'
+
+  const matcher = nameToTemplateMatchers.find((m) => {
+    if (/push|pull|empurr|puxar/i.test(m.pattern.source) && /bra[cç]o|peito|costas|ombro/i.test(name)) {
+      return false
+    }
+    return m.pattern.test(name)
+  })
   if (matcher) {
     const tpl = getWorkoutTemplateById(matcher.id)
     if (tpl) return tpl.type
   }
-  if (workout.muscleGroups?.some((g) => ['Peito', 'Ombros', 'Tríceps'].includes(g))) return 'Push'
-  if (workout.muscleGroups?.some((g) => ['Costas', 'Bíceps'].includes(g))) return 'Pull'
-  if (workout.muscleGroups?.some((g) => ['Quadríceps', 'Posterior', 'Glúteos'].includes(g))) return 'Legs'
-  return 'Full Body'
+
+  const groups = (workout.muscleGroups || []).map(normalizeGroupKey)
+  const has = (...keys) => groups.some((g) => keys.some((k) => g.includes(k)))
+  if (has('biceps', 'triceps') && !has('peitoral', 'peito', 'costas')) return 'Braços'
+  if (has('peitoral', 'peito') && has('triceps', 'ombro')) return 'Push'
+  if (has('peitoral', 'peito') && !has('triceps')) return 'Peito'
+  if (has('costas') && has('biceps')) return 'Pull'
+  if (has('costas') && !has('biceps')) return 'Costas'
+  if (has('ombro') && !has('peitoral', 'peito')) return 'Ombros'
+  if (has('perna', 'quadriceps', 'posterior', 'gluteo', 'glúteos')) return 'Legs'
+  if (groups.length >= 4) return 'Full Body'
+  if (groups.length === 1) {
+    const only = groups[0]
+    if (only.includes('peitoral') || only.includes('peito')) return 'Peito'
+    if (only.includes('costas')) return 'Costas'
+    if (only.includes('ombro')) return 'Ombros'
+    if (only.includes('abdomen') || only.includes('core')) return 'Core/Abdômen'
+  }
+  return groups[0] ? workout.muscleGroups[0] : 'Full Body'
 }
 
 function exerciseToDetail(exercise, overrides = {}) {
@@ -683,10 +758,20 @@ function normalizeExercises(exercises = []) {
 export function enrichWorkoutDetail(workout, extras = {}) {
   if (!workout) return null
 
+  const inferredType = inferTypeFromWorkout(workout)
+  // Só usar template PPL/Full Body se o tipo inferido bater; evita "Corpo inteiro" em Peito/Braços.
   const template = resolveTemplateForWorkout(workout)
-  const type = template?.type || inferTypeFromWorkout(workout)
-  const benefits = template?.benefits || getWorkoutBenefitsByType(type)
-  const precautions = template?.precautions || DEFAULT_PRECAUTIONS
+  const templateType = template?.type || ''
+  const useTemplate =
+    template &&
+    normalizeGroupKey(templateType) === normalizeGroupKey(inferredType)
+  const type = useTemplate ? templateType : inferredType
+  const benefits =
+    (useTemplate && template?.benefits) ||
+    getWorkoutBenefitsByType(type) ||
+    getWorkoutBenefitsByType(inferredType) ||
+    []
+  const precautions = (useTemplate && template?.precautions) || DEFAULT_PRECAUTIONS
   const planGoal =
     extras.generatedPlan?.objectiveLabel ||
     (extras.generatedPlan?.objective && objectiveLabels[extras.generatedPlan.objective]) ||
@@ -697,10 +782,23 @@ export function enrichWorkoutDetail(workout, extras = {}) {
   const userExercises = workout.exercises?.length ? resolveTemplateExercises(workout.exercises) : null
   const exercises = userExercises?.length
     ? userExercises
-    : resolveTemplateExercises(template?.exercises || [])
+    : useTemplate
+      ? resolveTemplateExercises(template?.exercises || [])
+      : []
   const equipmentFromExercises = [
     ...new Set((exercises || []).map((ex) => ex.equipment).filter((item) => item && item !== '—')),
   ]
+
+  const mainFromType = {
+    Peito: 'Peito',
+    Costas: 'Costas',
+    Ombros: 'Ombros',
+    Braços: 'Braços',
+    Push: 'Peito',
+    Pull: 'Costas',
+    Legs: 'Pernas',
+    'Full Body': 'Corpo inteiro',
+  }
 
   return {
     id: workout.id,
@@ -710,14 +808,18 @@ export function enrichWorkoutDetail(workout, extras = {}) {
     level: workout.level || planLevel || template?.level || 'Intermediário',
     duration: workoutDisplayMinutes(workout, template?.duration || 45),
     frequency: template?.frequency || 'Conforme sua planilha',
-    mainMuscleGroup: template?.mainMuscleGroup || workout.muscleGroups?.[0] || 'Corpo inteiro',
+    mainMuscleGroup:
+      workout.muscleGroups?.[0] ||
+      mainFromType[type] ||
+      (useTemplate && template?.mainMuscleGroup) ||
+      'Treino',
     secondaryMuscleGroups:
-      template?.secondaryMuscleGroups ||
       workout.muscleGroups?.slice(1) ||
+      (useTemplate && template?.secondaryMuscleGroups) ||
       [],
     equipment: equipmentFromExercises.length
       ? equipmentFromExercises
-      : template?.equipment || ['Conforme disponível'],
+      : (useTemplate && template?.equipment) || ['Conforme disponível'],
     benefits,
     precautions,
     exercises,

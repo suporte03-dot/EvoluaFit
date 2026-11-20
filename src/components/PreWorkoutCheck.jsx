@@ -141,7 +141,12 @@ export default function PreWorkoutCheck({ workout, onConfirm, onSkip, profile })
       </fieldset>
 
       <fieldset className="pre-workout__set">
-        <legend>Tempo disponível</legend>
+        <legend>Tempo disponível hoje (não altera a planilha)</legend>
+        <p className="pre-workout__hint">
+          Preferência do plano:{' '}
+          {profile?.duration || workout?.estimatedMinutes || '—'} min · prévia desta sessão:{' '}
+          ~{preview.workout ? Math.round(preview.sessionMinutes || preview.originalMinutes || 0) : '—'} min
+        </p>
         <div className="pre-workout__pills" role="group" aria-label="Tempo disponível">
           {TIME_OPTIONS.map((value) => (
             <button
@@ -181,7 +186,7 @@ export default function PreWorkoutCheck({ workout, onConfirm, onSkip, profile })
           disabled={!canConfirm}
           onClick={() => submit(false)}
         >
-          Ajustar e começar
+          Ajustar e começar (~{Math.round(preview.sessionMinutes || preview.originalMinutes || 0)} min)
         </button>
         <button type="button" className="btn btn--ghost" onClick={() => submit(true)}>
           Começar sem ajustar

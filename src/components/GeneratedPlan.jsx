@@ -6,6 +6,7 @@ import { classifyWorkoutDay, displayWorkoutName, formatRestLabel } from '../util
 import { IconCalendar, IconDumbbell } from './dashboard/icons'
 import DayVolumeSummary from './DayVolumeSummary'
 import { workoutDisplayMinutes } from '../utils/workoutDuration'
+import { findActiveWorkoutForPlanDay } from '../utils/libraryAdd.js'
 import WorkoutDetailModal from './WorkoutDetailModal'
 
 const WEEKDAYS = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo']
@@ -34,13 +35,15 @@ function getPlanDays(plan) {
 }
 
 export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan, onGenerateNew }) {
-  const { addPlanWorkouts, addWorkoutToPlan, startWorkout, showToast } = useFitness()
+  const { addPlanWorkouts, addWorkoutToPlan, startWorkout, showToast, workouts } = useFitness()
   const [detailWorkout, setDetailWorkout] = useState(null)
   const days = getPlanDays(plan)
   const firstDay = days[0]?.day
   const [expandedDays, setExpandedDays] = useState(() =>
     firstDay != null ? new Set([firstDay]) : new Set(),
   )
+  const hasActiveRoutine = (workouts || []).some((w) => w.planId === plan?.id)
+  const planPreference = plan.minutesPerWorkout || plan.duration
 
   const toggleDay = (dayNum) => {
     setExpandedDays((prev) => {
@@ -61,9 +64,11 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan, onG
   }
 
   const buildDayWorkout = (day) => {
-    const workouts = planToWorkouts(plan)
+    const active = findActiveWorkoutForPlanDay(workouts, plan, day)
+    if (active) return active
+    const fromPlan = planToWorkouts(plan)
     return (
-      workouts.find((w) => w.dayNumber === day.day || w.name === (day.workoutName || day.name)) || {
+      fromPlan.find((w) => w.dayNumber === day.day || w.name === (day.workoutName || day.name)) || {
         id: `preview-${plan.id}-${day.day}`,
         planId: plan.id,
         dayNumber: day.day,
@@ -82,6 +87,21 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan, onG
     )
   }
 
+  const dayDisplay = (day) => {
+    const active = findActiveWorkoutForPlanDay(workouts, plan, day)
+    const source = active || day
+    const exerciseCount = (source.exercises || []).length
+    const duration = workoutDisplayMinutes(source, Math.max(20, exerciseCount * 8))
+    return {
+      active,
+      exerciseCount,
+      duration,
+      exercises: source.exercises || [],
+      muscleGroups: active?.muscleGroups || day.muscleGroups || day.focus || [],
+      sourceLabel: active ? 'Rotina ativa' : 'Plano gerado',
+    }
+  }
+
   const openDayDetail = (day) => {
     setDetailWorkout(buildDayWorkout(day))
   }
@@ -93,8 +113,9 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan, onG
       showToast?.('Este dia ainda não tem exercícios para iniciar.', 'info')
       return
     }
-    // Ensure the day exists in planilha so finalize writes history against a real workout
-    addWorkoutToPlan(workout)
+    if (!findActiveWorkoutForPlanDay(workouts, plan, day)) {
+      addWorkoutToPlan(workout)
+    }
     startWorkout(workout)
   }
 
@@ -107,7 +128,12 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan, onG
           </h3>
           <p className="generated-plan__meta">
             {plan.level} · {plan.daysPerWeek}x/semana · {plan.splitLabel || getSplitStyleLabel(plan.splitStyle)} ·{' '}
-            {plan.minutesPerWorkout || plan.duration} min · {plan.location}
+            preferência {planPreference} min · {plan.location}
+          </p>
+          <p className="generated-plan__source-note">
+            {hasActiveRoutine
+              ? 'Abaixo, cada dia mostra a rotina ativa (Meus treinos) quando ela já foi salva — contagem e duração vêm da mesma fonte.'
+              : 'Isto é o plano gerado. Depois de “Salvar na minha planilha”, a rotina ativa fica em Meus treinos e passa a ser a fonte ao iniciar.'}
           </p>
         </div>
         <div className="generated-plan__actions">
@@ -144,9 +170,10 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan, onG
       <div className="generated-plan__days" role="list">
         {days.map((day) => {
           const type = resolveDayType(day)
-          const exerciseCount = (day.exercises || []).length
-          const duration = estimateDuration(day)
-          const muscleGroups = day.muscleGroups || day.focus || []
+          const display = dayDisplay(day)
+          const exerciseCount = display.exerciseCount
+          const duration = display.duration
+          const muscleGroups = display.muscleGroups
           const isExpanded = expandedDays.has(day.day)
           const panelId = `plan-day-panel-${plan.id}-${day.day}`
 
@@ -169,6 +196,7 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan, onG
                     <span className={`plan-day__type-badge plan-day__type-badge--${type.tone}`}>
                       {day.workoutType || type.label}
                     </span>
+                    <span className="plan-day__source-badge">{display.sourceLabel}</span>
                   </div>
                   <h4 className="plan-day__name">{displayWorkoutName(day.workoutName || day.name)}</h4>
                   <p className="plan-day__weekday">{weekdayForDay(day.day)}</p>
@@ -201,12 +229,12 @@ export default function GeneratedPlan({ plan, onDownloadExcel, onSaveToPlan, onG
                 {isExpanded && (
                   <>
                     <DayVolumeSummary
-                      exercises={day.exercises}
+                      exercises={display.exercises}
                       dayType={day.workoutType || type.label}
                       volumeSummary={day.volumeSummary}
                     />
                     <ul className="plan-day__exercises">
-                      {(day.exercises || []).map((ex) => (
+                      {display.exercises.map((ex) => (
                         <li key={ex.exerciseId || ex.name}>
                           <div className="plan-day__ex-main">
                             <strong>{ex.name}</strong>

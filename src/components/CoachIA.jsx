@@ -1000,7 +1000,7 @@ export default function CoachIA() {
       }
 
       if (payload.kind === 'exercise') {
-        addExerciseToPlan(payload.exercise)
+        addExerciseToPlan(payload.exercise, { skipConfirm: true })
         return true
       }
 

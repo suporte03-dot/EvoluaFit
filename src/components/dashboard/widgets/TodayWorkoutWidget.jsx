@@ -27,11 +27,14 @@ function heroTone(workout, title) {
 }
 
 export default function TodayWorkoutWidget({ profile, today, weekly, nextAction, onReorganize }) {
-  const { startWorkout, pendingSession, resumePendingSession, showToast } = useFitness()
+  const { startWorkout, pendingSession, resumePendingSession, showToast, generatedPlan } = useFitness()
   const navigate = useNavigate()
   const [detailWorkout, setDetailWorkout] = useState(null)
   const [timeTarget, setTimeTarget] = useState(null)
+  const [forceLongStart, setForceLongStart] = useState(false)
   const detailTarget = nextAction?.workout || today?.workout
+  const planPreference =
+    Number(generatedPlan?.minutesPerWorkout || generatedPlan?.duration || profile?.duration) || null
   const canAdjustTime =
     Boolean(detailTarget?.exercises?.length) &&
     ['start', 'resume'].includes(nextAction?.kind) &&
@@ -51,6 +54,7 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
     weekly?.weeklyGoal > 0
       ? Math.min(100, Math.round((weekly.completedCount / weekly.weeklyGoal) * 100))
       : 0
+  const needsTimeChoice = Boolean(timeTarget && sessionFit && sessionFit.fits === false && !forceLongStart)
 
   const runNavigate = (section, href) => {
     if (href) {
@@ -66,7 +70,11 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
       return
     }
     if (nextAction?.kind === 'start' && nextAction.workout) {
-      const payload = sessionFit?.target ? sessionWorkout : nextAction.workout
+      if (needsTimeChoice) {
+        showToast('Escolha outro tempo ou confirme a versão mais longa.', 'info')
+        return
+      }
+      const payload = timeTarget ? sessionWorkout : nextAction.workout
       startWorkout(payload)
       if (sessionFit?.summary) showToast(sessionFit.summary, 'info')
       return
@@ -100,13 +108,18 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
           <ul className="fit-hero__meta" aria-label="Resumo do treino">
             {meta.muscles?.length > 0 && <li>{meta.muscles.slice(0, 3).join(' · ')}</li>}
             <li>{meta.exerciseCount} exercícios</li>
-            <li>~{meta.duration} min</li>
+            <li>~{meta.duration} min nesta versão</li>
           </ul>
         ) : (
           <p className="fit-hero__lead">
             {nextAction?.description || 'O próximo passo da sua evolução aparece aqui.'}
           </p>
         )}
+        {planPreference ? (
+          <p className="fit-hero__plan-pref">
+            Preferência do plano: {planPreference} min · o tempo de hoje abaixo ajusta só esta sessão.
+          </p>
+        ) : null}
         {nextAction?.description && meta ? <p className="fit-hero__lead">{nextAction.description}</p> : null}
         {today?.nextWorkout && today.situation === 'no_workout_today' ? (
           <p className="fit-hero__lead">
@@ -145,7 +158,10 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
                   key={value}
                   type="button"
                   className={timeTarget === value ? 'is-active' : ''}
-                  onClick={() => setTimeTarget(value)}
+                  onClick={() => {
+                    setForceLongStart(false)
+                    setTimeTarget(value)
+                  }}
                 >
                   {value} min
                 </button>
@@ -153,18 +169,45 @@ export default function TodayWorkoutWidget({ profile, today, weekly, nextAction,
               <button
                 type="button"
                 className={timeTarget == null ? 'is-active' : ''}
-                onClick={() => setTimeTarget(null)}
+                onClick={() => {
+                  setForceLongStart(false)
+                  setTimeTarget(null)
+                }}
               >
                 Tempo normal
               </button>
             </div>
-            {sessionFit?.summary ? <p className="fit-hero__time-note">{sessionFit.summary}</p> : null}
+            {sessionFit?.summary ? (
+              <p className={`fit-hero__time-note${sessionFit.fits === false ? ' is-warn' : ''}`}>
+                {sessionFit.summary}
+              </p>
+            ) : null}
+            {sessionFit?.fits === false ? (
+              <div className="fit-hero__time-fallback">
+                <button
+                  type="button"
+                  className="btn btn--ghost btn--sm"
+                  onClick={() => setForceLongStart(true)}
+                >
+                  Começar mesmo assim (~{sessionFit.minutes} min)
+                </button>
+              </div>
+            ) : null}
           </div>
         ) : null}
 
         <div className="fit-hero__actions">
-          <button type="button" className="fit-hero__cta" onClick={handlePrimary}>
-            {nextAction?.primaryLabel || 'Continuar'}
+          <button
+            type="button"
+            className="fit-hero__cta"
+            onClick={handlePrimary}
+            disabled={needsTimeChoice}
+          >
+            {needsTimeChoice
+              ? 'Escolha o tempo'
+              : forceLongStart && timeTarget
+                ? `Iniciar ~${sessionFit?.minutes || meta?.duration} min`
+                : nextAction?.primaryLabel || 'Continuar'}
           </button>
           <button type="button" className="fit-hero__more" onClick={handleSecondary}>
             {nextAction?.secondaryLabel || 'Ver detalhes'}

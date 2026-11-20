@@ -1,8 +1,7 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import storageService from '../services/storageService'
 import { buildHistoryEntry } from '../services/workoutService'
 import { getPerformanceSummary } from '../utils/performanceUtils'
-import { parseSets, parseRestSeconds } from '../data/exercisesData'
 import {
   ensureCalendarMirror,
   markWorkoutPartial,
@@ -15,6 +14,15 @@ import {
   clearActiveSession,
   loadActiveSession,
 } from '../utils/progressStorage'
+import {
+  appendLibraryExercise,
+  buildLibraryExerciseEntry,
+  createLibraryAppendId,
+  listEligibleAddTargets,
+  removeLibraryAppend,
+  syncPlanDayExercises,
+  targetLabel,
+} from '../utils/libraryAdd.js'
 
 const FitnessContext = createContext(null)
 
@@ -27,6 +35,10 @@ export function FitnessProvider({ children }) {
     const loaded = storageService.load()
     return loaded.plans?.[0] || null
   })
+  const [libraryAddRequest, setLibraryAddRequest] = useState(null)
+  const [libraryAddBusy, setLibraryAddBusy] = useState(false)
+  const libraryAddBusyRef = useRef(false)
+  const lastLibraryAddRef = useRef(null)
 
   useEffect(() => {
     ensureCalendarMirror(data.workouts)
@@ -69,13 +81,30 @@ export function FitnessProvider({ children }) {
     })
   }, [])
 
-  const showToast = useCallback((message, type = 'success') => {
-    const id = Date.now()
-    setToasts((prev) => [...prev, { id, message, type }])
+  const dismissToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id))
+  }, [])
+
+  const showToast = useCallback((message, type = 'success', options = {}) => {
+    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+    const duration = Number(options.duration) > 0 ? Number(options.duration) : options.actionLabel ? 8000 : 3200
+    const toast = {
+      id,
+      message,
+      type,
+      actionLabel: options.actionLabel || null,
+      onAction: options.onAction
+        ? () => {
+            options.onAction()
+            dismissToast(id)
+          }
+        : null,
+    }
+    setToasts((prev) => [...prev, toast])
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id))
-    }, 3200)
-  }, [])
+    }, duration)
+  }, [dismissToast])
 
   const updateProfile = useCallback(
     (profile, options = {}) => {
@@ -452,57 +481,135 @@ export function FitnessProvider({ children }) {
     [data.workouts, persist, showToast],
   )
 
-  const addExerciseToPlan = useCallback(
-    (exercise) => {
-      if (!exercise) return
-
-      const entry = {
-        exerciseId: exercise.id,
-        name: exercise.name,
-        muscleGroup: exercise.category,
-        sets: parseSets(exercise.sets),
-        reps: exercise.reps,
-        restSeconds: parseRestSeconds(exercise.rest),
-        load: '',
+  const undoLibraryAdd = useCallback(
+    (token) => {
+      const snap = token || lastLibraryAddRef.current
+      if (!snap?.appendId || !snap?.workoutId) {
+        showToast('Não há inclusão recente para desfazer.', 'info')
+        return { ok: false, reason: 'missing' }
       }
-
-      const pending = data.workouts.find((w) => w.status === 'Pendente')
-
-      if (pending) {
-        persist((prev) => ({
-          ...prev,
-          workouts: prev.workouts.map((w) =>
-            w.id === pending.id
-              ? {
-                  ...w,
-                  exercises: [...w.exercises, entry],
-                  muscleGroups: [...new Set([...(w.muscleGroups || []), exercise.category])],
-                }
-              : w,
-          ),
-        }))
-        showToast(`"${exercise.name}" adicionado ao treino ${pending.name}`)
-        return
+      const prev = data
+      const current = prev.workouts.find((w) => w.id === snap.workoutId)
+      if (!current) {
+        showToast('Essa inclusão já foi alterada ou removida.', 'info')
+        return { ok: false, reason: 'gone' }
       }
-
-      const newWorkout = {
-        id: `workout-${Date.now()}`,
-        name: `Treino — ${exercise.category}`,
-        date: new Date().toISOString().split('T')[0],
-        muscleGroups: [exercise.category],
-        status: 'Pendente',
-        estimatedMinutes: 45,
-        exercises: [entry],
-        createdAt: new Date().toISOString(),
+      const result = removeLibraryAppend(current, snap.appendId)
+      if (!result.removed) {
+        showToast('Essa inclusão já foi alterada ou removida.', 'info')
+        return { ok: false, reason: 'gone' }
       }
-
-      persist((prev) => ({
-        ...prev,
-        workouts: [newWorkout, ...prev.workouts],
-      }))
-      showToast(`"${exercise.name}" adicionado à planilha!`)
+      try {
+        const workouts = prev.workouts.map((w) => (w.id === snap.workoutId ? result.workout : w))
+        const plans = syncPlanDayExercises(prev.plans, result.workout)
+        persist({ ...prev, workouts, plans })
+        const synced = plans.find((p) => p.id === result.workout.planId)
+        if (synced) setGeneratedPlan(synced)
+      } catch {
+        showToast('Não foi possível desfazer. Confira Meus treinos.', 'error')
+        return { ok: false, reason: 'persist' }
+      }
+      if (lastLibraryAddRef.current?.appendId === snap.appendId) lastLibraryAddRef.current = null
+      showToast('Inclusão desfeita.', 'info')
+      return { ok: true }
     },
-    [data.workouts, persist, showToast],
+    [data, persist, showToast],
+  )
+
+  const commitLibraryAdd = useCallback(
+    (exercise, workoutId = null) => {
+      if (!exercise) return { ok: false, reason: 'missing' }
+      if (libraryAddBusyRef.current) return { ok: false, reason: 'busy' }
+      libraryAddBusyRef.current = true
+      setLibraryAddBusy(true)
+
+      const appendId = createLibraryAppendId()
+      const entry = buildLibraryExerciseEntry(exercise, { appendId })
+      const prev = data
+      let updatedWorkout = null
+      let nextWorkouts = prev.workouts
+      let nextPlans = prev.plans
+
+      try {
+        if (workoutId) {
+          const target = prev.workouts.find((w) => w.id === workoutId)
+          if (!target) throw new Error('missing-target')
+          updatedWorkout = appendLibraryExercise(target, entry)
+          nextWorkouts = prev.workouts.map((w) => (w.id === updatedWorkout.id ? updatedWorkout : w))
+          nextPlans = syncPlanDayExercises(prev.plans, updatedWorkout)
+        } else {
+          const targets = listEligibleAddTargets(prev.workouts, {
+            generatedPlan: prev.plans?.[0] || generatedPlan,
+            history: prev.history,
+            plans: prev.plans,
+          })
+          if (targets.length) {
+            updatedWorkout = appendLibraryExercise(targets[0], entry)
+            nextWorkouts = prev.workouts.map((w) => (w.id === updatedWorkout.id ? updatedWorkout : w))
+            nextPlans = syncPlanDayExercises(prev.plans, updatedWorkout)
+          } else {
+            updatedWorkout = {
+              id: `workout-${Date.now()}`,
+              name: `Treino — ${exercise.category || 'Geral'}`,
+              date: new Date().toISOString().split('T')[0],
+              muscleGroups: [exercise.category].filter(Boolean),
+              status: 'Pendente',
+              estimatedMinutes: 45,
+              exercises: [entry],
+              createdAt: new Date().toISOString(),
+            }
+            nextWorkouts = [updatedWorkout, ...prev.workouts]
+          }
+        }
+        persist({ ...prev, workouts: nextWorkouts, plans: nextPlans })
+      } catch {
+        libraryAddBusyRef.current = false
+        setLibraryAddBusy(false)
+        showToast('Não foi possível salvar. Tente de novo.', 'error')
+        return { ok: false, reason: 'persist' }
+      }
+
+      const savedLabel = targetLabel(updatedWorkout)
+      const synced = nextPlans?.find((p) => p.id === updatedWorkout.planId)
+      if (synced) setGeneratedPlan(synced)
+      lastLibraryAddRef.current = {
+        appendId,
+        workoutId: updatedWorkout.id,
+        exerciseName: exercise.name,
+      }
+      showToast(`“${exercise.name}” adicionado a ${savedLabel}`, 'success', {
+        actionLabel: 'Desfazer',
+        onAction: () => undoLibraryAdd({ appendId, workoutId: updatedWorkout.id }),
+        duration: 8000,
+      })
+      libraryAddBusyRef.current = false
+      setLibraryAddBusy(false)
+      setLibraryAddRequest(null)
+      return { ok: true, appendId, workoutId: updatedWorkout.id }
+    },
+    [data, generatedPlan, persist, showToast, undoLibraryAdd],
+  )
+
+  /** Abre confirmação de destino; use { workoutId } ou { skipConfirm: true } para gravar direto. */
+  const addExerciseToPlan = useCallback(
+    (exercise, options = {}) => {
+      if (!exercise) return { ok: false, reason: 'missing' }
+      if (options.workoutId) return commitLibraryAdd(exercise, options.workoutId)
+      if (options.skipConfirm) return commitLibraryAdd(exercise, options.workoutId || null)
+      setLibraryAddRequest({ exercise })
+      return { ok: true, pending: true }
+    },
+    [commitLibraryAdd],
+  )
+
+  const cancelLibraryAdd = useCallback(() => {
+    if (libraryAddBusyRef.current) return
+    setLibraryAddRequest(null)
+  }, [])
+
+  const confirmLibraryAdd = useCallback(
+    (workoutId = null) => commitLibraryAdd(libraryAddRequest?.exercise, workoutId),
+    [commitLibraryAdd, libraryAddRequest],
   )
 
   const updateGoals = useCallback(
@@ -555,9 +662,12 @@ export function FitnessProvider({ children }) {
     activeWorkout,
     pendingSession,
     generatedPlan,
+    libraryAddRequest,
+    libraryAddBusy,
     setActiveWorkout,
     setGeneratedPlan,
     showToast,
+    dismissToast,
     updateProfile,
     addWorkout,
     updateWorkout,
@@ -576,6 +686,9 @@ export function FitnessProvider({ children }) {
     replaceWorkouts,
     addWorkoutToPlan,
     addExerciseToPlan,
+    confirmLibraryAdd,
+    cancelLibraryAdd,
+    undoLibraryAdd,
     updateGoals,
     importData,
     exportData,

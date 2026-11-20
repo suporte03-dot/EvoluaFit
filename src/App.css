@@ -4481,12 +4481,33 @@ main {
 }
 
 .toast {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   padding: 0.85rem 1.25rem;
   border-radius: var(--radius-sm);
   font-size: 0.88rem;
   font-weight: 500;
   box-shadow: var(--shadow);
   animation: slideIn 0.25s ease;
+  max-width: min(22rem, calc(100vw - 2rem));
+}
+
+.toast__message {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast__action {
+  flex-shrink: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0.15rem 0.25rem;
 }
 
 .toast--success {
@@ -4505,6 +4526,101 @@ main {
   background: var(--bg-card);
   border: 1px solid rgba(37, 99, 235, 0.5);
   color: #93c5fd;
+}
+
+.add-to-workout__lead,
+.add-to-workout__create,
+.add-to-workout__confirm {
+  margin: 0 0 0.85rem;
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.add-to-workout__list {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: min(40vh, 16rem);
+  overflow: auto;
+}
+
+.add-to-workout__option {
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(15, 23, 42, 0.35);
+  color: inherit;
+  border-radius: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.add-to-workout__option.is-active {
+  border-color: var(--green, #22c55e);
+  box-shadow: inset 0 0 0 1px rgba(34, 197, 94, 0.35);
+}
+
+.add-to-workout__option-name {
+  font-weight: 700;
+}
+
+.add-to-workout__option-meta {
+  font-size: 0.8rem;
+  color: var(--text-muted, #94a3b8);
+}
+
+.add-to-workout__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.generated-plan__source-note {
+  margin: 0.55rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--text-muted, #94a3b8);
+  max-width: 42rem;
+}
+
+.plan-day__source-badge {
+  display: inline-flex;
+  margin-left: 0.4rem;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: rgba(148, 163, 184, 0.18);
+  color: var(--text-muted, #94a3b8);
+}
+
+.fit-hero__plan-pref {
+  margin: 0.35rem 0 0.5rem;
+  font-size: 0.8rem;
+  color: rgba(226, 232, 240, 0.78);
+}
+
+.fit-hero__time-note.is-warn {
+  color: #fbbf24;
+}
+
+.fit-hero__time-fallback {
+  margin-top: 0.55rem;
+}
+
+.pre-workout__hint {
+  margin: 0 0 0.55rem;
+  font-size: 0.8rem;
+  color: var(--text-muted, #94a3b8);
 }
 
 @keyframes slideIn {
